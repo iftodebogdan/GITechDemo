@@ -1,0 +1,320 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DX9">
+      <UniqueIdentifier>{f471d7d9-5b9c-4eb7-945b-a481d1cc9f7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompiled Headers">
+      <UniqueIdentifier>{79a60a48-2e59-4113-82f3-277b80932e12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{739a8db1-d9b1-4385-9aff-b3f33a049f2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9">
+      <UniqueIdentifier>{9ac381ef-b408-4115-96c3-e6f42f9e81f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\Include">
+      <UniqueIdentifier>{1f44b508-2285-4781-a140-124efc709298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\Lib">
+      <UniqueIdentifier>{52a11e51-d079-4de2-88fa-f8b686fe4657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\Lib\x86">
+      <UniqueIdentifier>{2cbc280c-766e-4e71-ac28-7d531638edea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\Lib\x64">
+      <UniqueIdentifier>{99ca2b10-8aa9-4a4d-a505-44db1dd94344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DX9\RendererDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\VertexFormatDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\MappingsDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\VertexBufferDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3d9.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9anim.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9core.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9effect.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9math.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9mesh.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9shader.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9shape.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9tex.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\Include\d3dx9xof.h">
+      <Filter>SDK\DX9\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\IndexBufferDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Buffer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\IndexBuffer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Renderer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\VertexBuffer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\VertexFormat.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Texture.h" />
+    <ClInclude Include="DX9\TextureDX9.h" />
+    <ClInclude Include="SDK\gmtl\External\OpenSGConvert.h" />
+    <ClInclude Include="SDK\gmtl\Fit\GaussPointsFit.h" />
+    <ClInclude Include="SDK\gmtl\Misc\MatrixConvert.h" />
+    <ClInclude Include="SDK\gmtl\Numerics\Eigen.h" />
+    <ClInclude Include="SDK\gmtl\Util\Assert.h" />
+    <ClInclude Include="SDK\gmtl\Util\Meta.h" />
+    <ClInclude Include="SDK\gmtl\Util\StaticAssert.h" />
+    <ClInclude Include="SDK\gmtl\AABox.h" />
+    <ClInclude Include="SDK\gmtl\AABoxOps.h" />
+    <ClInclude Include="SDK\gmtl\AxisAngle.h" />
+    <ClInclude Include="SDK\gmtl\AxisAngleOps.h" />
+    <ClInclude Include="SDK\gmtl\Comparitors.h" />
+    <ClInclude Include="SDK\gmtl\Config.h" />
+    <ClInclude Include="SDK\gmtl\Containment.h" />
+    <ClInclude Include="SDK\gmtl\Coord.h" />
+    <ClInclude Include="SDK\gmtl\CoordOps.h" />
+    <ClInclude Include="SDK\gmtl\Defines.h" />
+    <ClInclude Include="SDK\gmtl\EulerAngle.h" />
+    <ClInclude Include="SDK\gmtl\EulerAngleOps.h" />
+    <ClInclude Include="SDK\gmtl\Frustum.h" />
+    <ClInclude Include="SDK\gmtl\FrustumOps.h" />
+    <ClInclude Include="SDK\gmtl\Generate.h" />
+    <ClInclude Include="SDK\gmtl\gmtl.h" />
+    <ClInclude Include="SDK\gmtl\Helpers.h" />
+    <ClInclude Include="SDK\gmtl\Intersection.h" />
+    <ClInclude Include="SDK\gmtl\LineSeg.h" />
+    <ClInclude Include="SDK\gmtl\LineSegOps.h" />
+    <ClInclude Include="SDK\gmtl\Math.h" />
+    <ClInclude Include="SDK\gmtl\Matrix.h" />
+    <ClInclude Include="SDK\gmtl\MatrixOps.h" />
+    <ClInclude Include="SDK\gmtl\OOBox.h" />
+    <ClInclude Include="SDK\gmtl\Output.h" />
+    <ClInclude Include="SDK\gmtl\ParametricCurve.h" />
+    <ClInclude Include="SDK\gmtl\Plane.h" />
+    <ClInclude Include="SDK\gmtl\PlaneOps.h" />
+    <ClInclude Include="SDK\gmtl\Point.h" />
+    <ClInclude Include="SDK\gmtl\Quat.h" />
+    <ClInclude Include="SDK\gmtl\QuatOps.h" />
+    <ClInclude Include="SDK\gmtl\Ray.h" />
+    <ClInclude Include="SDK\gmtl\RayOps.h" />
+    <ClInclude Include="SDK\gmtl\Sphere.h" />
+    <ClInclude Include="SDK\gmtl\SphereOps.h" />
+    <ClInclude Include="SDK\gmtl\Tri.h" />
+    <ClInclude Include="SDK\gmtl\TriOps.h" />
+    <ClInclude Include="SDK\gmtl\Vec.h" />
+    <ClInclude Include="SDK\gmtl\VecBase.h" />
+    <ClInclude Include="SDK\gmtl\VecExprMeta.h" />
+    <ClInclude Include="SDK\gmtl\VecOps.h" />
+    <ClInclude Include="SDK\gmtl\VecOpsMeta.h" />
+    <ClInclude Include="SDK\gmtl\Version.h" />
+    <ClInclude Include="SDK\gmtl\Xforms.h" />
+    <ClInclude Include="Common\ShaderTemplate.h" />
+    <ClInclude Include="Common\ShaderProgram.h" />
+    <ClInclude Include="DX9\ShaderProgramDX9.h" />
+    <ClInclude Include="Common\ShaderInput.h" />
+    <ClInclude Include="SDK\vld\include\vld.h" />
+    <ClInclude Include="SDK\vld\include\vld_def.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\config.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\devil_internal_exports.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\il.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\il_wrap.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\ilu.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\ilu_region.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\ilut.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\ilut_config.h" />
+    <ClInclude Include="SDK\DX9\include\d3d9caps.h" />
+    <ClInclude Include="SDK\DX9\include\d3d9types.h" />
+    <ClInclude Include="Utility\TextureLoader.h" />
+    <ClInclude Include="SDK\DevIL\include\IL\devil_cpp_wrapper.hpp" />
+    <ClInclude Include="Common\RenderState.h" />
+    <ClInclude Include="DX9\RenderStateDX9.h" />
+    <ClInclude Include="Common\SamplerState.h" />
+    <ClInclude Include="DX9\SamplerStateDX9.h" />
+    <ClInclude Include="Common\RenderTarget.h" />
+    <ClInclude Include="DX9\RenderTargetDX9.h" />
+    <ClInclude Include="Common\ResourceManager.h" />
+    <ClInclude Include="DX9\ResourceManagerDX9.h" />
+    <ClInclude Include="NULL\IndexBufferNULL.h" />
+    <ClInclude Include="NULL\RendererNULL.h" />
+    <ClInclude Include="NULL\RenderStateNULL.h" />
+    <ClInclude Include="NULL\RenderTargetNULL.h" />
+    <ClInclude Include="NULL\ResourceManagerNULL.h" />
+    <ClInclude Include="NULL\SamplerStateNULL.h" />
+    <ClInclude Include="NULL\ShaderProgramNULL.h" />
+    <ClInclude Include="NULL\TextureNULL.h" />
+    <ClInclude Include="NULL\VertexBufferNULL.h" />
+    <ClInclude Include="NULL\VertexFormatNULL.h" />
+    <ClInclude Include="Common\ResourceData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DX9\RendererDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\MappingsDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\VertexBufferDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\VertexFormatDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\IndexBufferDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Buffer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\IndexBuffer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Renderer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\VertexBuffer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\VertexFormat.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Texture.cpp" />
+    <ClCompile Include="DX9\TextureDX9.cpp" />
+    <ClCompile Include="Common\ShaderTemplate.cpp" />
+    <ClCompile Include="Common\ShaderProgram.cpp" />
+    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
+    <ClCompile Include="Common\ShaderInput.cpp" />
+    <ClCompile Include="Utility\TextureLoader.cpp" />
+    <ClCompile Include="Common\RenderState.cpp" />
+    <ClCompile Include="DX9\RenderStateDX9.cpp" />
+    <ClCompile Include="Common\SamplerState.cpp" />
+    <ClCompile Include="DX9\SamplerStateDX9.cpp" />
+    <ClCompile Include="Common\RenderTarget.cpp" />
+    <ClCompile Include="DX9\RenderTargetDX9.cpp" />
+    <ClCompile Include="Common\ResourceManager.cpp" />
+    <ClCompile Include="DX9\ResourceManagerDX9.cpp" />
+    <ClCompile Include="NULL\IndexBufferNULL.cpp" />
+    <ClCompile Include="NULL\RendererNULL.cpp" />
+    <ClCompile Include="NULL\RenderStateNULL.cpp" />
+    <ClCompile Include="NULL\RenderTargetNULL.cpp" />
+    <ClCompile Include="NULL\ResourceManagerNULL.cpp" />
+    <ClCompile Include="NULL\SamplerStateNULL.cpp" />
+    <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
+    <ClCompile Include="NULL\TextureNULL.cpp" />
+    <ClCompile Include="NULL\VertexBufferNULL.cpp" />
+    <ClCompile Include="NULL\VertexFormatNULL.cpp" />
+    <ClCompile Include="Common\ResourceSerialization.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LibRenderer.licenseheader" />
+    <None Include="SDK\DX9\Include\d3dx9math.inl">
+      <Filter>SDK\DX9\Include</Filter>
+    </None>
+    <None Include="Common\VertexBuffer.inl">
+      <Filter>Common</Filter>
+    </None>
+    <None Include="Common\ShaderInput.inl" />
+    <None Include="SDK\vld\bin\x64\dbghelp.dll" />
+    <None Include="SDK\vld\bin\x64\vld_x64.dll" />
+    <None Include="SDK\vld\bin\x86\dbghelp.dll" />
+    <None Include="SDK\vld\bin\x86\vld_x86.dll" />
+    <None Include="SDK\DevIL\bin\x64\Unicode\DevIL.dll" />
+    <None Include="SDK\DevIL\bin\x64\Unicode\ILU.dll" />
+    <None Include="SDK\DevIL\bin\x64\Unicode\ILUT.dll" />
+    <None Include="SDK\DevIL\bin\x64\DevIL.dll" />
+    <None Include="SDK\DevIL\bin\x64\ILU.dll" />
+    <None Include="SDK\DevIL\bin\x64\ILUT.dll" />
+    <None Include="SDK\DevIL\bin\x86\Unicode\DevIL.dll" />
+    <None Include="SDK\DevIL\bin\x86\Unicode\ILU.dll" />
+    <None Include="SDK\DevIL\bin\x86\Unicode\ILUT.dll" />
+    <None Include="SDK\DevIL\bin\x86\DevIL.dll" />
+    <None Include="SDK\DevIL\bin\x86\ILU.dll" />
+    <None Include="SDK\DevIL\bin\x86\ILUT.dll" />
+    <None Include="SDK\vld\bin\x64\Microsoft.DTfW.DHL.manifest" />
+    <None Include="SDK\vld\bin\x86\Microsoft.DTfW.DHL.manifest" />
+    <None Include="SDK\DevIL\include\IL\config.h.win" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="SDK\DX9\Lib\x64\d3d9.lib">
+      <Filter>SDK\DX9\Lib\x64</Filter>
+    </Library>
+    <Library Include="SDK\DX9\Lib\x64\d3dx9.lib">
+      <Filter>SDK\DX9\Lib\x64</Filter>
+    </Library>
+    <Library Include="SDK\DX9\Lib\x64\DxErr.lib">
+      <Filter>SDK\DX9\Lib\x64</Filter>
+    </Library>
+    <Library Include="SDK\DX9\Lib\x86\d3d9.lib">
+      <Filter>SDK\DX9\Lib\x86</Filter>
+    </Library>
+    <Library Include="SDK\DX9\Lib\x86\d3dx9.lib">
+      <Filter>SDK\DX9\Lib\x86</Filter>
+    </Library>
+    <Library Include="SDK\DX9\Lib\x86\DxErr.lib">
+      <Filter>SDK\DX9\Lib\x86</Filter>
+    </Library>
+    <Library Include="SDK\vld\lib\x64\vld.lib" />
+    <Library Include="SDK\vld\lib\x86\vld.lib" />
+    <Library Include="SDK\DevIL\lib\x64\DevIL.lib" />
+    <Library Include="SDK\DevIL\lib\x64\ILU.lib" />
+    <Library Include="SDK\DevIL\lib\x64\ILUT.lib" />
+    <Library Include="SDK\DevIL\lib\x86\DevIL.lib" />
+    <Library Include="SDK\DevIL\lib\x86\ILU.lib" />
+    <Library Include="SDK\DevIL\lib\x86\ILUT.lib" />
+    <Library Include="SDK\DX9\lib\x64\d3dx9d.lib" />
+    <Library Include="SDK\DX9\lib\x86\d3dx9d.lib" />
+    <Library Include="SDK\DevIL\lib\x64\Unicode\DevIL.lib" />
+    <Library Include="SDK\DevIL\lib\x64\Unicode\ILU.lib" />
+    <Library Include="SDK\DevIL\lib\x64\Unicode\ILUT.lib" />
+    <Library Include="SDK\DevIL\lib\x86\Unicode\DevIL.lib" />
+    <Library Include="SDK\DevIL\lib\x86\Unicode\ILU.lib" />
+    <Library Include="SDK\DevIL\lib\x86\Unicode\ILUT.lib" />
+  </ItemGroup>
+</Project>
