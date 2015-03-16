@@ -110,7 +110,6 @@
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -118,7 +117,6 @@
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,7 +124,6 @@
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -134,7 +131,6 @@
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -143,22 +139,28 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"
-xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
+      <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
+DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
+DEL /F /Q "$(OutDir)\vld_x86.dll"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -169,24 +171,30 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"
-xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
+      <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
+DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
+DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -199,25 +207,18 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"</Command>
-      <Message>Copy DLL dependencies</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
-      <Message>Deleting DLL dependencies</Message>
-      <Outputs>dummy</Outputs>
-    </CustomBuildStep>
+    <PostBuildEvent />
+    <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -228,26 +229,19 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"</Command>
-      <Message>Copy DLL dependencies</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
-      <Message>Deleting DLL dependencies</Message>
-      <Outputs>dummy</Outputs>
-    </CustomBuildStep>
+    <PostBuildEvent />
+    <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -258,27 +252,19 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copy DLL dependencies</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
-      <Message>Deleting DLL dependencies</Message>
-      <Outputs>dummy</Outputs>
-    </CustomBuildStep>
+    <PostBuildEvent />
+    <PostBuildEvent />
+    <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -289,28 +275,20 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBRENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\DevIL\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>DevIL.lib;ILU.lib;d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\DevIL\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\DevIL\bin\$(PlatformTarget)\*.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copy DLL dependencies</Message>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
-      <Message>Deleting DLL dependencies</Message>
-      <Outputs>dummy</Outputs>
-    </CustomBuildStep>
+    <PostBuildEvent />
+    <PostBuildEvent />
+    <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -348,15 +326,6 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
     <ClInclude Include="NULL\TextureNULL.h" />
     <ClInclude Include="NULL\VertexBufferNULL.h" />
     <ClInclude Include="NULL\VertexFormatNULL.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\config.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\devil_cpp_wrapper.hpp" />
-    <ClInclude Include="SDK\DevIL\include\IL\devil_internal_exports.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\il.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\ilu.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\ilut.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\ilut_config.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\ilu_region.h" />
-    <ClInclude Include="SDK\DevIL\include\IL\il_wrap.h" />
     <ClInclude Include="SDK\DX9\Include\d3d9.h" />
     <ClInclude Include="SDK\DX9\include\d3d9caps.h" />
     <ClInclude Include="SDK\DX9\include\d3d9types.h" />
@@ -427,7 +396,8 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Common\VertexBuffer.h" />
     <ClInclude Include="DX9\VertexBufferDX9.h" />
-    <ClInclude Include="Utility\TextureLoader.h" />
+    <ClInclude Include="Utility\ColorUtility.h" />
+    <ClInclude Include="Utility\HalfFloat.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\ResourceSerialization.cpp" />
@@ -493,24 +463,12 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
     </ClCompile>
     <ClCompile Include="Common\VertexBuffer.cpp" />
     <ClCompile Include="DX9\VertexBufferDX9.cpp" />
-    <ClCompile Include="Utility\TextureLoader.cpp" />
+    <ClCompile Include="Utility\ColorUtility.cpp" />
+    <ClCompile Include="Utility\HalfFloat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Common\ShaderInput.inl" />
     <None Include="LibRenderer.licenseheader" />
-    <None Include="SDK\DevIL\bin\x64\DevIL.dll" />
-    <None Include="SDK\DevIL\bin\x64\ILU.dll" />
-    <None Include="SDK\DevIL\bin\x64\ILUT.dll" />
-    <None Include="SDK\DevIL\bin\x64\Unicode\DevIL.dll" />
-    <None Include="SDK\DevIL\bin\x64\Unicode\ILU.dll" />
-    <None Include="SDK\DevIL\bin\x64\Unicode\ILUT.dll" />
-    <None Include="SDK\DevIL\bin\x86\DevIL.dll" />
-    <None Include="SDK\DevIL\bin\x86\ILU.dll" />
-    <None Include="SDK\DevIL\bin\x86\ILUT.dll" />
-    <None Include="SDK\DevIL\bin\x86\Unicode\DevIL.dll" />
-    <None Include="SDK\DevIL\bin\x86\Unicode\ILU.dll" />
-    <None Include="SDK\DevIL\bin\x86\Unicode\ILUT.dll" />
-    <None Include="SDK\DevIL\include\IL\config.h.win" />
     <None Include="SDK\DX9\Include\d3dx9math.inl" />
     <None Include="Common\VertexBuffer.inl" />
     <None Include="SDK\vld\bin\x64\dbghelp.dll" />
@@ -519,18 +477,6 @@ xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Comman
     <None Include="SDK\vld\bin\x86\vld_x86.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="SDK\DevIL\lib\x64\DevIL.lib" />
-    <Library Include="SDK\DevIL\lib\x64\ILU.lib" />
-    <Library Include="SDK\DevIL\lib\x64\ILUT.lib" />
-    <Library Include="SDK\DevIL\lib\x64\Unicode\DevIL.lib" />
-    <Library Include="SDK\DevIL\lib\x64\Unicode\ILU.lib" />
-    <Library Include="SDK\DevIL\lib\x64\Unicode\ILUT.lib" />
-    <Library Include="SDK\DevIL\lib\x86\DevIL.lib" />
-    <Library Include="SDK\DevIL\lib\x86\ILU.lib" />
-    <Library Include="SDK\DevIL\lib\x86\ILUT.lib" />
-    <Library Include="SDK\DevIL\lib\x86\Unicode\DevIL.lib" />
-    <Library Include="SDK\DevIL\lib\x86\Unicode\ILU.lib" />
-    <Library Include="SDK\DevIL\lib\x86\Unicode\ILUT.lib" />
     <Library Include="SDK\DX9\Lib\x64\d3d9.lib" />
     <Library Include="SDK\DX9\Lib\x64\d3dx9.lib" />
     <Library Include="SDK\DX9\lib\x64\d3dx9d.lib" />

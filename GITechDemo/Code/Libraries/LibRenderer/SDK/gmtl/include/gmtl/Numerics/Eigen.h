@@ -163,10 +163,10 @@ void Eigen::Tridiagonal3 (float** m_aafMat, float* m_afDiag,
     if ( fM02 != 0.0 )
     {
         float fLength = Math::sqrt(fM01*fM01+fM02*fM02);
-        float fInvLength = 1.0/fLength;
+        float fInvLength = 1.0f/fLength;
         fM01 *= fInvLength;
         fM02 *= fInvLength;
-        float fQ = 2.0*fM01*fM12+fM02*(fM22-fM11);
+        float fQ = 2.0f*fM01*fM12+fM02*(fM22-fM11);
         m_afDiag[1] = fM11+fM02*fQ;
         m_afDiag[2] = fM22-fM02*fQ;
         m_afSubd[0] = fLength;
@@ -223,7 +223,7 @@ void Eigen::Tridiagonal4 (float** m_aafMat, float* m_afDiag,
 
         // build column Q1
         fLength = Math::sqrt(fM01*fM01 + fM02*fM02 + fM03*fM03);
-        fInvLength = 1.0/fLength;
+        fInvLength = 1.0f/fLength;
         fQ11 = fM01*fInvLength;
         fQ21 = fM02*fInvLength;
         fQ31 = fM03*fInvLength;
@@ -244,7 +244,7 @@ void Eigen::Tridiagonal4 (float** m_aafMat, float* m_afDiag,
         fLength = Math::sqrt(fQ13*fQ13+fQ23*fQ23+fQ33*fQ33);
         if ( fLength > 0.0 )
         {
-            fInvLength = 1.0/fLength;
+            fInvLength = 1.0f/fLength;
             fQ13 *= fInvLength;
             fQ23 *= fInvLength;
             fQ33 *= fInvLength;
@@ -274,15 +274,15 @@ void Eigen::Tridiagonal4 (float** m_aafMat, float* m_afDiag,
             fLength = fQ21*fQ21+fQ31*fQ31;
             if ( fLength > 0.0 )
             {
-                fInvLength = 1.0/fLength;
-                float fTmp = fQ11-1.0;
+                fInvLength = 1.0f/fLength;
+                float fTmp = fQ11-1.0f;
                 fQ12 = -fQ21;
-                fQ22 = 1.0+fTmp*fQ21*fQ21*fInvLength;
+                fQ22 = 1.0f+fTmp*fQ21*fQ21*fInvLength;
                 fQ32 = fTmp*fQ21*fQ31*fInvLength;
 
                 fQ13 = -fQ31;
                 fQ23 = fQ32;
-                fQ33 = 1.0+fTmp*fQ31*fQ31*fInvLength;
+                fQ33 = 1.0f+fTmp*fQ31*fQ31*fInvLength;
 
                 fV0 = fQ12*fM11+fQ22*fM12+fQ32*fM13;
                 fV1 = fQ12*fM12+fQ22*fM22+fQ32*fM23;
@@ -322,10 +322,10 @@ void Eigen::Tridiagonal4 (float** m_aafMat, float* m_afDiag,
         if ( fM13 != 0.0 )
         {
             fLength = Math::sqrt(fM12*fM12+fM13*fM13);
-            fInvLength = 1.0/fLength;
+            fInvLength = 1.0f/fLength;
             fM12 *= fInvLength;
             fM13 *= fInvLength;
-            float fQ = 2.0*fM12*fM23+fM13*(fM33-fM22);
+            float fQ = 2.0f*fM12*fM23+fM13*(fM33-fM22);
 
             m_afDiag[2] = fM22+fM13*fQ;
             m_afDiag[3] = fM33-fM13*fQ;
@@ -373,7 +373,7 @@ void Eigen::TridiagonalN (int iSize, float** m_aafMat,
             }
             else
             {
-                float fInvScale = 1.0/fScale;
+                float fInvScale = 1.0f/fScale;
                 for (i2 = 0; i2 <= i3; i2++)
                 {
                     m_aafMat[i0][i2] *= fInvScale;
@@ -387,7 +387,7 @@ void Eigen::TridiagonalN (int iSize, float** m_aafMat,
                 fH -= fF*fG;
                 m_aafMat[i0][i3] = fF-fG;
                 fF = 0.0;
-                float fInvH = 1.0/fH;
+                float fInvH = 1.0f/fH;
                 for (i1 = 0; i1 <= i3; i1++)
                 {
                     m_aafMat[i1][i0] = m_aafMat[i0][i1]*fInvH;
@@ -399,7 +399,7 @@ void Eigen::TridiagonalN (int iSize, float** m_aafMat,
                     m_afSubd[i1] = fG*fInvH;
                     fF += m_afSubd[i1]*m_aafMat[i0][i1];
                 }
-                float fHalfFdivH = 0.5*fF*fInvH;
+                float fHalfFdivH = 0.5f*fF*fInvH;
                 for (i1 = 0; i1 <= i3; i1++)
                 {
                     fF = m_aafMat[i0][i1];
@@ -468,8 +468,8 @@ bool Eigen::QLAlgorithm (int iSize, float* m_afDiag, float* m_afSubd,
             if ( i2 == i0 )
                 break;
 
-            float fG = (m_afDiag[i0+1]-m_afDiag[i0])/(2.0*m_afSubd[i0]);
-            float fR = Math::sqrt(fG*fG+1.0);
+            float fG = (m_afDiag[i0+1]-m_afDiag[i0])/(2.0f*m_afSubd[i0]);
+            float fR = Math::sqrt(fG*fG+1.0f);
             if ( fG < 0.0 )
                 fG = m_afDiag[i2]-m_afDiag[i0]+m_afSubd[i0]/(fG-fR);
             else
@@ -482,21 +482,21 @@ bool Eigen::QLAlgorithm (int iSize, float* m_afDiag, float* m_afSubd,
                 if ( Math::abs(fF) >= Math::abs(fG) )
                 {
                     fCos = fG/fF;
-                    fR = sqrt(fCos*fCos+1.0);
+                    fR = sqrt(fCos*fCos+1.0f);
                     m_afSubd[i3+1] = fF*fR;
-                    fSin = 1.0/fR;
+                    fSin = 1.0f/fR;
                     fCos *= fSin;
                 }
                 else
                 {
                     fSin = fF/fG;
-                    fR = Math::sqrt(fSin*fSin+1.0);
+                    fR = Math::sqrt(fSin*fSin+1.0f);
                     m_afSubd[i3+1] = fG*fR;
-                    fCos = 1.0/fR;
+                    fCos = 1.0f/fR;
                     fSin *= fCos;
                 }
                 fG = m_afDiag[i3+1]-fP;
-                fR = (m_afDiag[i3]-fG)*fSin+2.0*fB*fCos;
+                fR = (m_afDiag[i3]-fG)*fSin+2.0f*fB*fCos;
                 fP = fSin*fR;
                 m_afDiag[i3+1] = fG+fP;
                 fG = fCos*fR-fB;

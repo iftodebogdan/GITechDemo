@@ -37,11 +37,15 @@ using namespace gmtl;
 #endif
 
 // This header holds all defines, enums and
-// descriptor structures used by the rendering library
+// structures used by the rendering library
 
 // Declare new data types
+#include "../Utility/HalfFloat.h"
+typedef LibRendererDll::HalfFloat half;
 typedef unsigned char byte;
-typedef unsigned long DWORD;
+typedef unsigned short word;
+typedef unsigned long dword;
+typedef unsigned long long qword;
 
 namespace LibRendererTools
 {
@@ -637,11 +641,11 @@ namespace LibRendererDll
 	{
 		bool bCanAutoGenMipmaps;
 		bool bDynamicTextures;
-		bool bPresentIntervalImmediate; // no vsync
-		bool bPresentIntervalOne; // 60Hz
-		bool bPresentIntervalTwo; // 30Hz
-		bool bPresentIntervalThree; // 20Hz
-		bool bPresentIntervalFour; // 15Hz
+		bool bPresentIntervalImmediate;	// no vsync
+		bool bPresentIntervalOne;		// 60Hz
+		bool bPresentIntervalTwo;		// 30Hz
+		bool bPresentIntervalThree;		// 20Hz
+		bool bPresentIntervalFour;		// 15Hz
 		bool bMrtIndependentBitDepths;
 		bool bMrtPostPixelShaderBlending;
 		bool bAnisotropicFiltering;

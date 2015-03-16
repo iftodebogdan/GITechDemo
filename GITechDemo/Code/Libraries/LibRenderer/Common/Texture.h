@@ -35,25 +35,19 @@ using namespace gmtl;
 namespace LibRendererDll
 {
 	// This is the platform independent texture class
+	// NB: for compressed texture formats, the smallest
+	// addressable element is a block, instead of a texel
 	class Texture : public Buffer
 	{
 	public:
 			#if __cplusplus >= 201103L // Check if the compiler supports C++11 standard
-				// Replaced by GetMipmapLevelDimensions()
+				// Replaced by GetWidth/Height/Depth()
 				LIBRENDERER_DLL const	unsigned int	GetElementCount() const = delete;
-				// Replaced by GetPixelSize()
-				LIBRENDERER_DLL const	unsigned int	GetElementSize() const = delete;
-				// Replaced by GetMipmapLevelByteCount()
-				LIBRENDERER_DLL const	unsigned int	GetSize() const = delete;
 				// Replaced by GetMipmapLevelData()
 				LIBRENDERER_DLL 		byte*			GetData() const = delete;
 			#else
-				// Replaced by GetMipmapLevelDimensions()
+				// Replaced by GetWidth/Height/Depth()
 				LIBRENDERER_DLL const	unsigned int	GetElementCount() const { assert(false); return 0; }
-				// Replaced by GetPixelSize()
-				LIBRENDERER_DLL const	unsigned int	GetElementSize() const { assert(false); return 0; }
-				// Replaced by GetMipmapLevelByteCount()
-				LIBRENDERER_DLL const	unsigned int	GetSize() const { assert(false); return 0; }
 				// Replaced by GetMipmapLevelData()
 				LIBRENDERER_DLL 		byte*			GetData() const { assert(false); return nullptr; }
 			#endif // __cplusplus >= 201103L
@@ -80,16 +74,18 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const	unsigned int	GetMipmapLevelOffset(const unsigned int mipmapLevel = 0) const { assert(mipmapLevel < TEX_MAX_MIPMAP_LEVELS); return m_nMipmapLevelOffset[mipmapLevel]; }
 				/* Get the offset in bytes of a cube face from the beginning of the memory buffer in which the texture is stored*/
 				LIBRENDERER_DLL const	unsigned int	GetCubeFaceOffset() const { assert(m_eTexType == TT_CUBE); return m_nSize / 6; }
-				/* Get the pixel size in bytes */
-				LIBRENDERER_DLL const	unsigned int	GetPixelSize() const { return Buffer::GetElementSize(); }
 				/* Returns true if the format of the texture is a compressed format */
 				LIBRENDERER_DLL const	bool			IsCompressed() const { return m_eTexFormat == PF_DXT1 || m_eTexFormat == PF_DXT3 || m_eTexFormat == PF_DXT5; }
+				/* Returns true if the format of the texture is a floating point format */
+				LIBRENDERER_DLL const	bool			IsFloatingPoint() const { return m_eTexFormat == PF_R32F || m_eTexFormat == PF_G32R32F || m_eTexFormat == PF_A32B32G32R32F; }
+				/* Returns true if the format of the texture is a depth stencil format */
+				LIBRENDERER_DLL const	bool			IsDepthStencil() const { return m_eTexFormat == PF_D24S8; }
 				/* Returns true if the format of the texture allows it to be mipmapable */
 				LIBRENDERER_DLL const	bool			IsMipmapable() const { return ms_bIsMipmapable[m_eTexFormat]; }
 				/* Get a pointer to the start of the specified mip level in the memory buffer in which the texture is stored */
-				LIBRENDERER_DLL 		byte*			GetMipmapLevelData(const unsigned int mipmapLevel = 0) const { return m_pData + GetMipmapLevelOffset(mipmapLevel); }
+				LIBRENDERER_DLL 		byte*			GetMipmapLevelData(const unsigned int mipmapLevel = 0) const;
 				/* Get a pointer to the start of the specified face and mip level in the memory buffer in which a cube texture is stored */
-				LIBRENDERER_DLL 		byte*			GetMipmapLevelData(const unsigned int cubeFace, const unsigned int mipmapLevel) const { assert(cubeFace >= 0 && cubeFace < 6); return m_pData + cubeFace * GetCubeFaceOffset() + GetMipmapLevelOffset(mipmapLevel); }
+				LIBRENDERER_DLL 		byte*			GetMipmapLevelData(const unsigned int cubeFace, const unsigned int mipmapLevel) const;
 
 		// Enable the texture on the specified slot
 		virtual LIBRENDERER_DLL void			Enable(const unsigned int texUnit) const = 0;
@@ -125,7 +121,7 @@ namespace LibRendererDll
 		static	LIBRENDERER_DLL const	unsigned int	GetDimensionCount(const TexType texType) { return ms_nDimensionCount[texType]; }
 		/* Returns true if the specified texture format is mipmapable */
 		static	LIBRENDERER_DLL const	bool			IsMipmapable(const PixelFormat texFormat) { return ms_bIsMipmapable[texFormat]; }
-		/* Get the size in bytes of a pixel from a texture of the specified format */
+		/* Get the size in bytes of a pixel (or block, for compressed formats) from a texture of the specified format */
 		static	LIBRENDERER_DLL const	unsigned int	GetPixelSize(const PixelFormat texFormat) { return ms_nPixelSize[texFormat]; }
 
 	protected:
@@ -136,7 +132,7 @@ namespace LibRendererDll
 		virtual							~Texture();
 
 		// Computes the properties of the texture and its mipmaps
-		void			ComputeMipmapProperties();
+		void			ComputeTextureProperties();
 
 		PixelFormat		m_eTexFormat;			// Holds the format of the texture
 		TexType			m_eTexType;				// Holds the type of texture
@@ -146,9 +142,9 @@ namespace LibRendererDll
 		unsigned int			m_nDimensionCount;
 		/* Holds the dimensions of each mip */
 		Vec<unsigned int, 3U>	m_nDimension[TEX_MAX_MIPMAP_LEVELS];
-		/* Holds offsets in bytes from the start of the texture */
+		/* Holds the sizes in bytes of each mip level */
 		unsigned int			m_nMipmapLevelByteCount[TEX_MAX_MIPMAP_LEVELS];
-		/* Holds the offsets in bytes from the beginning of the texture and to the start */
+		/* Holds the offsets in bytes of each mip */
 		unsigned int			m_nMipmapLevelOffset[TEX_MAX_MIPMAP_LEVELS];
 
 		/* Hardware accelerated mipmap generation */
@@ -161,12 +157,15 @@ namespace LibRendererDll
 
 		/* Holds the number of valid dimensions for the specified texture type */
 		static	const unsigned int	ms_nDimensionCount[TT_MAX];
-		/* Holds the size in bytes of a pixel for the specified texture format */
+		/* Holds the size in bytes of a pixel (or block, for compressed formats) for the specified texture format */
 		static	const unsigned int	ms_nPixelSize[PF_MAX];
 		/* Holds whether the specified texture format is mipmapable */
 		static	const bool			ms_bIsMipmapable[PF_MAX];
 
 		friend class ResourceManager;
+
+		LIBRENDERER_DLL friend std::ostream& operator<<(std::ostream& output_out, Texture &tex_in);
+		friend std::istream& operator>>(std::istream& s_in, Texture &tex_out);
 	};
 }
 

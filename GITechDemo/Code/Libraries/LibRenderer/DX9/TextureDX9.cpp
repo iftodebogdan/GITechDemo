@@ -33,6 +33,10 @@ TextureDX9::TextureDX9(
 	, m_nRowPitch(0)
 	, m_nDepthPitch(0)
 {
+	// Support for deferred initialization (loading from file)
+	if (usage == BU_NONE)
+		return;
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
 	D3DPOOL pool;
@@ -116,6 +120,12 @@ void TextureDX9::Disable(const unsigned int texUnit) const
 
 const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
 {
+	if (m_eTexType == TT_CUBE)
+	{
+		assert(false);
+		return false;
+	}
+
 	if (m_bIsLocked || m_eBufferUsage == BU_RENDERTAGET || m_eBufferUsage == BU_DEPTHSTENCIL)
 		return false;
 
@@ -128,7 +138,11 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 	case TT_1D:
 	case TT_2D:
 		hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(mipmapLevel, &rect, 0, BufferLockingDX9[lockMode]);
-		assert(SUCCEEDED(hr));
+		if (!SUCCEEDED(hr))
+		{
+			assert(false);
+			return false;
+		}
 		m_pTempBuffer = rect.pBits;
 		m_nRowPitch = rect.Pitch;
 		m_nDepthPitch = 0;
@@ -136,7 +150,11 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 
 	case TT_3D:
 		hr = ((IDirect3DVolumeTexture9*)m_pTexture)->LockBox(mipmapLevel, &box, 0, BufferLockingDX9[lockMode]);
-		assert(SUCCEEDED(hr));
+		if (!SUCCEEDED(hr))
+		{
+			assert(false);
+			return false;
+		}
 		m_pTempBuffer = box.pBits;
 		m_nRowPitch = box.RowPitch;
 		m_nDepthPitch = box.SlicePitch;
@@ -147,13 +165,23 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 
 const bool TextureDX9::Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode)
 {
+	if (m_eTexType != TT_CUBE)
+	{
+		assert(false);
+		return false;
+	}
+
 	if (m_bIsLocked)
 		return false;
 
 	assert(m_pTempBuffer == nullptr);
 	D3DLOCKED_RECT rect;
 	HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)cubeFace, mipmapLevel, &rect, 0, BufferLockingDX9[lockMode]);
-	assert(SUCCEEDED(hr));
+	if (!SUCCEEDED(hr))
+	{
+		assert(false);
+		return false;
+	}
 	m_pTempBuffer = rect.pBits;
 	m_nRowPitch = rect.Pitch;
 	m_nDepthPitch = 0;
@@ -178,16 +206,30 @@ void TextureDX9::Unlock()
 void TextureDX9::Update()
 {
 	assert(m_pTempBuffer != nullptr);
-	//memcpy(m_pTempBuffer, m_pData, m_nMipmapLevelByteCount[m_nLockedMipmap]);
-	for (unsigned int j = 0; j < GetDepth(m_nLockedMipmap); j++)
+
+	unsigned int width = GetWidth(m_nLockedMipmap);
+	unsigned int height = GetHeight(m_nLockedMipmap);
+	unsigned int depth = GetDepth(m_nLockedMipmap);
+	if (IsCompressed())
 	{
-		for (unsigned int i = 0; i < GetHeight(m_nLockedMipmap); i++)
+		width /= 4;
+		height /= 4;
+
+		if (width < 1)
+			width = 1;
+		if (height < 1)
+			height = 1;
+	}
+
+	for (unsigned int j = 0; j < depth; j++)
+	{
+		for (unsigned int i = 0; i < height; i++)
 		{
-			
 			memcpy(
 				(byte*)m_pTempBuffer + i * m_nRowPitch + j * m_nDepthPitch,
 				(GetTextureType() == TT_CUBE ? GetMipmapLevelData(m_nLockedCubeFace, m_nLockedMipmap) : GetMipmapLevelData(m_nLockedMipmap))
-				+ i * GetWidth(m_nLockedMipmap) * GetPixelSize() + j * GetWidth(m_nLockedMipmap) * GetHeight(m_nLockedMipmap) * GetPixelSize(),
+				+ i * width * GetElementSize()
+				+ j * width * height * GetElementSize(),
 				m_nRowPitch
 				);
 		}

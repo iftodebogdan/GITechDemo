@@ -46,19 +46,3 @@ void IndexBuffer::SetIndices(const unsigned int indicesVal[], const unsigned int
 	for (unsigned int i = 0; i < size; i++)
 		SetIndex(i + offset, indicesVal[i]);
 }
-
-std::ostream& LibRendererDll::operator<<(std::ostream& output_out, IndexBuffer& ib_in)
-{
-	output_out << *(Buffer*)&ib_in;
-	output_out.write((const char*)&ib_in.m_eIndexFormat, sizeof(IndexBufferFormat));
-
-	return output_out;
-}
-
-std::istream& LibRendererDll::operator>>(std::istream& s_in, IndexBuffer& ib_out)
-{
-	s_in >> *(Buffer*)&ib_out;
-	s_in.read((char*)&ib_out.m_eIndexFormat, sizeof(IndexBufferFormat));
-
-	return s_in;
-}

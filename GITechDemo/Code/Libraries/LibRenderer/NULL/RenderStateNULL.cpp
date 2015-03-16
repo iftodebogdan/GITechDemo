@@ -27,11 +27,6 @@ RenderStateNULL::RenderStateNULL()
 RenderStateNULL::~RenderStateNULL()
 {}
 
-const unsigned int RenderStateNULL::MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const
-{
-	return 0;
-}
-
 const bool RenderStateNULL::SetAlphaBlendEnable(const bool enabled)
 {
 	return true;

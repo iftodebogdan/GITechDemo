@@ -46,27 +46,3 @@ Buffer::~Buffer()
 	assert(m_pData != nullptr || Renderer::GetAPI() == API_NULL);
 	delete[] m_pData;
 }
-
-std::ostream& LibRendererDll::operator<<(std::ostream& output_out, Buffer& buf_in)
-{
-	output_out.write((const char*)&buf_in.m_nElementCount, sizeof(unsigned int));
-	output_out.write((const char*)&buf_in.m_nElementSize, sizeof(unsigned int));
-	output_out.write((const char*)&buf_in.m_eBufferUsage, sizeof(BufferUsage));
-	output_out.write((const char*)&buf_in.m_nSize, sizeof(unsigned int));
-	output_out.write((const char*)buf_in.m_pData, buf_in.m_nSize);
-
-	return output_out;
-}
-
-std::istream& LibRendererDll::operator>>(std::istream& s_in, Buffer& buf_out)
-{
-	s_in.read((char*)&buf_out.m_nElementCount, sizeof(unsigned int));
-	s_in.read((char*)&buf_out.m_nElementSize, sizeof(unsigned int));
-	s_in.read((char*)&buf_out.m_eBufferUsage, sizeof(BufferUsage));
-	s_in.read((char*)&buf_out.m_nSize, sizeof(unsigned int));
-	delete[] buf_out.m_pData;
-	buf_out.m_pData = new byte[buf_out.m_nSize];
-	s_in.read((char*)buf_out.m_pData, buf_out.m_nSize);
-
-	return s_in;
-}

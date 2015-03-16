@@ -32,17 +32,3 @@ VertexBuffer::VertexBuffer(VertexFormat* const vertexFormat, const unsigned int 
 
 VertexBuffer::~VertexBuffer()
 {}
-
-std::ostream& LibRendererDll::operator<<(std::ostream& output_out, VertexBuffer& vb_in)
-{
-	output_out << *(Buffer*)&vb_in;
-
-	return output_out;
-}
-
-std::istream& LibRendererDll::operator>>(std::istream& s_in, VertexBuffer& vb_out)
-{
-	s_in >> *(Buffer*)&vb_out;
-
-	return s_in;
-}

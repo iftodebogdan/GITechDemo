@@ -8,8 +8,10 @@
 #include <io.h>
 #include <fcntl.h>
 #include <fstream>
+#include <cstdlib>
 
 #include <Renderer.h>
+#include <../Utility/ColorUtility.h>
 using namespace LibRendererDll;
 
 #define MAX_LOADSTRING 100
@@ -163,6 +165,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 				case VK_SHIFT:
 					fSpeedFactor = 5.f;
 					break;
+				case VK_CONTROL:
+					fSpeedFactor = 0.1f;
 				}
 				break;
 				
@@ -184,6 +188,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 				case VK_SHIFT:
 					fSpeedFactor = 1.f;
 					break;
+				case VK_CONTROL:
+					fSpeedFactor = 1.0f;
 				}
 				break;
 			}
@@ -283,15 +289,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	ResourceManager* resMan = renderer->GetResourceManager();
 	
 	// First of all, load a model file
-	const unsigned int modelIdx = resMan->CreateModel("Out\\Models\\sponza\\sponza.lrm");
+	const unsigned int modelIdx = resMan->CreateModel("sponza\\sponza.lrm");
 	model = resMan->GetModel(modelIdx);
-
-	// Create a texture from an image file
-	const unsigned int tex1Idx = resMan->CreateTexture("checker.jpg"); // sponza_curtain_diff.tga
-	Tex = resMan->GetTexture(tex1Idx);
 
 	// Read the contents of the file
 	std::ifstream t("simple.hlsl");
+	//std::ifstream t("normal.hlsl");
+	//std::ifstream t("normal_scale.hlsl");
+	//std::ifstream t("pos_only.hlsl");
 	int length;
 	t.seekg(0, std::ios::end);			// go to the end
 	length = (int)t.tellg();			// report location (this is the length)
@@ -322,6 +327,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	VSInput = resMan->GetShaderInput(vsiIdx);
 	const unsigned int psiIdx = resMan->CreateShaderInput(PShd);
 	PSInput = resMan->GetShaderInput(psiIdx);
+
+	const unsigned int texIdx = resMan->CreateTexture("sponza\\textures\\sponza_curtain_diff.lrt");
+	Tex = resMan->GetTexture(texIdx);
 
 	return TRUE;
 }
@@ -451,7 +459,7 @@ void RenderScene()
 		// Also set the sampling filter to linearly interpolate between texels and mips
 		renderer->GetSamplerStateManager()->SetFilter(PSInput->GetInputDesc(handle).nRegisterIndex, SF_MIN_MAG_LINEAR_MIP_LINEAR);
 	}
-
+	
 	// Clear our backbuffer so that we have a nice black background
 	// and a depth value that's as far away as possible (at our Z far, which is 2000.f)
 	renderer->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
@@ -470,9 +478,7 @@ void RenderScene()
 		VShd->Enable(VSInput);
 		PShd->Enable(PSInput);
 		
-		// Draw the contents of the vertex buffer
-		//renderer->DrawVertexBuffer(VBuf);
-
+		// Draw the contents of the vertex buffers
 		for (unsigned int mesh = 0; mesh < model->arrMesh.size(); mesh++)
 			renderer->DrawVertexBuffer(model->arrMesh[mesh]->pVertexBuffer);
 

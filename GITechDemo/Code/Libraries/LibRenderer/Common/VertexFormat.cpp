@@ -102,25 +102,3 @@ const unsigned int VertexFormat::CalculateStride() const
 		stride += VertexAttributeTypeSize[m_pElements[i].eType];
 	return stride;
 }
-
-std::ostream &LibRendererDll::operator<<(std::ostream &output_out, VertexFormat &vf_in)
-{
-	output_out.write((const char*)&vf_in.m_nAttributeCount, sizeof(unsigned int));
-	for (unsigned int i = 0; i < vf_in.m_nAttributeCount; i++)
-		output_out << vf_in.m_pElements[i];
-	output_out.write((const char*)&vf_in.m_nStride, sizeof(unsigned int));
-
-	return output_out;
-}
-
-std::istream &LibRendererDll::operator>>(std::istream &s_in, VertexFormat &vf_out)
-{
-	s_in.read((char*)&vf_out.m_nAttributeCount, sizeof(unsigned int));
-	delete[] vf_out.m_pElements;
-	vf_out.m_pElements = new VertexElement[vf_out.m_nAttributeCount];
-	for (unsigned int i = 0; i < vf_out.m_nAttributeCount; i++)
-		s_in >> vf_out.m_pElements[i];
-	s_in.read((char*)&vf_out.m_nStride, sizeof(unsigned int));
-
-	return s_in;
-}

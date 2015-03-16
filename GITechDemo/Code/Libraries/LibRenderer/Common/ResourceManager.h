@@ -75,7 +75,7 @@ namespace LibRendererDll
 		// Create a texture
 		virtual	LIBRENDERER_DLL const unsigned int		CreateTexture(const PixelFormat texFormat, const TexType texType, const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1, const unsigned int mipmapLevelCount = 0, const BufferUsage usage = BU_TEXTURE) = 0;
 				// Create a texture and load data from an image file
-				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile, const unsigned int mipmapLevelCount = 0, const bool convertToARGB = true);
+				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile);
 
 		// Create a render target
 		// NB: The depth buffer is always PF_D24S8

@@ -115,6 +115,82 @@ std::istream & LibRendererDll::operator>>(std::istream & s_in, VertexElement & v
 	return s_in;
 }
 
+std::ostream &LibRendererDll::operator<<(std::ostream &output_out, VertexFormat &vf_in)
+{
+	output_out.write((const char*)&vf_in.m_nAttributeCount, sizeof(unsigned int));
+	for (unsigned int i = 0; i < vf_in.m_nAttributeCount; i++)
+		output_out << vf_in.m_pElements[i];
+	output_out.write((const char*)&vf_in.m_nStride, sizeof(unsigned int));
+
+	return output_out;
+}
+
+std::istream &LibRendererDll::operator>>(std::istream &s_in, VertexFormat &vf_out)
+{
+	s_in.read((char*)&vf_out.m_nAttributeCount, sizeof(unsigned int));
+	delete[] vf_out.m_pElements;
+	vf_out.m_pElements = new VertexElement[vf_out.m_nAttributeCount];
+	for (unsigned int i = 0; i < vf_out.m_nAttributeCount; i++)
+		s_in >> vf_out.m_pElements[i];
+	s_in.read((char*)&vf_out.m_nStride, sizeof(unsigned int));
+
+	return s_in;
+}
+
+std::ostream& LibRendererDll::operator<<(std::ostream& output_out, VertexBuffer& vb_in)
+{
+	output_out << *(Buffer*)&vb_in;
+
+	return output_out;
+}
+
+std::istream& LibRendererDll::operator>>(std::istream& s_in, VertexBuffer& vb_out)
+{
+	s_in >> *(Buffer*)&vb_out;
+
+	return s_in;
+}
+
+std::ostream& LibRendererDll::operator<<(std::ostream& output_out, IndexBuffer& ib_in)
+{
+	output_out << *(Buffer*)&ib_in;
+	output_out.write((const char*)&ib_in.m_eIndexFormat, sizeof(IndexBufferFormat));
+
+	return output_out;
+}
+
+std::istream& LibRendererDll::operator>>(std::istream& s_in, IndexBuffer& ib_out)
+{
+	s_in >> *(Buffer*)&ib_out;
+	s_in.read((char*)&ib_out.m_eIndexFormat, sizeof(IndexBufferFormat));
+
+	return s_in;
+}
+
+std::ostream& LibRendererDll::operator<<(std::ostream& output_out, Buffer& buf_in)
+{
+	output_out.write((const char*)&buf_in.m_nElementCount, sizeof(unsigned int));
+	output_out.write((const char*)&buf_in.m_nElementSize, sizeof(unsigned int));
+	output_out.write((const char*)&buf_in.m_eBufferUsage, sizeof(BufferUsage));
+	output_out.write((const char*)&buf_in.m_nSize, sizeof(unsigned int));
+	output_out.write((const char*)buf_in.m_pData, buf_in.m_nSize);
+
+	return output_out;
+}
+
+std::istream& LibRendererDll::operator>>(std::istream& s_in, Buffer& buf_out)
+{
+	s_in.read((char*)&buf_out.m_nElementCount, sizeof(unsigned int));
+	s_in.read((char*)&buf_out.m_nElementSize, sizeof(unsigned int));
+	s_in.read((char*)&buf_out.m_eBufferUsage, sizeof(BufferUsage));
+	s_in.read((char*)&buf_out.m_nSize, sizeof(unsigned int));
+	delete[] buf_out.m_pData;
+	buf_out.m_pData = new byte[buf_out.m_nSize];
+	s_in.read((char*)buf_out.m_pData, buf_out.m_nSize);
+
+	return s_in;
+}
+
 std::ostream& LibRendererDll::operator<<(std::ostream& output_out, const Model::Mesh& mesh_in)
 {
 	// mesh name size
@@ -454,4 +530,44 @@ LibRendererDll::Model::~Model()
 			arrMaterial[mat] = nullptr;
 		}
 	}
+}
+
+std::ostream& LibRendererDll::operator<<(std::ostream& output_out, Texture& tex_in)
+{
+	output_out << *(Buffer*)&tex_in;
+
+	output_out.write((char*)&tex_in.m_eTexFormat, sizeof(PixelFormat));
+	output_out.write((char*)&tex_in.m_eTexType, sizeof(TexType));
+	output_out.write((char*)&tex_in.m_nMipmapLevelCount, sizeof(unsigned int));
+
+	output_out.write((char*)&tex_in.m_nDimensionCount, sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
+		output_out.write((char*)&tex_in.m_nDimension[i], sizeof(Vec<unsigned int, 3U>));
+	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
+		output_out.write((char*)&tex_in.m_nMipmapLevelByteCount[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
+		output_out.write((char*)&tex_in.m_nMipmapLevelOffset[i], sizeof(unsigned int));
+
+	return output_out;
+}
+
+std::istream& LibRendererDll::operator>>(std::istream& s_in, Texture& tex_out)
+{
+	s_in >> *(Buffer*)&tex_out;
+
+	s_in.read((char*)&tex_out.m_eTexFormat, sizeof(PixelFormat));
+	s_in.read((char*)&tex_out.m_eTexType, sizeof(TexType));
+	s_in.read((char*)&tex_out.m_nMipmapLevelCount, sizeof(unsigned int));
+
+	s_in.read((char*)&tex_out.m_nDimensionCount, sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
+		s_in.read((char*)&tex_out.m_nDimension[i], sizeof(Vec<unsigned int, 3U>));
+	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
+		s_in.read((char*)&tex_out.m_nMipmapLevelByteCount[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
+		s_in.read((char*)&tex_out.m_nMipmapLevelOffset[i], sizeof(unsigned int));
+
+	tex_out.Bind();
+
+	return s_in;
 }

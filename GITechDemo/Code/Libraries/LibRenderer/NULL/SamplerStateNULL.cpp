@@ -27,16 +27,6 @@ SamplerStateNULL::SamplerStateNULL()
 SamplerStateNULL::~SamplerStateNULL()
 {}
 
-const SamplerFilter SamplerStateNULL::MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip)
-{
-	return SF_NONE;
-}
-
-const SamplerAddressingMode SamplerStateNULL::MatchAddressingMode(const DWORD sam)
-{
-	return SAM_NONE;
-}
-
 const bool SamplerStateNULL::SetAnisotropy(const unsigned int slot, const float anisotropy)
 {
 	return true;

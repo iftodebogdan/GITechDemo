@@ -26,8 +26,6 @@ namespace LibRendererDll
 	class RenderStateNULL : public RenderState
 	{
 	public:
-		const unsigned int MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const;
-
 		const bool SetAlphaBlendEnable(const bool enabled);
 		const bool SetAlphaSrcBlend(const Blend alphaSrc);
 		const bool SetAlphaDstBlend(const Blend alphaDst);

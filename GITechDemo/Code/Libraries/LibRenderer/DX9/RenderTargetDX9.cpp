@@ -175,9 +175,9 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	for (unsigned int i = 0; i < texture->GetHeight(); i++)
 	{
 		memcpy(
-			texture->GetMipmapLevelData(0) + i * texture->GetWidth() * texture->GetPixelSize(),
+			texture->GetMipmapLevelData(0) + i * texture->GetWidth() * texture->GetElementSize(),
 			(byte*)rect.pBits + i * rect.Pitch,
-			texture->GetWidth() * texture->GetPixelSize()
+			texture->GetWidth() * texture->GetElementSize()
 			);
 	}
 

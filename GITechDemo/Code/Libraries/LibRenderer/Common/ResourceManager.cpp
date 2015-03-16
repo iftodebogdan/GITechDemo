@@ -27,8 +27,6 @@
 #include "Texture.h"
 #include "RenderTarget.h"
 
-#include "Utility/TextureLoader.h"
-
 #include "ResourceManager.h"
 using namespace LibRendererDll;
 
@@ -145,13 +143,23 @@ const unsigned int ResourceManager::CreateShaderTemplate(ShaderProgram* const sh
 	return (unsigned int)m_arrShaderTemplate.size() - 1;
 }
 
-const unsigned int ResourceManager::CreateTexture(const char* pathToFile, const unsigned int mipmapLevelCount, const bool convertToARGB)
+const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 {
-	TextureLoader::ImageDesc desc = TextureLoader::LoadImageFile(pathToFile, convertToARGB);
-	const unsigned int texIdx = CreateTexture(desc.format, desc.type, desc.width, desc.height, desc.depth, mipmapLevelCount, BU_TEXTURE);
-	TextureLoader::CopyImageData(GetTexture(texIdx));
-	TextureLoader::UnloadImageFile();
-	return texIdx;
+	const unsigned int texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
+	std::ifstream texFile;
+	texFile.open(pathToFile, std::ios::binary);
+	if (texFile.is_open())
+	{
+		texFile >> *GetTexture(texIdx);
+		texFile.close();
+		return texIdx;
+	}
+	else
+	{
+		delete GetTexture(texIdx);
+		m_arrTexture.pop_back();
+		return -1;
+	}
 }
 
 const unsigned int ResourceManager::CreateModel(const char* pathToFile)

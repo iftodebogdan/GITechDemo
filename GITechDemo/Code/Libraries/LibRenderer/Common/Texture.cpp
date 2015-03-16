@@ -19,6 +19,7 @@
 #include "stdafx.h"
 
 #include "Texture.h"
+#include "../Utility/ColorUtility.h"
 using namespace LibRendererDll;
 
 const unsigned int Texture::ms_nDimensionCount[TT_MAX] =
@@ -50,9 +51,9 @@ const unsigned int Texture::ms_nPixelSize[PF_MAX] =
 	4,	// PF_R32F
 	8,	// PF_G32R32F
 	16,	// PF_A32B32G32R32F,
-	0,	// PF_DXT1 (calculated at runtime)
-	0,	// PF_DXT3 (calculated at runtime)
-	0,	// PF_DXT5 (calculated at runtime)
+	8,	// PF_DXT1	// block size, instead of pixel
+	16,	// PF_DXT3	// block size, instead of pixel
+	16,	// PF_DXT5	// block size, instead of pixel
 	4	// PF_D24S8
 };
 
@@ -77,9 +78,9 @@ const bool Texture::ms_bIsMipmapable[PF_MAX] =
 	false,	// PF_R32F
 	false,	// PF_G32R32F
 	false,	// PF_A32B32G32R32F,
-	true,	// PF_DXT1 (calculated at runtime)
-	true,	// PF_DXT3 (calculated at runtime)
-	true,	// PF_DXT5 (calculated at runtime)
+	true,	// PF_DXT1
+	true,	// PF_DXT3
+	true,	// PF_DXT5
 	false	// PF_D24S8
 };
 
@@ -96,32 +97,59 @@ Texture::Texture(
 	, m_nLockedCubeFace(-1)
 	, m_bAutogenMipmaps(false)
 {
+	// Support for deferred initialization (loading from file)
+	if (usage == BU_NONE)
+		return;
+
 	assert(sizeX > 0);
 	assert(sizeY > 0);
 	assert(sizeZ > 0);
 
+	// Only 2D and cube textures can be compressed
+	if (IsCompressed() && (m_eTexType == TT_1D || m_eTexType == TT_3D))
+		assert(false);
+
+	// Depth-stencil textures must be 2D
+	if (IsDepthStencil() && m_eTexType != TT_2D)
+		assert(false);
+
+	// No mipmaps for 32bit formats or depth-stencil formats
+	if ((IsFloatingPoint() || IsDepthStencil()) && (mipmapLevelCount > 1))
+		assert(false);
+
+	unsigned int width = sizeX;
+	unsigned int height = sizeY;
+	unsigned int depth = sizeZ;
+	if (IsCompressed())
+	{
+		// Calculate the smallest number divisible by 4 which is >= width/height
+		// This is for block compression size restrictions
+		width = sizeX + (4 - sizeX % 4) % 4;
+		height = sizeY + (4 - sizeY % 4) % 4;
+	}
+
 	m_nDimensionCount = GetDimensionCount(texType);
 	m_nElementSize = GetPixelSize(texFormat);
 
-	m_nDimension[0][0] = sizeX;
+	m_nDimension[0][0] = width;
 
 	if (m_nDimensionCount >= 2)
 	{
 		if (m_eTexType == TT_CUBE)
-			m_nDimension[0][1] = sizeX;	// Cube maps have the same size on X and Y axes ... they're cube faces ...
+			m_nDimension[0][1] = width;	// Cube maps have the same size on X and Y axes ... they're cube faces ...
 		else
-			m_nDimension[0][1] = sizeY;
+			m_nDimension[0][1] = height;
 	}
 	else
 		m_nDimension[0][1] = 1;	// 1D textures have a height of one texel
 
 	if (m_nDimensionCount == 3)
-		m_nDimension[0][2] = sizeZ;
+		m_nDimension[0][2] = depth;
 	else
 		m_nDimension[0][2] = 1;	// 1D or 2D textures have a depth of one texel
 
 	// Calculate mipmap properties (dimensions, memory used, etc.)
-	ComputeMipmapProperties();
+	ComputeTextureProperties();
 
 	// Allocate memory for our texture
 	m_pData = new byte[m_nSize];
@@ -130,7 +158,7 @@ Texture::Texture(
 Texture::~Texture()
 {}
 
-void Texture::ComputeMipmapProperties()
+void Texture::ComputeTextureProperties()
 {
 	if (!IsMipmapable())
 	{
@@ -157,93 +185,193 @@ void Texture::ComputeMipmapProperties()
 		assert(m_nMipmapLevelCount <= maxMipmapLevels && m_nMipmapLevelCount > 0);
 	}
 
-	// Now we calculate and save the size of each mipmap
-	unsigned int totalPixelCount = 0;
+	// Now we calculate and store the size of each mipmap
 	unsigned int sizeX = m_nDimension[0][0];
 	unsigned int sizeY = m_nDimension[0][1];
 	unsigned int sizeZ = m_nDimension[0][2];
-	for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
-	{
-		totalPixelCount += sizeX * sizeY * sizeZ;
-		m_nDimension[level][0] = sizeX;
-		m_nDimension[level][1] = sizeY;
-		m_nDimension[level][2] = sizeZ;
-
-		if (sizeX > 1)
-			sizeX /= 2;
-		if (sizeY > 1)
-			sizeY /= 2;
-		if (sizeZ > 1)
-			sizeZ /= 2;
-	}
-	// Save the total number of pixels so that we can calculate the space
-	// required to store the texture in memory
-	m_nElementCount = totalPixelCount * (m_eTexType == TT_CUBE ? 6u : 1u);
-
-	// Calculate the size in memory of each mipmap level
-	unsigned int totalByteCount = 0;
 	m_nMipmapLevelOffset[0] = 0; // Initialize the first element of the array
-	for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
+
+	if (IsCompressed())
 	{
-		m_nMipmapLevelByteCount[level] =
-			m_nDimension[level][0] *
-			m_nDimension[level][1] *
-			m_nDimension[level][2] *
-			GetPixelSize();
-		if (level < m_nMipmapLevelCount - 1)
-			m_nMipmapLevelOffset[level + 1] = m_nMipmapLevelOffset[level] + m_nMipmapLevelByteCount[level];
-		totalByteCount += m_nMipmapLevelByteCount[level];
+		for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
+		{
+			// When dealing with compressed formats, we consider a compressed block
+			// to be the smallest addressable element instead of a pixel,
+			// which will be reflected in the element count, pixel/block size, etc.
+			unsigned int blocksX = sizeX / 4;
+			if (blocksX < 1)
+				blocksX = 1;
+
+			unsigned int blocksY = sizeY / 4;
+			if (blocksY < 1)
+				blocksY = 1;
+
+			// For compressed formats, GetPixelSize() actually returns the size
+			// in bytes for a compressed block (8 for DXT1 and 16 for DXT3/5)
+			m_nMipmapLevelByteCount[level] = GetElementSize() * blocksX * blocksY;
+			m_nElementCount += blocksX * blocksY;
+			m_nSize += m_nMipmapLevelByteCount[level];
+
+			if (level < m_nMipmapLevelCount - 1)
+				m_nMipmapLevelOffset[level + 1] = m_nMipmapLevelOffset[level] + m_nMipmapLevelByteCount[level];
+
+			m_nDimension[level][0] = sizeX;
+			m_nDimension[level][1] = sizeY;
+			m_nDimension[level][2] = sizeZ;
+
+			if (sizeX > 1)
+				sizeX >>= 1;
+			if (sizeY > 1)
+				sizeY >>= 1;
+		}
 	}
-	// Calculate the total memory space required to store the texture
-	m_nSize = totalByteCount * (m_eTexType == TT_CUBE ? 6u : 1u);
+	else
+	{
+		for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
+		{
+			m_nMipmapLevelByteCount[level] = GetElementSize() * sizeX * sizeY * sizeZ;
+			m_nElementCount += sizeX * sizeY * sizeZ;
+			m_nSize += m_nMipmapLevelByteCount[level];
+
+			if (level < m_nMipmapLevelCount - 1)
+				m_nMipmapLevelOffset[level + 1] = m_nMipmapLevelOffset[level] + m_nMipmapLevelByteCount[level];
+
+			m_nDimension[level][0] = sizeX;
+			m_nDimension[level][1] = sizeY;
+			m_nDimension[level][2] = sizeZ;
+
+			if (sizeX > 1)
+				sizeX >>= 1;
+			if (sizeY > 1)
+				sizeY >>= 1;
+			if (sizeZ > 1)
+				sizeZ >>= 1;
+		}
+	}
+
+	m_nElementCount *= (m_eTexType == TT_CUBE ? 6u : 1u);
+	m_nSize *= (m_eTexType == TT_CUBE ? 6u : 1u);
+}
+
+LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigned int mipmapLevel) const
+{
+	if (m_eTexType == TT_CUBE)
+	{
+		assert(false);
+		return nullptr;
+	}
+	
+	return m_pData + GetMipmapLevelOffset(mipmapLevel);
+}
+
+LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
+{
+	if (m_eTexType != TT_CUBE)
+	{
+		assert(false);
+		return nullptr;
+	}
+	
+	assert(cubeFace >= 0 && cubeFace < 6);
+	
+	return m_pData + cubeFace * GetCubeFaceOffset() + GetMipmapLevelOffset(mipmapLevel);
 }
 
 const bool Texture::GenerateMipmaps()
 {
-	assert(GetTextureType() == TT_2D || GetTextureType() == TT_CUBE);
-	assert(GetTextureFormat() == PF_A8R8G8B8 || GetTextureFormat() == PF_A8B8G8R8);
+	// Just to be safe (might be useful later when porting on other platforms)
+	assert(sizeof(Vec4f) == sizeof(float) * 4);
 
-	if (IsLocked())
+	if (!IsMipmapable())
 		return false;
 
-	for (unsigned int face = 0; face < (m_eTexType == TT_CUBE ? 6u : 1u); face++)
+	Vec4f* rgba = new Vec4f[GetWidth() * GetHeight() * GetDepth()];
+
+	unsigned int faceCount = GetTextureType() == TT_CUBE ? 6 : 1;
+
+	for (unsigned int face = 0; face < faceCount; face++)
 	{
-		for (unsigned int i = 1; i < GetMipmapLevelCount(); i++)
+		for (unsigned int mip = 1; mip < GetMipmapLevelCount(); mip++)
 		{
-			byte* srcBuffer;
-			byte* destBuffer;
-			if (m_eTexType == TT_CUBE)
-			{
-				Lock(face, i, BL_WRITE_ONLY);
-				srcBuffer = GetMipmapLevelData(face, i - 1);
-				destBuffer = GetMipmapLevelData(face, i);
-			}
+			byte* texelsSrc = faceCount == 1 ? GetMipmapLevelData(mip - 1) : GetMipmapLevelData(face, mip - 1);
+			byte* texelsDst = faceCount == 1 ? GetMipmapLevelData(mip) : GetMipmapLevelData(face, mip);
+
+			unsigned int widthSrc = GetWidth(mip - 1);
+			unsigned int heightSrc = GetHeight(mip - 1);
+			unsigned int depthSrc = GetDepth(mip - 1);
+
+			unsigned int widthDst = GetWidth(mip);
+			unsigned int heightDst = GetHeight(mip);
+			unsigned int depthDst = GetDepth(mip);
+
+			unsigned int areaSrc = widthSrc * heightSrc;
+			unsigned int areaDst = widthDst * heightDst;
+
+			assert(widthDst != widthSrc || heightDst != heightSrc || depthDst != depthSrc);
+
+			if(IsCompressed())
+				ColorUtility::ConvertFrom[GetTextureFormat()](texelsSrc, rgba, Math::Max(widthSrc, 4u), Math::Max(heightSrc, 4u), 1);
 			else
+				ColorUtility::ConvertFrom[GetTextureFormat()](texelsSrc, rgba, widthSrc, heightSrc, depthSrc);
+
+			for (unsigned int z = 0; z < depthDst; z++)
 			{
-				Lock(i, BL_WRITE_ONLY);
-				srcBuffer = GetMipmapLevelData(i - 1);
-				destBuffer = GetMipmapLevelData(i);
-			}
-			for (unsigned int y = 0; y < GetHeight(i); y++)
-			{
-				for (unsigned int x = 0; x < GetWidth(i); x++)
+				for (unsigned int y = 0; y < heightDst; y++)
 				{
-					for (unsigned int bpp = 0; bpp < GetPixelSize(); bpp++)
+					for (unsigned int x = 0; x < widthDst; x++)
 					{
-						*(destBuffer + x * GetPixelSize() + y * GetWidth(i) * GetPixelSize() + bpp) =
-							(
-							*(srcBuffer + (2 * x)		* GetPixelSize() + (2 * y)		* GetWidth(i - 1) * GetPixelSize() + bpp) +
-							*(srcBuffer + (2 * x + 1)	* GetPixelSize() + (2 * y)		* GetWidth(i - 1) * GetPixelSize() + bpp) +
-							*(srcBuffer + (2 * x)		* GetPixelSize() + (2 * y + 1)	* GetWidth(i - 1) * GetPixelSize() + bpp) +
-							*(srcBuffer + (2 * x + 1)	* GetPixelSize() + (2 * y + 1)	* GetWidth(i - 1) * GetPixelSize() + bpp)
-							) / 4;
+						unsigned int uvw = x + y * widthDst + z * areaDst;
+						unsigned int base = 2 * (x + y * widthSrc + z * areaSrc);
+						for (unsigned int c = 0; c < 4; c++)
+						{
+							if (depthSrc > 1)
+							{
+								rgba[uvw][c] =
+									0.125f *
+									(
+									rgba[base][c] +							// (   x	,	y	,   z	)
+									rgba[base + 1][c] +						// ( x + 1	,	y	,   z	)
+									rgba[base + widthSrc][c] +				// (   x	, y + 1	,   z	)
+									rgba[base + widthSrc + 1][c] +			// ( x + 1	, y + 1	,   z	)
+									rgba[base + areaSrc][c] +				// (   x	,   y	, z + 1	)
+									rgba[base + 1 + areaSrc][c] +			// ( x + 1	,	y	, z + 1	)
+									rgba[base + widthSrc + areaSrc][c] +	// (   x	, y + 1	, z + 1	)
+									rgba[base + widthSrc + 1 + areaSrc][c]	// ( x + 1	, y + 1	, z + 1	)
+									);
+							}
+							else if (heightSrc > 1)
+							{
+								rgba[uvw][c] =
+									0.25f *
+									(
+									rgba[base][c] +					// (   x	,	  y	  )
+									rgba[base + 1][c] +				// ( x + 1	,	  y   )
+									rgba[base + widthSrc][c] +		// (   x	,	y + 1 )
+									rgba[base + widthSrc + 1][c]	// ( x + 1	,	y + 1 )
+									);
+							}
+							else
+							{
+								rgba[uvw][c] =
+									0.5f *
+									(
+									rgba[base][c] +		// (   x   )
+									rgba[base + 1][c]	// ( x + 1 )
+									);
+							}
+						}
 					}
 				}
 			}
-			Update();
-			Unlock();
+
+			if(IsCompressed())
+				ColorUtility::ConvertTo[GetTextureFormat()](rgba, texelsDst, Math::Max(widthDst, 4u), Math::Max(heightDst, 4u), 1);
+			else
+				ColorUtility::ConvertTo[GetTextureFormat()](rgba, texelsDst, widthDst, heightDst, depthDst);
 		}
 	}
+
+	delete[] rgba;
 
 	return true;
 }
