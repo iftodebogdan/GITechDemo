@@ -99,6 +99,7 @@ namespace LibRendererDll
 
 				LIBRENDERER_DLL	const Fill			GetFillMode() const { return m_eFillMode; }
 
+		virtual	LIBRENDERER_DLL			void		Reset() = 0;
 
 	protected:
 		RenderState();

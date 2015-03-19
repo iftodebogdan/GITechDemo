@@ -24,8 +24,8 @@ using namespace LibRendererDll;
 TextureNULL::TextureNULL(
 	const PixelFormat texFormat, const TexType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
-	const unsigned int mipmapLevelCount, const BufferUsage usage)
-	: Texture(texFormat, texType, sizeX, sizeY, sizeZ, mipmapLevelCount, usage)
+	const unsigned int mipCount, const BufferUsage usage)
+	: Texture(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage)
 {}
 
 TextureNULL::~TextureNULL()

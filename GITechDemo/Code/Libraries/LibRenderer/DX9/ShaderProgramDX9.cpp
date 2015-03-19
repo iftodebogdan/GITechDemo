@@ -328,7 +328,7 @@ const unsigned int ShaderProgramDX9::GetConstantStructMemberCount(const unsigned
 	return constDesc.StructMembers;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantByteCount(const unsigned int handle) const
+const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int handle) const
 {
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;

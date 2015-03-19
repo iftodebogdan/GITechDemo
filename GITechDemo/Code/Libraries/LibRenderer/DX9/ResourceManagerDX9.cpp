@@ -88,9 +88,9 @@ const unsigned int ResourceManagerDX9::CreateShaderProgram(const ShaderProgramTy
 const unsigned int ResourceManagerDX9::CreateTexture(
 	const PixelFormat texFormat, const TexType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
-	const unsigned int mipmapLevelCount, const BufferUsage usage)
+	const unsigned int mipCount, const BufferUsage usage)
 {
-	m_arrTexture.push_back(new TextureDX9(texFormat, texType, sizeX, sizeY, sizeZ, mipmapLevelCount, usage));
+	m_arrTexture.push_back(new TextureDX9(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage));
 	return (unsigned int)m_arrTexture.size() - 1;
 }
 

@@ -40,7 +40,7 @@ namespace LibRendererDll
 		TextureNULL(
 			const PixelFormat texFormat, const TexType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
-			const unsigned int mipmapLevelCount = 0, const BufferUsage usage = BU_TEXTURE);
+			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 		~TextureNULL();
 
 		friend class ResourceManagerNULL;

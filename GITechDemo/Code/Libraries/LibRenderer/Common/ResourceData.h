@@ -140,7 +140,7 @@ namespace LibRendererDll
 		CMP_LESSEQUAL,
 		CMP_GREATER,
 		CMP_NOTEQUAL,
-		CMP_GREATEQUAL,
+		CMP_GREATEREQUAL,
 		CMP_ALWAYS,
 
 		CMP_MAX,	// DO NOT USE! INTERNAL USAGE ONLY!
@@ -207,6 +207,11 @@ namespace LibRendererDll
 	///////////////////////////////////////////////////////////
 
 	// SAMPLER STATES /////////////////////////////////////////
+
+	enum
+	{
+		MAX_ANISOTROPY = 16		// Maximum anisotropy level
+	};
 
 	enum
 	{
@@ -621,6 +626,8 @@ namespace LibRendererDll
 		std::string				szName;			// Name of the model (not required)
 		std::vector<Mesh*>		arrMesh;		// Meshes associated with the model
 		std::vector<Material*>	arrMaterial;	// Materials associated with the mesh
+
+		std::string				szSourceFile;	// File from which model was loaded
 
 		LIBRENDERER_DLL friend std::ostream& operator<<(std::ostream& output_out, const Model& model_in);
 		friend std::istream& operator>>(std::istream& s_in, Model& model_out);

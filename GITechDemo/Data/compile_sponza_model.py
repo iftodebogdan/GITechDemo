@@ -2,7 +2,8 @@ import os
 import subprocess
 import time
 
-pathToModelFile = "sponza_scene/"
+#pathToModelFile = "sponza_scene/"
+pathToModelFile = "crytek-sponza/"
 modelFile = "sponza.obj"
 outputPath = "sponza/"
 modelCompilerExe = "../Bin/x64/Release/ModelCompiler/ModelCompiler.exe"

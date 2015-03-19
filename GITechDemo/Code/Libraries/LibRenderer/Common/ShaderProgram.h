@@ -55,7 +55,7 @@ namespace LibRendererDll
 		virtual const unsigned int GetConstantColumnCount(const unsigned int handle) const = 0;
 		virtual const unsigned int GetConstantArrayElementCount(const unsigned int handle) const = 0;
 		virtual const unsigned int GetConstantStructMemberCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantByteCount(const unsigned int handle) const = 0;
+		virtual const unsigned int GetConstantSizeBytes(const unsigned int handle) const = 0;
 
 		void SetValue(const RegisterType registerType, const unsigned int registerIndex, const void* const data, const unsigned int registerCount);
 		virtual void SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount) = 0;

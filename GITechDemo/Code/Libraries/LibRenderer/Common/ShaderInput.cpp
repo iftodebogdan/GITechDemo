@@ -378,11 +378,10 @@ const Matrix44f ShaderInput::GetMatrix4x4(const unsigned int handle, const unsig
 	return GetMatrix<float, 4, 4>(handle, idx);
 }
 
-
 void ShaderInput::SetTexture(const unsigned int handle, const Texture* const tex)
 {
 	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
 	assert(tex);
 	assert(
 		(desc.eInputType == IT_SAMPLER) ||

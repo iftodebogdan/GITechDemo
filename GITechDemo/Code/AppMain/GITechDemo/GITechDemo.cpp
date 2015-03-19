@@ -22,8 +22,10 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window c
 HWND hWnd;
 
-VertexBuffer*	VBuf	= nullptr;
-Texture*		Tex		= nullptr;
+// Usage: TextureLUT[TextureType][MaterialIndex] = TextureIndex
+std::vector<unsigned int> TextureLUT[Model::TextureDesc::TT_UNKNOWN];
+
+ResourceManager* resMan = nullptr;
 ShaderTemplate*	VShd	= nullptr;
 ShaderTemplate*	PShd	= nullptr;
 ShaderInput*	VSInput	= nullptr;
@@ -286,17 +288,50 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// NB: when creating a resource, the resource manager
 	// will return an index, with which you can retrieve
 	// a pointer to the actual resource
-	ResourceManager* resMan = renderer->GetResourceManager();
+	resMan = renderer->GetResourceManager();
 	
 	// First of all, load a model file
 	const unsigned int modelIdx = resMan->CreateModel("sponza\\sponza.lrm");
 	model = resMan->GetModel(modelIdx);
 
+	// Now load all the textures referenced by the model and build a lookup table
+	for (unsigned int tt = Model::TextureDesc::TT_NONE; tt < Model::TextureDesc::TT_UNKNOWN; tt++)
+		TextureLUT[tt].resize(model->arrMaterial.size(), -1);
+
+	for (unsigned int i = 0; i < model->arrMaterial.size(); i++)
+	{
+		for (unsigned int j = 0; j < model->arrMaterial[i]->arrTexture.size(); j++)
+		{
+			std::string filePath = "sponza\\" + model->arrMaterial[i]->arrTexture[j]->szFilePath;
+
+			const unsigned int offset = (unsigned int)filePath.rfind('.');
+			if (offset != std::string::npos)
+				filePath.replace(offset, UINT_MAX, ".lrt");
+
+			unsigned int texIdx = -1;
+			texIdx = resMan->FindTexture(filePath.c_str());
+			if (texIdx == -1)
+			{
+				texIdx = resMan->CreateTexture(filePath.c_str());
+
+				// Set the sampling filter to linearly interpolate between texels and mips
+				// and set the maximum anisotropy level for maximum quality
+				Texture* tex = resMan->GetTexture(texIdx);
+				tex->SetAnisotropy(MAX_ANISOTROPY);
+				tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+			}
+
+			assert(texIdx != -1);
+			assert(TextureLUT[model->arrMaterial[i]->arrTexture[j]->eTexType][i] == -1 ||
+				TextureLUT[model->arrMaterial[i]->arrTexture[j]->eTexType][i] == texIdx);
+
+			if(TextureLUT[model->arrMaterial[i]->arrTexture[j]->eTexType][i] == -1)
+				TextureLUT[model->arrMaterial[i]->arrTexture[j]->eTexType][i] = texIdx;
+		}
+	}
+
 	// Read the contents of the file
 	std::ifstream t("simple.hlsl");
-	//std::ifstream t("normal.hlsl");
-	//std::ifstream t("normal_scale.hlsl");
-	//std::ifstream t("pos_only.hlsl");
 	int length;
 	t.seekg(0, std::ios::end);			// go to the end
 	length = (int)t.tellg();			// report location (this is the length)
@@ -327,9 +362,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	VSInput = resMan->GetShaderInput(vsiIdx);
 	const unsigned int psiIdx = resMan->CreateShaderInput(PShd);
 	PSInput = resMan->GetShaderInput(psiIdx);
-
-	const unsigned int texIdx = resMan->CreateTexture("sponza\\textures\\sponza_curtain_diff.lrt");
-	Tex = resMan->GetTexture(texIdx);
 
 	return TRUE;
 }
@@ -452,14 +484,6 @@ void RenderScene()
 		VSInput->SetMatrix4x4(handle, matWVP[2] * matWVP[1] * matWVP[0]);
 	}
 
-	if (PSInput->GetInputHandleByName("Tex", handle))
-	{
-		// Set the texture as an input to the pixel shader
-		PSInput->SetTexture(handle, Tex);
-		// Also set the sampling filter to linearly interpolate between texels and mips
-		renderer->GetSamplerStateManager()->SetFilter(PSInput->GetInputDesc(handle).nRegisterIndex, SF_MIN_MAG_LINEAR_MIP_LINEAR);
-	}
-	
 	// Clear our backbuffer so that we have a nice black background
 	// and a depth value that's as far away as possible (at our Z far, which is 2000.f)
 	renderer->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
@@ -474,17 +498,34 @@ void RenderScene()
 	// return value of BeginFrame() before submiting draw calls!
 	if (renderer->BeginFrame())
 	{
-		// Set the vertex and pixel shaders used to render the scene
-		VShd->Enable(VSInput);
-		PShd->Enable(PSInput);
-		
+		renderer->GetRenderStateManager()->SetAlphaTestEnable(true);
+		renderer->GetRenderStateManager()->SetAlphaFunc(CMP_GREATER);
+		renderer->GetRenderStateManager()->SetAlphaRef(0.5f);
+
 		// Draw the contents of the vertex buffers
 		for (unsigned int mesh = 0; mesh < model->arrMesh.size(); mesh++)
+		{
+			const unsigned int diffTexIdx = TextureLUT[Model::TextureDesc::TT_DIFFUSE][model->arrMesh[mesh]->nMaterialIdx];
+			if (diffTexIdx != -1)
+			{
+				Texture* Tex = resMan->GetTexture(diffTexIdx);
+				if (PSInput->GetInputHandleByName("Tex", handle) && Tex != nullptr)
+				{
+					// Set the texture as an input to the pixel shader
+					PSInput->SetTexture(handle, Tex);
+				}
+			}
+
+			// Set the vertex and pixel shaders used to render the scene
+			VShd->Enable(VSInput);
+			PShd->Enable(PSInput);
+
 			renderer->DrawVertexBuffer(model->arrMesh[mesh]->pVertexBuffer);
 
-		// Disable shaders
-		VShd->Disable();
-		PShd->Disable();
+			// Disable shaders
+			VShd->Disable();
+			PShd->Disable();
+		}
 
 		// End the frame
 		renderer->EndFrame();

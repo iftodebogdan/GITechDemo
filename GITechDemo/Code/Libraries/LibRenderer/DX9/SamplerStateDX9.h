@@ -21,6 +21,8 @@
 
 #include "SamplerState.h"
 
+enum _D3DTEXTUREFILTERTYPE;
+
 namespace LibRendererDll
 {
 	class RendererDX9;
@@ -28,21 +30,25 @@ namespace LibRendererDll
 	class SamplerStateDX9 : public SamplerState
 	{
 	public:
-		const SamplerFilter			MatchFilterType(const dword min, const dword mag, const dword mip);
-		const SamplerAddressingMode	MatchAddressingMode(const dword sam);
+		const SamplerFilter			MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip);
+		const SamplerAddressingMode	MatchAddressingMode(const DWORD sam);
 
-		const bool SetAnisotropy(const unsigned int slot, const float anisotropy);
-		const bool SetLodBias(const unsigned int slot, const float lodBias);
-		const bool SetFilter(const unsigned int slot, const SamplerFilter filter);
-		const bool SetBorderColor(const unsigned int slot, const Vec4f rgba);
-		const bool SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
-		const bool SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
-		const bool SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
-		const bool SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
+		const bool	SetLodBias(const unsigned int slot, const float lodBias);
+		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
+		const bool	SetBorderColor(const unsigned int slot, const Vec4f rgba);
+		const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
+		const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
+		const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
+		const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+
+		void		Reset();
 
 	protected:
 		SamplerStateDX9();
 		~SamplerStateDX9();
+
+		_D3DTEXTUREFILTERTYPE	m_eCurrentMinFilter[MAX_NUM_PSAMPLERS];
 
 		friend class RendererDX9;
 	};

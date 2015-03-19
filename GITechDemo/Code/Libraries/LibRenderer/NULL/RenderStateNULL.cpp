@@ -136,3 +136,7 @@ const bool RenderStateNULL::SetFillMode(const Fill fillMode)
 {
 	return true;
 }
+
+void RenderStateNULL::Reset()
+{
+}

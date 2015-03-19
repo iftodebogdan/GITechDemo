@@ -152,6 +152,7 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 	{
 		texFile >> *GetTexture(texIdx);
 		texFile.close();
+		GetTexture(texIdx)->m_szSourceFile = pathToFile;
 		return texIdx;
 	}
 	else
@@ -171,6 +172,7 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 	{
 		modelFile >> *m_arrModel.back();
 		modelFile.close();
+		m_arrModel.back()->szSourceFile = pathToFile;
 		return (unsigned int)m_arrModel.size() - 1;
 	}
 	else
@@ -179,4 +181,32 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 		m_arrModel.pop_back();
 		return -1;
 	}
+}
+
+const unsigned int LibRendererDll::ResourceManager::FindTexture(const char * pathToFile, const bool strict)
+{
+	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
+		if (m_arrTexture[i]->m_szSourceFile == pathToFile)
+			return i;
+
+	if (!strict)
+		for (unsigned int i = 0; i < m_arrTexture.size(); i++)
+			if (m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
+				return i;
+
+	return -1;
+}
+
+const unsigned int LibRendererDll::ResourceManager::FindModel(const char * pathToFile, const bool strict)
+{
+	for (unsigned int i = 0; i < m_arrModel.size(); i++)
+		if (m_arrModel[i]->szSourceFile == pathToFile)
+			return i;
+
+	if(!strict)
+		for (unsigned int i = 0; i < m_arrModel.size(); i++)
+			if (m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
+				return i;
+
+	return -1;
 }

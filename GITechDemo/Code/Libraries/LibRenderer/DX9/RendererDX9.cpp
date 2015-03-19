@@ -256,6 +256,12 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 
 		// Rebind resources
 		GetResourceManager()->BindAll();
+		
+		// Reset sampler states
+		GetSamplerStateManager()->Reset();
+
+		// Reset render states
+		GetRenderStateManager()->Reset();
 	}
 
 	D3DVIEWPORT9 vp;
@@ -292,7 +298,14 @@ const bool RendererDX9::BeginFrame()
 		if (FAILED(hr))
 			return false;
 
+		// Rebind resources
 		GetResourceManager()->BindAll();
+
+		// Reset sampler states
+		GetSamplerStateManager()->Reset();
+
+		// Reset render states
+		GetRenderStateManager()->Reset();
 
 		m_bDeviceLost = false;
 	}
@@ -332,10 +345,12 @@ void RendererDX9::DrawVertexBuffer(VertexBuffer* vb)
 {
 	assert(vb);
 	vb->Enable();
+
 	if (vb->GetIndexBuffer())
 		m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vb->GetElementCount(), 0, vb->GetIndexBuffer()->GetElementCount() / 3);
 	else
-		assert(false); // TODO: not yet implemented
+		m_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, vb->GetElementCount() / 3);
+
 	vb->Disable();
 }
 

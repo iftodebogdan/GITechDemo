@@ -27,48 +27,7 @@ using namespace LibRendererDll;
 
 SamplerStateDX9::SamplerStateDX9()
 {
-	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-
-	HRESULT hr;
-	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
-	{
-		DWORD value, value2, value3;
-		hr = device->GetSamplerState(i, D3DSAMP_MAXANISOTROPY, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].fAnisotropy = (float)value;
-
-		hr = device->GetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].fLodBias = (float)value;
-
-		hr = device->GetSamplerState(i, D3DSAMP_MINFILTER, &value);
-		assert(SUCCEEDED(hr));
-		hr = device->GetSamplerState(i, D3DSAMP_MAGFILTER, &value2);
-		assert(SUCCEEDED(hr));
-		hr = device->GetSamplerState(i, D3DSAMP_MIPFILTER, &value3);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].eFilter = MatchFilterType(value, value2, value3);
-
-		hr = device->GetSamplerState(i, D3DSAMP_BORDERCOLOR, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].vBorderColor = Vec4f(
-			(float)((value & (0xff << 16)) >> 16) / 255.f,	// red
-			(float)((value & (0xff << 8)) >> 8) / 255.f,	// green
-			(float)(value & 0xff) / 255.f,					// blue
-			(float)((value & (0xff << 24)) >> 24) / 255.f);	// alpha
-
-		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSU, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].eAddressingMode[0] = MatchAddressingMode(value);
-
-		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSV, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].eAddressingMode[1] = MatchAddressingMode(value);
-
-		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSW, &value);
-		assert(SUCCEEDED(hr));
-		m_tCurrentState[i].eAddressingMode[2] = MatchAddressingMode(value);
-	}
+	Reset();
 }
 
 SamplerStateDX9::~SamplerStateDX9()
@@ -106,15 +65,35 @@ const SamplerAddressingMode SamplerStateDX9::MatchAddressingMode(const DWORD sam
 
 const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float anisotropy)
 {
-	if (anisotropy == GetAnisotropy(slot))
+	float aniso = Math::clamp(anisotropy, 1.f, (float)MAX_ANISOTROPY);
+
+	if (aniso == GetAnisotropy(slot))
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, (DWORD)anisotropy);
+	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, (DWORD)aniso);
 	assert(SUCCEEDED(hr));
-
+	
+	HRESULT hr1 = 0;
 	if (SUCCEEDED(hr))
-		return SamplerState::SetAnisotropy(slot, anisotropy);
+	{
+		if (aniso > 1.f && m_eCurrentMinFilter[slot] != D3DTEXF_ANISOTROPIC)
+		{
+			hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+			if (SUCCEEDED(hr1))
+				m_eCurrentMinFilter[slot] = D3DTEXF_ANISOTROPIC;
+		}
+		else if (aniso <= 1.f && m_eCurrentMinFilter[slot] != MinMagFilterDX9[GetFilter(slot)])
+		{
+			hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, MinMagFilterDX9[GetFilter(slot)]);
+			if (SUCCEEDED(hr1))
+				m_eCurrentMinFilter[slot] = (_D3DTEXTUREFILTERTYPE)MinMagFilterDX9[GetFilter(slot)];
+		}
+	}
+	assert(SUCCEEDED(hr1));
+
+	if (SUCCEEDED(hr) && SUCCEEDED(hr1))
+		return SamplerState::SetAnisotropy(slot, aniso);
 	else
 		return false;
 }
@@ -139,9 +118,26 @@ const bool SamplerStateDX9::SetFilter(const unsigned int slot, const SamplerFilt
 	if (filter == GetFilter(slot))
 		return true;
 
-	HRESULT hr1, hr2, hr3;
+	HRESULT hr1 = 0, hr2 = 0, hr3 = 0;
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, MinMagFilterDX9[filter]);
+	//if (1.f < GetAnisotropy(slot) && GetAnisotropy(slot) <= MAX_ANISOTROPY && m_eCurrentMinFilter[slot] != D3DTEXF_ANISOTROPIC)
+	//{
+	//		hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+	//		if (SUCCEEDED(hr1))
+	//			m_eCurrentMinFilter[slot] = D3DTEXF_ANISOTROPIC;
+	//}
+	//else if (GetAnisotropy(slot) <= 1.f && m_eCurrentMinFilter[slot] != MinMagFilterDX9[filter])
+	//{
+	//	hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, MinMagFilterDX9[filter]);
+	//	if (SUCCEEDED(hr1))
+	//		m_eCurrentMinFilter[slot] = (_D3DTEXTUREFILTERTYPE)MinMagFilterDX9[filter];
+	//}
+	if (GetAnisotropy(slot) <= 1.f)
+	{
+		hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, MinMagFilterDX9[filter]);
+		if (SUCCEEDED(hr1))
+			m_eCurrentMinFilter[slot] = (_D3DTEXTUREFILTERTYPE)MinMagFilterDX9[filter];
+	}
 	assert(SUCCEEDED(hr1));
 	hr2 = device->SetSamplerState(slot, D3DSAMP_MAGFILTER, MinMagFilterDX9[filter]);
 	assert(SUCCEEDED(hr2));
@@ -230,4 +226,61 @@ const bool SamplerStateDX9::SetAddressingMode(const unsigned int slot, const Sam
 		return SamplerState::SetAddressingMode(slot, samUVW);
 	else
 		return false;
+}
+
+void SamplerStateDX9::Reset()
+{
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	HRESULT hr;
+
+	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
+	{
+		DWORD value, value2, value3;
+		hr = device->GetSamplerState(i, D3DSAMP_MAXANISOTROPY, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].fAnisotropy = (float)value;
+
+		hr = device->GetSamplerState(i, D3DSAMP_MIPMAPLODBIAS, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].fLodBias = (float)value;
+
+		hr = device->GetSamplerState(i, D3DSAMP_MINFILTER, &value);
+		assert(SUCCEEDED(hr));
+		hr = device->GetSamplerState(i, D3DSAMP_MAGFILTER, &value2);
+		assert(SUCCEEDED(hr));
+		hr = device->GetSamplerState(i, D3DSAMP_MIPFILTER, &value3);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].eFilter = MatchFilterType(value, value2, value3);
+
+		hr = device->GetSamplerState(i, D3DSAMP_BORDERCOLOR, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].vBorderColor = Vec4f(
+			(float)((value & (0xff << 16)) >> 16) / 255.f,	// red
+			(float)((value & (0xff << 8)) >> 8) / 255.f,	// green
+			(float)(value & 0xff) / 255.f,					// blue
+			(float)((value & (0xff << 24)) >> 24) / 255.f);	// alpha
+
+		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSU, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].eAddressingMode[0] = MatchAddressingMode(value);
+
+		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSV, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].eAddressingMode[1] = MatchAddressingMode(value);
+
+		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSW, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].eAddressingMode[2] = MatchAddressingMode(value);
+	}
+
+	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
+	{
+		SetAnisotropy(i, 1.f);
+		SetLodBias(i, 0.f);
+		SetFilter(i, SF_MIN_MAG_POINT_MIP_NONE);
+		SetBorderColor(i, Vec4f(0.f, 0.f, 0.f, 0.f));
+		for (unsigned int j = 0; j < 3; j++)
+			SetAddressingMode(i, SAM_WRAP);
+		m_eCurrentMinFilter[i] = D3DTEXF_POINT;
+	}
 }

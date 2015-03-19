@@ -66,3 +66,6 @@ const bool SamplerStateNULL::SetAddressingMode(const unsigned int slot, const Sa
 {
 	return true;
 }
+
+void SamplerStateNULL::Reset()
+{}

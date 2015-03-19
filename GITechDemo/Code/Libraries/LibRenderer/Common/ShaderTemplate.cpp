@@ -52,7 +52,7 @@ void ShaderTemplate::DescribeShaderInputs()
 		inputDesc.nRows = m_pProgram->GetConstantRowCount(i);
 		inputDesc.nColumns = m_pProgram->GetConstantColumnCount(i);
 		inputDesc.nArrayElements = m_pProgram->GetConstantArrayElementCount(i);
-		inputDesc.nBytes = m_pProgram->GetConstantByteCount(i);
+		inputDesc.nBytes = m_pProgram->GetConstantSizeBytes(i);
 		inputDesc.nOffsetInBytes = offset;
 		offset += inputDesc.nRegisterCount * sizeof(float) * 4u;
 
@@ -107,7 +107,17 @@ void ShaderTemplate::Enable(ShaderInput* shaderInput)
 				//m_pProgram->SetTexture(m_arrInputDesc[i].nRegisterIndex, (Texture*)*(unsigned long long*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes));
 				Texture* tex = (Texture*)*(unsigned long long*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
 				if (tex)
+				{
 					tex->Enable(m_arrInputDesc[i].nRegisterIndex);
+					SamplerState* ssm = Renderer::GetInstance()->GetSamplerStateManager();
+					ssm->SetAnisotropy(m_arrInputDesc[i].nRegisterIndex, tex->GetAnisotropy());
+					ssm->SetLodBias(m_arrInputDesc[i].nRegisterIndex, tex->GetLodBias());
+					ssm->SetFilter(m_arrInputDesc[i].nRegisterIndex, tex->GetFilter());
+					ssm->SetBorderColor(m_arrInputDesc[i].nRegisterIndex, tex->GetBorderColor());
+					ssm->SetAddressingModeU(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeU());
+					ssm->SetAddressingModeV(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeV());
+					ssm->SetAddressingModeW(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeW());
+				}
 			}
 			else
 				assert(false); // shouldn't happen

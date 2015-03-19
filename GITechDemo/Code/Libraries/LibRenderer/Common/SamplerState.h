@@ -58,6 +58,8 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeW(const unsigned int slot) const { assert(slot < MAX_NUM_PSAMPLERS); return m_tCurrentState[slot].eAddressingMode[2]; }
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingMode(const unsigned int slot) const { return (GetAddressingModeU(slot) == GetAddressingModeV(slot) && GetAddressingModeV(slot) == GetAddressingModeW(slot)) ? GetAddressingModeU(slot) : SAM_NONE; }
 
+		virtual	LIBRENDERER_DLL		void	Reset() = 0;
+
 	protected:
 		SamplerState();
 		virtual ~SamplerState();

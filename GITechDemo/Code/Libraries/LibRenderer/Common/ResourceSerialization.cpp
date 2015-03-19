@@ -538,15 +538,15 @@ std::ostream& LibRendererDll::operator<<(std::ostream& output_out, Texture& tex_
 
 	output_out.write((char*)&tex_in.m_eTexFormat, sizeof(PixelFormat));
 	output_out.write((char*)&tex_in.m_eTexType, sizeof(TexType));
-	output_out.write((char*)&tex_in.m_nMipmapLevelCount, sizeof(unsigned int));
+	output_out.write((char*)&tex_in.m_nMipCount, sizeof(unsigned int));
 
 	output_out.write((char*)&tex_in.m_nDimensionCount, sizeof(unsigned int));
-	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
+	for (unsigned int i = 0; i < tex_in.m_nMipCount; i++)
 		output_out.write((char*)&tex_in.m_nDimension[i], sizeof(Vec<unsigned int, 3U>));
-	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
-		output_out.write((char*)&tex_in.m_nMipmapLevelByteCount[i], sizeof(unsigned int));
-	for (unsigned int i = 0; i < tex_in.m_nMipmapLevelCount; i++)
-		output_out.write((char*)&tex_in.m_nMipmapLevelOffset[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_in.m_nMipCount; i++)
+		output_out.write((char*)&tex_in.m_nMipSizeBytes[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_in.m_nMipCount; i++)
+		output_out.write((char*)&tex_in.m_nMipOffset[i], sizeof(unsigned int));
 
 	return output_out;
 }
@@ -557,15 +557,15 @@ std::istream& LibRendererDll::operator>>(std::istream& s_in, Texture& tex_out)
 
 	s_in.read((char*)&tex_out.m_eTexFormat, sizeof(PixelFormat));
 	s_in.read((char*)&tex_out.m_eTexType, sizeof(TexType));
-	s_in.read((char*)&tex_out.m_nMipmapLevelCount, sizeof(unsigned int));
+	s_in.read((char*)&tex_out.m_nMipCount, sizeof(unsigned int));
 
 	s_in.read((char*)&tex_out.m_nDimensionCount, sizeof(unsigned int));
-	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
+	for (unsigned int i = 0; i < tex_out.m_nMipCount; i++)
 		s_in.read((char*)&tex_out.m_nDimension[i], sizeof(Vec<unsigned int, 3U>));
-	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
-		s_in.read((char*)&tex_out.m_nMipmapLevelByteCount[i], sizeof(unsigned int));
-	for (unsigned int i = 0; i < tex_out.m_nMipmapLevelCount; i++)
-		s_in.read((char*)&tex_out.m_nMipmapLevelOffset[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_out.m_nMipCount; i++)
+		s_in.read((char*)&tex_out.m_nMipSizeBytes[i], sizeof(unsigned int));
+	for (unsigned int i = 0; i < tex_out.m_nMipCount; i++)
+		s_in.read((char*)&tex_out.m_nMipOffset[i], sizeof(unsigned int));
 
 	tex_out.Bind();
 

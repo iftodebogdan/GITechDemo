@@ -92,9 +92,9 @@ void ModelCompiler::Run(int argc, char* argv[])
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll
 	// propably to request more postprocessing than we do in this example.
-	unsigned int ppFlags = aiProcessPreset_TargetRealtime_MaxQuality & ~aiProcess_FindDegenerates; // & aiProcess_OptimizeGraph & aiProcess_PreTransformVertices & aiProcess_Debone
-																								   //if (Renderer::GetAPI() == API_DX9)
-																								   //	ppFlags |= aiProcess_ConvertToLeftHanded;
+	unsigned int ppFlags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;// | aiProcess_OptimizeGraph | aiProcess_PreTransformVertices | aiProcess_Debone;
+	ppFlags &= ~aiProcess_FindDegenerates;
+
 	scene = importer.ReadFile(argv[argc - 1], ppFlags);
 
 	if (!scene)

@@ -25,109 +25,7 @@ using namespace LibRendererDll;
 
 RenderStateDX9::RenderStateDX9()
 {
-	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
-	DWORD value;
-
-	hr = device->GetRenderState(D3DRS_ALPHABLENDENABLE, &value);
-	assert(SUCCEEDED(hr));
-	m_bAlphaBlendEnable = (value != 0);
-
-	hr = device->GetRenderState(D3DRS_SRCBLENDALPHA, &value);
-	assert(SUCCEEDED(hr));
-	m_eAlphaSrcBlend = (Blend)MatchRenderState(value, BLEND);
-
-	hr = device->GetRenderState(D3DRS_DESTBLENDALPHA, &value);
-	assert(SUCCEEDED(hr));
-	m_eAlphaDstBlend = (Blend)MatchRenderState(value, BLEND);
-
-	hr = device->GetRenderState(D3DRS_ALPHATESTENABLE, &value);
-	assert(SUCCEEDED(hr));
-	m_bAlphaTestEnable = (value != 0);
-
-	hr = device->GetRenderState(D3DRS_ALPHAFUNC, &value);
-	assert(SUCCEEDED(hr));
-	m_eAlphaFunc = (Cmp)MatchRenderState(value, CMP);
-
-	hr = device->GetRenderState(D3DRS_ALPHAREF, &value);
-	assert(SUCCEEDED(hr));
-	m_fAlphaRef = (float)value / 255.f;
-
-	hr = device->GetRenderState(D3DRS_BLENDFACTOR, &value);
-	assert(SUCCEEDED(hr));
-	m_vBlendFactor = Vec4f(
-		(float)((value & (0xff << 16)) >> 16) / 255.f,	// red
-		(float)((value & (0xff << 8)) >> 8) / 255.f,	// green
-		(float)(value & 0xff) / 255.f,					// blue
-		(float)((value & (0xff << 24)) >> 24) / 255.f);	// alpha
-
-	hr = device->GetRenderState(D3DRS_CULLMODE, &value);
-	assert(SUCCEEDED(hr));
-	m_eCullMode = (Cull)MatchRenderState(value, CULL);
-
-
-
-	hr = device->GetRenderState(D3DRS_ZENABLE, &value);
-	assert(SUCCEEDED(hr));
-	m_eZEnable = (ZBuffer)MatchRenderState(value, ZB);
-
-	hr = device->GetRenderState(D3DRS_ZFUNC, &value);
-	assert(SUCCEEDED(hr));
-	m_eZFunc = (Cmp)MatchRenderState(value, CMP);
-
-	hr = device->GetRenderState(D3DRS_ZWRITEENABLE, &value);
-	assert(SUCCEEDED(hr));
-	m_bZWriteEnable = (value != 0);
-
-
-
-	hr = device->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &value);
-	assert(SUCCEEDED(hr));
-	m_fSlopeScaleDepthBias = *(float*)&value;
-
-	hr = device->GetRenderState(D3DRS_DEPTHBIAS, &value);
-	assert(SUCCEEDED(hr));
-	m_fDepthBias = *(float*)&value * 16777216.0f;
-
-
-
-	hr = device->GetRenderState(D3DRS_STENCILENABLE, &value);
-	assert(SUCCEEDED(hr));
-	m_bStencilEnable = (value != 0);
-
-	hr = device->GetRenderState(D3DRS_STENCILFUNC, &value);
-	assert(SUCCEEDED(hr));
-	m_eStencilFunc = (Cmp)MatchRenderState(value, CMP);
-
-	hr = device->GetRenderState(D3DRS_STENCILREF, &value);
-	assert(SUCCEEDED(hr));
-	m_lStencilRef = value;
-
-	hr = device->GetRenderState(D3DRS_STENCILMASK, &value);
-	assert(SUCCEEDED(hr));
-	m_lStencilMask = value;
-
-	hr = device->GetRenderState(D3DRS_STENCILWRITEMASK, &value);
-	assert(SUCCEEDED(hr));
-	m_lStencilWriteMask = value;
-
-	hr = device->GetRenderState(D3DRS_STENCILFAIL, &value);
-	assert(SUCCEEDED(hr));
-	m_eStencilFail = (StencilOp)MatchRenderState(value, STENCILOP);
-
-	hr = device->GetRenderState(D3DRS_STENCILZFAIL, &value);
-	assert(SUCCEEDED(hr));
-	m_eStencilZFail = (StencilOp)MatchRenderState(value, STENCILOP);
-
-	hr = device->GetRenderState(D3DRS_STENCILPASS, &value);
-	assert(SUCCEEDED(hr));
-	m_eStencilPass = (StencilOp)MatchRenderState(value, STENCILOP);
-
-
-
-	hr = device->GetRenderState(D3DRS_FILLMODE, &value);
-	assert(SUCCEEDED(hr));
-	m_eFillMode = (Fill)MatchRenderState(value, FILL);
+	Reset();
 }
 
 RenderStateDX9::~RenderStateDX9()
@@ -537,4 +435,149 @@ const bool RenderStateDX9::SetFillMode(const Fill fillMode)
 		return RenderState::SetFillMode(fillMode);
 	else
 		return false;
+}
+
+void LibRendererDll::RenderStateDX9::Reset()
+{
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	HRESULT hr;
+	DWORD value;
+
+
+
+	hr = device->GetRenderState(D3DRS_ALPHABLENDENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bAlphaBlendEnable = (value != 0);
+
+	hr = device->GetRenderState(D3DRS_SRCBLEND, &value);
+	assert(SUCCEEDED(hr));
+	m_eAlphaSrcBlend = (Blend)MatchRenderState(value, BLEND);
+
+	hr = device->GetRenderState(D3DRS_DESTBLEND, &value);
+	assert(SUCCEEDED(hr));
+	m_eAlphaDstBlend = (Blend)MatchRenderState(value, BLEND);
+
+	hr = device->GetRenderState(D3DRS_BLENDFACTOR, &value);
+	assert(SUCCEEDED(hr));
+	m_vBlendFactor = Vec4f(
+		(float)((value & (0xff << 16)) >> 16) / 255.f,	// red
+		(float)((value & (0xff << 8)) >> 8) / 255.f,	// green
+		(float)(value & 0xff) / 255.f,					// blue
+		(float)((value & (0xff << 24)) >> 24) / 255.f);	// alpha
+
+
+
+	hr = device->GetRenderState(D3DRS_ALPHATESTENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bAlphaTestEnable = (value != 0);
+
+	hr = device->GetRenderState(D3DRS_ALPHAFUNC, &value);
+	assert(SUCCEEDED(hr));
+	m_eAlphaFunc = (Cmp)MatchRenderState(value, CMP);
+
+	hr = device->GetRenderState(D3DRS_ALPHAREF, &value);
+	assert(SUCCEEDED(hr));
+	m_fAlphaRef = (float)value / 255.f;
+
+
+
+	hr = device->GetRenderState(D3DRS_CULLMODE, &value);
+	assert(SUCCEEDED(hr));
+	m_eCullMode = (Cull)MatchRenderState(value, CULL);
+
+
+
+	hr = device->GetRenderState(D3DRS_ZENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_eZEnable = (ZBuffer)MatchRenderState(value, ZB);
+
+	hr = device->GetRenderState(D3DRS_ZFUNC, &value);
+	assert(SUCCEEDED(hr));
+	m_eZFunc = (Cmp)MatchRenderState(value, CMP);
+
+	hr = device->GetRenderState(D3DRS_ZWRITEENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bZWriteEnable = (value != 0);
+
+
+
+	hr = device->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &value);
+	assert(SUCCEEDED(hr));
+	m_fSlopeScaleDepthBias = *(float*)&value;
+
+	hr = device->GetRenderState(D3DRS_DEPTHBIAS, &value);
+	assert(SUCCEEDED(hr));
+	m_fDepthBias = *(float*)&value * 16777216.0f;
+
+
+
+	hr = device->GetRenderState(D3DRS_STENCILENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bStencilEnable = (value != 0);
+
+	hr = device->GetRenderState(D3DRS_STENCILFUNC, &value);
+	assert(SUCCEEDED(hr));
+	m_eStencilFunc = (Cmp)MatchRenderState(value, CMP);
+
+	hr = device->GetRenderState(D3DRS_STENCILREF, &value);
+	assert(SUCCEEDED(hr));
+	m_lStencilRef = value;
+
+	hr = device->GetRenderState(D3DRS_STENCILMASK, &value);
+	assert(SUCCEEDED(hr));
+	m_lStencilMask = value;
+
+	hr = device->GetRenderState(D3DRS_STENCILWRITEMASK, &value);
+	assert(SUCCEEDED(hr));
+	m_lStencilWriteMask = value;
+
+	hr = device->GetRenderState(D3DRS_STENCILFAIL, &value);
+	assert(SUCCEEDED(hr));
+	m_eStencilFail = (StencilOp)MatchRenderState(value, STENCILOP);
+
+	hr = device->GetRenderState(D3DRS_STENCILZFAIL, &value);
+	assert(SUCCEEDED(hr));
+	m_eStencilZFail = (StencilOp)MatchRenderState(value, STENCILOP);
+
+	hr = device->GetRenderState(D3DRS_STENCILPASS, &value);
+	assert(SUCCEEDED(hr));
+	m_eStencilPass = (StencilOp)MatchRenderState(value, STENCILOP);
+
+
+
+	hr = device->GetRenderState(D3DRS_FILLMODE, &value);
+	assert(SUCCEEDED(hr));
+	m_eFillMode = (Fill)MatchRenderState(value, FILL);
+
+
+
+	// Set defaults
+	SetAlphaBlendEnable(false);
+	SetAlphaSrcBlend(BLEND_ONE);
+	SetAlphaDstBlend(BLEND_ZERO);
+	SetBlendFactor(Vec4f(1.f, 1.f, 1.f, 1.f));
+
+	SetAlphaTestEnable(false);
+	SetAlphaFunc(CMP_ALWAYS);
+	SetAlphaRef(0.f);
+	
+	SetCullMode(CULL_CCW);
+
+	SetZEnable(ZB_ENABLED);
+	SetZFunc(CMP_LESSEQUAL);
+	SetZWriteEnabled(true);
+
+	SetSlopeScaleDepthBias(0.f);
+	SetDepthBias(0.f);
+
+	SetStencilEnable(false);
+	SetStencilFunc(CMP_ALWAYS);
+	SetStencilRef(0);
+	SetStencilMask(ULONG_MAX);
+	SetStencilWriteMask(ULONG_MAX);
+	SetStencilFail(STENCILOP_KEEP);
+	SetStencilZFail(STENCILOP_KEEP);
+	SetStencilPass(STENCILOP_KEEP);
+
+	SetFillMode(FILL_SOLID);
 }

@@ -2,7 +2,8 @@ import os
 import subprocess
 import time
 
-pathToTextureFiles = "sponza_scene/textures/"
+#pathToTextureFiles = "sponza_scene/textures/"
+pathToTextureFiles = "crytek-sponza/textures/"
 outputPath = "sponza/textures/"
 textureCompilerExe = "../Bin/x64/Release/TextureCompiler/TextureCompiler.exe"
 

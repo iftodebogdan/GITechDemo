@@ -26,14 +26,16 @@ namespace LibRendererDll
 	class SamplerStateNULL : public SamplerState
 	{
 	public:
-		const bool SetAnisotropy(const unsigned int slot, const float anisotropy);
-		const bool SetLodBias(const unsigned int slot, const float lodBias);
-		const bool SetFilter(const unsigned int slot, const SamplerFilter filter);
-		const bool SetBorderColor(const unsigned int slot, const Vec4f rgba);
-		const bool SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
-		const bool SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
-		const bool SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
-		const bool SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
+		const bool	SetLodBias(const unsigned int slot, const float lodBias);
+		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
+		const bool	SetBorderColor(const unsigned int slot, const Vec4f rgba);
+		const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
+		const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
+		const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
+		const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+
+		void		Reset();
 
 	protected:
 		SamplerStateNULL();

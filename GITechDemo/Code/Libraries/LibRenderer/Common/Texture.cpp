@@ -87,16 +87,23 @@ const bool Texture::ms_bIsMipmapable[PF_MAX] =
 Texture::Texture(
 	const PixelFormat texFormat, const TexType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
-	const unsigned int mipmapLevelCount, const BufferUsage usage)
+	const unsigned int mipCount, const BufferUsage usage)
 	: Buffer(0, 0, usage)	// We don't know at this stage how much memory we need
 	, m_eTexFormat(texFormat)
 	, m_eTexType(texType)
-	, m_nMipmapLevelCount(mipmapLevelCount)
+	, m_nMipCount(mipCount)
 	, m_bIsLocked(false)
-	, m_nLockedMipmap(-1)
+	, m_nLockedMip(-1)
 	, m_nLockedCubeFace(-1)
 	, m_bAutogenMipmaps(false)
 {
+	m_tSamplerStates.fAnisotropy = 1.f;
+	m_tSamplerStates.fLodBias = 0.f;
+	m_tSamplerStates.eFilter = SF_MIN_MAG_POINT_MIP_NONE;
+	m_tSamplerStates.vBorderColor = Vec4f(0.f, 0.f, 0.f, 0.f);
+	for (unsigned int dim = 0; dim < 3; dim++)
+		m_tSamplerStates.eAddressingMode[dim] = SAM_WRAP;
+
 	// Support for deferred initialization (loading from file)
 	if (usage == BU_NONE)
 		return;
@@ -114,7 +121,7 @@ Texture::Texture(
 		assert(false);
 
 	// No mipmaps for 32bit formats or depth-stencil formats
-	if ((IsFloatingPoint() || IsDepthStencil()) && (mipmapLevelCount > 1))
+	if ((IsFloatingPoint() || IsDepthStencil()) && (mipCount > 1))
 		assert(false);
 
 	unsigned int width = sizeX;
@@ -162,7 +169,7 @@ void Texture::ComputeTextureProperties()
 {
 	if (!IsMipmapable())
 	{
-		m_nMipmapLevelCount = 1;
+		m_nMipCount = 1;
 	}
 	else
 	{
@@ -180,20 +187,20 @@ void Texture::ComputeTextureProperties()
 		_BitScanReverse((unsigned long*)&maxMipmapLevelsZ, m_nDimension[0][2]);
 		unsigned int maxMipmapLevels = (unsigned int)Math::Max(maxMipmapLevelsX, maxMipmapLevelsY, maxMipmapLevelsX) + 1;
 
-		if (m_nMipmapLevelCount == 0)
-			m_nMipmapLevelCount = maxMipmapLevels;
-		assert(m_nMipmapLevelCount <= maxMipmapLevels && m_nMipmapLevelCount > 0);
+		if (m_nMipCount == 0)
+			m_nMipCount = maxMipmapLevels;
+		assert(m_nMipCount <= maxMipmapLevels && m_nMipCount > 0);
 	}
 
 	// Now we calculate and store the size of each mipmap
 	unsigned int sizeX = m_nDimension[0][0];
 	unsigned int sizeY = m_nDimension[0][1];
 	unsigned int sizeZ = m_nDimension[0][2];
-	m_nMipmapLevelOffset[0] = 0; // Initialize the first element of the array
+	m_nMipOffset[0] = 0; // Initialize the first element of the array
 
 	if (IsCompressed())
 	{
-		for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
+		for (unsigned int level = 0; level < m_nMipCount; level++)
 		{
 			// When dealing with compressed formats, we consider a compressed block
 			// to be the smallest addressable element instead of a pixel,
@@ -208,12 +215,12 @@ void Texture::ComputeTextureProperties()
 
 			// For compressed formats, GetPixelSize() actually returns the size
 			// in bytes for a compressed block (8 for DXT1 and 16 for DXT3/5)
-			m_nMipmapLevelByteCount[level] = GetElementSize() * blocksX * blocksY;
+			m_nMipSizeBytes[level] = GetElementSize() * blocksX * blocksY;
 			m_nElementCount += blocksX * blocksY;
-			m_nSize += m_nMipmapLevelByteCount[level];
+			m_nSize += m_nMipSizeBytes[level];
 
-			if (level < m_nMipmapLevelCount - 1)
-				m_nMipmapLevelOffset[level + 1] = m_nMipmapLevelOffset[level] + m_nMipmapLevelByteCount[level];
+			if (level < m_nMipCount - 1)
+				m_nMipOffset[level + 1] = m_nMipOffset[level] + m_nMipSizeBytes[level];
 
 			m_nDimension[level][0] = sizeX;
 			m_nDimension[level][1] = sizeY;
@@ -227,14 +234,14 @@ void Texture::ComputeTextureProperties()
 	}
 	else
 	{
-		for (unsigned int level = 0; level < m_nMipmapLevelCount; level++)
+		for (unsigned int level = 0; level < m_nMipCount; level++)
 		{
-			m_nMipmapLevelByteCount[level] = GetElementSize() * sizeX * sizeY * sizeZ;
+			m_nMipSizeBytes[level] = GetElementSize() * sizeX * sizeY * sizeZ;
 			m_nElementCount += sizeX * sizeY * sizeZ;
-			m_nSize += m_nMipmapLevelByteCount[level];
+			m_nSize += m_nMipSizeBytes[level];
 
-			if (level < m_nMipmapLevelCount - 1)
-				m_nMipmapLevelOffset[level + 1] = m_nMipmapLevelOffset[level] + m_nMipmapLevelByteCount[level];
+			if (level < m_nMipCount - 1)
+				m_nMipOffset[level + 1] = m_nMipOffset[level] + m_nMipSizeBytes[level];
 
 			m_nDimension[level][0] = sizeX;
 			m_nDimension[level][1] = sizeY;
@@ -253,7 +260,7 @@ void Texture::ComputeTextureProperties()
 	m_nSize *= (m_eTexType == TT_CUBE ? 6u : 1u);
 }
 
-LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigned int mipmapLevel) const
+LIBRENDERER_DLL byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
 {
 	if (m_eTexType == TT_CUBE)
 	{
@@ -261,10 +268,10 @@ LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigne
 		return nullptr;
 	}
 	
-	return m_pData + GetMipmapLevelOffset(mipmapLevel);
+	return m_pData + GetMipOffset(mipmapLevel);
 }
 
-LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
+LIBRENDERER_DLL byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
 {
 	if (m_eTexType != TT_CUBE)
 	{
@@ -274,7 +281,7 @@ LIBRENDERER_DLL byte * LibRendererDll::Texture::GetMipmapLevelData(const unsigne
 	
 	assert(cubeFace >= 0 && cubeFace < 6);
 	
-	return m_pData + cubeFace * GetCubeFaceOffset() + GetMipmapLevelOffset(mipmapLevel);
+	return m_pData + cubeFace * GetCubeFaceOffset() + GetMipOffset(mipmapLevel);
 }
 
 const bool Texture::GenerateMipmaps()
@@ -291,10 +298,10 @@ const bool Texture::GenerateMipmaps()
 
 	for (unsigned int face = 0; face < faceCount; face++)
 	{
-		for (unsigned int mip = 1; mip < GetMipmapLevelCount(); mip++)
+		for (unsigned int mip = 1; mip < GetMipCount(); mip++)
 		{
-			byte* texelsSrc = faceCount == 1 ? GetMipmapLevelData(mip - 1) : GetMipmapLevelData(face, mip - 1);
-			byte* texelsDst = faceCount == 1 ? GetMipmapLevelData(mip) : GetMipmapLevelData(face, mip);
+			byte* texelsSrc = faceCount == 1 ? GetMipData(mip - 1) : GetMipData(face, mip - 1);
+			byte* texelsDst = faceCount == 1 ? GetMipData(mip) : GetMipData(face, mip);
 
 			unsigned int widthSrc = GetWidth(mip - 1);
 			unsigned int heightSrc = GetHeight(mip - 1);

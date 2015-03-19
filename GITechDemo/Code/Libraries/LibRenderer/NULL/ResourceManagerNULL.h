@@ -48,7 +48,7 @@ namespace LibRendererDll
 		const unsigned int CreateTexture(
 			const PixelFormat texFormat, const TexType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
-			const unsigned int mipmapLevelCount = 0, const BufferUsage usage = BU_TEXTURE);
+			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 
 		const unsigned int CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil);

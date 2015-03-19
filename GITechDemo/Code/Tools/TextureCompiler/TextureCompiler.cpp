@@ -528,17 +528,16 @@ void TextureCompiler::Run(int argc, char* argv[])
 			Log << "\t[INFO] Swizzling could not be performed\n";
 	}
 
-	//if (ilGetInteger(IL_ORIGIN_MODE) == IL_ORIGIN_LOWER_LEFT)
-	//{
-	//	Log << "\t[INFO]Source image has a lower left origin: flipping...\n";
-	//	const unsigned long long flipStart = GetTickCount64();
-	//	if (iluFlipImage())
-	//		Log << "\t[INFO] Flipping done in " << (float)(GetTickCount64() - flipStart) << " ms\n";
-	//	else
-	//		Log << "\t[INFO] Flipping could not be performed\n";
-	//}
-
-
+	if (ilGetInteger(IL_ORIGIN_MODE) == IL_ORIGIN_LOWER_LEFT)
+	{
+		Log << "\t[INFO]Source image has a lower left origin: flipping...\n";
+		const unsigned long long flipStart = GetTickCount64();
+		if (iluFlipImage())
+			Log << "\t[INFO] Flipping done in " << (float)(GetTickCount64() - flipStart) << " ms\n";
+		else
+			Log << "\t[INFO] Flipping could not be performed\n";
+	}
+	
 	if (format == PF_NONE || format == srcFormat)
 	{
 		format = srcFormat;
@@ -563,7 +562,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 		Log << "\tHeight: " << info.Height << "\n";
 		Log << "\tDepth: " << info.Depth << "\n";
 		Log << "\tSize of data: " << info.SizeOfData << "\n";
-		Log << "\tMip count: " << texDst->GetMipmapLevelCount() << "\n";
+		Log << "\tMip count: " << texDst->GetMipCount() << "\n";
 
 		if (texDst->GetTextureType() == TT_CUBE)
 		{
@@ -576,15 +575,15 @@ void TextureCompiler::Run(int argc, char* argv[])
 				iluGetImageInfo(&faceInfo);
 
 				assert(ilGetInteger(IL_IMAGE_CUBEFLAGS) == IL_CUBEMAP_POSITIVEX * powf(2.f, (float)face));
-				assert(faceInfo.SizeOfData == texDst->GetMipmapLevelByteCount());
+				assert(faceInfo.SizeOfData == texDst->GetMipByteCount());
 
-				memcpy(texDst->GetMipmapLevelData(face, 0), faceInfo.Data, texDst->GetMipmapLevelByteCount(0));
+				memcpy(texDst->GetMipData(face, 0), faceInfo.Data, texDst->GetMipSizeBytes(0));
 			}
 		}
 		else
 		{
-			assert(info.SizeOfData == texDst->GetMipmapLevelByteCount());
-			memcpy(texDst->GetMipmapLevelData(), info.Data, texDst->GetMipmapLevelByteCount());
+			assert(info.SizeOfData == texDst->GetMipByteCount());
+			memcpy(texDst->GetMipData(), info.Data, texDst->GetMipSizeBytes());
 		}
 	}
 	else
@@ -612,7 +611,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 		Log << "\tDepth: " << info.Depth << "\n";
 		Log << "\tSize of source data: " << info.SizeOfData << "\n";
 		Log << "\tSize of destination data: " << texDst->GetSize() << "\n";
-		Log << "\tMip count: " << texDst->GetMipmapLevelCount() << "\n";
+		Log << "\tMip count: " << texDst->GetMipCount() << "\n";
 
 		Vec4f* tmpData = nullptr;
 		tmpData = new Vec4f[info.Width * info.Height * info.Depth];
@@ -633,13 +632,13 @@ void TextureCompiler::Run(int argc, char* argv[])
 				assert(ilGetInteger(IL_IMAGE_CUBEFLAGS) == IL_CUBEMAP_POSITIVEX * powf(2.f, (float)face));
 
 				ColorUtility::ConvertFrom[srcFormat](faceInfo.Data, tmpData, faceInfo.Width, faceInfo.Height, faceInfo.Depth);
-				ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipmapLevelData(face, 0), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
+				ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipData(face, 0), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
 			}
 		}
 		else
 		{
 			ColorUtility::ConvertFrom[srcFormat](info.Data, tmpData, info.Width, info.Height, info.Depth);
-			ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipmapLevelData(), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
+			ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipData(), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
 		}
 
 		Log << "\t[INFO] Conversion finished in " << (float)(GetTickCount64() - convertStart) << " ms\n";
@@ -698,7 +697,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 
 	assert(texIn->GetTextureFormat() == texDst->GetTextureFormat());
 	assert(texIn->GetTextureType() == texDst->GetTextureType());
-	assert(texIn->GetMipmapLevelCount() == texDst->GetMipmapLevelCount());
+	assert(texIn->GetMipCount() == texDst->GetMipCount());
 	assert(texIn->GetDimensionCount() == texDst->GetDimensionCount());
 	assert(((Buffer*)texIn)->GetSize() == ((Buffer*)texDst)->GetSize());
 	assert(memcmp(((Buffer*)texIn)->GetData(), ((Buffer*)texDst)->GetData(), ((Buffer*)texDst)->GetSize()) == 0);

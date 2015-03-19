@@ -89,7 +89,7 @@ const unsigned int ShaderProgramNULL::GetConstantStructMemberCount(const unsigne
 	return 0;
 }
 
-const unsigned int ShaderProgramNULL::GetConstantByteCount(const unsigned int handle) const
+const unsigned int ShaderProgramNULL::GetConstantSizeBytes(const unsigned int handle) const
 {
 	return 0;
 }

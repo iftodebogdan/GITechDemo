@@ -171,11 +171,11 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	assert(SUCCEEDED(hr));
 
 	// Write data to texture
-	//memcpy(texture->GetMipmapLevelData(0), rect.pBits, texture->GetMipmapLevelByteCount(0));
+	//memcpy(texture->GetMipData(0), rect.pBits, texture->GetMipSizeBytes(0));
 	for (unsigned int i = 0; i < texture->GetHeight(); i++)
 	{
 		memcpy(
-			texture->GetMipmapLevelData(0) + i * texture->GetWidth() * texture->GetElementSize(),
+			texture->GetMipData(0) + i * texture->GetWidth() * texture->GetElementSize(),
 			(byte*)rect.pBits + i * rect.Pitch,
 			texture->GetWidth() * texture->GetElementSize()
 			);
@@ -196,7 +196,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 		m_pColorSurfaceBackup = nullptr;
 	}
 
-	//for (unsigned int i = 0, n = texture->GetMipmapLevelCount(); i < n; i++)
+	//for (unsigned int i = 0, n = texture->GetMipCount(); i < n; i++)
 	//{
 	//	IDirect3DSurface9* destSurface = 0;
 	//	hr = ((IDirect3DTexture9*)((TextureDX9*)texture)->GetTextureDX9())->GetSurfaceLevel(i, &destSurface);

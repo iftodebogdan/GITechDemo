@@ -73,7 +73,7 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const unsigned int CreateShaderTemplate(ShaderProgram* const shaderProgram);
 
 		// Create a texture
-		virtual	LIBRENDERER_DLL const unsigned int		CreateTexture(const PixelFormat texFormat, const TexType texType, const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1, const unsigned int mipmapLevelCount = 0, const BufferUsage usage = BU_TEXTURE) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateTexture(const PixelFormat texFormat, const TexType texType, const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1, const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE) = 0;
 				// Create a texture and load data from an image file
 				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile);
 
@@ -93,6 +93,13 @@ namespace LibRendererDll
 				LIBRENDERER_DLL Texture*		const	GetTexture(const unsigned int idx)			const	{ assert(idx < m_arrTexture.size()); return m_arrTexture[idx]; }
 				LIBRENDERER_DLL RenderTarget*	const	GetRenderTarget(const unsigned int idx)		const	{ assert(idx < m_arrRenderTarget.size()); return m_arrRenderTarget[idx]; }
 				LIBRENDERER_DLL Model*			const	GetModel(const unsigned int idx)			const	{ assert(idx < m_arrModel.size()); return m_arrModel[idx]; }
+
+				// Utility functions for finding a resource by its' original file name from which it was loaded
+				// NB: If the strict parameter is set to false, it will first try to find an exact match, then try
+				// to find a substring in the resource's original file path; default behaviour (i.e. strict = true)
+				// is to only search for an exact match
+				LIBRENDERER_DLL const unsigned int		FindTexture(const char* pathToFile, const bool strict = true);
+				LIBRENDERER_DLL const unsigned int		FindModel(const char* pathToFile, const bool strict = true);
 
 				// Destroy various resource types, freeing memory
 				// NB: Destroying a high level resource also destroys the associated low level resources
