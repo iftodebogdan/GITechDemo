@@ -21,7 +21,7 @@
 #include "HalfFloat.h"
 using namespace LibRendererDll;
 
-LibRendererDll::HalfFloat::HalfFloat(const float value)
+HalfFloat::HalfFloat(const float value)
 {
 	assert(sizeof(HalfFloat) == sizeof(unsigned short));
 

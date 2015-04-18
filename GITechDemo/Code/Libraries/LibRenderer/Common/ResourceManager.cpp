@@ -110,30 +110,11 @@ const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shad
 	return (unsigned int)m_arrShaderInput.size() - 1;
 }
 
-const unsigned int ResourceManager::CreateShaderProgram(const ShaderProgramType programType, const char* srcData, char* const errors, const char* entryPoint, const char* profile)
+const unsigned int ResourceManager::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors, const char* entryPoint, const char* profile)
 {
-	// This is just a safety measure to convert CR and CRLF
-	// line ending to LF
-	std::string srcDataLF;
-	const char* i;
-	unsigned int n;
-	for (i = srcData, n = (unsigned int)strlen(srcData); i + n > srcData; srcData++)
-	{
-		switch (*srcData) {
-		case '\r':
-			assert(false);
-			srcDataLF += '\n';	// write LF instead of CR
-			if (*(srcData + 1) == '\n')	// if it's CRLF line ending
-				srcData++;				// skip another character
-		case '\n':
-		default:
-			srcDataLF += (char)*srcData;
-		}
-	}
-
 	const unsigned int spIdx = CreateShaderProgram(programType);
 	ShaderProgram* const sp = GetShaderProgram(spIdx);
-	sp->Compile(srcDataLF.c_str(), errors, entryPoint, profile);
+	sp->Compile(filePath, errors, entryPoint, profile);
 	return spIdx;
 }
 
@@ -183,7 +164,7 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 	}
 }
 
-const unsigned int LibRendererDll::ResourceManager::FindTexture(const char * pathToFile, const bool strict)
+const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
 {
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		if (m_arrTexture[i]->m_szSourceFile == pathToFile)
@@ -197,7 +178,7 @@ const unsigned int LibRendererDll::ResourceManager::FindTexture(const char * pat
 	return -1;
 }
 
-const unsigned int LibRendererDll::ResourceManager::FindModel(const char * pathToFile, const bool strict)
+const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		if (m_arrModel[i]->szSourceFile == pathToFile)

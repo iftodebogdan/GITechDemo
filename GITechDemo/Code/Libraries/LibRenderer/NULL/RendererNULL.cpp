@@ -37,6 +37,9 @@ void RendererNULL::Initialize(void* hWnd)
 	m_pSamplerState = new SamplerStateNULL();
 }
 
+void RendererNULL::SetBackBufferSize(const Vec2i size, const Vec2i offset)
+{}
+
 void RendererNULL::SetViewport(const Vec2i size, const Vec2i offset)
 {}
 
@@ -57,5 +60,8 @@ void RendererNULL::DrawVertexBuffer(VertexBuffer* vb)
 void RendererNULL::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
 {}
 
-void RendererNULL::CreateProjectionMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+{}
+
+void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
 {}

@@ -22,6 +22,7 @@
 #include "Buffer.h"
 #include "ShaderInput.h"
 #include "Texture.h"
+#include "ShaderProgram.h"
 using namespace LibRendererDll;
 
 
@@ -40,7 +41,7 @@ using namespace LibRendererDll;
 
 
 ShaderInput::ShaderInput(ShaderTemplate* shaderTemplate)
-	: Buffer(shaderTemplate->GetTotalNumberOfUsedRegisters(), sizeof(float) * 4u, BU_NONE)
+	: Buffer(shaderTemplate->GetTotalSizeOfInputConstants(), 1u, BU_NONE)
 	, m_pShaderTemplate(shaderTemplate)
 {
 	assert(shaderTemplate);
@@ -62,7 +63,13 @@ const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsign
 
 	inputHandle = ~0u;
 
-	assert(false || Renderer::GetAPI() == API_NULL);
+#ifdef _DEBUG
+	if(Renderer::GetInstance()->GetAPI() != API_NULL)
+		std::cout << "Could not find input \"" << inputName << "\" in " <<
+			(m_pShaderTemplate->m_pProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
+			" shader: \"" << m_pShaderTemplate->m_pProgram->GetFilePath() << "\"\n";
+#endif
+
 	return false;
 }
 
@@ -378,17 +385,30 @@ const Matrix44f ShaderInput::GetMatrix4x4(const unsigned int handle, const unsig
 	return GetMatrix<float, 4, 4>(handle, idx);
 }
 
-void ShaderInput::SetTexture(const unsigned int handle, const Texture* const tex)
+void ShaderInput::SetTexture(const unsigned int handle, const unsigned int texIdx)
 {
 	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
 	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
-	assert(tex);
+
 	assert(
+		texIdx == -1 ||
 		(desc.eInputType == IT_SAMPLER) ||
-		(desc.eInputType == IT_SAMPLER1D && tex->GetTextureType() == TT_1D) ||
-		(desc.eInputType == IT_SAMPLER2D && tex->GetTextureType() == TT_2D) ||
-		(desc.eInputType == IT_SAMPLER3D && tex->GetTextureType() == TT_3D) ||
-		(desc.eInputType == IT_SAMPLERCUBE && tex->GetTextureType() == TT_CUBE)
+		(desc.eInputType == IT_SAMPLER1D && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_1D) ||
+		(desc.eInputType == IT_SAMPLER2D && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_2D) ||
+		(desc.eInputType == IT_SAMPLER3D && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_3D) ||
+		(desc.eInputType == IT_SAMPLERCUBE && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_CUBE)
 		);
-	*(unsigned long long*)(m_pData + desc.nOffsetInBytes) = (unsigned long long)tex; // unsigned long long for 64bit pointer support
+	*(unsigned int*)(m_pData + desc.nOffsetInBytes) = (unsigned int)texIdx;
+}
+
+void ShaderInput::SetTexture(const unsigned int handle, const Texture* const tex)
+{
+	const ResourceManager* const resMan = Renderer::GetInstance()->GetResourceManager();
+	const unsigned int texCount = resMan->GetTextureCount();
+	for (unsigned int i = 0; i < texCount; i++)
+		if (resMan->GetTexture(i) == tex)
+		{
+			SetTexture(handle, i);
+			break;
+		}
 }

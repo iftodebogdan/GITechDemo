@@ -32,7 +32,7 @@ const bool SamplerStateNULL::SetAnisotropy(const unsigned int slot, const float 
 	return true;
 }
 
-const bool SamplerStateNULL::SetLodBias(const unsigned int slot, const float lodBias)
+const bool SamplerStateNULL::SetMipmapLodBias(const unsigned int slot, const float lodBias)
 {
 	return true;
 }

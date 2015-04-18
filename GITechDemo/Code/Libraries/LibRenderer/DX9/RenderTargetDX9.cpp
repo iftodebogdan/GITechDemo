@@ -25,8 +25,8 @@
 using namespace LibRendererDll;
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
-	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil)
-	: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil)
+	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
 	, m_pColorSurfaceBackup(nullptr)
@@ -38,8 +38,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
-		//m_pColorBuffer[i] = new TextureDX9(pixelFormat, TT_2D, width, height, 1,
-		//	m_bHasMipmaps ? 0 : 1, BU_RENDERTAGET);
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
 		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
@@ -47,7 +45,60 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 
 	if (hasDepthStencil)
 	{
-		//m_pDepthBuffer = new TextureDX9(PF_D24S8, TT_2D, width, height, 1, 1, BU_DEPTHSTENCIL);
+		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		assert(SUCCEEDED(hr));
+	}
+}
+
+RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
+	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, PixelFormatRT0, PixelFormatRT1, PixelFormatRT2, PixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
+	, m_pColorSurface(nullptr)
+	, m_pDepthSurface(nullptr)
+	, m_pColorSurfaceBackup(nullptr)
+	, m_pDepthSurfaceBackup(nullptr)
+{
+	HRESULT hr;
+
+	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
+
+	for (unsigned int i = 0; i < m_nTargetCount; i++)
+	{
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
+		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		assert(SUCCEEDED(hr));
+	}
+
+	if (hasDepthStencil)
+	{
+		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		assert(SUCCEEDED(hr));
+	}
+}
+
+RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
+	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, PixelFormatRT0, PixelFormatRT1, PixelFormatRT2, PixelFormatRT3, hasMipmaps, hasDepthStencil, depthStencilFormat)
+	, m_pColorSurface(nullptr)
+	, m_pDepthSurface(nullptr)
+	, m_pColorSurfaceBackup(nullptr)
+	, m_pDepthSurfaceBackup(nullptr)
+{
+	HRESULT hr;
+
+	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
+
+	for (unsigned int i = 0; i < m_nTargetCount; i++)
+	{
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
+		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		assert(SUCCEEDED(hr));
+	}
+
+	if (hasDepthStencil)
+	{
 		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
@@ -71,19 +122,17 @@ void RenderTargetDX9::Enable()
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
+	hr = device->GetDepthStencilSurface(&m_pDepthSurfaceBackup);
+	assert(SUCCEEDED(hr));
 
 	hr = device->GetRenderTarget(0, &m_pColorSurfaceBackup);
 	assert(SUCCEEDED(hr));
 
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
-		((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9();
 		hr = device->SetRenderTarget((DWORD)i, m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
-
-	hr = device->GetDepthStencilSurface(&m_pDepthSurfaceBackup);
-	assert(SUCCEEDED(hr));
 
 	// Viewport is automatically set
 	hr = device->SetDepthStencilSurface(m_pDepthSurface);

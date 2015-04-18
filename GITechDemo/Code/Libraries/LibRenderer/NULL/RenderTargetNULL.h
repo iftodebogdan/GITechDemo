@@ -35,7 +35,13 @@ namespace LibRendererDll
 
 	protected:
 		RenderTargetNULL(const unsigned int targetCount, PixelFormat pixelFormat,
-			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil);
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTargetNULL(const unsigned int targetCount,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTargetNULL(const unsigned int targetCount,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		~RenderTargetNULL();
 
 		friend class ResourceManagerNULL;

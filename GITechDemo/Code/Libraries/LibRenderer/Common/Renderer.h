@@ -53,10 +53,15 @@ namespace LibRendererDll
 		object, setting the presentation parameters, and finally creating the device. */
 		virtual	LIBRENDERER_DLL void				Initialize(void* hWnd) = 0;
 
-		/* Set viewport size and offset (useful when rendering in a part of a window) */
-		virtual	LIBRENDERER_DLL void				SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) { m_vViewportSize = size; m_vViewportOffset = offset; }
+		/* Set backbuffer size and offset (useful when rendering in a part of a window) */
+		virtual	LIBRENDERER_DLL void				SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) { m_vBackBufferSize = size; m_vBackBufferOffset = offset; }
+		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferSize() { return m_vBackBufferSize; }
+		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferOffset() { return m_vBackBufferOffset; }
+		/* Set viewport size and offset */
+		virtual	LIBRENDERER_DLL	void				SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) = 0;
 		/* Create a projection matrix for the corresponding API */
-		virtual LIBRENDERER_DLL void				CreateProjectionMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar) = 0;
+		virtual LIBRENDERER_DLL void				CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar) = 0;
+		virtual LIBRENDERER_DLL void				CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar) = 0;
 		/* Convert a GMTL / OpenGL projection matrix to a DirectX compliant projection matrix */
 		static	LIBRENDERER_DLL	void				ConvertOGLProjMatToD3D(Matrix44f& matProj);
 		static	LIBRENDERER_DLL	void				ConvertOGLProjMatToD3D(Matrix44f* const matProj) { ConvertOGLProjMatToD3D(*matProj); }
@@ -85,8 +90,8 @@ namespace LibRendererDll
 		Renderer();
 		virtual	~Renderer();
 
-				Vec2i			m_vViewportSize;		// The viewport size in pixels
-				Vec2i			m_vViewportOffset;		// The viewport offset in pixels
+				Vec2i			m_vBackBufferSize;		// The backbuffer size in pixels
+				Vec2i			m_vBackBufferOffset;	// The backbuffer offset in pixels
 			ResourceManager*	m_pResourceManager;		// Pointer to the resource manager
 			RenderState*		m_pRenderState;			// Pointer to the render state manager
 			SamplerState*		m_pSamplerState;		// Pointer to the texture sampler state manager

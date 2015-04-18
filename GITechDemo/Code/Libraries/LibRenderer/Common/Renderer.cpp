@@ -38,8 +38,8 @@ Renderer* Renderer::m_pInstance = nullptr;
 API Renderer::m_eAPI = API_NULL;
 
 Renderer::Renderer()
-	: m_vViewportSize(800, 600)
-	, m_vViewportOffset(0, 0)
+	: m_vBackBufferSize(800, 600)
+	, m_vBackBufferOffset(0, 0)
 	, m_pResourceManager(nullptr)
 	, m_pRenderState(nullptr)
 	, m_pSamplerState(nullptr)

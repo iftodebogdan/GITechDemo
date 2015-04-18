@@ -79,7 +79,9 @@ namespace LibRendererDll
 				/* Returns true if the format of the texture is a floating point format */
 				LIBRENDERER_DLL const	bool			IsFloatingPoint() const { return m_eTexFormat == PF_R32F || m_eTexFormat == PF_G32R32F || m_eTexFormat == PF_A32B32G32R32F; }
 				/* Returns true if the format of the texture is a depth stencil format */
-				LIBRENDERER_DLL const	bool			IsDepthStencil() const { return m_eTexFormat == PF_D24S8; }
+				LIBRENDERER_DLL const	bool			IsDepthStencil() const { return (m_eTexFormat >= PF_D24S8 && m_eTexFormat <= PF_RAWZ); }
+				/* Returns true if the texture is a render target */
+				LIBRENDERER_DLL	const	bool			IsRenderTarget() const { return m_eBufferUsage == BU_RENDERTAGET; }
 				/* Returns true if the format of the texture allows it to be mipmapable */
 				LIBRENDERER_DLL const	bool			IsMipmapable() const { return ms_bIsMipmapable[m_eTexFormat]; }
 				/* Get a pointer to the start of the specified mip level in the memory buffer in which the texture is stored */
@@ -101,7 +103,7 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL void			Update() = 0;
 
 		// Create a corresponding platform specific resource
-		virtual LIBRENDERER_DLL void			Bind() = 0;
+		virtual LIBRENDERER_DLL void			Bind();
 		// Destroy the platform specific resource
 		virtual LIBRENDERER_DLL void			Unbind() = 0;
 
@@ -114,12 +116,10 @@ namespace LibRendererDll
 
 				// Generate mipmaps (SLOW!)
 				LIBRENDERER_DLL const	bool	GenerateMipmaps();
-				// Check for mipmap autogeneration
-				LIBRENDERER_DLL const	bool	UsingHardwareAcceleratedMipmapGeneration() { return m_bAutogenMipmaps; }
 
 				// Set various sampler states for when the texture is bound
 				LIBRENDERER_DLL	void	SetAnisotropy(const float anisotropy) { m_tSamplerStates.fAnisotropy = Math::clamp(anisotropy, 1.f, (float)MAX_ANISOTROPY); }
-				LIBRENDERER_DLL	void	SetLodBias(const float lodBias) { m_tSamplerStates.fLodBias = lodBias; }
+				LIBRENDERER_DLL	void	SetMipmapLodBias(const float lodBias) { m_tSamplerStates.fLodBias = lodBias; }
 				LIBRENDERER_DLL	void	SetFilter(const SamplerFilter filter) { m_tSamplerStates.eFilter = filter; }
 				LIBRENDERER_DLL	void	SetBorderColor(const Vec4f rgba) { m_tSamplerStates.vBorderColor = rgba; }
 				LIBRENDERER_DLL	void	SetAddressingModeU(const SamplerAddressingMode samU) { m_tSamplerStates.eAddressingMode[0] = samU; }
@@ -129,7 +129,7 @@ namespace LibRendererDll
 
 				// Get various sampler states
 				LIBRENDERER_DLL const float					GetAnisotropy() const { return m_tSamplerStates.fAnisotropy; }
-				LIBRENDERER_DLL const float					GetLodBias() const { return m_tSamplerStates.fLodBias; }
+				LIBRENDERER_DLL const float					GetMipmapLodBias() const { return m_tSamplerStates.fLodBias; }
 				LIBRENDERER_DLL const SamplerFilter			GetFilter() const { return m_tSamplerStates.eFilter; }
 				LIBRENDERER_DLL const Vec4f					GetBorderColor() const { return m_tSamplerStates.vBorderColor; }
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeU() const { return m_tSamplerStates.eAddressingMode[0]; }
@@ -155,10 +155,10 @@ namespace LibRendererDll
 		virtual							~Texture();
 
 		// Computes the properties of the texture and its mipmaps
-		void			ComputeTextureProperties();
+		void			ComputeTextureProperties(const Vec3i dimensions);
 
-		PixelFormat		m_eTexFormat;			// Holds the format of the texture
-		TexType			m_eTexType;				// Holds the type of texture
+		PixelFormat		m_eTexFormat;	// Holds the format of the texture
+		TexType			m_eTexType;		// Holds the type of texture
 		unsigned int	m_nMipCount;	// Holds the number of mips
 
 		/* Holds the number of valid dimensions based on the type */
@@ -170,9 +170,6 @@ namespace LibRendererDll
 		/* Holds the offsets in bytes of each mip */
 		unsigned int			m_nMipOffset[TEX_MAX_MIPMAP_LEVELS];
 
-		/* Hardware accelerated mipmap generation */
-		bool	m_bAutogenMipmaps;
-
 		/* Lock status */
 		bool			m_bIsLocked;
 		unsigned int	m_nLockedMip;
@@ -183,6 +180,9 @@ namespace LibRendererDll
 
 		/* Path to the file from which the texture was loaded from */
 		std::string		m_szSourceFile;
+
+		/* This texture is a render target with dynamic resolution, sync'ed to the backbuffer's resolution */
+		bool	m_bIsDynamicRT;
 
 		/* Holds the number of valid dimensions for the specified texture type */
 		static	const unsigned int	ms_nDimensionCount[TT_MAX];

@@ -97,9 +97,9 @@ void ShaderProgramDX9::Disable()
 	assert(SUCCEEDED(hr));
 }
 
-const bool ShaderProgramDX9::Compile(const char* srcData, char* const errors, const char* entryPoint, const char* profile)
+const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, const char* entryPoint, const char* profile)
 {
-	m_szSrcData = srcData;
+	m_szSrcFile = filePath;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
@@ -121,8 +121,12 @@ const bool ShaderProgramDX9::Compile(const char* srcData, char* const errors, co
 	LPD3DXBUFFER errorMsg = nullptr;
 	m_szEntryPoint = entryPoint;
 	m_szProfile = profile;
-	HRESULT hr = D3DXCompileShader(srcData, (UINT)strlen(srcData), NULL, NULL, entryPoint, profile,
-		NULL, &compiledData, &errorMsg, &m_pConstantTable);
+	DWORD flags = NULL;
+#ifdef _DEBUG
+	flags |= D3DXSHADER_DEBUG;
+#endif
+	HRESULT hr = D3DXCompileShaderFromFile(filePath, NULL, NULL, entryPoint, profile,
+		flags, &compiledData, &errorMsg, &m_pConstantTable);
 
 #ifdef _DEBUG
 	if (errorMsg)
@@ -335,7 +339,23 @@ const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int han
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
 
-	return constDesc.Bytes;
+	unsigned int size = constDesc.RegisterCount;
+	switch (constDesc.RegisterSet)
+	{
+	case D3DXRS_FLOAT4:
+		size *= sizeof(float) * 4u;
+		break;
+	case D3DXRS_INT4:
+		size *= sizeof(int) * 4u;
+		break;
+	case D3DXRS_BOOL:
+		size *= sizeof(BOOL);
+	}
+
+	//assert(size == constDesc.Bytes);
+	size = max(size, constDesc.Bytes);
+
+	return size;
 }
 
 void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount)
@@ -399,8 +419,8 @@ void ShaderProgramDX9::SetTexture(const unsigned int registerIndex, const Textur
 
 void ShaderProgramDX9::Bind()
 {
-	if (m_szSrcData.length())
-		Compile(m_szSrcData.c_str(), nullptr, m_szEntryPoint.c_str(), m_szProfile.c_str());
+	if (m_szSrcFile.length())
+		Compile(m_szSrcFile.c_str(), nullptr, m_szEntryPoint.c_str(), m_szProfile.c_str());
 }
 
 void ShaderProgramDX9::Unbind()

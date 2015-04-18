@@ -27,7 +27,7 @@ namespace LibRendererDll
 	{
 	public:
 		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
-		const bool	SetLodBias(const unsigned int slot, const float lodBias);
+		const bool	SetMipmapLodBias(const unsigned int slot, const float lodBias);
 		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
 		const bool	SetBorderColor(const unsigned int slot, const Vec4f rgba);
 		const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);

@@ -75,9 +75,9 @@ const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsign
 	return 0;
 }
 
-const bool RenderStateDX9::SetAlphaBlendEnable(const bool enabled)
+const bool RenderStateDX9::SetColorBlendEnable(const bool enabled)
 {
-	if (enabled == GetAlphaBlendEnable())
+	if (enabled == GetColorBlendEnable())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -85,41 +85,41 @@ const bool RenderStateDX9::SetAlphaBlendEnable(const bool enabled)
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaBlendEnable(enabled);
+		return RenderState::SetColorBlendEnable(enabled);
 	else
 		return false;
 }
 
-const bool RenderStateDX9::SetAlphaSrcBlend(const Blend alphaSrc)
+const bool RenderStateDX9::SetColorSrcBlend(const Blend alphaSrc)
 {
 	assert(alphaSrc > BLEND && alphaSrc < BLEND_MAX);
 
-	if (alphaSrc == GetAlphaSrcBlend())
+	if (alphaSrc == GetColorSrcBlend())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = device->SetRenderState(D3DRS_SRCBLENDALPHA, RenderStateMappingDX9[alphaSrc]);
+	HRESULT hr = device->SetRenderState(D3DRS_SRCBLEND/*ALPHA*/, RenderStateMappingDX9[alphaSrc]);
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaSrcBlend(alphaSrc);
+		return RenderState::SetColorSrcBlend(alphaSrc);
 	else
 		return false;
 }
 
-const bool RenderStateDX9::SetAlphaDstBlend(const Blend alphaDst)
+const bool RenderStateDX9::SetColorDstBlend(const Blend alphaDst)
 {
 	assert(alphaDst > BLEND && alphaDst < BLEND_MAX);
 
-	if (alphaDst == GetAlphaDstBlend())
+	if (alphaDst == GetColorDstBlend())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = device->SetRenderState(D3DRS_DESTBLENDALPHA, RenderStateMappingDX9[alphaDst]);
+	HRESULT hr = device->SetRenderState(D3DRS_DESTBLEND/*ALPHA*/, RenderStateMappingDX9[alphaDst]);
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaDstBlend(alphaDst);
+		return RenderState::SetColorDstBlend(alphaDst);
 	else
 		return false;
 }
@@ -139,11 +139,11 @@ const bool RenderStateDX9::SetAlphaTestEnable(const bool enabled)
 		return false;
 }
 
-const bool RenderStateDX9::SetAlphaFunc(const Cmp alphaFunc)
+const bool RenderStateDX9::SetAlphaTestFunc(const Cmp alphaFunc)
 {
 	assert(alphaFunc > CMP && alphaFunc < CMP_MAX);
 
-	if (alphaFunc == GetAlphaFunc())
+	if (alphaFunc == GetAlphaTestFunc())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -151,16 +151,16 @@ const bool RenderStateDX9::SetAlphaFunc(const Cmp alphaFunc)
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaFunc(alphaFunc);
+		return RenderState::SetAlphaTestFunc(alphaFunc);
 	else
 		return false;
 }
 
-const bool RenderStateDX9::SetAlphaRef(const float normAlphaRef)
+const bool RenderStateDX9::SetAlphaTestRef(const float normAlphaRef)
 {
 	assert(normAlphaRef >= 0.f && normAlphaRef <= 1.f);
 
-	if (normAlphaRef == GetAlphaRef())
+	if (normAlphaRef == GetAlphaTestRef())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -168,12 +168,12 @@ const bool RenderStateDX9::SetAlphaRef(const float normAlphaRef)
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaRef(normAlphaRef);
+		return RenderState::SetAlphaTestRef(normAlphaRef);
 	else
 		return false;
 }
 
-const bool RenderStateDX9::SetBlendFactor(const Vec4f rgba)
+const bool RenderStateDX9::SetColorBlendFactor(const Vec4f rgba)
 {
 	assert(
 		rgba[0] >= 0.f && rgba[0] <= 1.f &&
@@ -182,7 +182,7 @@ const bool RenderStateDX9::SetBlendFactor(const Vec4f rgba)
 		rgba[3] >= 0.f && rgba[3] <= 1.f
 		);
 
-	if (rgba == GetBlendFactor())
+	if (rgba == GetColorBlendFactor())
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -190,7 +190,7 @@ const bool RenderStateDX9::SetBlendFactor(const Vec4f rgba)
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetBlendFactor(rgba);
+		return RenderState::SetColorBlendFactor(rgba);
 	else
 		return false;
 }
@@ -261,6 +261,25 @@ const bool RenderStateDX9::SetZWriteEnabled(const bool enabled)
 		return false;
 }
 
+const bool RenderStateDX9::SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha)
+{
+	if (red == GetColorWriteRedEnabled() &&
+		green == GetColorWriteGreenEnabled() &&
+		blue == GetColorWriteBlueEnabled() &&
+		alpha == GetColorWriteAlphaEnabled())
+		return true;
+
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	DWORD colorWriteEnable = ((red * 0xf) & D3DCOLORWRITEENABLE_RED) | ((green * 0xf) & D3DCOLORWRITEENABLE_GREEN) | ((blue * 0xf) & D3DCOLORWRITEENABLE_BLUE) | ((alpha * 0xf) & D3DCOLORWRITEENABLE_ALPHA);
+	HRESULT hr = device->SetRenderState(D3DRS_COLORWRITEENABLE, colorWriteEnable);
+	assert(SUCCEEDED(hr));
+
+	if (SUCCEEDED(hr))
+		return RenderState::SetColorWriteEnabled(red, green, blue, alpha);
+	else
+		return false;
+}
+
 const bool RenderStateDX9::SetSlopeScaleDepthBias(const float scale)
 {
 	if (scale == GetSlopeScaleDepthBias())
@@ -282,8 +301,8 @@ const bool RenderStateDX9::SetDepthBias(const float bias)
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	float dwBias = bias / 16777216.0f;
-	HRESULT hr = device->SetRenderState(D3DRS_DEPTHBIAS, *(DWORD*)&dwBias);
+	//float dwBias = bias / 16777216.0f;
+	HRESULT hr = device->SetRenderState(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
@@ -437,7 +456,35 @@ const bool RenderStateDX9::SetFillMode(const Fill fillMode)
 		return false;
 }
 
-void LibRendererDll::RenderStateDX9::Reset()
+const bool RenderStateDX9::SetScissorEnable(const bool enabled)
+{
+	if (enabled == GetScissorEnable())
+		return true;
+
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	HRESULT hr = device->SetRenderState(D3DRS_SCISSORTESTENABLE, (DWORD)enabled);
+	assert(SUCCEEDED(hr));
+
+	if (SUCCEEDED(hr))
+		return RenderState::SetScissorEnable(enabled);
+	else
+		return false;
+}
+
+const bool RenderStateDX9::SetScissor(const Vec2i size, const Vec2i offset)
+{
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	const RECT scissorRect = { offset[0], offset[1], offset[0] + size[0], offset[1] + size[1] };
+	HRESULT hr = device->SetScissorRect(&scissorRect);
+	assert(SUCCEEDED(hr));
+
+	if (SUCCEEDED(hr))
+		return RenderState::SetScissor(size, offset);
+	else
+		return false;
+}
+
+void RenderStateDX9::Reset()
 {
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
@@ -447,19 +494,19 @@ void LibRendererDll::RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_ALPHABLENDENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bAlphaBlendEnable = (value != 0);
+	m_bColorBlendEnable = (value != 0);
 
 	hr = device->GetRenderState(D3DRS_SRCBLEND, &value);
 	assert(SUCCEEDED(hr));
-	m_eAlphaSrcBlend = (Blend)MatchRenderState(value, BLEND);
+	m_eColorSrcBlend = (Blend)MatchRenderState(value, BLEND);
 
 	hr = device->GetRenderState(D3DRS_DESTBLEND, &value);
 	assert(SUCCEEDED(hr));
-	m_eAlphaDstBlend = (Blend)MatchRenderState(value, BLEND);
+	m_eColorDstBlend = (Blend)MatchRenderState(value, BLEND);
 
 	hr = device->GetRenderState(D3DRS_BLENDFACTOR, &value);
 	assert(SUCCEEDED(hr));
-	m_vBlendFactor = Vec4f(
+	m_vColorBlendFactor = Vec4f(
 		(float)((value & (0xff << 16)) >> 16) / 255.f,	// red
 		(float)((value & (0xff << 8)) >> 8) / 255.f,	// green
 		(float)(value & 0xff) / 255.f,					// blue
@@ -500,6 +547,13 @@ void LibRendererDll::RenderStateDX9::Reset()
 	m_bZWriteEnable = (value != 0);
 
 
+	hr = device->GetRenderState(D3DRS_COLORWRITEENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bColorWriteRed	= (value & D3DCOLORWRITEENABLE_RED) != 0;
+	m_bColorWriteGreen	= (value & D3DCOLORWRITEENABLE_GREEN) != 0;
+	m_bColorWriteBlue	= (value & D3DCOLORWRITEENABLE_BLUE) != 0;
+	m_bColorWriteAlpha	= (value & D3DCOLORWRITEENABLE_ALPHA) != 0;
+
 
 	hr = device->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &value);
 	assert(SUCCEEDED(hr));
@@ -507,7 +561,7 @@ void LibRendererDll::RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_DEPTHBIAS, &value);
 	assert(SUCCEEDED(hr));
-	m_fDepthBias = *(float*)&value * 16777216.0f;
+	m_fDepthBias = *(float*)&value;// *16777216.0f;
 
 
 
@@ -551,33 +605,11 @@ void LibRendererDll::RenderStateDX9::Reset()
 
 
 
-	// Set defaults
-	SetAlphaBlendEnable(false);
-	SetAlphaSrcBlend(BLEND_ONE);
-	SetAlphaDstBlend(BLEND_ZERO);
-	SetBlendFactor(Vec4f(1.f, 1.f, 1.f, 1.f));
+	hr = device->GetRenderState(D3DRS_SCISSORTESTENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bScissorEnable = (value != 0);
 
-	SetAlphaTestEnable(false);
-	SetAlphaFunc(CMP_ALWAYS);
-	SetAlphaRef(0.f);
-	
-	SetCullMode(CULL_CCW);
 
-	SetZEnable(ZB_ENABLED);
-	SetZFunc(CMP_LESSEQUAL);
-	SetZWriteEnabled(true);
 
-	SetSlopeScaleDepthBias(0.f);
-	SetDepthBias(0.f);
-
-	SetStencilEnable(false);
-	SetStencilFunc(CMP_ALWAYS);
-	SetStencilRef(0);
-	SetStencilMask(ULONG_MAX);
-	SetStencilWriteMask(ULONG_MAX);
-	SetStencilFail(STENCILOP_KEEP);
-	SetStencilZFail(STENCILOP_KEEP);
-	SetStencilPass(STENCILOP_KEEP);
-
-	SetFillMode(FILL_SOLID);
+	RenderState::Reset();
 }

@@ -35,7 +35,7 @@ namespace LibRendererDll
 
 		void Enable();
 		void Disable();
-		const bool Compile(const char* srcData, char* const errors, const char* entryPoint = "", const char* profile = "");
+		const bool Compile(const char* filePath, char* const errors, const char* entryPoint = "", const char* profile = "");
 		
 		void Bind();
 		void Unbind();

@@ -22,8 +22,20 @@
 using namespace LibRendererDll;
 
 RenderTargetNULL::RenderTargetNULL(const unsigned int targetCount, PixelFormat pixelFormat,
-	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil)
-	: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil)
+	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
+{}
+
+RenderTargetNULL::RenderTargetNULL(const unsigned int targetCount,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
+{}
+
+RenderTargetNULL::RenderTargetNULL(const unsigned int targetCount,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+	bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, hasMipmaps, hasDepthStencil, depthStencilFormat)
 {}
 
 RenderTargetNULL::~RenderTargetNULL()

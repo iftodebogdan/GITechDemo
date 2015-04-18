@@ -365,6 +365,8 @@ namespace LibRendererDll
 
 		// Depth-stencil format
 		PF_D24S8,
+		PF_INTZ,
+		PF_RAWZ,
 
 		PF_MAX	// DO NOT USE! INTERNAL USAGE ONLY!
 	};

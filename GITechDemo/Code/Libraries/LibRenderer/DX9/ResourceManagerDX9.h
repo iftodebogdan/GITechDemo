@@ -51,7 +51,13 @@ namespace LibRendererDll
 			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 
 		const unsigned int CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
-			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil);
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		const unsigned int CreateRenderTarget(const unsigned int targetCount,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		const unsigned int CreateRenderTarget(const unsigned int targetCount,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
+			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 
 	private:
 		ResourceManagerDX9() {}

@@ -499,7 +499,7 @@ Model::Mesh::~Mesh()
 	}
 }
 
-LibRendererDll::Model::Material::~Material()
+Model::Material::~Material()
 {
 	for (unsigned int tex = 0; tex < arrTexture.size(); tex++)
 	{
@@ -511,7 +511,7 @@ LibRendererDll::Model::Material::~Material()
 	}
 }
 
-LibRendererDll::Model::~Model()
+Model::~Model()
 {
 	for (unsigned int mesh = 0; mesh < arrMesh.size(); mesh++)
 	{

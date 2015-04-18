@@ -19,6 +19,7 @@
 #include "stdafx.h"
 
 #include "Texture.h"
+#include "Renderer.h"
 #include "../Utility/ColorUtility.h"
 using namespace LibRendererDll;
 
@@ -54,7 +55,9 @@ const unsigned int Texture::ms_nPixelSize[PF_MAX] =
 	8,	// PF_DXT1	// block size, instead of pixel
 	16,	// PF_DXT3	// block size, instead of pixel
 	16,	// PF_DXT5	// block size, instead of pixel
-	4	// PF_D24S8
+	4,	// PF_D24S8
+	4,	// PF_INTZ
+	4	// PF_RAWZ
 };
 
 const bool Texture::ms_bIsMipmapable[PF_MAX] =
@@ -81,7 +84,9 @@ const bool Texture::ms_bIsMipmapable[PF_MAX] =
 	true,	// PF_DXT1
 	true,	// PF_DXT3
 	true,	// PF_DXT5
-	false	// PF_D24S8
+	false,	// PF_D24S8
+	false,	// PF_INTZ
+	false	// PF_RAWZ
 };
 
 Texture::Texture(
@@ -95,7 +100,7 @@ Texture::Texture(
 	, m_bIsLocked(false)
 	, m_nLockedMip(-1)
 	, m_nLockedCubeFace(-1)
-	, m_bAutogenMipmaps(false)
+	, m_bIsDynamicRT(false)
 {
 	m_tSamplerStates.fAnisotropy = 1.f;
 	m_tSamplerStates.fLodBias = 0.f;
@@ -108,35 +113,50 @@ Texture::Texture(
 	if (usage == BU_NONE)
 		return;
 
-	assert(sizeX > 0);
-	assert(sizeY > 0);
+	assert(sizeX > 0 || (usage == BU_RENDERTAGET || (texFormat >= PF_D24S8 && texFormat <= PF_RAWZ)));	// Render targets may have dynamic resolution
+	assert(sizeY > 0 || (usage == BU_RENDERTAGET || (texFormat >= PF_D24S8 && texFormat <= PF_RAWZ)));	// (i.e. sync'ed with the resolution of the backbuffer)
 	assert(sizeZ > 0);
 
 	// Only 2D and cube textures can be compressed
-	if (IsCompressed() && (m_eTexType == TT_1D || m_eTexType == TT_3D))
-		assert(false);
+	assert(!IsCompressed() || (m_eTexType != TT_1D && m_eTexType != TT_3D));
+
+	// Render targets must not use compressed formats
+	assert(!IsRenderTarget() || !IsCompressed());
 
 	// Depth-stencil textures must be 2D
-	if (IsDepthStencil() && m_eTexType != TT_2D)
-		assert(false);
+	assert(!IsDepthStencil() || m_eTexType == TT_2D);
 
 	// No mipmaps for 32bit formats or depth-stencil formats
-	if ((IsFloatingPoint() || IsDepthStencil()) && (mipCount > 1))
-		assert(false);
+	assert(IsMipmapable() || GetMipCount() == 1);
 
-	unsigned int width = sizeX;
-	unsigned int height = sizeY;
-	unsigned int depth = sizeZ;
+	// Calculate mipmap properties (dimensions, memory used, etc.)
+	ComputeTextureProperties(Vec3i(sizeX, sizeY, sizeZ));
+
+	// Allocate memory for our texture
+	m_pData = new byte[m_nSize];
+}
+
+Texture::~Texture()
+{}
+
+void Texture::ComputeTextureProperties(const Vec3i dimensions)
+{
+	if ((dimensions[0] <= 0 || dimensions[1] <= 0) && (IsRenderTarget() || IsDepthStencil()))
+		m_bIsDynamicRT = true;
+
+	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : Renderer::GetInstance()->GetBackBufferSize()[0];
+	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : Renderer::GetInstance()->GetBackBufferSize()[1];
+	unsigned int depth	= dimensions[2];
 	if (IsCompressed())
 	{
 		// Calculate the smallest number divisible by 4 which is >= width/height
 		// This is for block compression size restrictions
-		width = sizeX + (4 - sizeX % 4) % 4;
-		height = sizeY + (4 - sizeY % 4) % 4;
+		width = width + (4 - width % 4) % 4;
+		height = height + (4 - height % 4) % 4;
 	}
 
-	m_nDimensionCount = GetDimensionCount(texType);
-	m_nElementSize = GetPixelSize(texFormat);
+	m_nDimensionCount = GetDimensionCount(m_eTexType);
+	m_nElementSize = GetPixelSize(m_eTexFormat);
 
 	m_nDimension[0][0] = width;
 
@@ -155,23 +175,7 @@ Texture::Texture(
 	else
 		m_nDimension[0][2] = 1;	// 1D or 2D textures have a depth of one texel
 
-	// Calculate mipmap properties (dimensions, memory used, etc.)
-	ComputeTextureProperties();
-
-	// Allocate memory for our texture
-	m_pData = new byte[m_nSize];
-}
-
-Texture::~Texture()
-{}
-
-void Texture::ComputeTextureProperties()
-{
-	if (!IsMipmapable())
-	{
-		m_nMipCount = 1;
-	}
-	else
+	if (IsMipmapable() && m_nMipCount != 1)
 	{
 		// _BitScanReverse() is an intrinsic function which is specific to MSVC.
 		// It searches from the most significant bit to the least significant bit
@@ -187,9 +191,13 @@ void Texture::ComputeTextureProperties()
 		_BitScanReverse((unsigned long*)&maxMipmapLevelsZ, m_nDimension[0][2]);
 		unsigned int maxMipmapLevels = (unsigned int)Math::Max(maxMipmapLevelsX, maxMipmapLevelsY, maxMipmapLevelsX) + 1;
 
-		if (m_nMipCount == 0)
+		if (m_nMipCount == 0 || m_nMipCount > maxMipmapLevels || IsRenderTarget())
 			m_nMipCount = maxMipmapLevels;
 		assert(m_nMipCount <= maxMipmapLevels && m_nMipCount > 0);
+	}
+	else
+	{
+		m_nMipCount = 1;
 	}
 
 	// Now we calculate and store the size of each mipmap
@@ -260,7 +268,7 @@ void Texture::ComputeTextureProperties()
 	m_nSize *= (m_eTexType == TT_CUBE ? 6u : 1u);
 }
 
-LIBRENDERER_DLL byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
+byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
 {
 	if (m_eTexType == TT_CUBE)
 	{
@@ -271,7 +279,7 @@ LIBRENDERER_DLL byte* const Texture::GetMipData(const unsigned int mipmapLevel) 
 	return m_pData + GetMipOffset(mipmapLevel);
 }
 
-LIBRENDERER_DLL byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
+byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
 {
 	if (m_eTexType != TT_CUBE)
 	{
@@ -381,4 +389,13 @@ const bool Texture::GenerateMipmaps()
 	delete[] rgba;
 
 	return true;
+}
+
+void Texture::Bind()
+{
+	if (m_bIsDynamicRT)
+	{
+		Vec2i dim = Renderer::GetInstance()->GetBackBufferSize();
+		ComputeTextureProperties(Vec3i(dim[0], dim[1], 1));
+	}
 }

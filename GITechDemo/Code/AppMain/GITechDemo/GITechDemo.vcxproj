@@ -147,8 +147,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -174,8 +173,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -203,8 +201,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -232,8 +229,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -261,8 +257,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -290,8 +285,7 @@
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>
-      </Outputs>
+      <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -299,12 +293,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GITechDemo.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GITechDemo.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -325,6 +321,16 @@
     <ProjectReference Include="..\..\Libraries\LibRenderer\LibRenderer.vcxproj">
       <Project>{42b90f7f-e5d8-4b7f-be74-cac4da86c76f}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Data\shaders\DeferredLightAmb.hlsl" />
+    <None Include="..\..\..\Data\shaders\DeferredLightDir.hlsl" />
+    <None Include="..\..\..\Data\shaders\DepthCopy.hlsl" />
+    <None Include="..\..\..\Data\shaders\DepthPass.hlsl" />
+    <None Include="..\..\..\Data\shaders\GBufferGeneration.hlsl" />
+    <None Include="..\..\..\Data\shaders\PostProcess.hlsl" />
+    <None Include="..\..\..\Data\shaders\Skybox.hlsl" />
+    <None Include="..\..\..\Data\shaders\Utils.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,32 +25,6 @@ namespace LibRendererDll
 {
 	class RenderStateNULL : public RenderState
 	{
-	public:
-		const bool	SetAlphaBlendEnable(const bool enabled);
-		const bool	SetAlphaSrcBlend(const Blend alphaSrc);
-		const bool	SetAlphaDstBlend(const Blend alphaDst);
-		const bool	SetAlphaTestEnable(const bool enabled);
-		const bool	SetAlphaFunc(const Cmp alphaFunc);
-		const bool	SetAlphaRef(const float normAlphaRef);
-		const bool	SetBlendFactor(const Vec4f rgba);
-		const bool	SetCullMode(const Cull cullMode);
-		const bool	SetZEnable(const ZBuffer enabled);
-		const bool	SetZFunc(const Cmp zFunc);
-		const bool	SetZWriteEnabled(const bool enabled);
-		const bool	SetSlopeScaleDepthBias(const float scale);
-		const bool	SetDepthBias(const float bias);
-		const bool	SetStencilEnable(const bool enabled);
-		const bool	SetStencilFunc(const Cmp stencilFunc);
-		const bool	SetStencilRef(const unsigned long stencilRef);
-		const bool	SetStencilMask(const unsigned long stencilMask);
-		const bool	SetStencilWriteMask(const unsigned long stencilWriteMask);
-		const bool	SetStencilFail(const StencilOp stencilFail);
-		const bool	SetStencilZFail(const StencilOp stencilZFail);
-		const bool	SetStencilPass(const StencilOp stencilPass);
-		const bool	SetFillMode(const Fill fillMode);
-
-		void		Reset();
-
 	protected:
 		RenderStateNULL();
 		~RenderStateNULL();

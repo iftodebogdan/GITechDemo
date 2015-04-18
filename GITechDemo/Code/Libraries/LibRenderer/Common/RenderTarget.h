@@ -49,30 +49,35 @@ namespace LibRendererDll
 		// Destroy platform specific resource
 		virtual LIBRENDERER_DLL void					Unbind();
 
-				// Get the number of render targets (MRT)
+				/* Get the number of render targets (MRT) */
 				LIBRENDERER_DLL const unsigned int		GetTargetCount() const { return m_nTargetCount; }
-				// Get the pixel format of the color buffer
-				LIBRENDERER_DLL const PixelFormat		GetFormat() const { return m_pColorBuffer[0]->GetTextureFormat(); }
-				// Get the width of the color buffer
+				/* Get the pixel format of the color buffer */
+				LIBRENDERER_DLL const PixelFormat		GetFormat(const unsigned int colorBufferIdx = 0) const { assert(colorBufferIdx < m_nTargetCount); return m_pColorBuffer[colorBufferIdx]->GetTextureFormat(); }
+				/* Get the width of the color buffer */
 				LIBRENDERER_DLL const unsigned int		GetWidth() const { return m_pColorBuffer[0]->GetWidth(); }
-				// Get the height of the color buffer
+				/* Get the height of the color buffer */
 				LIBRENDERER_DLL const unsigned int		GetHeight() const { return m_pColorBuffer[0]->GetHeight(); }
-				// Get the texture corresponding to the specified color buffer
-				LIBRENDERER_DLL const Texture* const	GetColorBuffer(const unsigned int colorBufferIdx) const { assert(colorBufferIdx < m_nTargetCount); return m_pColorBuffer[colorBufferIdx]; }
-				// Get the texture corresponding to the specified depth buffer
-				LIBRENDERER_DLL const Texture* const	GetDepthBuffer() const { return m_pDepthBuffer; }
-				// Determines if the color buffer has mipmaps
+				/* Get the texture corresponding to the specified color buffer */
+				LIBRENDERER_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const { assert(colorBufferIdx < m_nTargetCount); return m_nColorBufferTexIdx[colorBufferIdx]; }
+				/* Get the texture corresponding to the specified depth buffer */
+				LIBRENDERER_DLL const unsigned int		GetDepthBuffer() const { return m_nDepthBufferTexIdx; }
+				/* Determines if the color buffer has mipmaps */
 				LIBRENDERER_DLL const bool				HasMipmaps() const { return m_bHasMipmaps; }
-				// Determines if the render target has a depth buffer
+				/* Determines if the render target has a depth buffer */
 				LIBRENDERER_DLL const bool				HasDepthBuffer() const { return m_pDepthBuffer != 0; }
 
 	protected:
 		RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
-			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil);
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount,
+			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount,
+			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		virtual ~RenderTarget();
 
 		unsigned int	m_nTargetCount;
-		PixelFormat		m_ePixelFormat;
 		unsigned int	m_nWidth;
 		unsigned int	m_nHeight;
 		bool			m_bHasMipmaps;

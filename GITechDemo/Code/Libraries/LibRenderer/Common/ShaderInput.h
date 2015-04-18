@@ -43,10 +43,14 @@ namespace LibRendererDll
 	{
 	public:
 				// Set a texture
+				LIBRENDERER_DLL void	SetTexture(const unsigned int handle, const unsigned int texIdx);
 				LIBRENDERER_DLL void	SetTexture(const unsigned int handle, const Texture* const tex);
 
 				// Set bools
 				LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const bool* const data);
+				LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec2f* const data) { SetBoolArray(handle, (const bool* const)data); }
+				LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec3f* const data) { SetBoolArray(handle, (const bool* const)data); }
+				LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec4f* const data) { SetBoolArray(handle, (const bool* const)data); }
 				LIBRENDERER_DLL void	SetBool(const unsigned int handle, const bool data) { SetBoolArray(handle, &data); }
 				LIBRENDERER_DLL void	SetBool2(const unsigned int handle, const Vec<bool, 2> data) { SetBoolArray(handle, data.getData()); }
 				LIBRENDERER_DLL void	SetBool3(const unsigned int handle, const Vec<bool, 3> data) { SetBoolArray(handle, data.getData()); }
@@ -55,6 +59,9 @@ namespace LibRendererDll
 
 				// Set floats
 				LIBRENDERER_DLL void	SetFloatArray(const unsigned int handle, const float* const data);
+				LIBRENDERER_DLL void	SetFloatArray(const unsigned int handle, const Vec2f* const data) { SetFloatArray(handle, (const float* const)data); }
+				LIBRENDERER_DLL void	SetFloatArray(const unsigned int handle, const Vec3f* const data) { SetFloatArray(handle, (const float* const)data); }
+				LIBRENDERER_DLL void	SetFloatArray(const unsigned int handle, const Vec4f* const data) { SetFloatArray(handle, (const float* const)data); }
 				LIBRENDERER_DLL void	SetFloat(const unsigned int handle, const float data) { SetFloatArray(handle, &data); }
 				LIBRENDERER_DLL void	SetFloat2(const unsigned int handle, const Vec2f data) { SetFloatArray(handle, data.getData()); }
 				LIBRENDERER_DLL void	SetFloat3(const unsigned int handle, const Vec3f data) { SetFloatArray(handle, data.getData()); }
@@ -63,6 +70,9 @@ namespace LibRendererDll
 
 				// Set integers
 				LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const int* const data);
+				LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec2f* const data) { SetIntArray(handle, (const int* const)data); }
+				LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec3f* const data) { SetIntArray(handle, (const int* const)data); }
+				LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec4f* const data) { SetIntArray(handle, (const int* const)data); }
 				LIBRENDERER_DLL void	SetInt(const unsigned int handle, const int data) { SetIntArray(handle, &data); }
 				LIBRENDERER_DLL void	SetInt2(const unsigned int handle, const Vec2i data) { SetIntArray(handle, data.getData()); }
 				LIBRENDERER_DLL void	SetInt3(const unsigned int handle, const Vec3i data) { SetIntArray(handle, data.getData()); }

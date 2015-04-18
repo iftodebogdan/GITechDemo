@@ -98,17 +98,17 @@ const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float a
 		return false;
 }
 
-const bool SamplerStateDX9::SetLodBias(const unsigned int slot, const float lodBias)
+const bool SamplerStateDX9::SetMipmapLodBias(const unsigned int slot, const float lodBias)
 {
-	if (lodBias == GetLodBias(slot))
+	if (lodBias == GetMipmapLodBias(slot))
 		return true;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, (DWORD)lodBias);
+	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)&lodBias);
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
-		return SamplerState::SetLodBias(slot, lodBias);
+		return SamplerState::SetMipmapLodBias(slot, lodBias);
 	else
 		return false;
 }
@@ -276,7 +276,7 @@ void SamplerStateDX9::Reset()
 	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
 	{
 		SetAnisotropy(i, 1.f);
-		SetLodBias(i, 0.f);
+		SetMipmapLodBias(i, 0.f);
 		SetFilter(i, SF_MIN_MAG_POINT_MIP_NONE);
 		SetBorderColor(i, Vec4f(0.f, 0.f, 0.f, 0.f));
 		for (unsigned int j = 0; j < 3; j++)

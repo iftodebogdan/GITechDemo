@@ -43,6 +43,5 @@ Buffer::Buffer(const unsigned int elementCount, const unsigned int elementSize, 
 
 Buffer::~Buffer()
 {
-	assert(m_pData != nullptr || Renderer::GetAPI() == API_NULL);
 	delete[] m_pData;
 }

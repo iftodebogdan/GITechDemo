@@ -65,7 +65,8 @@ void TextureDX9::Disable(const unsigned int texUnit) const
 	assert(activeTex == m_pTexture);
 	unsigned int refCount = 1;
 	refCount = activeTex->Release();
-	assert(refCount == 1);
+	// Inconsistent between the retail and debug DX9 runtimes
+	//assert(refCount == 1/* + IsRenderTarget() ? 1 : 0*/);
 #endif
 
 	hr = device->SetTexture(texUnit, 0);
@@ -192,6 +193,8 @@ void TextureDX9::Update()
 
 void TextureDX9::Bind()
 {
+	Texture::Bind();
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
 	D3DPOOL pool;
@@ -202,6 +205,7 @@ void TextureDX9::Bind()
 
 	HRESULT hr;
 	DWORD usageFlags;
+	unsigned int mipCount;
 	switch (GetTextureType())
 	{
 	case TT_1D:
@@ -213,13 +217,15 @@ void TextureDX9::Bind()
 
 	case TT_2D:
 		usageFlags = BufferUsageDX9[m_eBufferUsage];
-		if (m_eBufferUsage == BU_RENDERTAGET && m_bAutogenMipmaps == true)
+		mipCount = GetMipCount();
+		if (IsRenderTarget() && mipCount != 0)
 		{
 			// automatic mipmap generation for RTs
 			usageFlags |= D3DUSAGE_AUTOGENMIPMAP;
+			mipCount = 0;
 		}
 		hr = device->CreateTexture(
-			GetWidth(), GetHeight(), m_bAutogenMipmaps ? 0 : GetMipCount(),
+			GetWidth(), GetHeight(), mipCount,
 			usageFlags, TextureFormatDX9[m_eTexFormat],
 			pool, (IDirect3DTexture9**)&m_pTexture, 0);
 		break;

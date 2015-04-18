@@ -29,6 +29,13 @@ namespace LibRendererDll
 	// NB: Currently, all member functions are protected. Use shader templates!
 	class ShaderProgram
 	{
+	public:
+		const ShaderProgramType	GetProgramType() const { return m_eProgramType; }
+		const char* const GetFilePath() const { return m_szSrcFile.c_str(); }
+		const char* const GetCompilationErrors() const { return m_szErrors.c_str(); }
+		const char* const GetEntryPoint() const { return m_szEntryPoint.c_str(); }
+		const char* const GetProfile() const { return m_szProfile.c_str(); }
+
 	protected:
 		ShaderProgram(const ShaderProgramType programType);
 		virtual ~ShaderProgram();
@@ -39,11 +46,6 @@ namespace LibRendererDll
 
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
-
-		const char* const GetSourceCode() const { return m_szSrcData.c_str(); }
-		const char* const GetCompilationErrors() const { return m_szErrors.c_str(); }
-		const char* const GetEntryPoint() const { return m_szEntryPoint.c_str(); }
-		const char* const GetProfile() const { return m_szProfile.c_str(); }
 
 		virtual const unsigned int GetConstantCount() const = 0;
 		virtual const char* GetConstantName(const unsigned int handle) const = 0;
@@ -64,7 +66,7 @@ namespace LibRendererDll
 		virtual void SetTexture(const unsigned int registerIndex, const Texture* const tex) = 0;
 
 		ShaderProgramType m_eProgramType;
-		std::string m_szSrcData;
+		std::string m_szSrcFile;
 		std::string m_szErrors;
 		std::string m_szEntryPoint;
 		std::string m_szProfile;

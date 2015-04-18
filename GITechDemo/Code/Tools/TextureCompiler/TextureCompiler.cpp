@@ -528,9 +528,9 @@ void TextureCompiler::Run(int argc, char* argv[])
 			Log << "\t[INFO] Swizzling could not be performed\n";
 	}
 
-	if (ilGetInteger(IL_ORIGIN_MODE) == IL_ORIGIN_LOWER_LEFT)
+	if (info.Origin == IL_ORIGIN_LOWER_LEFT)
 	{
-		Log << "\t[INFO]Source image has a lower left origin: flipping...\n";
+		Log << "\t[INFO] Source image has a lower left origin: flipping...\n";
 		const unsigned long long flipStart = GetTickCount64();
 		if (iluFlipImage())
 			Log << "\t[INFO] Flipping done in " << (float)(GetTickCount64() - flipStart) << " ms\n";

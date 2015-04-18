@@ -40,21 +40,24 @@ namespace LibRendererDll
 	class RenderState
 	{
 	public:
-		virtual	LIBRENDERER_DLL	const bool			SetAlphaBlendEnable(const bool enabled) { m_bAlphaBlendEnable = enabled; return true; }
-		virtual	LIBRENDERER_DLL	const bool			SetAlphaSrcBlend(const Blend alphaSrc) { m_eAlphaSrcBlend = alphaSrc; return true; }
-		virtual	LIBRENDERER_DLL	const bool			SetAlphaDstBlend(const Blend alphaDst) { m_eAlphaDstBlend = alphaDst; return true; }
 		virtual	LIBRENDERER_DLL	const bool			SetAlphaTestEnable(const bool enabled) { m_bAlphaTestEnable = enabled; return true; }
-		virtual	LIBRENDERER_DLL	const bool			SetAlphaFunc(const Cmp alphaFunc) { m_eAlphaFunc = alphaFunc; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetAlphaTestFunc(const Cmp alphaFunc) { m_eAlphaFunc = alphaFunc; return true; }
 		// normAlphaRef is normalized (i.e. between [0, 1])
-		virtual	LIBRENDERER_DLL	const bool			SetAlphaRef(const float normAlphaRef) { m_fAlphaRef = normAlphaRef; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetAlphaTestRef(const float normAlphaRef) { m_fAlphaRef = normAlphaRef; return true; }
+
+		virtual	LIBRENDERER_DLL	const bool			SetColorBlendEnable(const bool enabled) { m_bColorBlendEnable = enabled; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetColorSrcBlend(const Blend alphaSrc) { m_eColorSrcBlend = alphaSrc; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetColorDstBlend(const Blend alphaDst) { m_eColorDstBlend = alphaDst; return true; }
 		// Color components are normalized (i.e. between [0, 1])
-		virtual	LIBRENDERER_DLL	const bool			SetBlendFactor(const Vec4f rgba) { m_vBlendFactor = rgba; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetColorBlendFactor(const Vec4f rgba) { m_vColorBlendFactor = rgba; return true; }
 
 		virtual	LIBRENDERER_DLL	const bool			SetCullMode(const Cull cullMode) { m_eCullMode = cullMode; return true; }
 
 		virtual	LIBRENDERER_DLL	const bool			SetZEnable(const ZBuffer enabled) { m_eZEnable = enabled; return true; }
 		virtual	LIBRENDERER_DLL	const bool			SetZFunc(const Cmp zFunc) { m_eZFunc = zFunc; return true; }
 		virtual	LIBRENDERER_DLL	const bool			SetZWriteEnabled(const bool enabled) { m_bZWriteEnable = enabled; return true; }
+
+		virtual	LIBRENDERER_DLL	const bool			SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha) { m_bColorWriteRed = red; m_bColorWriteGreen = green; m_bColorWriteBlue = blue; m_bColorWriteAlpha = alpha; return true; }
 
 		virtual	LIBRENDERER_DLL	const bool			SetSlopeScaleDepthBias(const float scale) { m_fSlopeScaleDepthBias = scale; return true; }
 		virtual	LIBRENDERER_DLL	const bool			SetDepthBias(const float bias) { m_fDepthBias = bias; return true; }
@@ -70,20 +73,30 @@ namespace LibRendererDll
 
 		virtual	LIBRENDERER_DLL	const bool			SetFillMode(const Fill fillMode) { m_eFillMode = fillMode; return true; }
 
+		virtual	LIBRENDERER_DLL	const bool			SetScissorEnable(const bool enabled) { m_bScissorEnable = enabled; return true; }
+		virtual	LIBRENDERER_DLL	const bool			SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) { return true; }
 
-				LIBRENDERER_DLL	const bool			GetAlphaBlendEnable() const { return m_bAlphaBlendEnable; }
-				LIBRENDERER_DLL	const Blend			GetAlphaSrcBlend() const { return m_eAlphaSrcBlend; }
-				LIBRENDERER_DLL	const Blend			GetAlphaDstBlend() const { return m_eAlphaDstBlend; }
+
 				LIBRENDERER_DLL	const bool			GetAlphaTestEnable() const { return m_bAlphaTestEnable; }
-				LIBRENDERER_DLL	const Cmp			GetAlphaFunc() const { return m_eAlphaFunc; }
-				LIBRENDERER_DLL	const float			GetAlphaRef() const { return m_fAlphaRef; }
-				LIBRENDERER_DLL	const Vec4f			GetBlendFactor() const { return m_vBlendFactor; }
+				LIBRENDERER_DLL	const float			GetAlphaTestRef() const { return m_fAlphaRef; }
+				LIBRENDERER_DLL	const Cmp			GetAlphaTestFunc() const { return m_eAlphaFunc; }
+
+				LIBRENDERER_DLL	const bool			GetColorBlendEnable() const { return m_bColorBlendEnable; }
+				LIBRENDERER_DLL	const Blend			GetColorSrcBlend() const { return m_eColorSrcBlend; }
+				LIBRENDERER_DLL	const Blend			GetColorDstBlend() const { return m_eColorDstBlend; }
+				LIBRENDERER_DLL	const Vec4f			GetColorBlendFactor() const { return m_vColorBlendFactor; }
 
 				LIBRENDERER_DLL	const Cull			GetCullMode() const { return m_eCullMode; }
 
 				LIBRENDERER_DLL	const ZBuffer		GetZEnable() const { return m_eZEnable; }
 				LIBRENDERER_DLL	const Cmp			GetZFunc() const { return m_eZFunc; }
 				LIBRENDERER_DLL	const bool			GetZWriteEnabled() const { return m_bZWriteEnable; }
+
+				LIBRENDERER_DLL		void			GetColorWriteEnabled(bool& red, bool& green, bool& blue, bool& alpha) { red = m_bColorWriteRed; green = m_bColorWriteGreen; blue = m_bColorWriteBlue; alpha = m_bColorWriteAlpha; }
+				LIBRENDERER_DLL	const bool			GetColorWriteRedEnabled() { return m_bColorWriteRed; }
+				LIBRENDERER_DLL	const bool			GetColorWriteGreenEnabled() { return m_bColorWriteGreen; }
+				LIBRENDERER_DLL	const bool			GetColorWriteBlueEnabled() { return m_bColorWriteBlue; }
+				LIBRENDERER_DLL	const bool			GetColorWriteAlphaEnabled() { return m_bColorWriteAlpha; }
 
 				LIBRENDERER_DLL	const float			GetSlopeScaleDepthBias() const { return m_fSlopeScaleDepthBias; }
 				LIBRENDERER_DLL	const float			GetDepthBias() const { return m_fDepthBias; }
@@ -99,20 +112,22 @@ namespace LibRendererDll
 
 				LIBRENDERER_DLL	const Fill			GetFillMode() const { return m_eFillMode; }
 
-		virtual	LIBRENDERER_DLL			void		Reset() = 0;
+				LIBRENDERER_DLL	const bool			GetScissorEnable() { return m_bScissorEnable; }
+
+		virtual	LIBRENDERER_DLL		void			Reset();
 
 	protected:
 		RenderState();
 		virtual ~RenderState();
 
 		// Alpha states
-		bool			m_bAlphaBlendEnable;
-		Blend			m_eAlphaSrcBlend;
-		Blend			m_eAlphaDstBlend;
+		bool			m_bColorBlendEnable;
+		Blend			m_eColorSrcBlend;
+		Blend			m_eColorDstBlend;
 		bool			m_bAlphaTestEnable;
 		Cmp				m_eAlphaFunc;
 		float			m_fAlphaRef;
-		Vec4f			m_vBlendFactor;
+		Vec4f			m_vColorBlendFactor;
 
 		// Culling states
 		Cull			m_eCullMode;
@@ -121,6 +136,12 @@ namespace LibRendererDll
 		ZBuffer			m_eZEnable;
 		Cmp				m_eZFunc;
 		bool			m_bZWriteEnable;
+		
+		// Color write enable
+		bool			m_bColorWriteRed;
+		bool			m_bColorWriteGreen;
+		bool			m_bColorWriteBlue;
+		bool			m_bColorWriteAlpha;
 
 		// Depth bias states
 		float			m_fSlopeScaleDepthBias;
@@ -138,6 +159,9 @@ namespace LibRendererDll
 
 		// Fill mode
 		Fill			m_eFillMode;
+
+		// Scissor test
+		bool			m_bScissorEnable;
 
 		friend class Renderer;
 	};

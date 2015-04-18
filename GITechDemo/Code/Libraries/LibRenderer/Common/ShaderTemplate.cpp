@@ -54,7 +54,7 @@ void ShaderTemplate::DescribeShaderInputs()
 		inputDesc.nArrayElements = m_pProgram->GetConstantArrayElementCount(i);
 		inputDesc.nBytes = m_pProgram->GetConstantSizeBytes(i);
 		inputDesc.nOffsetInBytes = offset;
-		offset += inputDesc.nRegisterCount * sizeof(float) * 4u;
+		offset += inputDesc.nBytes; //inputDesc.nRegisterCount * sizeof(float) * 4u;
 
 		m_arrInputDesc.push_back(inputDesc);
 	}
@@ -82,10 +82,10 @@ const unsigned int ShaderTemplate::GetTotalSizeOfInputConstants() const
 	return ret;
 }
 
-void ShaderTemplate::Enable(ShaderInput* shaderInput)
+void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 {
 	assert(m_pShaderInput == nullptr);
-	assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
+	//assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
 	m_pShaderInput = shaderInput;
 
@@ -104,14 +104,14 @@ void ShaderTemplate::Enable(ShaderInput* shaderInput)
 		{
 			if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
 			{
-				//m_pProgram->SetTexture(m_arrInputDesc[i].nRegisterIndex, (Texture*)*(unsigned long long*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes));
-				Texture* tex = (Texture*)*(unsigned long long*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+				const unsigned int texIdx = *(unsigned int*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+				const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
 				if (tex)
 				{
 					tex->Enable(m_arrInputDesc[i].nRegisterIndex);
 					SamplerState* ssm = Renderer::GetInstance()->GetSamplerStateManager();
 					ssm->SetAnisotropy(m_arrInputDesc[i].nRegisterIndex, tex->GetAnisotropy());
-					ssm->SetLodBias(m_arrInputDesc[i].nRegisterIndex, tex->GetLodBias());
+					ssm->SetMipmapLodBias(m_arrInputDesc[i].nRegisterIndex, tex->GetMipmapLodBias());
 					ssm->SetFilter(m_arrInputDesc[i].nRegisterIndex, tex->GetFilter());
 					ssm->SetBorderColor(m_arrInputDesc[i].nRegisterIndex, tex->GetBorderColor());
 					ssm->SetAddressingModeU(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeU());
@@ -129,7 +129,7 @@ void ShaderTemplate::Enable(ShaderInput* shaderInput)
 
 void ShaderTemplate::Disable()
 {
-	assert((m_pShaderInput && m_arrInputDesc.size()) || (!m_pShaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
+	//assert((m_pShaderInput && m_arrInputDesc.size()) || (!m_pShaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
 	m_pProgram->Disable();
 
@@ -137,7 +137,8 @@ void ShaderTemplate::Disable()
 	{
 		if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
 		{
-			Texture* tex = (Texture*)*(unsigned long long*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+			const unsigned int texIdx = *(unsigned int*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+			const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
 			if (tex)
 				tex->Disable(m_arrInputDesc[i].nRegisterIndex);
 		}

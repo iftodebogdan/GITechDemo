@@ -143,8 +143,8 @@ void RendererDX9::Initialize(void* hWnd)
 	m_ePresentParameters.Windowed = TRUE;
 	m_ePresentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	m_ePresentParameters.BackBufferFormat = D3DFMT_UNKNOWN;
-	m_ePresentParameters.BackBufferWidth = m_vViewportSize[0];
-	m_ePresentParameters.BackBufferHeight = m_vViewportSize[1];
+	m_ePresentParameters.BackBufferWidth = m_vBackBufferSize[0];
+	m_ePresentParameters.BackBufferHeight = m_vBackBufferSize[1];
 	m_ePresentParameters.BackBufferCount = 1;
 	m_ePresentParameters.EnableAutoDepthStencil = TRUE;
 	m_ePresentParameters.AutoDepthStencilFormat = D3DFMT_D24S8;
@@ -188,29 +188,18 @@ void RendererDX9::Initialize(void* hWnd)
 
 	assert(m_pd3dDevice);
 
-	D3DVIEWPORT9 vp;
-	vp.X = 0;
-	vp.Y = 0;
-	vp.Width = m_vViewportSize[0];
-	vp.Height = m_vViewportSize[1];
-	vp.MinZ = 0.f;
-	vp.MaxZ = 1.f;
-
-	hr = m_pd3dDevice->SetViewport(&vp);
-	assert(SUCCEEDED(hr));
-
 	m_pResourceManager = new ResourceManagerDX9();
 	m_pRenderState = new RenderStateDX9();
 	m_pSamplerState = new SamplerStateDX9();
 }
 
-void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
+void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
 {
-	if (size == m_vViewportSize && offset == m_vViewportOffset)
+	if (size == m_vBackBufferSize && offset == m_vBackBufferOffset)
 		return;
 
-	Vec2i oldVPSize = m_vViewportSize;
-	Renderer::SetViewport(size, offset);
+	Vec2i oldVPSize = m_vBackBufferSize;
+	Renderer::SetBackBufferSize(size, offset);
 
 	if (!m_pd3dDevice)
 		return;
@@ -218,7 +207,7 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 	m_bDeviceLost = false;
 
 	// minimized?
-	if (!(size[0] && size[1] && m_vViewportSize[0] && m_vViewportSize[1]))
+	if (!(size[0] && size[1] && m_vBackBufferSize[0] && m_vBackBufferSize[1]))
 	{
 		// not technically lost, but shouldn't render
 		m_bDeviceLost = true;
@@ -243,8 +232,8 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 		assert(refCount == 0);
 
 		// Set back buffer size
-		pp.BackBufferWidth = m_vViewportSize[0];
-		pp.BackBufferHeight = m_vViewportSize[1];
+		pp.BackBufferWidth = m_vBackBufferSize[0];
+		pp.BackBufferHeight = m_vBackBufferSize[1];
 
 		// Unbind resources
 		GetResourceManager()->UnbindAll();
@@ -254,25 +243,32 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 		m_ePresentParameters = pp;
 		assert(SUCCEEDED(hr));
 
-		// Rebind resources
-		GetResourceManager()->BindAll();
-		
-		// Reset sampler states
-		GetSamplerStateManager()->Reset();
+		if (SUCCEEDED(hr))
+		{
+			// Rebind resources
+			GetResourceManager()->BindAll();
 
-		// Reset render states
-		GetRenderStateManager()->Reset();
+			// Reset sampler states
+			GetSamplerStateManager()->Reset();
+
+			// Reset render states
+			GetRenderStateManager()->Reset();
+		}
 	}
 
+}
+
+void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
+{
 	D3DVIEWPORT9 vp;
-	vp.X = 0;
-	vp.Y = 0;
+	vp.X = offset[0];
+	vp.Y = offset[1];
 	vp.Width = size[0];
 	vp.Height = size[1];
 	vp.MinZ = 0.f;
 	vp.MaxZ = 1.f;
-
-	hr = m_pd3dDevice->SetViewport(&vp);
+	
+	HRESULT hr = m_pd3dDevice->SetViewport(&vp);
 	assert(SUCCEEDED(hr));
 }
 
@@ -332,10 +328,10 @@ void RendererDX9::SwapBuffers()
 {
 	// Present the backbuffer contents to the display
 	RECT dstRect;
-	dstRect.left = m_vViewportOffset[0];
-	dstRect.top = m_vViewportOffset[1];
-	dstRect.right = m_vViewportSize[0] + m_vViewportOffset[0];
-	dstRect.bottom = m_vViewportSize[1] + m_vViewportOffset[1];
+	dstRect.left = m_vBackBufferOffset[0];
+	dstRect.top = m_vBackBufferOffset[1];
+	dstRect.right = m_vBackBufferSize[0] + m_vBackBufferOffset[0];
+	dstRect.bottom = m_vBackBufferSize[1] + m_vBackBufferOffset[1];
 
 	HRESULT hr = m_pd3dDevice->Present(NULL, &dstRect, NULL, NULL);
 	assert(SUCCEEDED(hr) || hr == D3DERR_DEVICELOST);
@@ -362,7 +358,7 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 
 	hr = m_pd3dDevice->GetDepthStencilSurface(&depthStencil);
 	assert(SUCCEEDED(hr));
-	if (hr != D3DERR_NOTFOUND)
+	if (hr != D3DERR_NOTFOUND && depthStencil)
 	{
 		flags |= D3DCLEAR_ZBUFFER;
 		D3DSURFACE_DESC desc;
@@ -370,17 +366,29 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 		depthStencil->GetDesc(&desc);
 		if (desc.Format == D3DFMT_D24S8)
 			flags |= D3DCLEAR_STENCIL;
+		depthStencil->Release();
 	}
-	depthStencil->Release();
 
 	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_RGBA((DWORD)rgba[0], (DWORD)rgba[1], (DWORD)rgba[2], (DWORD)rgba[3]), 1.0f, 0);
 	assert(SUCCEEDED(hr));
 }
 
-void RendererDX9::CreateProjectionMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
 {
 	D3DXMATRIXA16 mat;
 	D3DXMatrixPerspectiveFovLH(&mat, fovYRad, aspectRatio, zNear, zFar);
+
+	// Transpose our matrix, making it column-major in order to adhere to the GMTL standard
+	matProj(0, 0) = mat._11; matProj(0, 1) = mat._21; matProj(0, 2) = mat._31; matProj(0, 3) = mat._41;
+	matProj(1, 0) = mat._12; matProj(1, 1) = mat._22; matProj(1, 2) = mat._32; matProj(1, 3) = mat._42;
+	matProj(2, 0) = mat._13; matProj(2, 1) = mat._23; matProj(2, 2) = mat._33; matProj(2, 3) = mat._43;
+	matProj(3, 0) = mat._14; matProj(3, 1) = mat._24; matProj(3, 2) = mat._34; matProj(3, 3) = mat._44;
+}
+
+void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
+{
+	D3DXMATRIXA16 mat;
+	D3DXMatrixOrthoOffCenterLH(&mat, left, right, bottom, top, zNear, zFar);
 
 	// Transpose our matrix, making it column-major in order to adhere to the GMTL standard
 	matProj(0, 0) = mat._11; matProj(0, 1) = mat._21; matProj(0, 2) = mat._31; matProj(0, 3) = mat._41;

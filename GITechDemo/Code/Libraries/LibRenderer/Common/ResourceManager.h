@@ -66,7 +66,7 @@ namespace LibRendererDll
 		// Support for deferred creation of shader programs
 		virtual	LIBRENDERER_DLL const unsigned int CreateShaderProgram(const ShaderProgramType programType) = 0;
 				// Create a shader program
-				LIBRENDERER_DLL const unsigned int CreateShaderProgram(const ShaderProgramType programType, const char* srcData, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "");
+				LIBRENDERER_DLL const unsigned int CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "");
 
 				// Create a shader template from a shader program
 				// NB: TODO: shader templates will be extended in the future to encompass multiple passes / techniques
@@ -78,8 +78,10 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile);
 
 		// Create a render target
-		// NB: The depth buffer is always PF_D24S8
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil) = 0;
+		// NB: If no width or height is specified, the render target will match the backbuffer's resolution
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
 
 				LIBRENDERER_DLL	const unsigned int		CreateModel(const char* pathToFile);
 
@@ -93,6 +95,16 @@ namespace LibRendererDll
 				LIBRENDERER_DLL Texture*		const	GetTexture(const unsigned int idx)			const	{ assert(idx < m_arrTexture.size()); return m_arrTexture[idx]; }
 				LIBRENDERER_DLL RenderTarget*	const	GetRenderTarget(const unsigned int idx)		const	{ assert(idx < m_arrRenderTarget.size()); return m_arrRenderTarget[idx]; }
 				LIBRENDERER_DLL Model*			const	GetModel(const unsigned int idx)			const	{ assert(idx < m_arrModel.size()); return m_arrModel[idx]; }
+
+				LIBRENDERER_DLL const unsigned int		GetVertexFormatCount()		const { return (unsigned int)m_arrVertexFormat.size(); }
+				LIBRENDERER_DLL const unsigned int		GetIndexBufferCount()		const { return (unsigned int)m_arrIndexBuffer.size(); }
+				LIBRENDERER_DLL const unsigned int		GetVertexBufferCount()		const { return (unsigned int)m_arrVertexBuffer.size(); }
+				LIBRENDERER_DLL const unsigned int		GetShaderInputCount()		const { return (unsigned int)m_arrShaderInput.size(); }
+				LIBRENDERER_DLL const unsigned int		GetShaderProgramCount()		const { return (unsigned int)m_arrShaderProgram.size(); }
+				LIBRENDERER_DLL const unsigned int		GetShaderTemplateCount()	const { return (unsigned int)m_arrShaderTemplate.size(); }
+				LIBRENDERER_DLL const unsigned int		GetTextureCount()			const { return (unsigned int)m_arrTexture.size(); }
+				LIBRENDERER_DLL const unsigned int		GetRenderTargetCount()		const { return (unsigned int)m_arrRenderTarget.size(); }
+				LIBRENDERER_DLL const unsigned int		GetModelCount()				const { return (unsigned int)m_arrModel.size(); }
 
 				// Utility functions for finding a resource by its' original file name from which it was loaded
 				// NB: If the strict parameter is set to false, it will first try to find an exact match, then try
