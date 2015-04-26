@@ -40,10 +40,10 @@ Matrix44f worldViewProjMat;
 const bool GBUFFER_Z_PREPASS = false;
 
 #define MAX_NUM_CASCADES (9)
-#define PCF_BLUR_SIZE (4)
+#define PCF_BLUR_SIZE (16)
 const bool DEBUG_CASCADES = false;
 const unsigned int NUM_CASCADES = 4;
-const float CASCADE_SPLIT_FACTOR = 0.75f;
+const float CASCADE_SPLIT_FACTOR = 0.7f;
 const float CASCADE_MAX_VIEW_DEPTH = 3000.f;
 const float CASCADE_BLEND_SIZE = 50.f;
 

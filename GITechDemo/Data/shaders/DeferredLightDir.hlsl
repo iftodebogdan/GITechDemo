@@ -51,6 +51,9 @@ static const int	nCascadeCount = 4; // number of cascades
 static const int	nCascadesPerRow = 2; // number of cascades per row, i.e. ceil(sqrt(nCascadeCount))
 static const float	fCascadeNormSize = 0.5f; // normalized size of a cascade, i.e. 1.f / nCascadesPerRow
 
+// PCF method
+#define PCF_SAMPLE	PCF4x4Poisson
+
 struct PSOut
 {
 	float4 colorOut	:	SV_TARGET;
@@ -110,7 +113,7 @@ void psmain(VSOut input, out PSOut output)
 		float2(fCascadeNormSize * fmod(nValidCascade, nCascadesPerRow), fCascadeNormSize * floor(nValidCascade / nCascadesPerRow));
 
 	// PCF Poisson disc shadow sampling
-	float fPercentLit = PCF4x4Poisson(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBias);
+	float fPercentLit = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBias);
 	//float fPercentLit = tex2D(texShadowMap, f3CascadeTexCoord.xy).r > f3CascadeTexCoord.z - fShadowDepthBias;
 
 	// if required, blend between cascade seams
@@ -119,10 +122,39 @@ void psmain(VSOut input, out PSOut output)
 		if (nValidCascade != nCascadeCount - 1)
 		{
 			// the blend amount depends on the position of the point inside the blend band of the current cascade
-			float fBlendAmount = (f2CascadeBoundsMin[nValidCascade].x + fCascadeBlendSize) - f4LightViewPos.x;
-			fBlendAmount = max(fBlendAmount, (f2CascadeBoundsMin[nValidCascade].y + fCascadeBlendSize) - f4LightViewPos.y);
-			fBlendAmount = max(fBlendAmount, f4LightViewPos.x - (f2CascadeBoundsMax[nValidCascade].x - fCascadeBlendSize));
-			fBlendAmount = max(fBlendAmount, f4LightViewPos.y - (f2CascadeBoundsMax[nValidCascade].y - fCascadeBlendSize));
+			float fScaledBlendSize = fCascadeBlendSize * (nValidCascade * nValidCascade + 1);
+			float fBlendAmount = 0.f;
+			
+			// partition the cascade into 4 parts and only allow blending in the parts furthest from the camera
+			// (i.e. the part that is closest to the camera is not adjacent to any valid cascade, because they
+			// fit very tightly around the view frustum, so blending in that zone would result in artifacts)
+			// Disclaimer: there probably exists an easier way to do this, but I'm just lazy
+			float2 NE = float2(0.707107f, 0.707107f); //normalize(float2(0.5f, 0.5f));
+			float2 SE = float2(0.707107f, -0.707107f); //normalize(float2(0.5f, -0.5f));
+			float2 SW = float2(-0.707107f, -0.707107f); //normalize(float2(-0.5f, -0.5f));
+			float2 NW = float2(-0.707107f, 0.707107f); //normalize(float2(-0.5f, 0.5f));
+
+			float2 f2CascadeSpaceViewDir = normalize(mul(f44CascadeProjMat[0], f4LightViewPos).xy);
+			float4 f4LightSpaceCameraDir = mul(f44CascadeProjMat[0], mul(f44ScreenToLightViewMat, float4(0.f, 0.f, 1.f, 1.f)));
+			bool dotNE = dot(f2CascadeSpaceViewDir, NE) > 0.f;
+			bool dotSE = dot(f2CascadeSpaceViewDir, SE) > 0.f;
+			bool dotSW = dot(f2CascadeSpaceViewDir, SW) > 0.f;
+			bool dotNW = dot(f2CascadeSpaceViewDir, NW) > 0.f;
+			bool dotCamDirNE = dot(f4LightSpaceCameraDir.xy, NE) > 0.f;
+			bool dotCamDirSE = dot(f4LightSpaceCameraDir.xy, SE) > 0.f;
+			bool dotCamDirSW = dot(f4LightSpaceCameraDir.xy, SW) > 0.f;
+			bool dotCamDirNW = dot(f4LightSpaceCameraDir.xy, NW) > 0.f;
+
+			if (dotSW && dotNW && (dotCamDirSW || dotCamDirNW))
+				fBlendAmount = max(fBlendAmount, (f2CascadeBoundsMin[nValidCascade].x + fScaledBlendSize) - f4LightViewPos.x);
+			if (dotSW && dotSE && (dotCamDirSW || dotCamDirSE))
+				fBlendAmount = max(fBlendAmount, (f2CascadeBoundsMin[nValidCascade].y + fScaledBlendSize) - f4LightViewPos.y);
+			if (dotSE && dotNE && (dotCamDirSE || dotCamDirNE))
+				fBlendAmount = max(fBlendAmount, f4LightViewPos.x - (f2CascadeBoundsMax[nValidCascade].x - fScaledBlendSize));
+			if (dotNW && dotNE && (dotCamDirNW || dotCamDirNE))
+				fBlendAmount = max(fBlendAmount, f4LightViewPos.y - (f2CascadeBoundsMax[nValidCascade].y - fScaledBlendSize));
+			
+			fBlendAmount /= fScaledBlendSize;
 
 			// if our point is inside the blend band, we can continue with blending
 			if (fBlendAmount > 0.f)
@@ -130,18 +162,16 @@ void psmain(VSOut input, out PSOut output)
 				// calculate texture coordinates for sampling from the cascade one order
 				// higher than the cascade from which we sampled earlier
 				float3 f3LQCascadeTexCoord = mul(f44CascadeProjMat[nValidCascade + 1], f4LightViewPos).xyz;
-				if (f3LQCascadeTexCoord.x > 0.f && f3LQCascadeTexCoord.x < 1.f && f3LQCascadeTexCoord.y > 0.f && f3LQCascadeTexCoord.y < 1.f)
-				{
-					fBlendAmount /= fCascadeBlendSize;
-					f3LQCascadeTexCoord.xy =
-						(f3LQCascadeTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
-						fCascadeNormSize +
-						float2(fCascadeNormSize * fmod(nValidCascade + 1, nCascadesPerRow), fCascadeNormSize * floor((nValidCascade + 1) / nCascadesPerRow));
+				f3LQCascadeTexCoord.xy =
+					(f3LQCascadeTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
+					fCascadeNormSize +
+					float2(fCascadeNormSize * fmod(nValidCascade + 1, nCascadesPerRow), fCascadeNormSize * floor((nValidCascade + 1) / nCascadesPerRow));
 
-					// sample from the lower quality cascade and blend between samples appropriately
-					float fPercentLitLQ = PCF4x4Poisson(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBias);
-					fPercentLit = fPercentLit * (1.f - fBlendAmount) + fPercentLitLQ * fBlendAmount;
-				}
+				// sample from the lower quality cascade and blend between samples appropriately
+				float fPercentLitLQ = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBias);
+				//float fPercentLitLQ = tex2D(texShadowMap, f3LQCascadeTexCoord.xy).r > f3LQCascadeTexCoord.z - fShadowDepthBias;
+				if (fPercentLitLQ > 0.f && fPercentLitLQ < 1.f) // only blend at shadow edges
+					fPercentLit = lerp(fPercentLit, fPercentLitLQ, fBlendAmount);
 			}
 		}
 	}
