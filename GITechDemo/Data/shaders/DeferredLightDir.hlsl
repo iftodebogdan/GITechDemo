@@ -89,7 +89,7 @@ void psmain(VSOut input, out PSOut output)
 	bool bValidCascade[MAX_NUM_CASCADES];
 	bool bValidCascadeTexCoord = false;
 	int nValidCascade = 0;
-	for(int cascade = 0; cascade < nCascadeCount; cascade++)
+	for(int cascade = nCascadeCount - 1; cascade >= 0; cascade--)
 	{
 		// iterate through all AABBs and check if the point
 		// is inside of one of them
@@ -99,7 +99,7 @@ void psmain(VSOut input, out PSOut output)
 			f4LightViewPos.y < f2CascadeBoundsMax[cascade].y)
 		{
 			nValidCascade = cascade;
-			break;
+			//break;
 		}
 	}
 

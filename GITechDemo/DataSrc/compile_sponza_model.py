@@ -6,7 +6,7 @@ import time
 pathToModelFile = "crytek-sponza/"
 modelFile = "sponza.obj"
 outputPath = "../Data/models/sponza/"
-modelCompilerExe = "../Bin/x64/Release/ModelCompiler/ModelCompiler.exe"
+modelCompilerExe = "../Bin/x64/Release/LibRendererTools/ModelCompiler.exe"
 
 start = time.clock()
 

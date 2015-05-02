@@ -124,6 +124,73 @@ ShaderInput*	DepthCopyFInput = nullptr;
 ShaderInput*	PostProcessVInput = nullptr;
 ShaderInput*	PostProcessFInput = nullptr;
 
+// A lookup table for shader inputs (faster than searching everytime by input name)
+enum ShaderName
+{
+	SkyBoxVS, SkyBoxPS,
+	GBufferGenerationVS, GBufferGenerationPS,
+	DeferredLightAmbVS, DeferredLightAmbPS,
+	DeferredLightDirVS, DeferredLightDirPS,
+	DepthPassVS, DepthPassPS,
+	DepthCopyVS, DepthCopyPS,
+	PostProcessVS, PostProcessPS,
+
+	SHADER_COUNT
+};
+
+enum ShaderInputName
+{
+	f44WorldViewProjMat, f44WorldViewMat, texDiffuse, texNormal, bHasNormalMap,
+	texSpec, bHasSpecMap, fSpecIntensity, f2HalfTexelOffset, texDepthBuffer,
+	f44SkyViewProjMat, texSkyTex, texDiffuseBuffer, fAmbientFactor, f44InvProjMat,
+	texNormalBuffer, texShadowMap, fShadowDepthBias, f2OneOverShadowMapSize, f44ViewMat,
+	f44InvViewProjMat, f44ScreenToLightViewMat, f3LightDir, fDiffuseFactor, fSpecFactor,
+	bDebugCascades, nCascadeCount, nCascadesPerRow, fCascadeNormSize, f2CascadeBoundsMin,
+	f2CascadeBoundsMax, f44CascadeProjMat, fCascadeBlendSize, texLightAccumulationBuffer,
+
+	SHADER_INPUT_COUNT
+};
+
+struct ShaderInputLUT
+{
+	unsigned int lut[SHADER_COUNT][SHADER_INPUT_COUNT];
+	static const std::string inputName[SHADER_INPUT_COUNT];
+	static const ShaderInput * const * const inputHandler[SHADER_COUNT];
+
+	ShaderInputLUT()
+	{
+		for (unsigned int i = 0; i < SHADER_COUNT; i++)
+			for (unsigned int j = 0; j < SHADER_INPUT_COUNT; j++)
+				lut[i][j] = ~0;
+	}
+
+	unsigned int* operator[](unsigned int idx) { return lut[idx]; }
+	const unsigned int* const operator[](unsigned int idx) const { return lut[idx]; }
+
+	const char* const getName(ShaderInputName name) const { return inputName[name].c_str(); }
+	const ShaderInput* const getInputHandler(ShaderName name) const { return *inputHandler[name]; }
+} ShdInputLUT;
+
+const std::string ShaderInputLUT::inputName[] = {
+	"f44WorldViewProjMat", "f44WorldViewMat", "texDiffuse", "texNormal", "bHasNormalMap",
+	"texSpec", "bHasSpecMap", "fSpecIntensity", "f2HalfTexelOffset", "texDepthBuffer",
+	"f44SkyViewProjMat", "texSkyTex", "texDiffuseBuffer", "fAmbientFactor", "f44InvProjMat",
+	"texNormalBuffer", "texShadowMap", "fShadowDepthBias", "f2OneOverShadowMapSize", "f44ViewMat",
+	"f44InvViewProjMat", "f44ScreenToLightViewMat", "f3LightDir", "fDiffuseFactor", "fSpecFactor",
+	"bDebugCascades", "nCascadeCount", "nCascadesPerRow", "fCascadeNormSize", "f2CascadeBoundsMin",
+	"f2CascadeBoundsMax", "f44CascadeProjMat", "fCascadeBlendSize", "texLightAccumulationBuffer"
+};
+
+const ShaderInput * const * const ShaderInputLUT::inputHandler[] = {
+	&SkyBoxVInput, &SkyBoxFInput,
+	&GBufferGenerationVInput, &GBufferGenerationFInput,
+	&DeferredLightAmbVInput, &DeferredLightAmbFInput,
+	&DeferredLightDirVInput, &DeferredLightDirFInput,
+	&DepthPassVInput, &DepthPassFInput,
+	&DepthCopyVInput, &DepthCopyFInput,
+	&PostProcessVInput, &PostProcessFInput
+};
+
 // The geometry buffer, holding information necessary for calculating light contribution
 RenderTarget*	GBuffer = nullptr;
 // The shadow map corresponding to the directional light
@@ -698,6 +765,14 @@ void AllocateRenderResources()
 	psiIdx = ResourceMgr->CreateShaderInput(SkyBoxFP);
 	SkyBoxFInput = ResourceMgr->GetShaderInput(psiIdx);
 
+	// Build a lookup table of shader inputs
+	// NB: because this searches for all inputs in all shaders,
+	// regardless if the input belongs to another shader, this
+	// will generate some harmless errors in the console output
+	for (unsigned int shader = SkyBoxVS; shader <= PostProcessPS; shader++)
+		for (unsigned int input = f44WorldViewProjMat; input <= texLightAccumulationBuffer; input++)
+			ShdInputLUT.getInputHandler((ShaderName)shader)->GetInputHandleByName(ShdInputLUT.getName((ShaderInputName)input), ShdInputLUT[shader][input]);
+
 	// Initialize the various render targets we will be using
 	//
 	// Geometry buffer (GBuffer)
@@ -973,7 +1048,7 @@ void UpdateMatrices()
 
 		// Enlarge the light view frustum in order to avoid PCF shadow sampling from
 		// sampling outside of a shadow map cascade
-		float pcfScale = ((float)PCF_BLUR_SIZE * 2.f + 1.f) / (float)SHADOW_MAP_SIZE[0];
+		float pcfScale = (((float)PCF_BLUR_SIZE + 1.f) * 2.f ) / (float)SHADOW_MAP_SIZE[0];
 		Vec3f aabbDiag = ViewFrustumPartitionLightSpaceAABB.mMax - ViewFrustumPartitionLightSpaceAABB.mMin;
 		Vec2f offsetForPCF = Vec2f(aabbDiag[0], aabbDiag[1]) * 0.5f * pcfScale;
 
@@ -1008,7 +1083,7 @@ void UpdateMatrices()
 
 void GenerateDirectionalShadowMap()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
 	bool red, blue, green, alpha;
 	RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
@@ -1030,8 +1105,9 @@ void GenerateDirectionalShadowMap()
 		RenderContext->SetViewport(size, offset);
 		RenderContext->GetRenderStateManager()->SetScissor(size, offset);
 
-		if (DepthPassVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
-			DepthPassVInput->SetMatrix4x4(handle, dirLightWorldViewProjMat[cascade]);
+		//if (DepthPassVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
+		if(ShdInputLUT[DepthPassVS][f44WorldViewProjMat] != ~0)
+			DepthPassVInput->SetMatrix4x4(ShdInputLUT[DepthPassVS][f44WorldViewProjMat], dirLightWorldViewProjMat[cascade]);
 
 		DepthPassVP->Enable(DepthPassVInput);
 		DepthPassFP->Enable(DepthPassFInput);
@@ -1053,7 +1129,7 @@ void GenerateDirectionalShadowMap()
 
 void GenerateGBuffer()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
 	GBuffer->Enable();
 
@@ -1069,8 +1145,9 @@ void GenerateGBuffer()
 		RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
 		RenderContext->GetRenderStateManager()->SetColorWriteEnabled(false, false, false, false);
 
-		if (DepthPassVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
-			DepthPassVInput->SetMatrix4x4(handle, worldViewProjMat);
+		//if (DepthPassVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
+		if (ShdInputLUT[DepthPassVS][f44WorldViewProjMat] != ~0)
+			DepthPassVInput->SetMatrix4x4(ShdInputLUT[DepthPassVS][f44WorldViewProjMat], worldViewProjMat);
 
 		DepthPassVP->Enable(DepthPassVInput);
 		DepthPassFP->Enable(DepthPassFInput);
@@ -1087,11 +1164,13 @@ void GenerateGBuffer()
 		RenderContext->GetRenderStateManager()->SetZFunc(CMP_EQUAL);
 	}
 
-	if (GBufferGenerationVInput->GetInputHandleByName("f44WorldViewMat", handle))
-		GBufferGenerationVInput->SetMatrix4x4(handle, worldViewMat);
+	//if (GBufferGenerationVInput->GetInputHandleByName("f44WorldViewMat", handle))
+	if (ShdInputLUT[GBufferGenerationVS][f44WorldViewMat] != ~0)
+		GBufferGenerationVInput->SetMatrix4x4(ShdInputLUT[GBufferGenerationVS][f44WorldViewMat], worldViewMat);
 
-	if (GBufferGenerationVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
-		GBufferGenerationVInput->SetMatrix4x4(handle, worldViewProjMat);
+	//if (GBufferGenerationVInput->GetInputHandleByName("f44WorldViewProjMat", handle))
+	if (ShdInputLUT[GBufferGenerationVS][f44WorldViewProjMat] != ~0)
+		GBufferGenerationVInput->SetMatrix4x4(ShdInputLUT[GBufferGenerationVS][f44WorldViewProjMat], worldViewProjMat);
 
 	// A visibility test would be useful if we were CPU bound (or vertex bound).
 	// However, there isn't a reason to do such an optimization for now, since the
@@ -1102,27 +1181,33 @@ void GenerateGBuffer()
 		const unsigned int normalTexIdx = TextureLUT[Model::TextureDesc::TT_HEIGHT][SponzaScene->arrMesh[mesh]->nMaterialIdx];
 		const unsigned int specTexIdx = TextureLUT[Model::TextureDesc::TT_SPECULAR][SponzaScene->arrMesh[mesh]->nMaterialIdx];
 
-		if (GBufferGenerationFInput->GetInputHandleByName("texDiffuse", handle))
-			GBufferGenerationFInput->SetTexture(handle, diffTexIdx);
+		//if (GBufferGenerationFInput->GetInputHandleByName("texDiffuse", handle))
+		if (ShdInputLUT[GBufferGenerationPS][texDiffuse] != ~0)
+			GBufferGenerationFInput->SetTexture(ShdInputLUT[GBufferGenerationPS][texDiffuse], diffTexIdx);
 
-		if (GBufferGenerationFInput->GetInputHandleByName("texNormal", handle))
+		//if (GBufferGenerationFInput->GetInputHandleByName("texNormal", handle))
+		if (ShdInputLUT[GBufferGenerationPS][texNormal] != ~0)
 		{
-			GBufferGenerationFInput->SetTexture(handle, normalTexIdx);
+			GBufferGenerationFInput->SetTexture(ShdInputLUT[GBufferGenerationPS][texNormal], normalTexIdx);
 
-			if (GBufferGenerationFInput->GetInputHandleByName("bHasNormalMap", handle))
-				GBufferGenerationFInput->SetBool(handle, normalTexIdx != -1);
+			//if (GBufferGenerationFInput->GetInputHandleByName("bHasNormalMap", handle))
+			if (ShdInputLUT[GBufferGenerationPS][bHasNormalMap] != ~0)
+				GBufferGenerationFInput->SetBool(ShdInputLUT[GBufferGenerationPS][bHasNormalMap], normalTexIdx != -1);
 		}
 
-		if (GBufferGenerationFInput->GetInputHandleByName("texSpec", handle))
+		//if (GBufferGenerationFInput->GetInputHandleByName("texSpec", handle))
+		if (ShdInputLUT[GBufferGenerationPS][texSpec] != ~0)
 		{
-			GBufferGenerationFInput->SetTexture(handle, specTexIdx);
+			GBufferGenerationFInput->SetTexture(ShdInputLUT[GBufferGenerationPS][texSpec], specTexIdx);
 
-			if (GBufferGenerationFInput->GetInputHandleByName("bHasSpecMap", handle))
-				GBufferGenerationFInput->SetBool(handle, specTexIdx != -1);
+			//if (GBufferGenerationFInput->GetInputHandleByName("bHasSpecMap", handle))
+			if (ShdInputLUT[GBufferGenerationPS][bHasSpecMap] != ~0)
+				GBufferGenerationFInput->SetBool(ShdInputLUT[GBufferGenerationPS][bHasSpecMap], specTexIdx != -1);
 		}
 
-		if (GBufferGenerationFInput->GetInputHandleByName("fSpecIntensity", handle))
-			GBufferGenerationFInput->SetFloat(handle, SponzaScene->arrMaterial[SponzaScene->arrMesh[mesh]->nMaterialIdx]->fShininessStrength);
+		//if (GBufferGenerationFInput->GetInputHandleByName("fSpecIntensity", handle))
+		if (ShdInputLUT[GBufferGenerationPS][fSpecIntensity] != ~0)
+			GBufferGenerationFInput->SetFloat(ShdInputLUT[GBufferGenerationPS][fSpecIntensity], SponzaScene->arrMaterial[SponzaScene->arrMesh[mesh]->nMaterialIdx]->fShininessStrength);
 
 		GBufferGenerationVP->Enable(GBufferGenerationVInput);
 		GBufferGenerationFP->Enable(GBufferGenerationFInput);
@@ -1151,7 +1236,7 @@ void GenerateGBuffer()
 // for those pixels and thus reducing pointless shading of pixels which are not lit)
 void ResolveDepthBuffer()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
 	bool red, blue, green, alpha;
 	RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
@@ -1161,11 +1246,13 @@ void ResolveDepthBuffer()
 	Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-	if (DepthCopyVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
-		DepthCopyVInput->SetFloat2(handle, Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
+	//if (DepthCopyVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
+	if (ShdInputLUT[DepthCopyVS][f2HalfTexelOffset] != ~0)
+		DepthCopyVInput->SetFloat2(ShdInputLUT[DepthCopyVS][f2HalfTexelOffset], Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
 
-	if (DepthCopyFInput->GetInputHandleByName("texDepthBuffer", handle))
-		DepthCopyFInput->SetTexture(handle, GBuffer->GetDepthBuffer());
+	//if (DepthCopyFInput->GetInputHandleByName("texDepthBuffer", handle))
+	if (ShdInputLUT[DepthCopyPS][texDepthBuffer] != ~0)
+		DepthCopyFInput->SetTexture(ShdInputLUT[DepthCopyPS][texDepthBuffer], GBuffer->GetDepthBuffer());
 
 	DepthCopyVP->Enable(DepthCopyVInput);
 	DepthCopyFP->Enable(DepthCopyFInput);
@@ -1185,7 +1272,7 @@ void ResolveDepthBuffer()
 // other objects that aren't inside the cube (which, at 2x2x2, is quite small)
 void DrawSky()
 {
-	unsigned int handle;
+	//unsigned int handle;
 	
 	bool blendEnabled;
 	Blend DstBlend, SrcBlend;
@@ -1202,11 +1289,13 @@ void DrawSky()
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_LESSEQUAL);
 
-	if (SkyBoxVInput->GetInputHandleByName("f44SkyViewProjMat", handle))
-		SkyBoxVInput->SetMatrix4x4(handle, viewProjMat* makeTrans(-tCamera.vPos, Type2Type<Matrix44f>()));
+	//if (SkyBoxVInput->GetInputHandleByName("f44SkyViewProjMat", handle))
+	if (ShdInputLUT[SkyBoxVS][f44SkyViewProjMat] != ~0)
+		SkyBoxVInput->SetMatrix4x4(ShdInputLUT[SkyBoxVS][f44SkyViewProjMat], viewProjMat* makeTrans(-tCamera.vPos, Type2Type<Matrix44f>()));
 
-	if (SkyBoxFInput->GetInputHandleByName("texSkyTex", handle))
-		SkyBoxFInput->SetTexture(handle, skyTexIdx);
+	//if (SkyBoxFInput->GetInputHandleByName("texSkyTex", handle))
+	if (ShdInputLUT[SkyBoxPS][texSkyTex] != ~0)
+		SkyBoxFInput->SetTexture(ShdInputLUT[SkyBoxPS][texSkyTex], skyTexIdx);
 		
 	SkyBoxVP->Enable(SkyBoxVInput);
 	SkyBoxFP->Enable(SkyBoxFInput);
@@ -1227,16 +1316,19 @@ void DrawSky()
 // Accumulate ambient light
 void AccumulateAmbientLight()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
-	if (DeferredLightAmbVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
-		DeferredLightAmbVInput->SetFloat2(handle, Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
+	//if (DeferredLightAmbVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
+	if (ShdInputLUT[DeferredLightAmbVS][f2HalfTexelOffset] != ~0)
+		DeferredLightAmbVInput->SetFloat2(ShdInputLUT[DeferredLightAmbVS][f2HalfTexelOffset], Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
 
-	if (DeferredLightAmbFInput->GetInputHandleByName("texDiffuseBuffer", handle))
-		DeferredLightAmbFInput->SetTexture(handle, GBuffer->GetColorBuffer(0));
+	//if (DeferredLightAmbFInput->GetInputHandleByName("texDiffuseBuffer", handle))
+	if (ShdInputLUT[DeferredLightAmbPS][texDiffuseBuffer] != ~0)
+		DeferredLightAmbFInput->SetTexture(ShdInputLUT[DeferredLightAmbPS][texDiffuseBuffer], GBuffer->GetColorBuffer(0));
 
-	if (DeferredLightAmbFInput->GetInputHandleByName("fAmbientFactor", handle))
-		DeferredLightAmbFInput->SetFloat(handle, 0.1f);
+	//if (DeferredLightAmbFInput->GetInputHandleByName("fAmbientFactor", handle))
+	if (ShdInputLUT[DeferredLightAmbPS][fAmbientFactor] != ~0)
+		DeferredLightAmbFInput->SetFloat(ShdInputLUT[DeferredLightAmbPS][fAmbientFactor], 0.1f);
 
 	DeferredLightAmbVP->Enable(DeferredLightAmbVInput);
 	DeferredLightAmbFP->Enable(DeferredLightAmbFInput);
@@ -1250,73 +1342,95 @@ void AccumulateAmbientLight()
 // Accumulate directional light
 void AccumulateDirectionalLight()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
-	if (DeferredLightDirVInput->GetInputHandleByName("f44InvProjMat", handle))
-		DeferredLightDirVInput->SetMatrix4x4(handle, invProjMat);
+	//if (DeferredLightDirVInput->GetInputHandleByName("f44InvProjMat", handle))
+	if (ShdInputLUT[DeferredLightDirVS][f44InvProjMat] != ~0)
+		DeferredLightDirVInput->SetMatrix4x4(ShdInputLUT[DeferredLightDirVS][f44InvProjMat], invProjMat);
 
-	if (DeferredLightDirVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
-		DeferredLightDirVInput->SetFloat2(handle, Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
+	//if (DeferredLightDirVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
+	if (ShdInputLUT[DeferredLightDirVS][f2HalfTexelOffset] != ~0)
+		DeferredLightDirVInput->SetFloat2(ShdInputLUT[DeferredLightDirVS][f2HalfTexelOffset], Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
 
-	if (DeferredLightDirFInput->GetInputHandleByName("texDiffuseBuffer", handle))
-		DeferredLightDirFInput->SetTexture(handle, GBuffer->GetColorBuffer(0));
+	//if (DeferredLightDirFInput->GetInputHandleByName("texDiffuseBuffer", handle))
+	if (ShdInputLUT[DeferredLightDirPS][texDiffuseBuffer] != ~0)
+		DeferredLightDirFInput->SetTexture(ShdInputLUT[DeferredLightDirPS][texDiffuseBuffer], GBuffer->GetColorBuffer(0));
 
-	if (DeferredLightDirFInput->GetInputHandleByName("texNormalBuffer", handle))
-		DeferredLightDirFInput->SetTexture(handle, GBuffer->GetColorBuffer(1));
+	//if (DeferredLightDirFInput->GetInputHandleByName("texNormalBuffer", handle))
+	if (ShdInputLUT[DeferredLightDirPS][texNormalBuffer] != ~0)
+		DeferredLightDirFInput->SetTexture(ShdInputLUT[DeferredLightDirPS][texNormalBuffer], GBuffer->GetColorBuffer(1));
 
-	if (DeferredLightDirFInput->GetInputHandleByName("texDepthBuffer", handle))
-		DeferredLightDirFInput->SetTexture(handle, GBuffer->GetDepthBuffer());
+	//if (DeferredLightDirFInput->GetInputHandleByName("texDepthBuffer", handle))
+	if (ShdInputLUT[DeferredLightDirPS][texDepthBuffer] != ~0)
+		DeferredLightDirFInput->SetTexture(ShdInputLUT[DeferredLightDirPS][texDepthBuffer], GBuffer->GetDepthBuffer());
 
-	if (DeferredLightDirFInput->GetInputHandleByName("texShadowMap", handle))
-		DeferredLightDirFInput->SetTexture(handle, ShadowMapDir->GetDepthBuffer());
+	//if (DeferredLightDirFInput->GetInputHandleByName("texShadowMap", handle))
+	if (ShdInputLUT[DeferredLightDirPS][texShadowMap] != ~0)
+		DeferredLightDirFInput->SetTexture(ShdInputLUT[DeferredLightDirPS][texShadowMap], ShadowMapDir->GetDepthBuffer());
 
-	if (DeferredLightDirFInput->GetInputHandleByName("fShadowDepthBias", handle))
-		DeferredLightDirFInput->SetFloat(handle, SHADOW_MAP_DEPTH_BIAS);
+	//if (DeferredLightDirFInput->GetInputHandleByName("fShadowDepthBias", handle))
+	if (ShdInputLUT[DeferredLightDirPS][fShadowDepthBias] != ~0)
+		DeferredLightDirFInput->SetFloat(ShdInputLUT[DeferredLightDirPS][fShadowDepthBias], SHADOW_MAP_DEPTH_BIAS);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f2OneOverShadowMapSize", handle))
-		DeferredLightDirFInput->SetFloat2(handle, Vec2f(1.f / (float)SHADOW_MAP_SIZE[0], 1.f / (float)SHADOW_MAP_SIZE[1]));
+	//if (DeferredLightDirFInput->GetInputHandleByName("f2OneOverShadowMapSize", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f2OneOverShadowMapSize] != ~0)
+		DeferredLightDirFInput->SetFloat2(ShdInputLUT[DeferredLightDirPS][f2OneOverShadowMapSize], Vec2f(1.f / (float)SHADOW_MAP_SIZE[0], 1.f / (float)SHADOW_MAP_SIZE[1]));
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f44ViewMat", handle))
-		DeferredLightDirFInput->SetMatrix4x4(handle, viewMat);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f44ViewMat", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f44ViewMat] != ~0)
+		DeferredLightDirFInput->SetMatrix4x4(ShdInputLUT[DeferredLightDirPS][f44ViewMat], viewMat);
 
 	//if (DeferredLightDirFInput->GetInputHandleByName("f44InvViewProjMat", handle))
-	//	DeferredLightDirFInput->SetMatrix4x4(handle, invViewProjMat);
+	//if (ShdInputLUT[DeferredLightDirPS][f44InvViewProjMat] != ~0)
+	//	DeferredLightDirFInput->SetMatrix4x4(ShdInputLUT[DeferredLightDirPS][f44InvViewProjMat], invViewProjMat);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f44ScreenToLightViewMat", handle))
-		DeferredLightDirFInput->SetMatrix4x4(handle, dirLightViewMat * invViewProjMat);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f44ScreenToLightViewMat", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f44ScreenToLightViewMat] != ~0)
+		DeferredLightDirFInput->SetMatrix4x4(ShdInputLUT[DeferredLightDirPS][f44ScreenToLightViewMat], dirLightViewMat * invViewProjMat);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f3LightDir", handle))
-		DeferredLightDirFInput->SetFloat3(handle, directionalLightDir);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f3LightDir", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f3LightDir] != ~0)
+		DeferredLightDirFInput->SetFloat3(ShdInputLUT[DeferredLightDirPS][f3LightDir], directionalLightDir);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("fDiffuseFactor", handle))
-		DeferredLightDirFInput->SetFloat(handle, 1.f);
+	//if (DeferredLightDirFInput->GetInputHandleByName("fDiffuseFactor", handle))
+	if (ShdInputLUT[DeferredLightDirPS][fDiffuseFactor] != ~0)
+		DeferredLightDirFInput->SetFloat(ShdInputLUT[DeferredLightDirPS][fDiffuseFactor], 1.f);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("fSpecFactor", handle))
-		DeferredLightDirFInput->SetFloat(handle, 40.f);
+	//if (DeferredLightDirFInput->GetInputHandleByName("fSpecFactor", handle))
+	if (ShdInputLUT[DeferredLightDirPS][fSpecFactor] != ~0)
+		DeferredLightDirFInput->SetFloat(ShdInputLUT[DeferredLightDirPS][fSpecFactor], 40.f);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("bDebugCascades", handle))
-		DeferredLightDirFInput->SetBool(handle, DEBUG_CASCADES);
+	//if (DeferredLightDirFInput->GetInputHandleByName("bDebugCascades", handle))
+	if (ShdInputLUT[DeferredLightDirPS][bDebugCascades] != ~0)
+		DeferredLightDirFInput->SetBool(ShdInputLUT[DeferredLightDirPS][bDebugCascades], DEBUG_CASCADES);
 
 	//if (DeferredLightDirFInput->GetInputHandleByName("nCascadeCount", handle))
-	//	DeferredLightDirFInput->SetInt(handle, NUM_CASCADES);
-	//
+	//if (ShdInputLUT[DeferredLightDirPS][nCascadeCount] != ~0)
+	//	DeferredLightDirFInput->SetInt(ShdInputLUT[DeferredLightDirPS][nCascadeCount], NUM_CASCADES);
+
 	//if (DeferredLightDirFInput->GetInputHandleByName("nCascadesPerRow", handle))
-	//	DeferredLightDirFInput->SetInt(handle, (int)Math::ceil(Math::sqrt((float)NUM_CASCADES)));
-	//
+	//if (ShdInputLUT[DeferredLightDirPS][nCascadesPerRow] != ~0)
+	//	DeferredLightDirFInput->SetInt(ShdInputLUT[DeferredLightDirPS][nCascadesPerRow], (int)Math::ceil(Math::sqrt((float)NUM_CASCADES)));
+
 	//if (DeferredLightDirFInput->GetInputHandleByName("fCascadeNormSize", handle))
-	//	DeferredLightDirFInput->SetFloat(handle, 1.f / Math::ceil(Math::sqrt((float)NUM_CASCADES)));
+	//if (ShdInputLUT[DeferredLightDirPS][fCascadeNormSize] != ~0)
+	//	DeferredLightDirFInput->SetFloat(ShdInputLUT[DeferredLightDirPS][fCascadeNormSize], 1.f / Math::ceil(Math::sqrt((float)NUM_CASCADES)));
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f2CascadeBoundsMin", handle))
-		DeferredLightDirFInput->SetFloatArray(handle, cascadeBoundsMin);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f2CascadeBoundsMin", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f2CascadeBoundsMin] != ~0)
+		DeferredLightDirFInput->SetFloatArray(ShdInputLUT[DeferredLightDirPS][f2CascadeBoundsMin], cascadeBoundsMin);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f2CascadeBoundsMax", handle))
-		DeferredLightDirFInput->SetFloatArray(handle, cascadeBoundsMax);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f2CascadeBoundsMax", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f2CascadeBoundsMax] != ~0)
+		DeferredLightDirFInput->SetFloatArray(ShdInputLUT[DeferredLightDirPS][f2CascadeBoundsMax], cascadeBoundsMax);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("f44CascadeProjMat", handle))
-		DeferredLightDirFInput->SetMatrixArray(handle, dirLightProjMat);
+	//if (DeferredLightDirFInput->GetInputHandleByName("f44CascadeProjMat", handle))
+	if (ShdInputLUT[DeferredLightDirPS][f44CascadeProjMat] != ~0)
+		DeferredLightDirFInput->SetMatrixArray(ShdInputLUT[DeferredLightDirPS][f44CascadeProjMat], dirLightProjMat);
 
-	if (DeferredLightDirFInput->GetInputHandleByName("fCascadeBlendSize", handle))
-		DeferredLightDirFInput->SetFloat(handle, CASCADE_BLEND_SIZE);
+	//if (DeferredLightDirFInput->GetInputHandleByName("fCascadeBlendSize", handle))
+	if (ShdInputLUT[DeferredLightDirPS][fCascadeBlendSize] != ~0)
+		DeferredLightDirFInput->SetFloat(ShdInputLUT[DeferredLightDirPS][fCascadeBlendSize], CASCADE_BLEND_SIZE);
 
 	DeferredLightDirVP->Enable(DeferredLightDirVInput);
 	DeferredLightDirFP->Enable(DeferredLightDirFInput);
@@ -1375,7 +1489,7 @@ void AccumulateLight()
 // Apply postprocessing effects. Afterwards, copy results to the backbuffer.
 void ApplyPostProcessing()
 {
-	unsigned int handle;
+	//unsigned int handle;
 
 	RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
@@ -1384,11 +1498,13 @@ void ApplyPostProcessing()
 	Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-	if (PostProcessVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
-		PostProcessVInput->SetFloat2(handle, Vec2f(0.5f / LightAccumulationBuffer->GetWidth(), 0.5f / LightAccumulationBuffer->GetHeight()));
+	//if (PostProcessVInput->GetInputHandleByName("f2HalfTexelOffset", handle))
+	if (ShdInputLUT[PostProcessVS][f2HalfTexelOffset] != ~0)
+		PostProcessVInput->SetFloat2(ShdInputLUT[PostProcessVS][f2HalfTexelOffset], Vec2f(0.5f / LightAccumulationBuffer->GetWidth(), 0.5f / LightAccumulationBuffer->GetHeight()));
 
-	if (PostProcessFInput->GetInputHandleByName("texLightAccumulationBuffer", handle))
-		PostProcessFInput->SetTexture(handle, LightAccumulationBuffer->GetColorBuffer(0));
+	//if (PostProcessFInput->GetInputHandleByName("texLightAccumulationBuffer", handle))
+	if (ShdInputLUT[PostProcessPS][texLightAccumulationBuffer] != ~0)
+		PostProcessFInput->SetTexture(ShdInputLUT[PostProcessPS][texLightAccumulationBuffer], LightAccumulationBuffer->GetColorBuffer(0));
 
 	PostProcessVP->Enable(PostProcessVInput);
 	PostProcessFP->Enable(PostProcessFInput);

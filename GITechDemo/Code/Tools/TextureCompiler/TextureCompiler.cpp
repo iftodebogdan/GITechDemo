@@ -575,14 +575,14 @@ void TextureCompiler::Run(int argc, char* argv[])
 				iluGetImageInfo(&faceInfo);
 
 				assert(ilGetInteger(IL_IMAGE_CUBEFLAGS) == IL_CUBEMAP_POSITIVEX * powf(2.f, (float)face));
-				assert(faceInfo.SizeOfData == texDst->GetMipByteCount());
+				assert(faceInfo.SizeOfData == texDst->GetMipSizeBytes());
 
 				memcpy(texDst->GetMipData(face, 0), faceInfo.Data, texDst->GetMipSizeBytes(0));
 			}
 		}
 		else
 		{
-			assert(info.SizeOfData == texDst->GetMipByteCount());
+			assert(info.SizeOfData == texDst->GetMipSizeBytes());
 			memcpy(texDst->GetMipData(), info.Data, texDst->GetMipSizeBytes());
 		}
 	}

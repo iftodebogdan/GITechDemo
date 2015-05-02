@@ -5,7 +5,7 @@ import time
 #pathToTextureFiles = "sponza_scene/textures/"
 pathToTextureFiles = "crytek-sponza/textures/"
 outputPath = "../Data/models/sponza/textures/"
-textureCompilerExe = "../Bin/x64/Release/TextureCompiler/TextureCompiler.exe"
+textureCompilerExe = "../Bin/x64/Release/LibRendererTools/TextureCompiler.exe"
 
 start = time.clock()
 
