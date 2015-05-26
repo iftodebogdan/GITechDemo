@@ -34,8 +34,9 @@
 
 using namespace LibRendererDll;
 
-Renderer* Renderer::m_pInstance = nullptr;
-API Renderer::m_eAPI = API_NULL;
+Renderer* Renderer::ms_pInstance = nullptr;
+API Renderer::ms_eAPI = API_NONE;
+int Renderer::ms_nProfileMarkerCounter = 0;
 
 Renderer::Renderer()
 	: m_vBackBufferSize(800, 600)
@@ -59,28 +60,63 @@ Renderer::~Renderer()
 
 void Renderer::CreateInstance(API eApi)
 {
-	assert(m_pInstance == nullptr);
+	assert(ms_pInstance == nullptr);
+	if (ms_pInstance != nullptr)
+		return;
 
 	switch (eApi)
 	{
 		case API_DX9:
-			m_pInstance = new RendererDX9;
-			m_eAPI = API_DX9;
+			ms_pInstance = new RendererDX9;
+			ms_eAPI = API_DX9;
 			break;
 		case API_NULL:
-			m_pInstance = new RendererNULL;
-			m_eAPI = API_NULL;
+			ms_pInstance = new RendererNULL;
+			ms_eAPI = API_NULL;
+			break;
+		default:
+			assert(false);
 	}
 }
 
 void Renderer::DestroyInstance()
 {
-	if (m_pInstance)
+	if (ms_pInstance)
 	{
-		m_pInstance->GetResourceManager()->ReleaseAll();
-		delete m_pInstance;
-		m_pInstance = nullptr;
+	#if ENABLE_PROFILE_MARKERS
+		assert(ms_nProfileMarkerCounter == 0);
+	#endif
+		ms_pInstance->GetResourceManager()->ReleaseAll();
+		Renderer* tmp = ms_pInstance;
+		ms_pInstance = nullptr;
+		delete tmp;
 	}
+}
+
+Renderer* Renderer::GetInstance()
+{
+	return ms_pInstance;
+}
+
+API Renderer::GetAPI()
+{
+	return ms_eAPI;
+}
+
+void Renderer::SetBackBufferSize(const Vec2i size, const Vec2i offset)
+{
+	m_vBackBufferSize = size;
+	m_vBackBufferOffset = offset;
+}
+
+Vec2i Renderer::GetBackBufferSize()
+{
+	return m_vBackBufferSize;
+}
+
+Vec2i Renderer::GetBackBufferOffset()
+{
+	return m_vBackBufferOffset;
 }
 
 void Renderer::ConvertOGLProjMatToD3D(Matrix44f& matProj)
@@ -88,4 +124,40 @@ void Renderer::ConvertOGLProjMatToD3D(Matrix44f& matProj)
 	matProj[2][2] = matProj[2][2] * -1 - (matProj[2][2] + 1) / -2.f;
 	matProj[3][2] *= -1;
 	matProj[2][3] *= 0.5f;
+}
+
+void Renderer::ConvertOGLProjMatToD3D(Matrix44f* const matProj)
+{
+	ConvertOGLProjMatToD3D(*matProj);
+}
+
+
+ResourceManager* Renderer::GetResourceManager()
+{
+	return m_pResourceManager;
+}
+
+RenderState* Renderer::GetRenderStateManager()
+{
+	return m_pRenderState;
+}
+
+SamplerState* Renderer::GetSamplerStateManager()
+{
+	return m_pSamplerState;
+}
+
+DeviceCaps Renderer::GetDeviceCaps()
+{
+	return m_tDeviceCaps;
+}
+
+void Renderer::PushProfileMarker(const char* const label)
+{
+	ms_nProfileMarkerCounter++;
+}
+
+void Renderer::PopProfileMarker()
+{
+	ms_nProfileMarkerCounter--;
 }

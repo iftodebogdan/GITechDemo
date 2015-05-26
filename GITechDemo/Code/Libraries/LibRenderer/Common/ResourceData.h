@@ -32,12 +32,41 @@
 #include <gmtl/gmtl.h>
 using namespace gmtl;
 
+// This header holds all defines, enums and
+// structures used by the rendering library
+
 #ifndef assert
 #define assert(_Expression)     ((void)0)
 #endif
 
-// This header holds all defines, enums and
-// structures used by the rendering library
+#ifndef ENABLE_PROFILE_MARKERS
+	#if defined(_DEBUG) || defined(_PROFILE)
+		#define ENABLE_PROFILE_MARKERS (1)
+	#else
+		#define ENABLE_PROFILE_MARKERS (0)
+	#endif
+#endif
+
+#if ENABLE_PROFILE_MARKERS
+	extern int g_nProfileMarkerCounter;
+	#ifndef PUSH_PROFILE_MARKER
+		#define PUSH_PROFILE_MARKER(label) \
+			if(Renderer::GetInstance()) \
+				Renderer::GetInstance()->PushProfileMarker(label);
+	#endif
+	#ifndef POP_PROFILE_MARKER
+		#define POP_PROFILE_MARKER() \
+			if(Renderer::GetInstance()) \
+				Renderer::GetInstance()->PopProfileMarker();
+	#endif
+#else
+	#ifndef PUSH_PROFILE_MARKER
+		#define PUSH_PROFILE_MARKER(label) ((void)0)
+	#endif
+	#ifndef POP_PROFILE_MARKER
+		#define POP_PROFILE_MARKER() ((void)0)
+	#endif
+#endif
 
 // Declare new data types
 #include "../Utility/HalfFloat.h"
@@ -50,6 +79,7 @@ typedef unsigned long long qword;
 namespace LibRendererTools
 {
 	class ModelCompiler;
+	class TextureCompiler;
 }
 
 namespace LibRendererDll
@@ -59,9 +89,9 @@ namespace LibRendererDll
 	// Available rendering APIs to be used when instantiating the renderer
 	enum API
 	{
+		API_NONE,	// No renderer instantiated
 		API_NULL,	// Null render
-
-		API_DX9,	// Direct3D 9
+		API_DX9		// Direct3D 9
 	};
 
 	/////////////////////////////////////////////////////////////////////

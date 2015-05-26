@@ -24,7 +24,7 @@
 #include "ShaderProgramDX9.h"
 #include "TextureDX9.h"
 #include "RenderTargetDX9.h"
-
+#include "Renderer.h"
 #include "ResourceManagerDX9.h"
 using namespace LibRendererDll;
 
@@ -39,6 +39,8 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
 	const unsigned int attributeCount, const VertexAttributeUsage usage,
 	const VertexAttributeType type, const unsigned int usageIdx, ...)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	VertexFormat* vf = new VertexFormatDX9(attributeCount);
 	unsigned int offset = 0;
 
@@ -58,8 +60,12 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
 	va_end(args);
 
 	vf->SetStride(offset);
+	vf->Update();
 
 	m_arrVertexFormat.push_back(vf);
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrVertexFormat.size() - 1;
 }
 
@@ -67,7 +73,12 @@ const unsigned int ResourceManagerDX9::CreateIndexBuffer(
 	const unsigned int indexCount, const IndexBufferFormat indexFormat,
 	const BufferUsage usage)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrIndexBuffer.push_back(new IndexBufferDX9(indexCount, indexFormat, usage));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrIndexBuffer.size() - 1;
 }
 
@@ -75,7 +86,12 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
 	VertexFormat* const vertexFormat, const unsigned int vertexCount,
 	IndexBuffer* const indexBuffer, const BufferUsage usage)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrVertexBuffer.push_back(new VertexBufferDX9((VertexFormatDX9*)vertexFormat, vertexCount, (IndexBufferDX9*)indexBuffer, usage));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrVertexBuffer.size() - 1;
 }
 
@@ -90,14 +106,36 @@ const unsigned int ResourceManagerDX9::CreateTexture(
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
 	const unsigned int mipCount, const BufferUsage usage)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrTexture.push_back(new TextureDX9(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrTexture.size() - 1;
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrRenderTarget.push_back(new RenderTargetDX9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat));
+
+	POP_PROFILE_MARKER();
+
+	return (unsigned int)m_arrRenderTarget.size() - 1;
+}
+
+const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	m_arrRenderTarget.push_back(new RenderTargetDX9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrRenderTarget.size() - 1;
 }
 
@@ -105,18 +143,28 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrRenderTarget.push_back(new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
 		width, height, hasMipmaps, hasDepthStencil, depthStencilFormat));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrRenderTarget.size() - 1;
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount,
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
-	bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrRenderTarget.push_back(new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
-		hasMipmaps, hasDepthStencil, depthStencilFormat));
+		widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrRenderTarget.size() - 1;
 }

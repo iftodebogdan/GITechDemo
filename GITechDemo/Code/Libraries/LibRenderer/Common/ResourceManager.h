@@ -27,17 +27,17 @@
 #endif
 #endif // LIBRENDERER_DLL
 
-#include "VertexFormat.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "Texture.h"
-#include "ShaderProgram.h"
-#include "ShaderTemplate.h"
-#include "ShaderInput.h"
-#include "RenderTarget.h"
-
 namespace LibRendererDll
 {
+	class VertexFormat;
+	class VertexBuffer;
+	class IndexBuffer;
+	class Texture;
+	class ShaderProgram;
+	class ShaderTemplate;
+	class ShaderInput;
+	class RenderTarget;
+
 	// This class manages all allocated resources
 	class ResourceManager
 	{
@@ -78,33 +78,34 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile);
 
 		// Create a render target
-		// NB: If no width or height is specified, the render target will match the backbuffer's resolution
+		// NB: The widthRatio and heightRatio parameters are relative to the backbuffer's resolution, for dynamic render target sizes
 		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
 		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
 
 				LIBRENDERER_DLL	const unsigned int		CreateModel(const char* pathToFile);
 
 				// Getters for various resource types
-				LIBRENDERER_DLL VertexFormat*	const	GetVertexFormat(const unsigned int idx)		const	{ assert(idx < m_arrVertexFormat.size()); return m_arrVertexFormat[idx]; }
-				LIBRENDERER_DLL IndexBuffer*	const	GetIndexBuffer(const unsigned int idx)		const	{ assert(idx < m_arrIndexBuffer.size()); return m_arrIndexBuffer[idx]; }
-				LIBRENDERER_DLL VertexBuffer*	const	GetVertexBuffer(const unsigned int idx)		const	{ assert(idx < m_arrVertexBuffer.size()); return m_arrVertexBuffer[idx]; }
-				LIBRENDERER_DLL ShaderInput*	const	GetShaderInput(const unsigned int idx)		const	{ assert(idx < m_arrShaderInput.size()); return m_arrShaderInput[idx]; }
-				LIBRENDERER_DLL ShaderProgram*	const	GetShaderProgram(const unsigned int idx)	const	{ assert(idx < m_arrShaderProgram.size()); return m_arrShaderProgram[idx]; }
-				LIBRENDERER_DLL ShaderTemplate*	const	GetShaderTemplate(const unsigned idx)		const	{ assert(idx < m_arrShaderTemplate.size()); return m_arrShaderTemplate[idx]; }
-				LIBRENDERER_DLL Texture*		const	GetTexture(const unsigned int idx)			const	{ assert(idx < m_arrTexture.size()); return m_arrTexture[idx]; }
-				LIBRENDERER_DLL RenderTarget*	const	GetRenderTarget(const unsigned int idx)		const	{ assert(idx < m_arrRenderTarget.size()); return m_arrRenderTarget[idx]; }
-				LIBRENDERER_DLL Model*			const	GetModel(const unsigned int idx)			const	{ assert(idx < m_arrModel.size()); return m_arrModel[idx]; }
+				LIBRENDERER_DLL VertexFormat*	const	GetVertexFormat(const unsigned int idx)		const;
+				LIBRENDERER_DLL IndexBuffer*	const	GetIndexBuffer(const unsigned int idx)		const;
+				LIBRENDERER_DLL VertexBuffer*	const	GetVertexBuffer(const unsigned int idx)		const;
+				LIBRENDERER_DLL ShaderInput*	const	GetShaderInput(const unsigned int idx)		const;
+				LIBRENDERER_DLL ShaderProgram*	const	GetShaderProgram(const unsigned int idx)	const;
+				LIBRENDERER_DLL ShaderTemplate*	const	GetShaderTemplate(const unsigned idx)		const;
+				LIBRENDERER_DLL Texture*		const	GetTexture(const unsigned int idx)			const;
+				LIBRENDERER_DLL RenderTarget*	const	GetRenderTarget(const unsigned int idx)		const;
+				LIBRENDERER_DLL Model*			const	GetModel(const unsigned int idx)			const;
 
-				LIBRENDERER_DLL const unsigned int		GetVertexFormatCount()		const { return (unsigned int)m_arrVertexFormat.size(); }
-				LIBRENDERER_DLL const unsigned int		GetIndexBufferCount()		const { return (unsigned int)m_arrIndexBuffer.size(); }
-				LIBRENDERER_DLL const unsigned int		GetVertexBufferCount()		const { return (unsigned int)m_arrVertexBuffer.size(); }
-				LIBRENDERER_DLL const unsigned int		GetShaderInputCount()		const { return (unsigned int)m_arrShaderInput.size(); }
-				LIBRENDERER_DLL const unsigned int		GetShaderProgramCount()		const { return (unsigned int)m_arrShaderProgram.size(); }
-				LIBRENDERER_DLL const unsigned int		GetShaderTemplateCount()	const { return (unsigned int)m_arrShaderTemplate.size(); }
-				LIBRENDERER_DLL const unsigned int		GetTextureCount()			const { return (unsigned int)m_arrTexture.size(); }
-				LIBRENDERER_DLL const unsigned int		GetRenderTargetCount()		const { return (unsigned int)m_arrRenderTarget.size(); }
-				LIBRENDERER_DLL const unsigned int		GetModelCount()				const { return (unsigned int)m_arrModel.size(); }
+				LIBRENDERER_DLL const unsigned int		GetVertexFormatCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetIndexBufferCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetVertexBufferCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetShaderInputCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetShaderProgramCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetShaderTemplateCount()	const;
+				LIBRENDERER_DLL const unsigned int		GetTextureCount()			const;
+				LIBRENDERER_DLL const unsigned int		GetRenderTargetCount()		const;
+				LIBRENDERER_DLL const unsigned int		GetModelCount()				const;
 
 				// Utility functions for finding a resource by its' original file name from which it was loaded
 				// NB: If the strict parameter is set to false, it will first try to find an exact match, then try
@@ -115,15 +116,15 @@ namespace LibRendererDll
 
 				// Destroy various resource types, freeing memory
 				// NB: Destroying a high level resource also destroys the associated low level resources
-				LIBRENDERER_DLL		void				ReleaseVertexFormat(const unsigned int idx)				{ assert(idx < m_arrVertexFormat.size()); delete m_arrVertexFormat[idx]; m_arrVertexFormat[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseIndexBuffer(const unsigned int idx)				{ assert(idx < m_arrIndexBuffer.size()); delete m_arrIndexBuffer[idx]; m_arrIndexBuffer[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseVertexBuffer(const unsigned int idx)				{ assert(idx < m_arrVertexBuffer.size()); delete m_arrVertexBuffer[idx]; m_arrVertexBuffer[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseShaderInput(const unsigned int idx)				{ assert(idx < m_arrShaderInput.size()); delete m_arrShaderInput[idx]; m_arrShaderInput[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseShaderProgram(const unsigned int idx)			{ assert(idx < m_arrShaderProgram.size()); delete m_arrShaderProgram[idx]; m_arrShaderProgram[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseShaderTemplate(const unsigned idx)				{ assert(idx < m_arrShaderTemplate.size()); delete m_arrShaderTemplate[idx]; m_arrShaderTemplate[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseTexture(const unsigned int idx)					{ assert(idx < m_arrTexture.size()); delete m_arrTexture[idx]; m_arrTexture[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseRenderTarget(const unsigned int idx)				{ assert(idx < m_arrRenderTarget.size()); delete m_arrRenderTarget[idx]; m_arrRenderTarget[idx] = nullptr; }
-				LIBRENDERER_DLL		void				ReleaseModel(const unsigned int idx)					{ assert(idx < m_arrRenderTarget.size()); delete m_arrModel[idx]; m_arrModel[idx] = nullptr; }
+				LIBRENDERER_DLL		void				ReleaseVertexFormat(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseIndexBuffer(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseVertexBuffer(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseShaderInput(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseShaderProgram(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseShaderTemplate(const unsigned idx);
+				LIBRENDERER_DLL		void				ReleaseTexture(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseRenderTarget(const unsigned int idx);
+				LIBRENDERER_DLL		void				ReleaseModel(const unsigned int idx);
 				
 	protected:
 		ResourceManager();

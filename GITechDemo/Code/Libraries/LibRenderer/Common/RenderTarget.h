@@ -28,18 +28,19 @@
 #endif // LIBRENDERER_DLL
 
 #include "ResourceData.h"
-#include "Texture.h"
 
 namespace LibRendererDll
 {
+	class Texture;
+
 	// This platform independent class manages render targets
 	class RenderTarget
 	{
 	public:
 		// Enable rendering in this RT
-		virtual LIBRENDERER_DLL void					Enable() = 0;
+		virtual LIBRENDERER_DLL void					Enable();
 		// Disable from rendering in this RT
-		virtual LIBRENDERER_DLL void					Disable() = 0;
+		virtual LIBRENDERER_DLL void					Disable();
 		// Copy the contents of the specified color buffer to a texture (only mip 0 is copied)
 		// NB: Texture must be 2D and have same width, height and format
 		virtual LIBRENDERER_DLL void					CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) = 0;
@@ -50,36 +51,44 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL void					Unbind();
 
 				/* Get the number of render targets (MRT) */
-				LIBRENDERER_DLL const unsigned int		GetTargetCount() const { return m_nTargetCount; }
+		LIBRENDERER_DLL const unsigned int		GetTargetCount() const;
 				/* Get the pixel format of the color buffer */
-				LIBRENDERER_DLL const PixelFormat		GetFormat(const unsigned int colorBufferIdx = 0) const { assert(colorBufferIdx < m_nTargetCount); return m_pColorBuffer[colorBufferIdx]->GetTextureFormat(); }
+		LIBRENDERER_DLL const PixelFormat		GetFormat(const unsigned int colorBufferIdx = 0) const;
 				/* Get the width of the color buffer */
-				LIBRENDERER_DLL const unsigned int		GetWidth() const { return m_pColorBuffer[0]->GetWidth(); }
+		LIBRENDERER_DLL const unsigned int		GetWidth() const;
 				/* Get the height of the color buffer */
-				LIBRENDERER_DLL const unsigned int		GetHeight() const { return m_pColorBuffer[0]->GetHeight(); }
+		LIBRENDERER_DLL const unsigned int		GetHeight() const;
 				/* Get the texture corresponding to the specified color buffer */
-				LIBRENDERER_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const { assert(colorBufferIdx < m_nTargetCount); return m_nColorBufferTexIdx[colorBufferIdx]; }
+		LIBRENDERER_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const;
 				/* Get the texture corresponding to the specified depth buffer */
-				LIBRENDERER_DLL const unsigned int		GetDepthBuffer() const { return m_nDepthBufferTexIdx; }
+		LIBRENDERER_DLL const unsigned int		GetDepthBuffer() const;
 				/* Determines if the color buffer has mipmaps */
-				LIBRENDERER_DLL const bool				HasMipmaps() const { return m_bHasMipmaps; }
+		LIBRENDERER_DLL const bool				HasMipmaps() const;
 				/* Determines if the render target has a depth buffer */
-				LIBRENDERER_DLL const bool				HasDepthBuffer() const { return m_pDepthBuffer != 0; }
+		LIBRENDERER_DLL const bool				HasDepthBuffer() const;
+
+		static	LIBRENDERER_DLL	RenderTarget*	GetActiveRenderTarget();
 
 	protected:
 		RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		RenderTarget(const unsigned int targetCount,
 			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		RenderTarget(const unsigned int targetCount,
 			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
-			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		virtual ~RenderTarget();
+
+		static	void	SetActiveRenderTarget(RenderTarget* const activeRenderTarget);
 
 		unsigned int	m_nTargetCount;
 		unsigned int	m_nWidth;
 		unsigned int	m_nHeight;
+		float			m_fWidthRatio;
+		float			m_fHeightRatio;
 		bool			m_bHasMipmaps;
 		bool			m_bHasDepthStencil;
 
@@ -87,6 +96,8 @@ namespace LibRendererDll
 		unsigned int	m_nDepthBufferTexIdx;
 		Texture**		m_pColorBuffer;
 		Texture*		m_pDepthBuffer;
+
+		static RenderTarget*	ms_pActiveRenderTarget;
 
 		friend class ResourceManager;
 	};

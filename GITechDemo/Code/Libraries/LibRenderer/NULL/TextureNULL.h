@@ -26,22 +26,23 @@ namespace LibRendererDll
 	class TextureNULL : public Texture
 	{
 	public:
-		void		Enable(const unsigned int texUnit) const;
-		void		Disable(const unsigned int texUnit) const;
-		const bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode);
-		const bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode);
-		void		Unlock();
-		void		Update();
+		void		Enable(const unsigned int texUnit) const {}
+		void		Disable(const unsigned int texUnit) const {}
+		const bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(mipmapLevel, lockMode); }
+		const bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(cubeFace, mipmapLevel, lockMode); }
+		void		Unlock() { Texture::Unlock(); }
+		void		Update() {}
 
-		void		Bind();
-		void		Unbind();
+		void		Bind() {}
+		void		Unbind() {}
 		
 	private:
 		TextureNULL(
 			const PixelFormat texFormat, const TexType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
-			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
-		~TextureNULL();
+			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE)
+			: Texture(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage) {}
+		~TextureNULL() {}
 
 		friend class ResourceManagerNULL;
 	};

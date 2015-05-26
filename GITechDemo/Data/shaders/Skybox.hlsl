@@ -23,6 +23,10 @@ void vsmain(VSIn input, out VSOut output)
 // Pixel shader ///////////////////////////////////////////////////
 const samplerCUBE texSkyTex;
 
+const float3 f3LightDir;
+const float fSunRadius;
+const float fSunBrightness;
+
 struct PSOut
 {
 	float4 f4SkyColor	:	SV_TARGET0;
@@ -30,6 +34,10 @@ struct PSOut
 
 void psmain(VSOut input, out PSOut output)
 {
-	output.f4SkyColor	=	texCUBE(texSkyTex, input.f3TexCoord);
+	const float3 f3SunDir	=	normalize(-f3LightDir);
+	const float	fSunDot		=	dot(normalize(input.f3TexCoord), f3SunDir);
+
+	output.f4SkyColor		=	texCUBE(texSkyTex, input.f3TexCoord);
+	output.f4SkyColor		+=	pow(max(0.f, fSunDot), fSunRadius) * fSunBrightness;
 }
 ////////////////////////////////////////////////////////////////////

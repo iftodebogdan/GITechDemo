@@ -41,8 +41,8 @@ void IndexBuffer::SetIndex(const unsigned int indexIdx, const unsigned int index
 	memcpy(m_pData + (indexIdx * m_nElementSize), &indexVal, m_nElementSize);
 }
 
-void IndexBuffer::SetIndices(const unsigned int indicesVal[], const unsigned int size, const unsigned int offset)
+void IndexBuffer::SetIndices(const unsigned int indicesVal[], const unsigned int idxCount, const unsigned int offset)
 {
-	for (unsigned int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < idxCount; i++)
 		SetIndex(i + offset, indicesVal[i]);
 }

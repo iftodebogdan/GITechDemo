@@ -34,27 +34,39 @@ TextureDX9::TextureDX9(
 	, m_nDepthPitch(0)
 {
 	// Support for deferred initialization (loading from file)
-	if (usage == BU_NONE)
-		return;
-
-	Bind();
+	if (usage != BU_NONE)
+	{
+		PUSH_PROFILE_MARKER(__FUNCSIG__);
+		Bind();
+		POP_PROFILE_MARKER();
+	}
 }
 
 TextureDX9::~TextureDX9()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	Unbind();
+
+	POP_PROFILE_MARKER();
 }
 
 void TextureDX9::Enable(const unsigned int texUnit) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
 	HRESULT hr = device->SetTexture(texUnit, m_pTexture);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void TextureDX9::Disable(const unsigned int texUnit) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -71,6 +83,8 @@ void TextureDX9::Disable(const unsigned int texUnit) const
 
 	hr = device->SetTexture(texUnit, 0);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
@@ -84,6 +98,8 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 	if (m_bIsLocked || m_eBufferUsage == BU_RENDERTAGET || m_eBufferUsage == BU_DEPTHSTENCIL)
 		return false;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(m_pTempBuffer == nullptr);
 	D3DLOCKED_RECT rect;
 	D3DLOCKED_BOX box;
@@ -96,6 +112,7 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 		if (!SUCCEEDED(hr))
 		{
 			assert(false);
+			POP_PROFILE_MARKER();
 			return false;
 		}
 		m_pTempBuffer = rect.pBits;
@@ -108,12 +125,15 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
 		if (!SUCCEEDED(hr))
 		{
 			assert(false);
+			POP_PROFILE_MARKER();
 			return false;
 		}
 		m_pTempBuffer = box.pBits;
 		m_nRowPitch = box.RowPitch;
 		m_nDepthPitch = box.SlicePitch;
 	}
+
+	POP_PROFILE_MARKER();
 
 	return Texture::Lock(mipmapLevel, lockMode);
 }
@@ -129,23 +149,30 @@ const bool TextureDX9::Lock(const unsigned int cubeFace, const unsigned int mipm
 	if (m_bIsLocked)
 		return false;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(m_pTempBuffer == nullptr);
 	D3DLOCKED_RECT rect;
 	HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)cubeFace, mipmapLevel, &rect, 0, BufferLockingDX9[lockMode]);
 	if (!SUCCEEDED(hr))
 	{
 		assert(false);
+		POP_PROFILE_MARKER();
 		return false;
 	}
 	m_pTempBuffer = rect.pBits;
 	m_nRowPitch = rect.Pitch;
 	m_nDepthPitch = 0;
 
+	POP_PROFILE_MARKER();
+
 	return Texture::Lock(cubeFace, mipmapLevel, lockMode);
 }
 
 void TextureDX9::Unlock()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(m_pTempBuffer != nullptr);
 	HRESULT hr;
 	if (m_eTexType == TT_CUBE)
@@ -156,6 +183,8 @@ void TextureDX9::Unlock()
 	m_pTempBuffer = nullptr;
 
 	Texture::Unlock();
+
+	POP_PROFILE_MARKER();
 }
 
 void TextureDX9::Update()
@@ -193,6 +222,8 @@ void TextureDX9::Update()
 
 void TextureDX9::Bind()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	Texture::Bind();
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -277,14 +308,20 @@ void TextureDX9::Bind()
 			}
 		}
 	}
+
+	POP_PROFILE_MARKER();
 }
 
 void TextureDX9::Unbind()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int refCount = 0;
 	if (m_pTexture)
 		refCount = m_pTexture->Release();
 	if (m_eBufferUsage == BU_TEXTURE)
 		assert(refCount == 0);
 	m_pTexture = nullptr;
+
+	POP_PROFILE_MARKER();
 }

@@ -18,35 +18,5 @@
 //////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 
-#include "VertexFormatNULL.h"
 #include "VertexBufferNULL.h"
-#include "IndexBufferNULL.h"
 using namespace LibRendererDll;
-
-VertexBufferNULL::VertexBufferNULL(VertexFormatNULL* const vertexFormat, const unsigned int vertexCount, IndexBufferNULL* const indexBuffer, const BufferUsage usage)
-	: VertexBuffer(vertexFormat, vertexCount, indexBuffer, usage)
-{}
-
-VertexBufferNULL::~VertexBufferNULL()
-{}
-
-void VertexBufferNULL::Enable(const unsigned int offset)
-{}
-
-void VertexBufferNULL::Disable()
-{}
-
-void VertexBufferNULL::Lock(const BufferLocking lockMode)
-{}
-
-void VertexBufferNULL::Unlock()
-{}
-
-void VertexBufferNULL::Update()
-{}
-
-void VertexBufferNULL::Bind()
-{}
-
-void VertexBufferNULL::Unbind()
-{}

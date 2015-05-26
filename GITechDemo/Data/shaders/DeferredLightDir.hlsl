@@ -69,6 +69,11 @@ void psmain(VSOut input, out PSOut output)
 
 	// sample the depth buffer
 	float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+
+	// early depth check, so that we don't shade
+	// the far plane (where the sky will be drawn)
+	if (fDepth == 1.f)
+		clip(-1);
 	
 	// Blinn-Phong directional lighting
 	float3 f3LightDirView = normalize(mul((float3x3)f44ViewMat, f3LightDir));
@@ -93,10 +98,10 @@ void psmain(VSOut input, out PSOut output)
 	{
 		// iterate through all AABBs and check if the point
 		// is inside of one of them
-		if (f4LightViewPos.x > f2CascadeBoundsMin[cascade].x &&
-			f4LightViewPos.y > f2CascadeBoundsMin[cascade].y &&
-			f4LightViewPos.x < f2CascadeBoundsMax[cascade].x &&
-			f4LightViewPos.y < f2CascadeBoundsMax[cascade].y)
+		if (f4LightViewPos.x >= f2CascadeBoundsMin[cascade].x &&
+			f4LightViewPos.y >= f2CascadeBoundsMin[cascade].y &&
+			f4LightViewPos.x <= f2CascadeBoundsMax[cascade].x &&
+			f4LightViewPos.y <= f2CascadeBoundsMax[cascade].y)
 		{
 			nValidCascade = cascade;
 			//break;

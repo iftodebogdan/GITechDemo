@@ -24,6 +24,7 @@
 #include "VertexFormat.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Texture.h"
 using namespace LibRendererDll;
 
 std::ostream& LibRendererDll::operator<<(std::ostream& output_out, const Model& model_in)

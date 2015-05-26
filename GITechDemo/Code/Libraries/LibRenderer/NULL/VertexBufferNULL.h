@@ -30,20 +30,21 @@ namespace LibRendererDll
 	class VertexBufferNULL : public VertexBuffer
 	{
 	public:
-		void	Enable(const unsigned int offset = 0);
-		void	Disable();
-		void	Lock(const BufferLocking lockMode);
-		void	Unlock();
-		void	Update();
+		void	Enable(const unsigned int offset = 0) {}
+		void	Disable() {}
+		void	Lock(const BufferLocking lockMode) {}
+		void	Unlock() {}
+		void	Update() {}
 
-		void	Bind();
-		void	Unbind();
+		void	Bind() {}
+		void	Unbind() {}
 
 	private:
 		VertexBufferNULL(
 			VertexFormatNULL* const vertexFormat, const unsigned int vertexCount,
-			IndexBufferNULL* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC);
-		~VertexBufferNULL();
+			IndexBufferNULL* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC)
+			: VertexBuffer((VertexFormat*)vertexFormat, vertexCount, (IndexBuffer*)indexBuffer, usage) {}
+		~VertexBufferNULL() {}
 
 		friend class ResourceManagerNULL;
 	};

@@ -26,20 +26,21 @@ namespace LibRendererDll
 	class IndexBufferNULL : public IndexBuffer
 	{
 	public:
-		void	Enable();
-		void	Disable();
-		void	Lock(const BufferLocking lockMode);
-		void	Unlock();
-		void	Update();
+		void	Enable() {}
+		void	Disable() {}
+		void	Lock(const BufferLocking lockMode) {}
+		void	Unlock() {}
+		void	Update() {}
 
-		void	Bind();
-		void	Unbind();
+		void	Bind() {}
+		void	Unbind() {}
 
 	private:
 		IndexBufferNULL::IndexBufferNULL(
 			const unsigned int indexCount, const IndexBufferFormat indexFormat,
-			const BufferUsage usage = BU_STATIC);
-		IndexBufferNULL::~IndexBufferNULL();
+			const BufferUsage usage = BU_STATIC)
+			: IndexBuffer(indexCount, indexFormat, usage) {}
+		IndexBufferNULL::~IndexBufferNULL() {}
 
 		friend class ResourceManagerNULL;
 	};

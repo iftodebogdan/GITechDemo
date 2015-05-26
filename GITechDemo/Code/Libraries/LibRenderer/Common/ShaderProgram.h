@@ -30,11 +30,11 @@ namespace LibRendererDll
 	class ShaderProgram
 	{
 	public:
-		const ShaderProgramType	GetProgramType() const { return m_eProgramType; }
-		const char* const GetFilePath() const { return m_szSrcFile.c_str(); }
-		const char* const GetCompilationErrors() const { return m_szErrors.c_str(); }
-		const char* const GetEntryPoint() const { return m_szEntryPoint.c_str(); }
-		const char* const GetProfile() const { return m_szProfile.c_str(); }
+		const ShaderProgramType	GetProgramType() const;
+		const char* const GetFilePath() const;
+		const char* const GetCompilationErrors() const;
+		const char* const GetEntryPoint() const;
+		const char* const GetProfile() const;
 
 	protected:
 		ShaderProgram(const ShaderProgramType programType);

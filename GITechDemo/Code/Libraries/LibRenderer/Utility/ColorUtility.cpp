@@ -845,7 +845,7 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 
 			float colorProj[4][4];
 			float minColorProj = FLT_MAX;
-			float maxColorProj = FLT_MIN;
+			float maxColorProj = -FLT_MAX;
 
 			// Project the color of each pixel of the block onto the eigenvector
 			for (unsigned int y = 0; y < 4; y++)

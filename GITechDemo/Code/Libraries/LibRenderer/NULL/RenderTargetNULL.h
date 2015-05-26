@@ -26,23 +26,29 @@ namespace LibRendererDll
 	class RenderTargetNULL : public RenderTarget
 	{
 	public:
-		void	Enable();
-		void	Disable();
-		void	CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture);
+		void	Enable() { RenderTarget::Enable(); }
+		void	Disable() { RenderTarget::Disable(); }
+		void	CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) {}
 
-		void	Bind();
-		void	Unbind();
+		void	Bind() {}
+		void	Unbind() {}
 
 	protected:
 		RenderTargetNULL(const unsigned int targetCount, PixelFormat pixelFormat,
-			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+			: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat) {}
+		RenderTargetNULL(const unsigned int targetCount, PixelFormat pixelFormat,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+			: RenderTarget(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat) {}
 		RenderTargetNULL(const unsigned int targetCount,
 			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
-			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+			: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat) {}
 		RenderTargetNULL(const unsigned int targetCount,
 			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
-			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
-		~RenderTargetNULL();
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+			: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat) {}
+		~RenderTargetNULL() {}
 
 		friend class ResourceManagerNULL;
 	};

@@ -53,8 +53,8 @@ namespace LibRendererDll
 
 				// Set an index
 				LIBRENDERER_DLL void	SetIndex(const unsigned int indexIdx, const unsigned int indexVal);
-				// Copy [size] elements to the index buffer from the array, starting from the [offset]-th element of the index buffer
-				LIBRENDERER_DLL void	SetIndices(const unsigned int indicesVal[], const unsigned int size, const unsigned int offset = 0);
+				// Copy [idxCount] elements to the index buffer from the array, starting from the [offset]-th element of the index buffer
+				LIBRENDERER_DLL void	SetIndices(const unsigned int indicesVal[], const unsigned int idxCount, const unsigned int offset = 0);
 
 	protected:
 		IndexBuffer(const unsigned int indexCount, const IndexBufferFormat indexFormat = IBF_INDEX16, const BufferUsage usage = BU_STATIC);

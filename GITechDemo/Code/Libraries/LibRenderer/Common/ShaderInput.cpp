@@ -19,8 +19,9 @@
 #include "stdafx.h"
 
 #include "Renderer.h"
-#include "Buffer.h"
 #include "ShaderInput.h"
+#include "ShaderTemplate.h"
+#include "ResourceManager.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
 using namespace LibRendererDll;
@@ -40,7 +41,7 @@ using namespace LibRendererDll;
 ///////////////////////////////////////////////////////////////////////////////
 
 
-ShaderInput::ShaderInput(ShaderTemplate* shaderTemplate)
+ShaderInput::ShaderInput(ShaderTemplate* const shaderTemplate)
 	: Buffer(shaderTemplate->GetTotalSizeOfInputConstants(), 1u, BU_NONE)
 	, m_pShaderTemplate(shaderTemplate)
 {
@@ -103,6 +104,41 @@ void ShaderInput::SetBoolArray(const unsigned int handle, const bool* const data
 	}
 }
 
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec2f* const data)
+{
+	SetBoolArray(handle, (const bool* const)data);
+}
+
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec3f* const data)
+{
+	SetBoolArray(handle, (const bool* const)data);
+}
+
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec4f* const data)
+{
+	SetBoolArray(handle, (const bool* const)data);
+}
+
+void ShaderInput::SetBool(const unsigned int handle, const bool data)
+{
+	SetBoolArray(handle, &data);
+}
+
+void ShaderInput::SetBool2(const unsigned int handle, const Vec<bool, 2> data)
+{
+	SetBoolArray(handle, data.getData());
+}
+
+void ShaderInput::SetBool3(const unsigned int handle, const Vec<bool, 3> data)
+{
+	SetBoolArray(handle, data.getData());
+}
+
+void ShaderInput::SetBool4(const unsigned int handle, const Vec<bool, 4> data)
+{
+	SetBoolArray(handle, data.getData());
+}
+
 void ShaderInput::SetFloatArray(const unsigned int handle, const float* const data)
 {
 	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
@@ -115,6 +151,41 @@ void ShaderInput::SetFloatArray(const unsigned int handle, const float* const da
 			desc.nBytes / desc.nArrayElements
 			);
 	}
+}
+
+void ShaderInput::SetFloatArray(const unsigned int handle, const Vec2f* const data)
+{
+	SetFloatArray(handle, (const float* const)data);
+}
+
+void ShaderInput::SetFloatArray(const unsigned int handle, const Vec3f* const data)
+{
+	SetFloatArray(handle, (const float* const)data);
+}
+
+void ShaderInput::SetFloatArray(const unsigned int handle, const Vec4f* const data)
+{
+	SetFloatArray(handle, (const float* const)data);
+}
+
+void ShaderInput::SetFloat(const unsigned int handle, const float data)
+{
+	SetFloatArray(handle, &data);
+}
+
+void ShaderInput::SetFloat2(const unsigned int handle, const Vec2f data)
+{
+	SetFloatArray(handle, data.getData());
+}
+
+void ShaderInput::SetFloat3(const unsigned int handle, const Vec3f data) 
+{
+	SetFloatArray(handle, data.getData());
+}
+
+void ShaderInput::SetFloat4(const unsigned int handle, const Vec4f data)
+{
+	SetFloatArray(handle, data.getData());
 }
 
 void ShaderInput::SetIntArray(const unsigned int handle, const int* const data)
@@ -147,6 +218,41 @@ void ShaderInput::SetIntArray(const unsigned int handle, const int* const data)
 	case RT_BOOL:
 		assert(false);	// This should not happen
 	}
+}
+
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec2f* const data)
+{
+	SetIntArray(handle, (const int* const)data);
+}
+
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec3f* const data)
+{
+	SetIntArray(handle, (const int* const)data);
+}
+
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec4f* const data)
+{
+	SetIntArray(handle, (const int* const)data);
+}
+
+void ShaderInput::SetInt(const unsigned int handle, const int data)
+{
+	SetIntArray(handle, &data);
+}
+
+void ShaderInput::SetInt2(const unsigned int handle, const Vec2i data)
+{
+	SetIntArray(handle, data.getData());
+}
+
+void ShaderInput::SetInt3(const unsigned int handle, const Vec3i data)
+{
+	SetIntArray(handle, data.getData());
+}
+
+void ShaderInput::SetInt4(const unsigned int handle, const Vec4i data)
+{
+	SetIntArray(handle, data.getData());
 }
 
 const bool ShaderInput::GetBool(const unsigned int handle, const unsigned int idx) const
@@ -411,4 +517,14 @@ void ShaderInput::SetTexture(const unsigned int handle, const Texture* const tex
 			SetTexture(handle, i);
 			break;
 		}
+}
+
+const unsigned int ShaderInput::GetInputCount() const
+{
+	return (unsigned int)m_pShaderTemplate->m_arrInputDesc.size();
+}
+
+const ShaderInputDesc ShaderInput::GetInputDesc(const unsigned int handle) const
+{
+	return m_pShaderTemplate->m_arrInputDesc[handle];
 }

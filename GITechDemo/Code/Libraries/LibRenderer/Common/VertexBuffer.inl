@@ -31,15 +31,6 @@ inline T& VertexBuffer::Position(const unsigned int vertexIdx) const
 	return *(T*)(m_pData + positionOffset + vertexIdx * GetVertexFormat()->GetStride());
 }
 
-inline const bool VertexBuffer::HasPosition() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_POSITION)
-			return true;
-
-	return false;
-}
-
 template <typename T>
 inline T& VertexBuffer::Normal(const unsigned int vertexIdx) const
 {
@@ -53,15 +44,6 @@ inline T& VertexBuffer::Normal(const unsigned int vertexIdx) const
 		}
 
 	return *(T*)(m_pData + normalOffset + vertexIdx * GetVertexFormat()->GetStride());
-}
-
-inline const bool VertexBuffer::HasNormal() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_NORMAL)
-			return true;
-
-	return false;
 }
 
 template <typename T>
@@ -79,15 +61,6 @@ inline T& VertexBuffer::Tangent(const unsigned int vertexIdx) const
 	return *(T*)(m_pData + tangentOffset + vertexIdx * GetVertexFormat()->GetStride());
 }
 
-inline const bool VertexBuffer::HasTangent() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TANGENT)
-			return true;
-
-	return false;
-}
-
 template <typename T>
 inline T& VertexBuffer::Binormal(const unsigned int vertexIdx) const
 {
@@ -101,15 +74,6 @@ inline T& VertexBuffer::Binormal(const unsigned int vertexIdx) const
 		}
 
 	return *(T*)(m_pData + binormalOffset + vertexIdx * GetVertexFormat()->GetStride());
-}
-
-inline const bool VertexBuffer::HasBinormal() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BINORMAL)
-			return true;
-
-	return false;
 }
 
 template <typename T>
@@ -128,16 +92,6 @@ inline T& VertexBuffer::TexCoord(const unsigned int vertexIdx, const unsigned in
 	return *(T*)(m_pData + tcoordOffset + vertexIdx * GetVertexFormat()->GetStride());
 }
 
-inline const bool VertexBuffer::HasTexCoord(const unsigned int usageIdx) const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TEXCOORD
-			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
-			return true;
-
-	return false;
-}
-
 template <typename T>
 inline T& VertexBuffer::Color(const unsigned int vertexIdx, const unsigned int usageIdx) const
 {
@@ -152,16 +106,6 @@ inline T& VertexBuffer::Color(const unsigned int vertexIdx, const unsigned int u
 		}
 
 	return *(T*)(m_pData + colorOffset + vertexIdx * GetVertexFormat()->GetStride());
-}
-
-inline const bool VertexBuffer::HasColor(const unsigned int usageIdx) const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_COLOR
-			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
-			return true;
-
-	return false;
 }
 
 template <typename T>
@@ -179,15 +123,6 @@ inline T& VertexBuffer::BlendIndices(const unsigned int vertexIdx) const
 	return *(T*)(m_pData + blendIndOffset + vertexIdx * GetVertexFormat()->GetStride());
 }
 
-inline const bool VertexBuffer::HasBlendIndices() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDINDICES)
-			return true;
-
-	return false;
-}
-
 template <typename T>
 inline T& VertexBuffer::BlendWeight(const unsigned int vertexIdx) const
 {
@@ -201,13 +136,4 @@ inline T& VertexBuffer::BlendWeight(const unsigned int vertexIdx) const
 		}
 
 	return *(T*)(m_pData + blendWeightOffset + vertexIdx * GetVertexFormat()->GetStride());
-}
-
-inline const bool VertexBuffer::HasBlendWeight() const
-{
-	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDWEIGHT)
-			return true;
-
-	return false;
 }

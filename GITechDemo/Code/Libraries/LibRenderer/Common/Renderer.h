@@ -29,12 +29,11 @@
 
 #include "ResourceData.h"
 
-#include "ResourceManager.h"
-#include "RenderState.h"
-#include "SamplerState.h"
-
 namespace LibRendererDll
 {
+	class RenderState;
+	class SamplerState;
+
 	// This is the platform independent renderer interface
 	class Renderer
 	{
@@ -44,9 +43,9 @@ namespace LibRendererDll
 		/* Destroys the instance of the Renderer object */
 		static	LIBRENDERER_DLL void				DestroyInstance();
 		/* Retrieves the instance of the Renderer object */
-		static	LIBRENDERER_DLL Renderer*			GetInstance() { return m_pInstance; }
+		static	LIBRENDERER_DLL Renderer*			GetInstance();
 		/* Retrieves the API of the currently instantiated renderer */
-		static	LIBRENDERER_DLL API					GetAPI() { return m_eAPI; }
+		static	LIBRENDERER_DLL API					GetAPI();
 
 		/* After you create an application window, you are ready to initialize the graphics
 		object that you will use to render the scene. This process includes creating the
@@ -54,9 +53,9 @@ namespace LibRendererDll
 		virtual	LIBRENDERER_DLL void				Initialize(void* hWnd) = 0;
 
 		/* Set backbuffer size and offset (useful when rendering in a part of a window) */
-		virtual	LIBRENDERER_DLL void				SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) { m_vBackBufferSize = size; m_vBackBufferOffset = offset; }
-		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferSize() { return m_vBackBufferSize; }
-		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferOffset() { return m_vBackBufferOffset; }
+		virtual	LIBRENDERER_DLL void				SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
+		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferSize();
+		virtual	LIBRENDERER_DLL	Vec2i				GetBackBufferOffset();
 		/* Set viewport size and offset */
 		virtual	LIBRENDERER_DLL	void				SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) = 0;
 		/* Create a projection matrix for the corresponding API */
@@ -64,7 +63,7 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL void				CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar) = 0;
 		/* Convert a GMTL / OpenGL projection matrix to a DirectX compliant projection matrix */
 		static	LIBRENDERER_DLL	void				ConvertOGLProjMatToD3D(Matrix44f& matProj);
-		static	LIBRENDERER_DLL	void				ConvertOGLProjMatToD3D(Matrix44f* const matProj) { ConvertOGLProjMatToD3D(*matProj); }
+		static	LIBRENDERER_DLL	void				ConvertOGLProjMatToD3D(Matrix44f* const matProj);
 
 		/* Try to begin a new frame (don't try to draw anything if it fails) */
 		virtual	LIBRENDERER_DLL const bool			BeginFrame() = 0;
@@ -77,14 +76,19 @@ namespace LibRendererDll
 		/* Draw the contents of a vertex buffer (for the moment, only supports triangle lists with valid index buffers) */
 		virtual	LIBRENDERER_DLL void				DrawVertexBuffer(VertexBuffer* vb) = 0;
 
+		/* Mark the beginning of a user-defined event, viewable in graphical analysis tools (NB: color values are between 0-255) */
+		virtual	LIBRENDERER_DLL	void				PushProfileMarker(const char* const label);
+		/* Mark the end of a user-defined event, viewable in graphical analysis tools */
+		virtual	LIBRENDERER_DLL	void				PopProfileMarker();
+
 				/* Retrieve a pointer to the resource manager */
-				LIBRENDERER_DLL ResourceManager*	GetResourceManager() { return m_pResourceManager; }
+				LIBRENDERER_DLL ResourceManager*	GetResourceManager();
 				/* Retrieve a pointer to the render state manager */
-				LIBRENDERER_DLL RenderState*		GetRenderStateManager() { return m_pRenderState; }
+				LIBRENDERER_DLL RenderState*		GetRenderStateManager();
 				/* Retrieve a pointer to the texture sampler state manager */
-				LIBRENDERER_DLL SamplerState*		GetSamplerStateManager() { return m_pSamplerState; }
+				LIBRENDERER_DLL SamplerState*		GetSamplerStateManager();
 				/* Device capabilities */
-				LIBRENDERER_DLL DeviceCaps			GetDeviceCaps() { return m_tDeviceCaps; }
+				LIBRENDERER_DLL DeviceCaps			GetDeviceCaps();
 
 	protected:
 		Renderer();
@@ -97,8 +101,9 @@ namespace LibRendererDll
 			SamplerState*		m_pSamplerState;		// Pointer to the texture sampler state manager
 			DeviceCaps			m_tDeviceCaps;			// Pointer to the device capabilities
 
-		static	Renderer*		m_pInstance;	// Holds the current instance of the rendering class
-		static	API				m_eAPI;			// Holds the currently instanced rendering API
+		static	Renderer*		ms_pInstance;			// Holds the current instance of the rendering class
+		static	API				ms_eAPI;				// Holds the currently instanced rendering API
+		static	int				ms_nProfileMarkerCounter;
 	};
 }
 

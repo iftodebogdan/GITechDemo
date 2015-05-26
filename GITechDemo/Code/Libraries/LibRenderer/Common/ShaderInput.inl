@@ -57,7 +57,7 @@ inline void ShaderInput::SetMatrixArray(const unsigned int handle, const Matrix<
 }
 
 template < typename T, const unsigned int ROWS, const unsigned int COLS >
-const Matrix<T, ROWS, COLS> ShaderInput::GetMatrix(const unsigned int handle, const unsigned int idx) const
+inline const Matrix<T, ROWS, COLS> ShaderInput::GetMatrix(const unsigned int handle, const unsigned int idx) const
 {
 	Matrix<T, ROWS, COLS> retMat;
 	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
@@ -78,7 +78,7 @@ const Matrix<T, ROWS, COLS> ShaderInput::GetMatrix(const unsigned int handle, co
 }
 
 template < const unsigned int ROWS, const unsigned int COLS >
-const Matrix<float, ROWS, COLS> ShaderInput::GetMatrix(const unsigned int handle, const unsigned int idx) const
+inline const Matrix<float, ROWS, COLS> ShaderInput::GetMatrix(const unsigned int handle, const unsigned int idx) const
 {
 	return GetMatrix<float, ROWS, COLS>(handle, idx);
 }

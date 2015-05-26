@@ -1,6 +1,11 @@
 #include "stdafx.h"
 
 #include <Renderer.h>
+#include <ResourceManager.h>
+#include <VertexBuffer.h>
+#include <VertexFormat.h>
+#include <IndexBuffer.h>
+#include <ResourceData.h>
 using namespace LibRendererDll;
 
 #include "../Common/Logging.h"

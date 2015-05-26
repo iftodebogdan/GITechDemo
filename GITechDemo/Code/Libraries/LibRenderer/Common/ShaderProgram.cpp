@@ -21,7 +21,7 @@
 #include "ShaderProgram.h"
 using namespace LibRendererDll;
 
-ShaderProgram::ShaderProgram(ShaderProgramType programType)
+ShaderProgram::ShaderProgram(const ShaderProgramType programType)
 	: m_eProgramType(programType)
 {}
 
@@ -41,4 +41,29 @@ void ShaderProgram::SetValue(const RegisterType registerType, const unsigned int
 	case RT_FLOAT4:
 		SetFloat(registerIndex, (const float* const)data, registerCount);
 	}
+}
+
+const ShaderProgramType ShaderProgram::GetProgramType() const
+{
+	return m_eProgramType;
+}
+
+const char* const ShaderProgram::GetFilePath() const
+{
+	return m_szSrcFile.c_str();
+}
+
+const char* const ShaderProgram::GetCompilationErrors() const
+{
+	return m_szErrors.c_str();
+}
+
+const char* const ShaderProgram::GetEntryPoint() const
+{
+	return m_szEntryPoint.c_str();
+}
+
+const char* const ShaderProgram::GetProfile() const
+{
+	return m_szProfile.c_str();
 }

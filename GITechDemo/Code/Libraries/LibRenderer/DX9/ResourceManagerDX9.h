@@ -52,12 +52,14 @@ namespace LibRendererDll
 
 		const unsigned int CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		const unsigned int CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		const unsigned int CreateRenderTarget(const unsigned int targetCount,
 			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		const unsigned int CreateRenderTarget(const unsigned int targetCount,
 			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
-			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 
 	private:
 		ResourceManagerDX9() {}

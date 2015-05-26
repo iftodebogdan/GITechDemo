@@ -27,7 +27,6 @@
 #endif
 #endif // LIBRENDERER_DLL
 
-#include <vector>
 #include "ResourceData.h"
 
 namespace LibRendererDll
@@ -42,12 +41,12 @@ namespace LibRendererDll
 		// Set the shader inputs and set the shader to an active state
 		LIBRENDERER_DLL void Enable(ShaderInput* const shaderInput);
 		// Set the shader inputs and set the shader to an active state
-		LIBRENDERER_DLL void Enable(ShaderInput& shaderInput) { Enable(&shaderInput); }
+		LIBRENDERER_DLL void Enable(ShaderInput& shaderInput);
 		// Disable the shader
 		LIBRENDERER_DLL void Disable();
 
 		// Get the constant table
-		LIBRENDERER_DLL	const std::vector<ShaderInputDesc> GetConstantTable() { return m_arrInputDesc; }
+		LIBRENDERER_DLL	const std::vector<ShaderInputDesc> GetConstantTable();
 		
 	protected:
 		ShaderTemplate(ShaderProgram* const shaderProgram);

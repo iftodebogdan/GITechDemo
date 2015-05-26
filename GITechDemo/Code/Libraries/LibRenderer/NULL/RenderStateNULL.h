@@ -26,8 +26,10 @@ namespace LibRendererDll
 	class RenderStateNULL : public RenderState
 	{
 	protected:
-		RenderStateNULL();
-		~RenderStateNULL();
+		RenderStateNULL() {}
+		~RenderStateNULL() {}
+
+		const bool	SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) { return true; }
 
 		friend class RendererNULL;
 	};

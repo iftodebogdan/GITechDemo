@@ -20,10 +20,3 @@
 
 #include "RenderStateNULL.h"
 using namespace LibRendererDll;
-
-RenderStateNULL::RenderStateNULL()
-{}
-
-RenderStateNULL::~RenderStateNULL()
-{}
-

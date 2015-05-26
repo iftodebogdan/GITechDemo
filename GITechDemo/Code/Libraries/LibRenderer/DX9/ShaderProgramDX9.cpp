@@ -34,16 +34,26 @@ ShaderProgramDX9::ShaderProgramDX9(const ShaderProgramType programType,
 	, m_pConstantTable(nullptr)
 {
 	if (strlen(srcData))
+	{
+		PUSH_PROFILE_MARKER(__FUNCSIG__);
 		Compile(srcData, nullptr, entryPoint, profile);
+		POP_PROFILE_MARKER();
+	}
 }
 
 ShaderProgramDX9::~ShaderProgramDX9()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	Unbind();
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::Enable()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(m_pVertexShader || m_pPixelShader);
 	
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -57,10 +67,14 @@ void ShaderProgramDX9::Enable()
 		hr = device->SetPixelShader(m_pPixelShader);
 	}
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::Disable()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -95,10 +109,14 @@ void ShaderProgramDX9::Disable()
 		hr = device->SetPixelShader(0);
 	}
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, const char* entryPoint, const char* profile)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_szSrcFile = filePath;
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -147,7 +165,10 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 		m_szErrors.clear();
 
 	if (FAILED(hr))
+	{
+		POP_PROFILE_MARKER();
 		return false;
+	}
 
 	unsigned int refCount = 0;
 	switch (m_eProgramType)
@@ -174,35 +195,49 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 		refCount = errorMsg->Release();
 	assert(refCount == 0);
 
+	POP_PROFILE_MARKER();
+
 	return true;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantCount() const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	D3DXCONSTANTTABLE_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetDesc(&constDesc);
 	assert(SUCCEEDED(hr));
 	
+	POP_PROFILE_MARKER();
+
 	return constDesc.Constants;
 }
 
 const char* ShaderProgramDX9::GetConstantName(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.Name;
 }
 
 const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
 	assert(count == 1);
+
+	POP_PROFILE_MARKER();
 
 	switch (constDesc.Type)
 	{
@@ -252,11 +287,15 @@ const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) con
 
 const RegisterType ShaderProgramDX9::GetConstantRegisterType(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
 	assert(count == 1);
+
+	POP_PROFILE_MARKER();
 
 	switch (constDesc.RegisterSet)
 	{
@@ -275,65 +314,91 @@ const RegisterType ShaderProgramDX9::GetConstantRegisterType(const unsigned int 
 
 const unsigned int ShaderProgramDX9::GetConstantRegisterIndex(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.RegisterIndex;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantRegisterCount(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.RegisterCount;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantRowCount(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
 
+	POP_PROFILE_MARKER();
+
 	return constDesc.Rows;
 }
 const unsigned int ShaderProgramDX9::GetConstantColumnCount(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.Columns;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantArrayElementCount(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.Elements;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantStructMemberCount(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	return constDesc.StructMembers;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int handle) const
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int count = 1u;
 	D3DXCONSTANT_DESC constDesc;
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
@@ -355,11 +420,15 @@ const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int han
 	//assert(size == constDesc.Bytes);
 	size = max(size, constDesc.Bytes);
 
+	POP_PROFILE_MARKER();
+
 	return size;
 }
 
 void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 	switch (m_eProgramType)
@@ -371,11 +440,15 @@ void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* c
 		hr = device->SetPixelShaderConstantF(registerIndex, data, registerCount);
 	}
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 
 void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 	switch (m_eProgramType)
@@ -387,10 +460,14 @@ void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const
 		hr = device->SetPixelShaderConstantI(registerIndex, data, registerCount);
 	}
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 	
@@ -409,22 +486,34 @@ void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* con
 	}
 	delete[] tempBuffer;
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::SetTexture(const unsigned int registerIndex, const Texture* const tex)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(tex);
 	tex->Enable(registerIndex);
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::Bind()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	if (m_szSrcFile.length())
 		Compile(m_szSrcFile.c_str(), nullptr, m_szEntryPoint.c_str(), m_szProfile.c_str());
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderProgramDX9::Unbind()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	unsigned int refCount = 0;
 
 	if (m_pVertexShader)
@@ -447,4 +536,6 @@ void ShaderProgramDX9::Unbind()
 		m_pConstantTable = nullptr;
 	}
 	assert(refCount == 0);
+
+	POP_PROFILE_MARKER();
 }

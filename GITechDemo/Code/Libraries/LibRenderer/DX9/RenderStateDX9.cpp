@@ -25,7 +25,11 @@ using namespace LibRendererDll;
 
 RenderStateDX9::RenderStateDX9()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	Reset();
+
+	POP_PROFILE_MARKER();
 }
 
 RenderStateDX9::~RenderStateDX9()
@@ -80,9 +84,13 @@ const bool RenderStateDX9::SetColorBlendEnable(const bool enabled)
 	if (enabled == GetColorBlendEnable())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ALPHABLENDENABLE, (DWORD)enabled);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetColorBlendEnable(enabled);
@@ -97,9 +105,13 @@ const bool RenderStateDX9::SetColorSrcBlend(const Blend alphaSrc)
 	if (alphaSrc == GetColorSrcBlend())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_SRCBLEND/*ALPHA*/, RenderStateMappingDX9[alphaSrc]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetColorSrcBlend(alphaSrc);
@@ -114,9 +126,13 @@ const bool RenderStateDX9::SetColorDstBlend(const Blend alphaDst)
 	if (alphaDst == GetColorDstBlend())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_DESTBLEND/*ALPHA*/, RenderStateMappingDX9[alphaDst]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetColorDstBlend(alphaDst);
@@ -129,9 +145,13 @@ const bool RenderStateDX9::SetAlphaTestEnable(const bool enabled)
 	if (enabled == GetAlphaTestEnable())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ALPHATESTENABLE, (DWORD)enabled);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetAlphaTestEnable(enabled);
@@ -146,9 +166,13 @@ const bool RenderStateDX9::SetAlphaTestFunc(const Cmp alphaFunc)
 	if (alphaFunc == GetAlphaTestFunc())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ALPHAFUNC, RenderStateMappingDX9[alphaFunc]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetAlphaTestFunc(alphaFunc);
@@ -163,9 +187,13 @@ const bool RenderStateDX9::SetAlphaTestRef(const float normAlphaRef)
 	if (normAlphaRef == GetAlphaTestRef())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ALPHAREF, (DWORD)(255.f * normAlphaRef));
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetAlphaTestRef(normAlphaRef);
@@ -185,9 +213,13 @@ const bool RenderStateDX9::SetColorBlendFactor(const Vec4f rgba)
 	if (rgba == GetColorBlendFactor())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_BLENDFACTOR, D3DCOLOR_COLORVALUE(rgba[0], rgba[1], rgba[2], rgba[3]));
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetColorBlendFactor(rgba);
@@ -202,9 +234,13 @@ const bool RenderStateDX9::SetCullMode(const Cull cullMode)
 	if (cullMode == GetCullMode())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_CULLMODE, RenderStateMappingDX9[cullMode]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetCullMode(cullMode);
@@ -219,9 +255,13 @@ const bool RenderStateDX9::SetZEnable(const ZBuffer enabled)
 	if (enabled == GetZEnable())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ZENABLE, RenderStateMappingDX9[enabled]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetZEnable(enabled);
@@ -236,9 +276,13 @@ const bool RenderStateDX9::SetZFunc(const Cmp zFunc)
 	if (zFunc == GetZFunc())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ZFUNC, RenderStateMappingDX9[zFunc]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetZFunc(zFunc);
@@ -251,9 +295,13 @@ const bool RenderStateDX9::SetZWriteEnabled(const bool enabled)
 	if (enabled == GetZWriteEnabled())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_ZWRITEENABLE, (DWORD)enabled);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetZWriteEnabled(enabled);
@@ -269,10 +317,14 @@ const bool RenderStateDX9::SetColorWriteEnabled(const bool red, const bool green
 		alpha == GetColorWriteAlphaEnabled())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	DWORD colorWriteEnable = ((red * 0xf) & D3DCOLORWRITEENABLE_RED) | ((green * 0xf) & D3DCOLORWRITEENABLE_GREEN) | ((blue * 0xf) & D3DCOLORWRITEENABLE_BLUE) | ((alpha * 0xf) & D3DCOLORWRITEENABLE_ALPHA);
 	HRESULT hr = device->SetRenderState(D3DRS_COLORWRITEENABLE, colorWriteEnable);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetColorWriteEnabled(red, green, blue, alpha);
@@ -285,9 +337,13 @@ const bool RenderStateDX9::SetSlopeScaleDepthBias(const float scale)
 	if (scale == GetSlopeScaleDepthBias())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&scale);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetSlopeScaleDepthBias(scale);
@@ -300,10 +356,14 @@ const bool RenderStateDX9::SetDepthBias(const float bias)
 	if (bias == GetDepthBias())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	//float dwBias = bias / 16777216.0f;
 	HRESULT hr = device->SetRenderState(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetDepthBias(bias);
@@ -316,9 +376,13 @@ const bool RenderStateDX9::SetStencilEnable(const bool enabled)
 	if (enabled == GetStencilEnable())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILENABLE, (DWORD)enabled);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilEnable(enabled);
@@ -333,9 +397,13 @@ const bool RenderStateDX9::SetStencilFunc(const Cmp stencilFunc)
 	if (stencilFunc == GetStencilFunc())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILFUNC, RenderStateMappingDX9[stencilFunc]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilFunc(stencilFunc);
@@ -348,9 +416,13 @@ const bool RenderStateDX9::SetStencilRef(const unsigned long stencilRef)
 	if (stencilRef == GetStencilRef())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILREF, (DWORD)stencilRef);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilRef(stencilRef);
@@ -363,9 +435,13 @@ const bool RenderStateDX9::SetStencilMask(const unsigned long stencilMask)
 	if (stencilMask == GetStencilMask())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILMASK, (DWORD)stencilMask);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilMask(stencilMask);
@@ -378,9 +454,13 @@ const bool RenderStateDX9::SetStencilWriteMask(const unsigned long stencilWriteM
 	if (stencilWriteMask == GetStencilWriteMask())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILWRITEMASK, (DWORD)stencilWriteMask);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilWriteMask(stencilWriteMask);
@@ -395,9 +475,13 @@ const bool RenderStateDX9::SetStencilFail(const StencilOp stencilFail)
 	if (stencilFail == GetStencilFail())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILFAIL, RenderStateMappingDX9[stencilFail]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilFail(stencilFail);
@@ -412,9 +496,13 @@ const bool RenderStateDX9::SetStencilZFail(const StencilOp stencilZFail)
 	if (stencilZFail == GetStencilZFail())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILZFAIL, RenderStateMappingDX9[stencilZFail]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilZFail(stencilZFail);
@@ -429,9 +517,13 @@ const bool RenderStateDX9::SetStencilPass(const StencilOp stencilPass)
 	if (stencilPass == GetStencilPass())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_STENCILPASS, RenderStateMappingDX9[stencilPass]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetStencilPass(stencilPass);
@@ -446,9 +538,13 @@ const bool RenderStateDX9::SetFillMode(const Fill fillMode)
 	if (fillMode == GetFillMode())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_FILLMODE, RenderStateMappingDX9[fillMode]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetFillMode(fillMode);
@@ -461,9 +557,13 @@ const bool RenderStateDX9::SetScissorEnable(const bool enabled)
 	if (enabled == GetScissorEnable())
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetRenderState(D3DRS_SCISSORTESTENABLE, (DWORD)enabled);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return RenderState::SetScissorEnable(enabled);
@@ -473,19 +573,22 @@ const bool RenderStateDX9::SetScissorEnable(const bool enabled)
 
 const bool RenderStateDX9::SetScissor(const Vec2i size, const Vec2i offset)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	const RECT scissorRect = { offset[0], offset[1], offset[0] + size[0], offset[1] + size[1] };
 	HRESULT hr = device->SetScissorRect(&scissorRect);
 	assert(SUCCEEDED(hr));
 
-	if (SUCCEEDED(hr))
-		return RenderState::SetScissor(size, offset);
-	else
-		return false;
+	POP_PROFILE_MARKER();
+
+	return SUCCEEDED(hr);
 }
 
 void RenderStateDX9::Reset()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 	DWORD value;
@@ -612,4 +715,6 @@ void RenderStateDX9::Reset()
 
 
 	RenderState::Reset();
+
+	POP_PROFILE_MARKER();
 }

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include <Renderer.h>
+#include <Texture.h>
+#include <ResourceManager.h>
 using namespace LibRendererDll;
 
 #include <IL/il.h>
@@ -154,13 +156,15 @@ PixelFormat TextureCompiler::GetPixelFormat(const ILinfo & info, bool& swizzle)
 				return PF_NONE;
 			}
 		case IL_FLOAT:
-			if (info.Bpp == 16)
+			// info.Bpp appears to be broken, since it is reporting 4 instead of 16 Bpp,
+			// although info.Data points to memory with 32bit floating point data
+			//if (info.Bpp == 16)
 				return PF_A32B32G32R32F;
-			else
-			{
-				assert(false);
-				return PF_NONE;
-			}
+			//else
+			//{
+			//	assert(false);
+			//	return PF_NONE;
+			//}
 		case IL_HALF:
 			if (info.Bpp == 8)
 				return PF_A16B16G16R16F;
@@ -651,7 +655,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 	{
 		Log << "\t[INFO] Generating mipmaps...\n";
 		const unsigned long long mipStart = GetTickCount64();
-		if (texDst->GenerateMipmaps())
+		if (texDst->GenerateMips())
 			Log << "\t[INFO] Mipmaps generated in " << (float)(GetTickCount64() - mipStart) << " ms\n";
 		else
 		{

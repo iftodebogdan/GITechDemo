@@ -27,16 +27,17 @@ namespace LibRendererDll
 	class VertexFormatNULL : public VertexFormat
 	{
 	public:
-		void	Enable();
-		void	Disable();
-		void	Update();
+		void	Enable() {}
+		void	Disable() {}
+		void	Update() {}
 
-		void	Bind();
-		void	Unbind();
+		void	Bind() {}
+		void	Unbind() {}
 
 	private:
-		VertexFormatNULL(const unsigned int attributeCount);
-		~VertexFormatNULL();
+		VertexFormatNULL(const unsigned int attributeCount)
+			: VertexFormat(attributeCount) {}
+		~VertexFormatNULL() {}
 
 		friend class ResourceManagerNULL;
 	};

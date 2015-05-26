@@ -45,3 +45,28 @@ Buffer::~Buffer()
 {
 	delete[] m_pData;
 }
+
+const unsigned int Buffer::GetElementCount() const
+{
+	return m_nElementCount;
+}
+
+const unsigned int Buffer::GetElementSize() const
+{
+	return m_nElementSize;
+}
+
+const BufferUsage Buffer::GetUsage() const
+{
+	return m_eBufferUsage;
+}
+
+const unsigned int Buffer::GetSize() const
+{
+	return m_nSize;
+}
+
+byte* Buffer::GetData() const
+{
+	return m_pData;
+}

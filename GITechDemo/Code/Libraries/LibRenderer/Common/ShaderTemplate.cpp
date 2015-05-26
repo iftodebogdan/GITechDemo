@@ -20,9 +20,11 @@
 
 #include "Renderer.h"
 #include "ShaderTemplate.h"
+#include "SamplerState.h"
 #include "ShaderProgram.h"
 #include "ShaderInput.h"
 #include "Texture.h"
+#include "ResourceManager.h"
 using namespace LibRendererDll;
 
 ShaderTemplate::ShaderTemplate(ShaderProgram* const shaderProgram)
@@ -30,7 +32,6 @@ ShaderTemplate::ShaderTemplate(ShaderProgram* const shaderProgram)
 	, m_pShaderInput(nullptr)
 {
 	assert(shaderProgram);
-
 	DescribeShaderInputs();
 }
 
@@ -111,7 +112,7 @@ void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 					tex->Enable(m_arrInputDesc[i].nRegisterIndex);
 					SamplerState* ssm = Renderer::GetInstance()->GetSamplerStateManager();
 					ssm->SetAnisotropy(m_arrInputDesc[i].nRegisterIndex, tex->GetAnisotropy());
-					ssm->SetMipmapLodBias(m_arrInputDesc[i].nRegisterIndex, tex->GetMipmapLodBias());
+					ssm->SetMipLodBias(m_arrInputDesc[i].nRegisterIndex, tex->GetMipLodBias());
 					ssm->SetFilter(m_arrInputDesc[i].nRegisterIndex, tex->GetFilter());
 					ssm->SetBorderColor(m_arrInputDesc[i].nRegisterIndex, tex->GetBorderColor());
 					ssm->SetAddressingModeU(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeU());
@@ -145,4 +146,14 @@ void ShaderTemplate::Disable()
 	}
 
 	m_pShaderInput = nullptr;
+}
+
+void ShaderTemplate::Enable(ShaderInput& shaderInput)
+{
+	Enable(&shaderInput);
+}
+
+const std::vector<ShaderInputDesc> ShaderTemplate::GetConstantTable()
+{
+	return m_arrInputDesc;
 }

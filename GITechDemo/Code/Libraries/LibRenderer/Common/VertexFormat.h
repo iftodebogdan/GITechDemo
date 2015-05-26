@@ -42,24 +42,24 @@ namespace LibRendererDll
 				//Set individual attributes. Don't forget to call SetStride(CalculateStride()) when you're done.
 				LIBRENDERER_DLL void				SetAttribute(const unsigned int attrIdx, const unsigned int offset, const VertexAttributeUsage usage,  const VertexAttributeType type, const unsigned int usageIdx);
 				//This can be used in conjunction with CalculateStride()
-				LIBRENDERER_DLL void				SetStride(const unsigned int stride) { m_nStride = stride; }
+				LIBRENDERER_DLL void				SetStride(const unsigned int stride);
 				//Calculates the vertex format stride based on the attributes' sizes.
 				LIBRENDERER_DLL const unsigned int	CalculateStride() const;
 
 				/* Get the number of attributes */
-				LIBRENDERER_DLL const unsigned int			GetAttributeCount() const { return m_nAttributeCount; }
+				LIBRENDERER_DLL const unsigned int			GetAttributeCount() const;
 				/* Get the offset in bytes of an attribute */
-				LIBRENDERER_DLL const unsigned int			GetOffset(const unsigned int attrIdx) const { assert(attrIdx < m_nAttributeCount); return m_pElements[attrIdx].nOffset; }
+				LIBRENDERER_DLL const unsigned int			GetOffset(const unsigned int attrIdx) const;
 				/* Get the attribute's data type */
-				LIBRENDERER_DLL const VertexAttributeType	GetAttributeType(const unsigned int attrIdx) const { assert(attrIdx < m_nAttributeCount); return m_pElements[attrIdx].eType; }
+				LIBRENDERER_DLL const VertexAttributeType	GetAttributeType(const unsigned int attrIdx) const;
 				/* Get the usage/semantic of the attribute */
-				LIBRENDERER_DLL const VertexAttributeUsage	GetAttributeUsage(const unsigned int attrIdx) const { assert(attrIdx < m_nAttributeCount); return m_pElements[attrIdx].eUsage; }
+				LIBRENDERER_DLL const VertexAttributeUsage	GetAttributeUsage(const unsigned int attrIdx) const;
 				/* Get the usage/semantic index of the attribute */
-				LIBRENDERER_DLL const unsigned int			GetUsageIndex(const unsigned int attrIdx) const { assert(attrIdx < m_nAttributeCount); return m_pElements[attrIdx].nUsageIdx; }
+				LIBRENDERER_DLL const unsigned int			GetUsageIndex(const unsigned int attrIdx) const;
 				/* Get the vertex format's stride */
-				LIBRENDERER_DLL const unsigned int			GetStride() const { return m_nStride; }
+				LIBRENDERER_DLL const unsigned int			GetStride() const;
 
-		static	LIBRENDERER_DLL const unsigned int			GetAttributeTypeSize(const VertexAttributeType type) { assert(type < VAT_MAX); return VertexAttributeTypeSize[type]; }
+				static	LIBRENDERER_DLL const unsigned int	GetAttributeTypeSize(const VertexAttributeType type);
 
 		// Enable the vertex format (also called by the associated vertex buffer)
 		virtual	LIBRENDERER_DLL void	Enable() = 0;

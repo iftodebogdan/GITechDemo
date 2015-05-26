@@ -101,6 +101,8 @@ Texture::Texture(
 	, m_nLockedMip(-1)
 	, m_nLockedCubeFace(-1)
 	, m_bIsDynamicRT(false)
+	, m_fWidthRatio(1.f)
+	, m_fHeightRatio(1.f)
 {
 	m_tSamplerStates.fAnisotropy = 1.f;
 	m_tSamplerStates.fLodBias = 0.f;
@@ -144,9 +146,9 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	if ((dimensions[0] <= 0 || dimensions[1] <= 0) && (IsRenderTarget() || IsDepthStencil()))
 		m_bIsDynamicRT = true;
 
-	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : Renderer::GetInstance()->GetBackBufferSize()[0];
-	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : Renderer::GetInstance()->GetBackBufferSize()[1];
-	unsigned int depth	= dimensions[2];
+	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : Renderer::GetInstance()->GetBackBufferSize()[0] * m_fWidthRatio;
+	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : Renderer::GetInstance()->GetBackBufferSize()[1] * m_fHeightRatio;
+	unsigned int depth	= !m_bIsDynamicRT ? dimensions[2] : 1;
 	if (IsCompressed())
 	{
 		// Calculate the smallest number divisible by 4 which is >= width/height
@@ -268,6 +270,25 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	m_nSize *= (m_eTexType == TT_CUBE ? 6u : 1u);
 }
 
+void Texture::SetDynamicSizeRatios(const float widthRatio, const float heightRatio)
+{
+	if (widthRatio != m_fWidthRatio || heightRatio != m_fHeightRatio)
+	{
+		m_fWidthRatio = widthRatio;
+		m_fHeightRatio = heightRatio;
+
+		Unbind();
+
+		ComputeTextureProperties(Vec3i(0, 0, 1));
+
+		// Reallocate memory for our texture
+		delete[] m_pData;
+		m_pData = new byte[m_nSize];
+
+		Bind();
+	}
+}
+
 byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
 {
 	if (m_eTexType == TT_CUBE)
@@ -292,8 +313,10 @@ byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int 
 	return m_pData + cubeFace * GetCubeFaceOffset() + GetMipOffset(mipmapLevel);
 }
 
-const bool Texture::GenerateMipmaps()
+const bool Texture::GenerateMips()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	// Just to be safe (might be useful later when porting on other platforms)
 	assert(sizeof(Vec4f) == sizeof(float) * 4);
 
@@ -388,6 +411,8 @@ const bool Texture::GenerateMipmaps()
 
 	delete[] rgba;
 
+	POP_PROFILE_MARKER();
+
 	return true;
 }
 
@@ -395,7 +420,242 @@ void Texture::Bind()
 {
 	if (m_bIsDynamicRT)
 	{
-		Vec2i dim = Renderer::GetInstance()->GetBackBufferSize();
-		ComputeTextureProperties(Vec3i(dim[0], dim[1], 1));
+		ComputeTextureProperties(Vec3i(0, 0, 1));
+
+		// Reallocate memory for our texture
+		delete[] m_pData;
+		m_pData = new byte[m_nSize];
 	}
+}
+
+const PixelFormat Texture::GetTextureFormat() const
+{
+	return m_eTexFormat;
+}
+
+const TexType Texture::GetTextureType() const
+{
+	return m_eTexType;
+}
+
+const unsigned int Texture::GetMipCount() const
+{
+	return m_nMipCount;
+}
+
+const unsigned int Texture::GetWidth(const unsigned int mipmapLevel) const
+{
+	return m_nDimension[mipmapLevel][0];
+}
+
+const unsigned int Texture::GetHeight(const unsigned int mipmapLevel) const
+{
+	return m_nDimension[mipmapLevel][1];
+}
+
+const unsigned int Texture::GetDepth(const unsigned int mipmapLevel) const
+{
+	return m_nDimension[mipmapLevel][2];
+}
+
+const unsigned int Texture::GetDimensionCount() const
+{
+	return m_nDimensionCount;
+}
+
+const unsigned int Texture::GetMipSizeBytes(const unsigned int mipmapLevel) const
+{
+	assert(mipmapLevel < TEX_MAX_MIPMAP_LEVELS);
+	return m_nMipSizeBytes[mipmapLevel];
+}
+
+const unsigned int Texture::GetMipOffset(const unsigned int mipmapLevel) const
+{
+	assert(mipmapLevel < TEX_MAX_MIPMAP_LEVELS);
+	return m_nMipOffset[mipmapLevel];
+}
+
+const unsigned int Texture::GetCubeFaceOffset() const
+{
+	assert(m_eTexType == TT_CUBE);
+	return m_nSize / 6;
+}
+
+const bool Texture::IsCompressed() const
+{
+	return
+		m_eTexFormat == PF_DXT1 ||
+		m_eTexFormat == PF_DXT3 ||
+		m_eTexFormat == PF_DXT5;
+}
+
+const bool Texture::IsFloatingPoint() const
+{
+	return
+		m_eTexFormat == PF_R32F ||
+		m_eTexFormat == PF_G32R32F ||
+		m_eTexFormat == PF_A32B32G32R32F;
+}
+
+const bool Texture::IsDepthStencil() const
+{
+	return (m_eTexFormat >= PF_D24S8 && m_eTexFormat <= PF_RAWZ);
+}
+
+const bool Texture::IsRenderTarget() const
+{
+	return m_eBufferUsage == BU_RENDERTAGET;
+}
+
+const bool Texture::IsMipmapable() const
+{
+	return ms_bIsMipmapable[m_eTexFormat];
+}
+
+const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
+{
+	assert(!m_bIsLocked);
+	m_bIsLocked = true;
+	m_nLockedMip = mipmapLevel;
+	m_nLockedCubeFace = 0;
+	return true;
+}
+
+const bool Texture::Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode)
+{
+	assert(!m_bIsLocked);
+	m_bIsLocked = true;
+	m_nLockedMip = mipmapLevel;
+	m_nLockedCubeFace = cubeFace;
+	return true;
+}
+
+void Texture::Unlock()
+{
+	assert(m_bIsLocked);
+	m_bIsLocked = false;
+	m_nLockedMip = -1;
+	m_nLockedCubeFace = -1;
+}
+
+const bool Texture::IsLocked() const
+{
+	return m_bIsLocked;
+}
+
+const unsigned int Texture::GetLockedMip() const
+{
+	assert(m_bIsLocked);
+	return m_nLockedMip;
+}
+
+const unsigned int Texture::GetLockedCubeFace() const
+{
+	assert(m_bIsLocked);
+	return m_nLockedCubeFace;
+}
+
+void Texture::SetAnisotropy(const float anisotropy)
+{
+	m_tSamplerStates.fAnisotropy = Math::clamp(anisotropy, 1.f, (float)MAX_ANISOTROPY);
+}
+
+void Texture::SetMipLodBias(const float lodBias)
+{
+	m_tSamplerStates.fLodBias = lodBias;
+}
+
+void Texture::SetFilter(const SamplerFilter filter)
+{
+	m_tSamplerStates.eFilter = filter;
+}
+
+void Texture::SetBorderColor(const Vec4f rgba)
+{
+	m_tSamplerStates.vBorderColor = rgba;
+}
+
+void Texture::SetAddressingModeU(const SamplerAddressingMode samU)
+{
+	m_tSamplerStates.eAddressingMode[0] = samU;
+}
+
+void Texture::SetAddressingModeV(const SamplerAddressingMode samV)
+{
+	m_tSamplerStates.eAddressingMode[1] = samV;
+}
+
+void Texture::SetAddressingModeW(const SamplerAddressingMode samW)
+{
+	m_tSamplerStates.eAddressingMode[2] = samW;
+}
+
+void Texture::SetAddressingMode(const SamplerAddressingMode samUVW)
+{
+	SetAddressingModeU(samUVW);
+	SetAddressingModeV(samUVW);
+	SetAddressingModeW(samUVW);
+}
+
+const float Texture::GetAnisotropy() const
+{
+	return m_tSamplerStates.fAnisotropy;
+}
+
+const float Texture::GetMipLodBias() const
+{
+	return m_tSamplerStates.fLodBias;
+}
+
+const SamplerFilter Texture::GetFilter() const
+{
+	return m_tSamplerStates.eFilter;
+}
+
+const Vec4f Texture::GetBorderColor() const
+{
+	return m_tSamplerStates.vBorderColor;
+}
+
+const SamplerAddressingMode Texture::GetAddressingModeU() const
+{
+	return m_tSamplerStates.eAddressingMode[0];
+}
+
+const SamplerAddressingMode Texture::GetAddressingModeV() const
+{
+	return m_tSamplerStates.eAddressingMode[1];
+}
+
+const SamplerAddressingMode Texture::GetAddressingModeW() const
+{
+	return m_tSamplerStates.eAddressingMode[2];
+}
+
+const SamplerAddressingMode Texture::GetAddressingMode() const
+{
+	return
+		(GetAddressingModeU() == GetAddressingModeV() &&
+		GetAddressingModeV() == GetAddressingModeW()) ?
+		GetAddressingModeU() : SAM_NONE;
+}
+
+const char* Texture::GetSourceFileName()
+{
+	return m_szSourceFile.c_str();
+}
+
+const unsigned int Texture::GetDimensionCount(const TexType texType)
+{
+	return ms_nDimensionCount[texType];
+}
+
+const bool Texture::IsMipmapable(const PixelFormat texFormat)
+{
+	return ms_bIsMipmapable[texFormat];
+}
+
+const unsigned int Texture::GetPixelSize(const PixelFormat texFormat)
+{
+	return ms_nPixelSize[texFormat];
 }

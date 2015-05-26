@@ -38,12 +38,14 @@ namespace LibRendererDll
 	protected:
 		RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		RenderTargetDX9(const unsigned int targetCount,
 			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
 			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		RenderTargetDX9(const unsigned int targetCount,
 			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
-			bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
 		~RenderTargetDX9();
 
 		IDirect3DSurface9**		m_pColorSurface;

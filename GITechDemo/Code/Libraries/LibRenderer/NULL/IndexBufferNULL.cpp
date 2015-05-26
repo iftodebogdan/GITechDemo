@@ -20,31 +20,3 @@
 
 #include "IndexBufferNULL.h"
 using namespace LibRendererDll;
-
-IndexBufferNULL::IndexBufferNULL(const unsigned int indexCount, const IndexBufferFormat indexFormat, const BufferUsage usage)
-	: IndexBuffer(indexCount, indexFormat, usage)
-{}
-
-IndexBufferNULL::~IndexBufferNULL()
-{}
-
-void IndexBufferNULL::Enable()
-{}
-
-void IndexBufferNULL::Disable()
-{}
-
-void IndexBufferNULL::Lock(const BufferLocking lockMode)
-{}
-
-void IndexBufferNULL::Unlock()
-{}
-
-void IndexBufferNULL::Update()
-{}
-
-void IndexBufferNULL::Bind()
-{}
-
-void IndexBufferNULL::Unbind()
-{}

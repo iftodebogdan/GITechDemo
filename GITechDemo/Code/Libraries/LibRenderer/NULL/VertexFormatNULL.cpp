@@ -20,25 +20,3 @@
 
 #include "VertexFormatNULL.h"
 using namespace LibRendererDll;
-
-VertexFormatNULL::VertexFormatNULL(const unsigned int attributeCount)
-	: VertexFormat(attributeCount)
-{}
-
-VertexFormatNULL::~VertexFormatNULL()
-{}
-
-void VertexFormatNULL::Enable()
-{}
-
-void VertexFormatNULL::Disable()
-{}
-
-void VertexFormatNULL::Update()
-{}
-
-void VertexFormatNULL::Bind()
-{}
-
-void VertexFormatNULL::Unbind()
-{}

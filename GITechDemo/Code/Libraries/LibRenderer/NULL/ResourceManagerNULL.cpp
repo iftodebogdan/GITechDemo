@@ -103,6 +103,13 @@ const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int ta
 	return (unsigned int)m_arrRenderTarget.size() - 1;
 }
 
+const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+{
+	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
+	return (unsigned int)m_arrRenderTarget.size() - 1;
+}
+
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount,
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
@@ -113,8 +120,8 @@ const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int ta
 
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount,
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
-	bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
+	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, hasMipmaps, hasDepthStencil, depthStencilFormat));
+	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
 	return (unsigned int)m_arrRenderTarget.size() - 1;
 }

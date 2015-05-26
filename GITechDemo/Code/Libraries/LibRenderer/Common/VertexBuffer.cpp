@@ -19,6 +19,7 @@
 #include "stdafx.h"
 
 #include "VertexBuffer.h"
+#include "VertexFormat.h"
 #include "IndexBuffer.h"
 using namespace LibRendererDll;
 
@@ -32,3 +33,92 @@ VertexBuffer::VertexBuffer(VertexFormat* const vertexFormat, const unsigned int 
 
 VertexBuffer::~VertexBuffer()
 {}
+
+VertexFormat* VertexBuffer::GetVertexFormat() const
+{
+	return m_pVertexFormat;
+}
+
+void VertexBuffer::SetIndexBuffer(IndexBuffer* const indexBuffer)
+{
+	m_pIndexBuffer = indexBuffer;
+}
+
+IndexBuffer* VertexBuffer::GetIndexBuffer() const
+{
+	return m_pIndexBuffer;
+}
+
+const bool VertexBuffer::HasPosition() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_POSITION)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasNormal() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_NORMAL)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasTangent() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TANGENT)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasBinormal() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BINORMAL)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasTexCoord(const unsigned int usageIdx) const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TEXCOORD
+			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasColor(const unsigned int usageIdx) const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_COLOR
+			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasBlendIndices() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDINDICES)
+			return true;
+
+	return false;
+}
+
+const bool VertexBuffer::HasBlendWeight() const
+{
+	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
+		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDWEIGHT)
+			return true;
+
+	return false;
+}

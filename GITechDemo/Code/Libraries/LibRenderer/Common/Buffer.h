@@ -36,15 +36,15 @@ namespace LibRendererDll
 	{
 	public:
 		// Returns the number of elements (vertices, indices, pixels, etc.) in the buffer
-		LIBRENDERER_DLL const unsigned int	GetElementCount() const { return m_nElementCount; }
+		LIBRENDERER_DLL const unsigned int	GetElementCount() const;
 		// Returns the size in bytes of an element
-		LIBRENDERER_DLL const unsigned int	GetElementSize() const { return m_nElementSize; }
+		LIBRENDERER_DLL const unsigned int	GetElementSize() const;
 		// Returns the usage option of the buffer
-		LIBRENDERER_DLL const BufferUsage	GetUsage() const { return m_eBufferUsage; }
+		LIBRENDERER_DLL const BufferUsage	GetUsage() const;
 		// Returns the size in bytes of the entire buffer
-		LIBRENDERER_DLL const unsigned int	GetSize() const { return m_nSize; }
+		LIBRENDERER_DLL const unsigned int	GetSize() const;
 		// Returns a pointer to the beginning of the buffer
-		LIBRENDERER_DLL	byte*				GetData() const { return m_pData; }
+		LIBRENDERER_DLL	byte*				GetData() const;
 
 	protected:
 		Buffer(const unsigned int elementCount, const unsigned int elementSize, const BufferUsage usage);

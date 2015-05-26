@@ -19,6 +19,7 @@
 #include "stdafx.h"
 
 #include <stdarg.h>
+
 #include "VertexFormat.h"
 using namespace LibRendererDll;
 
@@ -80,7 +81,7 @@ VertexFormat::~VertexFormat()
 }
 			 
 void VertexFormat::SetAttribute(const unsigned int attrIdx, const unsigned int offset,
-	VertexAttributeUsage usage, VertexAttributeType type, unsigned int usageIdx)
+	const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx)
 {
 	assert(attrIdx < m_nAttributeCount);
 
@@ -100,5 +101,51 @@ const unsigned int VertexFormat::CalculateStride() const
 	unsigned int stride = 0;
 	for (unsigned int i = 0; i < m_nAttributeCount; i++)
 		stride += VertexAttributeTypeSize[m_pElements[i].eType];
+
 	return stride;
+}
+
+void VertexFormat::SetStride(const unsigned int stride)
+{
+	m_nStride = stride;
+}
+
+const unsigned int VertexFormat::GetAttributeCount() const
+{
+	return m_nAttributeCount;
+}
+
+const unsigned int VertexFormat::GetOffset(const unsigned int attrIdx) const
+{
+	assert(attrIdx < m_nAttributeCount);
+	return m_pElements[attrIdx].nOffset;
+}
+
+const VertexAttributeType VertexFormat::GetAttributeType(const unsigned int attrIdx) const
+{
+	assert(attrIdx < m_nAttributeCount);
+	return m_pElements[attrIdx].eType;
+}
+
+const VertexAttributeUsage VertexFormat::GetAttributeUsage(const unsigned int attrIdx) const
+{
+	assert(attrIdx < m_nAttributeCount);
+	return m_pElements[attrIdx].eUsage;
+}
+
+const unsigned int VertexFormat::GetUsageIndex(const unsigned int attrIdx) const
+{
+	assert(attrIdx < m_nAttributeCount);
+	return m_pElements[attrIdx].nUsageIdx;
+}
+
+const unsigned int VertexFormat::GetStride() const
+{
+	return m_nStride;
+}
+
+const unsigned int VertexFormat::GetAttributeTypeSize(const VertexAttributeType type)
+{
+	assert(type < VAT_MAX);
+	return VertexAttributeTypeSize[type];
 }

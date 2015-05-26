@@ -26,7 +26,7 @@
 #include "ShaderTemplate.h"
 #include "Texture.h"
 #include "RenderTarget.h"
-
+#include "Renderer.h"
 #include "ResourceManager.h"
 using namespace LibRendererDll;
 
@@ -37,11 +37,29 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	ReleaseAll();
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	// Resources should already be released by the time
+	// we get here, but just as a precaution, check if
+	// there is anything that should be released
+	if (GetVertexFormatCount() ||
+		GetIndexBufferCount() ||
+		GetVertexBufferCount() ||
+		GetShaderInputCount() ||
+		GetShaderProgramCount() ||
+		GetShaderTemplateCount() ||
+		GetTextureCount() ||
+		GetRenderTargetCount() ||
+		GetModelCount())
+		ReleaseAll();
+
+	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseAll()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		delete m_arrModel[i];
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
@@ -70,38 +88,48 @@ void ResourceManager::ReleaseAll()
 	m_arrShaderTemplate.clear();
 	m_arrTexture.clear();
 	m_arrRenderTarget.clear();
+
+	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::BindAll()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
 		m_arrVertexFormat[i]->Bind();
 	for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
 		m_arrIndexBuffer[i]->Bind();
 	for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
 		m_arrVertexBuffer[i]->Bind();
-	for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-		m_arrShaderProgram[i]->Bind();
+	//for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
+	//	m_arrShaderProgram[i]->Bind();
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		m_arrTexture[i]->Bind();
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		m_arrRenderTarget[i]->Bind();
+
+	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::UnbindAll()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
 		m_arrVertexFormat[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
 		m_arrIndexBuffer[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
 		m_arrVertexBuffer[i]->Unbind();
-	for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-		m_arrShaderProgram[i]->Unbind();
+	//for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
+	//	m_arrShaderProgram[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		m_arrTexture[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		m_arrRenderTarget[i]->Unbind();
+
+	POP_PROFILE_MARKER();
 }
 
 const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shaderTemplate)
@@ -112,56 +140,67 @@ const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shad
 
 const unsigned int ResourceManager::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors, const char* entryPoint, const char* profile)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	const unsigned int spIdx = CreateShaderProgram(programType);
 	ShaderProgram* const sp = GetShaderProgram(spIdx);
 	sp->Compile(filePath, errors, entryPoint, profile);
+
+	POP_PROFILE_MARKER();
+
 	return spIdx;
 }
 
 const unsigned int ResourceManager::CreateShaderTemplate(ShaderProgram* const shaderProgram)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	m_arrShaderTemplate.push_back(new ShaderTemplate(shaderProgram));
+
+	POP_PROFILE_MARKER();
+
 	return (unsigned int)m_arrShaderTemplate.size() - 1;
 }
 
 const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 {
-	const unsigned int texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	unsigned int texIdx = -1;
 	std::ifstream texFile;
 	texFile.open(pathToFile, std::ios::binary);
 	if (texFile.is_open())
 	{
+		texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
 		texFile >> *GetTexture(texIdx);
 		texFile.close();
 		GetTexture(texIdx)->m_szSourceFile = pathToFile;
-		return texIdx;
 	}
-	else
-	{
-		delete GetTexture(texIdx);
-		m_arrTexture.pop_back();
-		return -1;
-	}
+
+	POP_PROFILE_MARKER();
+
+	return texIdx;
 }
 
 const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 {
-	m_arrModel.push_back(new Model);
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	std::ifstream modelFile;
 	modelFile.open(pathToFile, std::ios::binary);
+	unsigned int modelIdx = -1;
 	if (modelFile.is_open())
 	{
+		m_arrModel.push_back(new Model);
 		modelFile >> *m_arrModel.back();
 		modelFile.close();
 		m_arrModel.back()->szSourceFile = pathToFile;
-		return (unsigned int)m_arrModel.size() - 1;
+		modelIdx = (unsigned int)m_arrModel.size() - 1;
 	}
-	else
-	{
-		delete m_arrModel.back();
-		m_arrModel.pop_back();
-		return -1;
-	}
+
+	POP_PROFILE_MARKER();
+
+	return modelIdx;
 }
 
 const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
@@ -190,4 +229,194 @@ const unsigned int ResourceManager::FindModel(const char * pathToFile, const boo
 				return i;
 
 	return -1;
+}
+
+VertexFormat* const ResourceManager::GetVertexFormat(const unsigned int idx) const
+{
+	assert(idx < m_arrVertexFormat.size());
+	return m_arrVertexFormat[idx];
+}
+
+IndexBuffer* const ResourceManager::GetIndexBuffer(const unsigned int idx) const
+{
+	assert(idx < m_arrIndexBuffer.size());
+	return m_arrIndexBuffer[idx];
+}
+
+VertexBuffer* const ResourceManager::GetVertexBuffer(const unsigned int idx) const
+{
+	assert(idx < m_arrVertexBuffer.size());
+	return m_arrVertexBuffer[idx];
+}
+
+ShaderInput* const ResourceManager::GetShaderInput(const unsigned int idx) const
+{
+	assert(idx < m_arrShaderInput.size());
+	return m_arrShaderInput[idx];
+}
+
+ShaderProgram* const ResourceManager::GetShaderProgram(const unsigned int idx) const
+{
+	assert(idx < m_arrShaderProgram.size());
+	return m_arrShaderProgram[idx];
+}
+
+ShaderTemplate* const ResourceManager::GetShaderTemplate(const unsigned idx) const
+{
+	assert(idx < m_arrShaderTemplate.size());
+	return m_arrShaderTemplate[idx];
+}
+
+Texture* const ResourceManager::GetTexture(const unsigned int idx) const
+{
+	assert(idx < m_arrTexture.size());
+	return m_arrTexture[idx];
+}
+
+RenderTarget* const ResourceManager::GetRenderTarget(const unsigned int idx) const
+{
+	assert(idx < m_arrRenderTarget.size());
+	return m_arrRenderTarget[idx];
+}
+
+Model* const ResourceManager::GetModel(const unsigned int idx) const
+{
+	assert(idx < m_arrModel.size());
+	return m_arrModel[idx];
+}
+
+const unsigned int ResourceManager::GetVertexFormatCount() const
+{
+	return (unsigned int)m_arrVertexFormat.size();
+}
+
+const unsigned int ResourceManager::GetIndexBufferCount() const
+{
+	return (unsigned int)m_arrIndexBuffer.size();
+}
+
+const unsigned int ResourceManager::GetVertexBufferCount() const
+{
+	return (unsigned int)m_arrVertexBuffer.size();
+}
+
+const unsigned int ResourceManager::GetShaderInputCount() const
+{
+	return (unsigned int)m_arrShaderInput.size();
+}
+
+const unsigned int ResourceManager::GetShaderProgramCount() const
+{
+	return (unsigned int)m_arrShaderProgram.size();
+}
+
+const unsigned int ResourceManager::GetShaderTemplateCount() const
+{
+	return (unsigned int)m_arrShaderTemplate.size();
+}
+
+const unsigned int ResourceManager::GetTextureCount() const
+{
+	return (unsigned int)m_arrTexture.size();
+}
+
+const unsigned int ResourceManager::GetRenderTargetCount() const
+{
+	return (unsigned int)m_arrRenderTarget.size();
+}
+
+const unsigned int ResourceManager::GetModelCount() const
+{
+	return (unsigned int)m_arrModel.size();
+}
+
+void ResourceManager::ReleaseVertexFormat(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrVertexFormat.size());
+	delete m_arrVertexFormat[idx];
+	m_arrVertexFormat[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrIndexBuffer.size());
+	delete m_arrIndexBuffer[idx];
+	m_arrIndexBuffer[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrVertexBuffer.size());
+	delete m_arrVertexBuffer[idx];
+	m_arrVertexBuffer[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseShaderInput(const unsigned int idx)
+{
+	assert(idx < m_arrShaderInput.size());
+	delete m_arrShaderInput[idx];
+	m_arrShaderInput[idx] = nullptr;
+}
+
+void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrShaderProgram.size());
+	delete m_arrShaderProgram[idx];
+	m_arrShaderProgram[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseShaderTemplate(const unsigned idx)
+{
+	assert(idx < m_arrShaderTemplate.size());
+	delete m_arrShaderTemplate[idx];
+	m_arrShaderTemplate[idx] = nullptr;
+}
+
+void ResourceManager::ReleaseTexture(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrTexture.size());
+	delete m_arrTexture[idx];
+	m_arrTexture[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrRenderTarget.size());
+	delete m_arrRenderTarget[idx];
+	m_arrRenderTarget[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
+}
+
+void ResourceManager::ReleaseModel(const unsigned int idx)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	assert(idx < m_arrRenderTarget.size());
+	delete m_arrModel[idx];
+	m_arrModel[idx] = nullptr;
+
+	POP_PROFILE_MARKER();
 }

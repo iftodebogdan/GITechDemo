@@ -27,7 +27,11 @@ using namespace LibRendererDll;
 
 SamplerStateDX9::SamplerStateDX9()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	Reset();
+
+	POP_PROFILE_MARKER();
 }
 
 SamplerStateDX9::~SamplerStateDX9()
@@ -70,6 +74,8 @@ const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float a
 	if (aniso == GetAnisotropy(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MAXANISOTROPY, (DWORD)aniso);
 	assert(SUCCEEDED(hr));
@@ -92,23 +98,29 @@ const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float a
 	}
 	assert(SUCCEEDED(hr1));
 
+	POP_PROFILE_MARKER();
+
 	if (SUCCEEDED(hr) && SUCCEEDED(hr1))
 		return SamplerState::SetAnisotropy(slot, aniso);
 	else
 		return false;
 }
 
-const bool SamplerStateDX9::SetMipmapLodBias(const unsigned int slot, const float lodBias)
+const bool SamplerStateDX9::SetMipLodBias(const unsigned int slot, const float lodBias)
 {
-	if (lodBias == GetMipmapLodBias(slot))
+	if (lodBias == GetMipLodBias(slot))
 		return true;
+
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)&lodBias);
 	assert(SUCCEEDED(hr));
 
+	POP_PROFILE_MARKER();
+
 	if (SUCCEEDED(hr))
-		return SamplerState::SetMipmapLodBias(slot, lodBias);
+		return SamplerState::SetMipLodBias(slot, lodBias);
 	else
 		return false;
 }
@@ -117,6 +129,8 @@ const bool SamplerStateDX9::SetFilter(const unsigned int slot, const SamplerFilt
 {
 	if (filter == GetFilter(slot))
 		return true;
+
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	HRESULT hr1 = 0, hr2 = 0, hr3 = 0;
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
@@ -144,6 +158,8 @@ const bool SamplerStateDX9::SetFilter(const unsigned int slot, const SamplerFilt
 	hr3 = device->SetSamplerState(slot, D3DSAMP_MIPFILTER, MipFilterDX9[filter]);
 	assert(SUCCEEDED(hr3));
 
+	POP_PROFILE_MARKER();
+
 	if (SUCCEEDED(hr1) && SUCCEEDED(hr2) && SUCCEEDED(hr3))
 		return SamplerState::SetFilter(slot, filter);
 	else
@@ -162,9 +178,13 @@ const bool SamplerStateDX9::SetBorderColor(const unsigned int slot, const Vec4f 
 	if (rgba == GetBorderColor(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_BORDERCOLOR, D3DCOLOR_COLORVALUE(rgba[0], rgba[1], rgba[2], rgba[3]));
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return SamplerState::SetBorderColor(slot, rgba);
@@ -177,9 +197,13 @@ const bool SamplerStateDX9::SetAddressingModeU(const unsigned int slot, const Sa
 	if (samU == GetAddressingModeU(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_ADDRESSU, TextureAddressingModeDX9[samU]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return SamplerState::SetAddressingModeU(slot, samU);
@@ -192,9 +216,13 @@ const bool SamplerStateDX9::SetAddressingModeV(const unsigned int slot, const Sa
 	if (samV == GetAddressingModeV(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_ADDRESSV, TextureAddressingModeDX9[samV]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return SamplerState::SetAddressingModeV(slot, samV);
@@ -207,9 +235,13 @@ const bool SamplerStateDX9::SetAddressingModeW(const unsigned int slot, const Sa
 	if (samW == GetAddressingModeW(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_ADDRESSW, TextureAddressingModeDX9[samW]);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
 		return SamplerState::SetAddressingModeW(slot, samW);
@@ -222,14 +254,24 @@ const bool SamplerStateDX9::SetAddressingMode(const unsigned int slot, const Sam
 	if (samUVW == GetAddressingModeU(slot) && samUVW == GetAddressingModeV(slot) && samUVW == GetAddressingModeW(slot))
 		return true;
 
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	if (SetAddressingModeU(slot, samUVW) && SetAddressingModeV(slot, samUVW) && SetAddressingModeW(slot, samUVW))
+	{
+		POP_PROFILE_MARKER();
 		return SamplerState::SetAddressingMode(slot, samUVW);
+	}
 	else
+	{
+		POP_PROFILE_MARKER();
 		return false;
+	}
 }
 
 void SamplerStateDX9::Reset()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -276,11 +318,13 @@ void SamplerStateDX9::Reset()
 	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
 	{
 		SetAnisotropy(i, 1.f);
-		SetMipmapLodBias(i, 0.f);
+		SetMipLodBias(i, 0.f);
 		SetFilter(i, SF_MIN_MAG_POINT_MIP_NONE);
 		SetBorderColor(i, Vec4f(0.f, 0.f, 0.f, 0.f));
 		for (unsigned int j = 0; j < 3; j++)
 			SetAddressingMode(i, SAM_WRAP);
 		m_eCurrentMinFilter[i] = D3DTEXF_POINT;
 	}
+
+	POP_PROFILE_MARKER();
 }

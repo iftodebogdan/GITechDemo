@@ -52,6 +52,8 @@ RendererDX9::~RendererDX9()
 
 void RendererDX9::Initialize(void* hWnd)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	// Create the D3D object, which is needed to create the D3DDevice.
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 	assert(m_pD3D);
@@ -191,75 +193,78 @@ void RendererDX9::Initialize(void* hWnd)
 	m_pResourceManager = new ResourceManagerDX9();
 	m_pRenderState = new RenderStateDX9();
 	m_pSamplerState = new SamplerStateDX9();
+
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
 {
-	if (size == m_vBackBufferSize && offset == m_vBackBufferOffset)
-		return;
-
-	Vec2i oldVPSize = m_vBackBufferSize;
-	Renderer::SetBackBufferSize(size, offset);
-
-	if (!m_pd3dDevice)
-		return;
-
 	m_bDeviceLost = false;
 
 	// minimized?
-	if (!(size[0] && size[1] && m_vBackBufferSize[0] && m_vBackBufferSize[1]))
+	if (!size[0] || !size[1])
 	{
 		// not technically lost, but shouldn't render
 		m_bDeviceLost = true;
 		return;
 	}
 
+	if (size == m_vBackBufferSize && offset == m_vBackBufferOffset)
+		return;
+
+	if (!m_pd3dDevice)
+		return;
+	
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	HRESULT hr;
-	if (size != oldVPSize)
+	// Get swap chain
+	LPDIRECT3DSWAPCHAIN9 sc;
+	hr = m_pd3dDevice->GetSwapChain(0, &sc);
+	assert(SUCCEEDED(hr));
+
+	// Get present parameters
+	D3DPRESENT_PARAMETERS pp;
+	hr = sc->GetPresentParameters(&pp);
+	assert(SUCCEEDED(hr));
+
+	ULONG refCount = 0;
+	refCount = sc->Release();
+	assert(refCount == 0);
+
+	// Set back buffer size
+	pp.BackBufferWidth = size[0];
+	pp.BackBufferHeight = size[1];
+
+	// Unbind resources
+	GetResourceManager()->UnbindAll();
+
+	// Reset the device
+	hr = m_pd3dDevice->Reset(&pp);
+	m_ePresentParameters = pp;
+	assert(SUCCEEDED(hr));
+
+	if (SUCCEEDED(hr))
 	{
-		// Get swap chain
-		LPDIRECT3DSWAPCHAIN9 sc;
-		hr = m_pd3dDevice->GetSwapChain(0, &sc);
-		assert(SUCCEEDED(hr));
+		Renderer::SetBackBufferSize(size, offset);
 
-		// Get present parameters
-		D3DPRESENT_PARAMETERS pp;
-		hr = sc->GetPresentParameters(&pp);
-		assert(SUCCEEDED(hr));
+		// Rebind resources
+		GetResourceManager()->BindAll();
 
-		ULONG refCount = 0;
-		refCount = sc->Release();
-		assert(refCount == 0);
+		// Reset sampler states
+		GetSamplerStateManager()->Reset();
 
-		// Set back buffer size
-		pp.BackBufferWidth = m_vBackBufferSize[0];
-		pp.BackBufferHeight = m_vBackBufferSize[1];
-
-		// Unbind resources
-		GetResourceManager()->UnbindAll();
-
-		// Reset the device
-		hr = m_pd3dDevice->Reset(&pp);
-		m_ePresentParameters = pp;
-		assert(SUCCEEDED(hr));
-
-		if (SUCCEEDED(hr))
-		{
-			// Rebind resources
-			GetResourceManager()->BindAll();
-
-			// Reset sampler states
-			GetSamplerStateManager()->Reset();
-
-			// Reset render states
-			GetRenderStateManager()->Reset();
-		}
+		// Reset render states
+		GetRenderStateManager()->Reset();
 	}
 
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	D3DVIEWPORT9 vp;
 	vp.X = offset[0];
 	vp.Y = offset[1];
@@ -270,10 +275,14 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
 	
 	HRESULT hr = m_pd3dDevice->SetViewport(&vp);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 const bool RendererDX9::BeginFrame()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	HRESULT hr = m_pd3dDevice->TestCooperativeLevel();
 	if (hr == D3DERR_DEVICELOST)
 	{
@@ -281,6 +290,7 @@ const bool RendererDX9::BeginFrame()
 			m_bDeviceLost = true;
 
 		Sleep(1);
+		POP_PROFILE_MARKER();
 		return false;
 	}
 	else if (hr == D3DERR_DEVICENOTRESET)
@@ -292,7 +302,10 @@ const bool RendererDX9::BeginFrame()
 		// Reset the device
 		hr = m_pd3dDevice->Reset(&m_ePresentParameters);
 		if (FAILED(hr))
+		{
+			POP_PROFILE_MARKER();
 			return false;
+		}
 
 		// Rebind resources
 		GetResourceManager()->BindAll();
@@ -309,23 +322,32 @@ const bool RendererDX9::BeginFrame()
 	if (m_bDeviceLost)
 	{
 		Sleep(1);
+		POP_PROFILE_MARKER();
 		return false;
 	}
 
 	hr = m_pd3dDevice->BeginScene();
 	assert(SUCCEEDED(hr));
 
+	POP_PROFILE_MARKER();
+
 	return true;
 }
 
 void RendererDX9::EndFrame()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	HRESULT hr = m_pd3dDevice->EndScene();
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::SwapBuffers()
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	// Present the backbuffer contents to the display
 	RECT dstRect;
 	dstRect.left = m_vBackBufferOffset[0];
@@ -335,10 +357,14 @@ void RendererDX9::SwapBuffers()
 
 	HRESULT hr = m_pd3dDevice->Present(NULL, &dstRect, NULL, NULL);
 	assert(SUCCEEDED(hr) || hr == D3DERR_DEVICELOST);
+
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::DrawVertexBuffer(VertexBuffer* vb)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	assert(vb);
 	vb->Enable();
 
@@ -348,16 +374,19 @@ void RendererDX9::DrawVertexBuffer(VertexBuffer* vb)
 		m_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, vb->GetElementCount() / 3);
 
 	vb->Disable();
+
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
 {
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
 	HRESULT hr;
 	DWORD flags = D3DCLEAR_TARGET;
 	IDirect3DSurface9* depthStencil = nullptr;
 
 	hr = m_pd3dDevice->GetDepthStencilSurface(&depthStencil);
-	assert(SUCCEEDED(hr));
 	if (hr != D3DERR_NOTFOUND && depthStencil)
 	{
 		flags |= D3DCLEAR_ZBUFFER;
@@ -371,6 +400,8 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 
 	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_RGBA((DWORD)rgba[0], (DWORD)rgba[1], (DWORD)rgba[2], (DWORD)rgba[3]), 1.0f, 0);
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 }
 
 void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
@@ -395,4 +426,24 @@ void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, float left, float
 	matProj(1, 0) = mat._12; matProj(1, 1) = mat._22; matProj(1, 2) = mat._32; matProj(1, 3) = mat._42;
 	matProj(2, 0) = mat._13; matProj(2, 1) = mat._23; matProj(2, 2) = mat._33; matProj(2, 3) = mat._43;
 	matProj(3, 0) = mat._14; matProj(3, 1) = mat._24; matProj(3, 2) = mat._34; matProj(3, 3) = mat._44;
+}
+
+void RendererDX9::PushProfileMarker(const char* const label)
+{
+#ifdef ENABLE_PROFILE_MARKERS
+	Renderer::PushProfileMarker(label);
+	unsigned int len = (unsigned int)strlen(label) + 1;
+	wchar_t* labelWide = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, label, -1, labelWide, len);
+	D3DPERF_BeginEvent((D3DCOLOR)0xffffffff, labelWide);
+	delete[] labelWide;
+#endif
+}
+
+void RendererDX9::PopProfileMarker()
+{
+#ifdef ENABLE_PROFILE_MARKERS
+	Renderer::PopProfileMarker();
+	D3DPERF_EndEvent();
+#endif
 }

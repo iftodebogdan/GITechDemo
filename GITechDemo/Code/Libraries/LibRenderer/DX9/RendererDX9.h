@@ -37,7 +37,7 @@ namespace LibRendererDll
 		bool					m_bDeviceLost;
 		
 	public:
-		static	RendererDX9*	GetInstance() { assert(m_eAPI == API_DX9); return (RendererDX9*)m_pInstance; };
+		static	RendererDX9*	GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
 
 		void	Initialize(void* hWnd);
 		void	SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
@@ -50,6 +50,9 @@ namespace LibRendererDll
 		void		SwapBuffers();
 		void		Clear(const Vec4f rgba, const float z, const unsigned int stencil);
 		void		DrawVertexBuffer(VertexBuffer* vb);
+
+		void		PushProfileMarker(const char* const label);
+		void		PopProfileMarker();
 
 		IDirect3DDevice9*	GetDevice() const { return m_pd3dDevice; };
 		IDirect3D9*		 	GetDriver() const { return m_pD3D; }
