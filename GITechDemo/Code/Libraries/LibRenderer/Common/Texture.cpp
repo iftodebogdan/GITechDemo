@@ -146,9 +146,9 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	if ((dimensions[0] <= 0 || dimensions[1] <= 0) && (IsRenderTarget() || IsDepthStencil()))
 		m_bIsDynamicRT = true;
 
-	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : Renderer::GetInstance()->GetBackBufferSize()[0] * m_fWidthRatio;
-	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : Renderer::GetInstance()->GetBackBufferSize()[1] * m_fHeightRatio;
-	unsigned int depth	= !m_bIsDynamicRT ? dimensions[2] : 1;
+	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : (unsigned int)((float)Renderer::GetInstance()->GetBackBufferSize()[0] * m_fWidthRatio);
+	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : (unsigned int)((float)Renderer::GetInstance()->GetBackBufferSize()[1] * m_fHeightRatio);
+	unsigned int depth	= !m_bIsDynamicRT ? dimensions[2] : 1u;
 	if (IsCompressed())
 	{
 		// Calculate the smallest number divisible by 4 which is >= width/height

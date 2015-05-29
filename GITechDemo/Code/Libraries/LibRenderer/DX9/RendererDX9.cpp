@@ -430,7 +430,7 @@ void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, float left, float
 
 void RendererDX9::PushProfileMarker(const char* const label)
 {
-#ifdef ENABLE_PROFILE_MARKERS
+#if ENABLE_PROFILE_MARKERS
 	Renderer::PushProfileMarker(label);
 	unsigned int len = (unsigned int)strlen(label) + 1;
 	wchar_t* labelWide = new wchar_t[len];
@@ -442,7 +442,7 @@ void RendererDX9::PushProfileMarker(const char* const label)
 
 void RendererDX9::PopProfileMarker()
 {
-#ifdef ENABLE_PROFILE_MARKERS
+#if ENABLE_PROFILE_MARKERS
 	Renderer::PopProfileMarker();
 	D3DPERF_EndEvent();
 #endif

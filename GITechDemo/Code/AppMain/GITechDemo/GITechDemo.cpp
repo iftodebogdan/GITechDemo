@@ -74,9 +74,9 @@ const unsigned int RSM_SIZE = 512;
 const unsigned int RSM_NUM_PASSES = 8;
 const unsigned int RSM_SAMPLES_PER_PASS = 16;
 const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
-const float RSM_INTENSITY = 150.f;
+const float RSM_INTENSITY = 200.f;
 const float RSM_KERNEL_SCALE = 0.02f;
-const bool USE_HALF_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER = false;
+const bool USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER = true;
 
 const bool DEBUG_CSM_CAMERA = false;
 const bool DEBUG_RSM_CAMERA = false;
@@ -267,7 +267,7 @@ RenderTarget*	ShadowMapDir = nullptr;
 RenderTarget*	LightAccumulationBuffer = nullptr;
 // The RSM render target
 RenderTarget*	RSMBuffer = nullptr;
-// The indirect light accumulation buffer (half resolution)
+// The indirect light accumulation buffer (quarter resolution)
 RenderTarget*	IndirectLightAccumulationBuffer = nullptr;
 
 // A model consisting of several meshes and material information
@@ -733,6 +733,7 @@ void AllocateRenderResources()
 
 	// Load the sky cube map texture
 	skyTexIdx = ResourceMgr->CreateTexture("models/sponza/textures/sky.lrt");
+	ResourceMgr->GetTexture(skyTexIdx)->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 	PopLoadThreadEvent(); // textures
 
 	// Load shaders
@@ -932,7 +933,7 @@ void AllocateRenderResources()
 	ResourceMgr->GetTexture(RSMBuffer->GetDepthBuffer())->SetAddressingMode(SAM_BORDER);
 	ResourceMgr->GetTexture(RSMBuffer->GetDepthBuffer())->SetBorderColor(Vec4f(0.f, 0.f, 0.f, 0.f));
 
-	// Indirect lighting accumulation buffer (half resolution)
+	// Indirect lighting accumulation buffer (quarter resolution)
 	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A8R8G8B8, 0.5f, 0.5f, false, false, PF_NONE);
 	IndirectLightAccumulationBuffer = ResourceMgr->GetRenderTarget(rtIdx);
 	ResourceMgr->GetTexture(IndirectLightAccumulationBuffer->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
@@ -1794,7 +1795,7 @@ void AccumulateIndirectLight()
 	PUSH_PROFILE_MARKER("AccumulateIndirectLight()");
 
 	RenderTarget* const rtBkp = RenderTarget::GetActiveRenderTarget();
-	if (USE_HALF_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
+	if (USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
 	{
 		rtBkp->Disable();
 		IndirectLightAccumulationBuffer->Enable();
@@ -1805,6 +1806,9 @@ void AccumulateIndirectLight()
 	PUSH_PROFILE_MARKER("RSMApply.hlsl");
 	if (ShdInputLUT[RSMApplyVS][f2HalfTexelOffset] != ~0)
 		RSMApplyVInput->SetFloat2(ShdInputLUT[RSMApplyVS][f2HalfTexelOffset], Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
+
+	if (ShdInputLUT[RSMApplyPS][f2HalfTexelOffset] != ~0)
+		RSMApplyFInput->SetFloat2(ShdInputLUT[RSMApplyPS][f2HalfTexelOffset], Vec2f(0.5f / GBuffer->GetWidth(), 0.5f / GBuffer->GetHeight()));
 
 	if (ShdInputLUT[RSMApplyPS][texRSMFluxBuffer] != ~0)
 		RSMApplyFInput->SetTexture(ShdInputLUT[RSMApplyPS][texRSMFluxBuffer], RSMBuffer->GetColorBuffer(0));
@@ -1866,15 +1870,18 @@ void AccumulateIndirectLight()
 	}
 	POP_PROFILE_MARKER();
 
-	if (USE_HALF_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
+	if (USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
 	{
 		IndirectLightAccumulationBuffer->Disable();
 		rtBkp->Enable();
 
 		PUSH_PROFILE_MARKER("RSMApply.hlsl (upsample)");
 
-		if (ShdInputLUT[RSMApplyVS][f2HalfTexelOffset] != ~0)
-			RSMApplyVInput->SetFloat2(ShdInputLUT[RSMApplyVS][f2HalfTexelOffset], Vec2f(0.5f / IndirectLightAccumulationBuffer->GetWidth(), 0.5f / IndirectLightAccumulationBuffer->GetHeight()));
+		//if (ShdInputLUT[RSMApplyVS][f2HalfTexelOffset] != ~0)
+		//	RSMApplyVInput->SetFloat2(ShdInputLUT[RSMApplyVS][f2HalfTexelOffset], Vec2f(0.5f / IndirectLightAccumulationBuffer->GetWidth(), 0.5f / IndirectLightAccumulationBuffer->GetHeight()));
+
+		if (ShdInputLUT[RSMApplyPS][f3RSMKernel] != ~0)
+			RSMApplyFInput->SetFloatArray(ShdInputLUT[RSMApplyPS][f3RSMKernel], RSMKernel);
 
 		if (ShdInputLUT[RSMApplyPS][bIsUpsamplePass] != ~0)
 			RSMApplyFInput->SetBool(ShdInputLUT[RSMApplyPS][bIsUpsamplePass], true);

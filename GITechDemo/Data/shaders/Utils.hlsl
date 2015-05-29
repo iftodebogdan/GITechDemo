@@ -43,10 +43,10 @@ float PCF2x2Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			texCoord +
 			poissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
-		percentLit += isLit * 0.25f;
+		percentLit += isLit;
 	}
 
-	return percentLit;
+	return percentLit * 0.25f;
 }
 
 float PCF3x3Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
@@ -61,10 +61,10 @@ float PCF3x3Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			texCoord +
 			poissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
-		percentLit += isLit * 0.1111111f;
+		percentLit += isLit;
 	}
 
-	return percentLit;
+	return percentLit * 0.1111111f;
 }
 
 float PCF12TapPoisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
@@ -79,10 +79,10 @@ float PCF12TapPoisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 t
 			texCoord +
 			poissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
-		percentLit += isLit * 0.0833333f;
+		percentLit += isLit;
 	}
 
-	return percentLit;
+	return percentLit * 0.0833333f;
 }
 
 float PCF4x4Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
@@ -97,10 +97,46 @@ float PCF4x4Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			texCoord +
 			poissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
-		percentLit += isLit * 0.0625f;
+		percentLit += isLit;
 	}
 
-	return percentLit;
+	return percentLit * 0.0625f;
+}
+
+float PCF4x4PoissonRotatedx4(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
+{
+	float percentLit = 0.f;
+
+	[loop] for (int i = 0; i < 16; i++)
+	{
+		int isLit =
+			tex2D(
+				shadowMap,
+				texCoord +
+				poissonDisk[i].xy * oneOverShadowMapSize
+				).r > depthCompare;
+		isLit +=
+			tex2D(
+				shadowMap,
+				texCoord +
+				float2(1.f - poissonDisk[i].y, poissonDisk[i].x) * oneOverShadowMapSize
+				).r > depthCompare;
+		isLit +=
+			tex2D(
+				shadowMap,
+				texCoord +
+				(float2(1.f, 1.f) - poissonDisk[i].xy) * oneOverShadowMapSize
+				).r > depthCompare;
+		isLit +=
+			tex2D(
+				shadowMap,
+				texCoord +
+				float2(poissonDisk[i].y, 1.f - poissonDisk[i].x) * oneOverShadowMapSize
+				).r > depthCompare;
+		percentLit += isLit;
+	}
+	
+	return percentLit * 0.015625f;
 }
 
 float PCF3x3Dithered(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)

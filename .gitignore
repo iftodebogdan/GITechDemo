@@ -11,7 +11,9 @@
 [Dd]ebugPublic/
 [Rr]elease/
 ## x64/
-build/
+#build/
+!/*/[Bb]uild/**
+/*/[Bb]uild/**/
 bld/
 /*/[Bb]in/
 [Oo]bj/

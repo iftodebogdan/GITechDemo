@@ -128,7 +128,8 @@ void VertexFormatDX9::Unbind()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	ULONG refCount = 0;
-	refCount = m_pVertexDeclaration->Release();
+	if(m_pVertexDeclaration)
+		refCount = m_pVertexDeclaration->Release();
 	assert(refCount == 0);
 	m_pVertexDeclaration = nullptr;
 

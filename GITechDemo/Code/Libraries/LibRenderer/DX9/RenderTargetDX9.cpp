@@ -206,7 +206,8 @@ void RenderTargetDX9::Disable()
 	assert(SUCCEEDED(hr));
 
 	unsigned int refCount = 0;
-	refCount = m_pColorSurfaceBackup->Release();
+	if(m_pColorSurfaceBackup)
+		refCount = m_pColorSurfaceBackup->Release();
 	assert(refCount == 0);
 	m_pColorSurfaceBackup = nullptr;
 
@@ -219,7 +220,8 @@ void RenderTargetDX9::Disable()
 	hr = device->SetDepthStencilSurface(m_pDepthSurfaceBackup);
 	assert(SUCCEEDED(hr));
 
-	refCount = m_pDepthSurfaceBackup->Release();
+	if(m_pDepthSurfaceBackup)
+		refCount = m_pDepthSurfaceBackup->Release();
 	assert(refCount == 0);
 	m_pDepthSurfaceBackup = nullptr;
 
@@ -301,7 +303,8 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	{
 		hr = device->SetRenderTarget(0, m_pColorSurfaceBackup);
 		assert(SUCCEEDED(hr));
-		m_pColorSurfaceBackup->Release();
+		if(m_pColorSurfaceBackup)
+			m_pColorSurfaceBackup->Release();
 		m_pColorSurfaceBackup = nullptr;
 	}
 

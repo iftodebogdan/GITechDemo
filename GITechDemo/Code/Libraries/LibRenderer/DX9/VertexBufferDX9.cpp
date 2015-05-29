@@ -153,7 +153,8 @@ void VertexBufferDX9::Unbind()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	ULONG refCount = 0;
-	refCount = m_pVertexBuffer->Release();
+	if(m_pVertexBuffer)
+		refCount = m_pVertexBuffer->Release();
 	assert(refCount == 0);
 	m_pVertexBuffer = nullptr;
 

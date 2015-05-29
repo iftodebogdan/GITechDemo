@@ -129,7 +129,8 @@ void IndexBufferDX9::Unbind()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	ULONG refCount = 0;
-	refCount = m_pIndexBuffer->Release();
+	if(m_pIndexBuffer)
+		refCount = m_pIndexBuffer->Release();
 	assert(refCount == 0);
 	m_pIndexBuffer = nullptr;
 

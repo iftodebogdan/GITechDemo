@@ -52,7 +52,7 @@ static const int	nCascadesPerRow = 2; // number of cascades per row, i.e. ceil(s
 static const float	fCascadeNormSize = 0.5f; // normalized size of a cascade, i.e. 1.f / nCascadesPerRow
 
 // PCF method
-#define PCF_SAMPLE	PCF4x4Poisson
+#define PCF_SAMPLE	PCF4x4PoissonRotatedx4
 
 struct PSOut
 {
