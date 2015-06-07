@@ -15,11 +15,11 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texLightAccumulationBuffer;
+const sampler2D	texSource; // The texture to be copied
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-	// simple copy, for now
-	f4Color = tex2D(texLightAccumulationBuffer, input.f2TexCoord);
+	// Simple color texture copy onto a color render target
+	f4Color = float4(tex2D(texSource, input.f2TexCoord).rgb, 1.f);
 }
 ////////////////////////////////////////////////////////////////////

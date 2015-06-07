@@ -15,8 +15,8 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texDiffuseBuffer; // diffuse color
-const float	fAmbientFactor; // scale value for ambient light
+const sampler2D	texDiffuseBuffer;	// Diffuse color
+const float	fAmbientFactor;			// Scale value for ambient light
 
 struct PSOut
 {
@@ -25,8 +25,8 @@ struct PSOut
 
 void psmain(VSOut input, out PSOut output)
 {
-	// sample the diffuse buffer
-	float4 f4DiffuseColor = tex2D(texDiffuseBuffer, input.f2TexCoord);
+	// Sample the diffuse buffer
+	const float4 f4DiffuseColor = tex2D(texDiffuseBuffer, input.f2TexCoord);
 
 	// Final color
 	output.colorOut = float4(f4DiffuseColor.rgb * fAmbientFactor, 1.f);

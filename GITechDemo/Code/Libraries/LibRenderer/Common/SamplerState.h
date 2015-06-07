@@ -48,6 +48,7 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
 		virtual LIBRENDERER_DLL const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
 		virtual LIBRENDERER_DLL const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+		virtual	LIBRENDERER_DLL	const bool	SetSRGBEnabled(const unsigned int slot, const bool enabled);
 
 		LIBRENDERER_DLL const float					GetAnisotropy(const unsigned int slot) const;
 		LIBRENDERER_DLL const float					GetMipLodBias(const unsigned int slot) const;
@@ -57,6 +58,7 @@ namespace LibRendererDll
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeV(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeW(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingMode(const unsigned int slot) const;
+		LIBRENDERER_DLL	const bool					GetSRGBEnabled(const unsigned int slot) const;
 
 		virtual	LIBRENDERER_DLL		void	Reset() = 0;
 

@@ -31,6 +31,7 @@ SamplerState::SamplerState()
 		m_tCurrentState[i].vBorderColor = Vec4f(0.f, 0.f, 0.f, 0.f);
 		for (unsigned int j = 0; j < 3; j++)
 			m_tCurrentState[i].eAddressingMode[j] = SAM_WRAP;
+		m_tCurrentState[i].bSRGBEnabled = false;
 	}
 }
 
@@ -94,6 +95,13 @@ const bool SamplerState::SetAddressingMode(const unsigned int slot, const Sample
 		SetAddressingModeW(slot, samUVW);
 }
 
+const bool SamplerState::SetSRGBEnabled(const unsigned int slot, const bool enabled)
+{
+	assert(slot < MAX_NUM_PSAMPLERS);
+	m_tCurrentState[slot].bSRGBEnabled = enabled;
+	return true;
+}
+
 const float SamplerState::GetAnisotropy(const unsigned int slot) const
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
@@ -142,4 +150,10 @@ const SamplerAddressingMode SamplerState::GetAddressingMode(const unsigned int s
 		(GetAddressingModeU(slot) == GetAddressingModeV(slot) &&
 		GetAddressingModeV(slot) == GetAddressingModeW(slot)) ?
 		GetAddressingModeU(slot) : SAM_NONE;
+}
+
+const bool SamplerState::GetSRGBEnabled(const unsigned int slot) const
+{
+	assert(slot < MAX_NUM_PSAMPLERS);
+	return m_tCurrentState[slot].bSRGBEnabled;
 }

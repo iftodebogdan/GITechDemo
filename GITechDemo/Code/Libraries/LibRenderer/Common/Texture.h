@@ -119,6 +119,7 @@ namespace LibRendererDll
 				LIBRENDERER_DLL	void	SetAddressingModeV(const SamplerAddressingMode samV);
 				LIBRENDERER_DLL	void	SetAddressingModeW(const SamplerAddressingMode samW);
 				LIBRENDERER_DLL	void	SetAddressingMode(const SamplerAddressingMode samUVW);
+				LIBRENDERER_DLL	void	SetSRGBEnabled(const bool enabled);
 
 				// Get various sampler states
 				LIBRENDERER_DLL const float					GetAnisotropy() const;
@@ -129,6 +130,7 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeV() const;
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeW() const;
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingMode() const;
+				LIBRENDERER_DLL	const bool					GetSRGBEnabled() const;
 
 				// Retrieve the path to the file from which the texture was loaded from
 				LIBRENDERER_DLL	const	char*	GetSourceFileName();

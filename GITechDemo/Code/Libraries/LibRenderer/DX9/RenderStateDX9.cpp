@@ -79,9 +79,9 @@ const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsign
 	return 0;
 }
 
-const bool RenderStateDX9::SetColorBlendEnable(const bool enabled)
+const bool RenderStateDX9::SetColorBlendEnabled(const bool enabled)
 {
-	if (enabled == GetColorBlendEnable())
+	if (enabled == GetColorBlendEnabled())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -93,7 +93,7 @@ const bool RenderStateDX9::SetColorBlendEnable(const bool enabled)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetColorBlendEnable(enabled);
+		return RenderState::SetColorBlendEnabled(enabled);
 	else
 		return false;
 }
@@ -140,9 +140,9 @@ const bool RenderStateDX9::SetColorDstBlend(const Blend alphaDst)
 		return false;
 }
 
-const bool RenderStateDX9::SetAlphaTestEnable(const bool enabled)
+const bool RenderStateDX9::SetAlphaTestEnabled(const bool enabled)
 {
-	if (enabled == GetAlphaTestEnable())
+	if (enabled == GetAlphaTestEnabled())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -154,7 +154,7 @@ const bool RenderStateDX9::SetAlphaTestEnable(const bool enabled)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetAlphaTestEnable(enabled);
+		return RenderState::SetAlphaTestEnabled(enabled);
 	else
 		return false;
 }
@@ -248,11 +248,11 @@ const bool RenderStateDX9::SetCullMode(const Cull cullMode)
 		return false;
 }
 
-const bool RenderStateDX9::SetZEnable(const ZBuffer enabled)
+const bool RenderStateDX9::SetZEnabled(const ZBuffer enabled)
 {
 	assert(enabled > ZB && enabled < ZB_MAX);
 
-	if (enabled == GetZEnable())
+	if (enabled == GetZEnabled())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -264,7 +264,7 @@ const bool RenderStateDX9::SetZEnable(const ZBuffer enabled)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetZEnable(enabled);
+		return RenderState::SetZEnabled(enabled);
 	else
 		return false;
 }
@@ -371,9 +371,9 @@ const bool RenderStateDX9::SetDepthBias(const float bias)
 		return false;
 }
 
-const bool RenderStateDX9::SetStencilEnable(const bool enabled)
+const bool RenderStateDX9::SetStencilEnabled(const bool enabled)
 {
-	if (enabled == GetStencilEnable())
+	if (enabled == GetStencilEnabled())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -385,7 +385,7 @@ const bool RenderStateDX9::SetStencilEnable(const bool enabled)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetStencilEnable(enabled);
+		return RenderState::SetStencilEnabled(enabled);
 	else
 		return false;
 }
@@ -552,9 +552,9 @@ const bool RenderStateDX9::SetFillMode(const Fill fillMode)
 		return false;
 }
 
-const bool RenderStateDX9::SetScissorEnable(const bool enabled)
+const bool RenderStateDX9::SetScissorEnabled(const bool enabled)
 {
-	if (enabled == GetScissorEnable())
+	if (enabled == GetScissorEnabled())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -566,7 +566,7 @@ const bool RenderStateDX9::SetScissorEnable(const bool enabled)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetScissorEnable(enabled);
+		return RenderState::SetScissorEnabled(enabled);
 	else
 		return false;
 }
@@ -585,6 +585,25 @@ const bool RenderStateDX9::SetScissor(const Vec2i size, const Vec2i offset)
 	return SUCCEEDED(hr);
 }
 
+const bool RenderStateDX9::SetSRGBWriteEnabled(const bool enabled)
+{
+	if (enabled == GetSRGBWriteEnabled())
+		return true;
+
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	HRESULT hr = device->SetRenderState(D3DRS_SRGBWRITEENABLE, enabled ? (DWORD)1 : (DWORD)0);
+	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
+
+	if (SUCCEEDED(hr))
+		return RenderState::SetSRGBWriteEnabled(enabled);
+	else
+		return false;
+}
+
 void RenderStateDX9::Reset()
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -597,7 +616,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_ALPHABLENDENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bColorBlendEnable = (value != 0);
+	m_bColorBlendEnabled = (value != 0);
 
 	hr = device->GetRenderState(D3DRS_SRCBLEND, &value);
 	assert(SUCCEEDED(hr));
@@ -619,7 +638,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_ALPHATESTENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bAlphaTestEnable = (value != 0);
+	m_bAlphaTestEnabled = (value != 0);
 
 	hr = device->GetRenderState(D3DRS_ALPHAFUNC, &value);
 	assert(SUCCEEDED(hr));
@@ -639,7 +658,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_ZENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_eZEnable = (ZBuffer)MatchRenderState(value, ZB);
+	m_eZEnabled = (ZBuffer)MatchRenderState(value, ZB);
 
 	hr = device->GetRenderState(D3DRS_ZFUNC, &value);
 	assert(SUCCEEDED(hr));
@@ -647,7 +666,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_ZWRITEENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bZWriteEnable = (value != 0);
+	m_bZWriteEnabled = (value != 0);
 
 
 	hr = device->GetRenderState(D3DRS_COLORWRITEENABLE, &value);
@@ -670,7 +689,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_STENCILENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bStencilEnable = (value != 0);
+	m_bStencilEnabled = (value != 0);
 
 	hr = device->GetRenderState(D3DRS_STENCILFUNC, &value);
 	assert(SUCCEEDED(hr));
@@ -710,7 +729,13 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_SCISSORTESTENABLE, &value);
 	assert(SUCCEEDED(hr));
-	m_bScissorEnable = (value != 0);
+	m_bScissorEnabled = (value != 0);
+
+
+
+	hr = device->GetRenderState(D3DRS_SRGBWRITEENABLE, &value);
+	assert(SUCCEEDED(hr));
+	m_bSRGBEnabled = (value != 0);
 
 
 

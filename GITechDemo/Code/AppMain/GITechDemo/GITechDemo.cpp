@@ -27,6 +27,7 @@ using namespace LibRendererDll;
 
 #include "PerlinNoise.h"
 #include "Poisson.h"
+#include "GaussianFilter.h"
 
 #define MAX_LOADSTRING 100
 
@@ -49,37 +50,71 @@ Matrix44f worldViewProjMat;
 //////////////////////////////
 
 // Configurable options
-const bool GBUFFER_Z_PREPASS = false;
-const float Z_NEAR = 1.f;
-const float Z_FAR = 5000.f;
+/* GBuffer generation */
+bool GBUFFER_Z_PREPASS = false;
+float Z_NEAR = 1.f;
+float Z_FAR = 5000.f;
 
-const float AMBIENT_FACTOR = 0.025f;
-const float DIRECTIONAL_DIFFUSE_FACTOR = 1.5f;
-const float DIRECITONAL_SPECULAR_FACTOR = 40.f;
+bool AMBIENT_LIGHT_ENABLED = true;
+bool DIRECTIONAL_LIGHT_ENABLED = true;
+bool INDIRECT_LIGHT_ENABLED = true;
 
-const float SUN_RADIUS = 200.f;
-const float SUN_BRIGHTNESS = 1.f;
+/* Ambient light parameters */
+float AMBIENT_FACTOR = 0.1f;
 
-const float SHADOW_MAP_DEPTH_BIAS = 0.005f;
+/* Directional light parameters */
+float DIRECTIONAL_DIFFUSE_FACTOR = 15.f;
+float DIRECITONAL_SPECULAR_FACTOR = 75.f;
+
+/* Sun parameters */
+float SUN_RADIUS = 1000.f;
+float SUN_BRIGHTNESS = 500.f;
+
+/* Directional light shadow map parameters */
+float SHADOW_MAP_DEPTH_BIAS = 0.005f;
 const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
 
+/* Cascaded Shadow Map parameters */
 const unsigned int PCF_KERNEL_SIZE = 16;
-const bool DEBUG_CASCADES = false;
+bool DEBUG_CASCADES = false;
 const unsigned int NUM_CASCADES = 4;
-const float CASCADE_SPLIT_FACTOR = 0.7f;
-const float CASCADE_MAX_VIEW_DEPTH = 3000.f;
-const float CASCADE_BLEND_SIZE = 50.f;
+float CASCADE_SPLIT_FACTOR = 0.7f;
+float CASCADE_MAX_VIEW_DEPTH = 3000.f;
+float CASCADE_BLEND_SIZE = 25.f;
 
+/* Reflective Shadow Map parameters */
 const unsigned int RSM_SIZE = 512;
 const unsigned int RSM_NUM_PASSES = 8;
 const unsigned int RSM_SAMPLES_PER_PASS = 16;
 const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
-const float RSM_INTENSITY = 200.f;
-const float RSM_KERNEL_SCALE = 0.02f;
-const bool USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER = true;
+float RSM_INTENSITY = 200.f;
+float RSM_KERNEL_SCALE = 0.015f;
+bool USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER = true;
 
-const bool DEBUG_CSM_CAMERA = false;
-const bool DEBUG_RSM_CAMERA = false;
+/* Postprocessing parameters */
+bool POST_PROCESSING_ENABLE = true;
+// Tonemapping
+float HDR_EXPOSURE_BIAS = 0.1f;
+float HDR_AVG_LUMA_CLAMP_MIN = 0.00001f;
+float HDR_AVG_LUMA_CLAMP_MAX = 0.25f;
+float HDR_TONEMAPPING_SHOULDER_STRENGTH = 0.15f;
+float HDR_TONEMAPPING_LINEAR_STRENGTH = 0.5f;
+float HDR_TONEMAPPING_LINEAR_ANGLE = 0.07f;
+float HDR_TONEMAPPING_TOE_STRENGTH = 0.75f;
+float HDR_TONEMAPPING_TOE_NUMERATOR = 0.02f;
+float HDR_TONEMAPPING_TOE_DENOMINATOR = 0.25f;
+float HDR_TONEMAPPING_LINEAR_WHITE = 11.2f;
+float HDR_LUMA_ADAPT_SPEED = 1.f;
+// Bloom
+float BLOOM_BRIGHTNESS_THRESHOLD = 1.f;
+float BLOOM_STRENGTH = 0.6f;
+float BLOOM_POWER = 1.f;
+const unsigned int BLOOM_BLUR_KERNEL_COUNT = 5;
+unsigned int BLOOM_BLUR_KERNEL[BLOOM_BLUR_KERNEL_COUNT] = { 0, 1, 2, 2, 3 };
+
+/* Debug options */
+bool DEBUG_CSM_CAMERA = false;
+bool DEBUG_RSM_CAMERA = false;
 ///////////////////////////////
 
 // Cascaded Shadow Maps (CSM) and directional light related variables
@@ -146,15 +181,30 @@ ShaderTemplate*		DepthPassFP = nullptr;
 // Shader responsible for depth-resolving
 ShaderTemplate*		DepthCopyVP = nullptr;
 ShaderTemplate*		DepthCopyFP = nullptr;
-// Shader responsible for applying postprocessing effects
-ShaderTemplate*		PostProcessVP = nullptr;
-ShaderTemplate*		PostProcessFP = nullptr;
+// Shader responsible for copying the light accumulation buffer contents to the backbuffer
+ShaderTemplate*		ColorCopyVP = nullptr;
+ShaderTemplate*		ColorCopyFP = nullptr;
 // Shader responsible for capturing RSM data
 ShaderTemplate*		RSMCaptureVP = nullptr;
 ShaderTemplate*		RSMCaptureFP = nullptr;
 // Shader responsible for applying indirect lighting from the RSM
 ShaderTemplate*		RSMApplyVP = nullptr;
 ShaderTemplate*		RSMApplyFP = nullptr;
+// Shader responsible for downsampling the HDR light accumulation buffer
+ShaderTemplate*		DownsampleVP = nullptr;
+ShaderTemplate*		DownsampleFP = nullptr;
+// Shader responsible for calculating the average luminance
+ShaderTemplate*		LumaCalcVP = nullptr;
+ShaderTemplate*		LumaCalcFP = nullptr;
+// Shader responsible for mapping from HDR image space to LDR image space
+ShaderTemplate*		HDRToneMappingVP = nullptr;
+ShaderTemplate*		HDRToneMappingFP = nullptr;
+// Shader responsible for bloom effect
+ShaderTemplate*		BloomVP = nullptr;
+ShaderTemplate*		BloomFP = nullptr;
+// Shader responsible for chromatic aberration effect
+ShaderTemplate*		ChromaShiftVP = nullptr;
+ShaderTemplate*		ChromaShiftFP = nullptr;
 
 // Shader input instances for setting shader resources
 ShaderInput*	SkyBoxVInput = nullptr;
@@ -169,12 +219,20 @@ ShaderInput*	DepthPassVInput = nullptr;
 ShaderInput*	DepthPassFInput = nullptr;
 ShaderInput*	DepthCopyVInput = nullptr;
 ShaderInput*	DepthCopyFInput = nullptr;
-ShaderInput*	PostProcessVInput = nullptr;
-ShaderInput*	PostProcessFInput = nullptr;
+ShaderInput*	ColorCopyVInput = nullptr;
+ShaderInput*	ColorCopyFInput = nullptr;
 ShaderInput*	RSMCaptureVInput = nullptr;
 ShaderInput*	RSMCaptureFInput = nullptr;
 ShaderInput*	RSMApplyVInput = nullptr;
 ShaderInput*	RSMApplyFInput = nullptr;
+ShaderInput*	DownsampleVInput = nullptr;
+ShaderInput*	DownsampleFInput = nullptr;
+ShaderInput*	LumaCalcVInput = nullptr;
+ShaderInput*	LumaCalcFInput = nullptr;
+ShaderInput*	HDRToneMappingVInput = nullptr;
+ShaderInput*	HDRToneMappingFInput = nullptr;
+ShaderInput*	BloomVInput = nullptr;
+ShaderInput*	BloomFInput = nullptr;
 
 // A lookup table for shader inputs (faster than searching everytime by input name)
 enum ShaderName
@@ -187,9 +245,13 @@ enum ShaderName
 	DeferredLightDirVS, DeferredLightDirPS,
 	DepthPassVS, DepthPassPS,
 	DepthCopyVS, DepthCopyPS,
-	PostProcessVS, PostProcessPS,
+	ColorCopyVS, ColorCopyPS,
 	RSMCaptureVS, RSMCapturePS,
 	RSMApplyVS, RSMApplyPS,
+	DownsampleVS, DownsamplePS,
+	LumaCalcVS, LumaCalcPS,
+	HDRToneMappingVS, HDRToneMappingPS,
+	BloomVS, BloomPS,
 
 	SHADER_COUNT
 };
@@ -208,7 +270,12 @@ enum ShaderInputName
 	poissonDisk, f44LightWorldViewProjMat, f44LightWorldViewMat, texRSMFluxBuffer,
 	texRSMNormalBuffer, texRSMDepthBuffer, f3RSMKernel, f44RSMProjMat, f44RSMInvProjMat,
 	f44ViewToRSMViewMat, fRSMIntensity, fRSMKernelScale, fSunRadius, fSunBrightness,
-	texIndirectLightAccumulationBuffer, bIsUpsamplePass,
+	texIndirectLightAccumulationBuffer, bIsUpscalePass, texLumaCalcInput, bInitialLumaPass,
+	bFinalLumaPass, texAvgLuma, fExposureBias, f2AvgLumaClamp, texSource, f2TexelSize,
+	fShoulderStrength, fLinearStrength, fLinearAngle, fToeStrength, fToeNumerator,
+	fToeDenominator, fLinearWhite, bLumaAdaptationPass, fLumaAdaptSpeed, fFrameTime,
+	texLumaTarget, fBrightnessThreshold, bApplyBrightnessFilter, fBloomPower, nKernel,
+	nDownsampleFactor, fBloomStrength, f2ChromaShiftScale, fGaussianKernel,
 
 	SHADER_INPUT_COUNT
 };
@@ -244,7 +311,12 @@ const std::string ShaderInputLUT::inputName[] = {
 	"poissonDisk", "f44LightWorldViewProjMat", "f44LightWorldViewMat", "texRSMFluxBuffer",
 	"texRSMNormalBuffer", "texRSMDepthBuffer", "f3RSMKernel", "f44RSMProjMat", "f44RSMInvProjMat",
 	"f44ViewToRSMViewMat", "fRSMIntensity", "fRSMKernelScale", "fSunRadius", "fSunBrightness",
-	"texIndirectLightAccumulationBuffer", "bIsUpsamplePass"
+	"texIndirectLightAccumulationBuffer", "bIsUpscalePass", "texLumaCalcInput", "bInitialLumaPass",
+	"bFinalLumaPass", "texAvgLuma", "fExposureBias", "f2AvgLumaClamp", "texSource", "f2TexelSize",
+	"fShoulderStrength", "fLinearStrength", "fLinearAngle", "fToeStrength", "fToeNumerator",
+	"fToeDenominator", "fLinearWhite", "bLumaAdaptationPass", "fLumaAdaptSpeed", "fFrameTime",
+	"texLumaTarget", "fBrightnessThreshold", "bApplyBrightnessFilter", "fBloomPower", "nKernel",
+	"nDownsampleFactor", "fBloomStrength", "f2ChromaShiftScale", "fGaussianKernel"
 };
 
 const ShaderInput * const * const ShaderInputLUT::inputHandler[] = {
@@ -254,9 +326,13 @@ const ShaderInput * const * const ShaderInputLUT::inputHandler[] = {
 	&DeferredLightDirVInput, &DeferredLightDirFInput,
 	&DepthPassVInput, &DepthPassFInput,
 	&DepthCopyVInput, &DepthCopyFInput,
-	&PostProcessVInput, &PostProcessFInput,
+	&ColorCopyVInput, &ColorCopyFInput,
 	&RSMCaptureVInput, &RSMCaptureFInput,
-	&RSMApplyVInput, &RSMApplyFInput
+	&RSMApplyVInput, &RSMApplyFInput,
+	&DownsampleVInput, &DownsampleFInput,
+	&LumaCalcVInput, &LumaCalcFInput,
+	&HDRToneMappingVInput, &HDRToneMappingFInput,
+	&BloomVInput, &BloomFInput
 };
 
 // The geometry buffer, holding information necessary for calculating light contribution
@@ -269,6 +345,17 @@ RenderTarget*	LightAccumulationBuffer = nullptr;
 RenderTarget*	RSMBuffer = nullptr;
 // The indirect light accumulation buffer (quarter resolution)
 RenderTarget*	IndirectLightAccumulationBuffer = nullptr;
+// The 1/16 resolution target in which the light accumulation buffer is downsampled
+RenderTarget*	HDRDownsampleBuffer = nullptr;
+// The 64x64, 16x16, 4x4 and 1x1 average luminance render targets
+RenderTarget*	AverageLuminanceBuffer[4];
+// The two 1x1 adapted luminance render targets (per frame swapped)
+RenderTarget*	AdaptedLuminanceCurr;
+RenderTarget*	AdaptedLuminancePrev;
+// The LDR tone mapped image
+RenderTarget*	LDRToneMappedImageBuffer;
+// Two HDR render targets for bloom
+RenderTarget*	HDRBloomBuffer[2];
 
 // A model consisting of several meshes and material information
 Model*			SponzaScene = nullptr;
@@ -306,6 +393,9 @@ Perlin PerlinNoise(1, USHRT_MAX, 1, GetTickCount());
 
 // Poisson sampling for PCF
 Vec2f PoissonDisk[PCF_KERNEL_SIZE];
+
+// Gaussian kernel for blurring
+float GaussianKernel[16];
 
 // App states
 enum AppState
@@ -358,7 +448,12 @@ void AccumulateAmbientLight();
 void AccumulateDirectionalLight();
 void AccumulateIndirectLight();
 void AccumulateLight();
+void HDRDownsamplePass();
+void LuminanceMeasurementPass();
+void HDRToneMappingPass();
+void BloomPass();
 void ApplyPostProcessing();
+void CopyResultToBackBuffer(RenderTarget* const rt);
 void RenderScene();
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
@@ -707,6 +802,7 @@ void AllocateRenderResources()
 					Texture* tex = ResourceMgr->GetTexture(texIdx);
 					tex->SetAnisotropy(/*MAX_ANISOTROPY*/ 1.f);
 					tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+					tex->SetSRGBEnabled(true);
 				}
 				if (SponzaScene->arrMaterial[i]->arrTexture[j]->eTexType == Model::TextureDesc::TT_SPECULAR)
 				{
@@ -773,12 +869,12 @@ void AllocateRenderResources()
 	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
 	DepthCopyFP = ResourceMgr->GetShaderTemplate(pstIdx);
 
-	vspIdx = ResourceMgr->CreateShaderProgram("shaders/PostProcess.hlsl", SPT_VERTEX);
-	pspIdx = ResourceMgr->CreateShaderProgram("shaders/PostProcess.hlsl", SPT_PIXEL);
+	vspIdx = ResourceMgr->CreateShaderProgram("shaders/ColorCopy.hlsl", SPT_VERTEX);
+	pspIdx = ResourceMgr->CreateShaderProgram("shaders/ColorCopy.hlsl", SPT_PIXEL);
 	vstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(vspIdx));
-	PostProcessVP = ResourceMgr->GetShaderTemplate(vstIdx);
+	ColorCopyVP = ResourceMgr->GetShaderTemplate(vstIdx);
 	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
-	PostProcessFP = ResourceMgr->GetShaderTemplate(pstIdx);
+	ColorCopyFP = ResourceMgr->GetShaderTemplate(pstIdx);
 
 	vspIdx = ResourceMgr->CreateShaderProgram("shaders/Skybox.hlsl", SPT_VERTEX);
 	pspIdx = ResourceMgr->CreateShaderProgram("shaders/Skybox.hlsl", SPT_PIXEL);
@@ -800,7 +896,35 @@ void AllocateRenderResources()
 	RSMApplyVP = ResourceMgr->GetShaderTemplate(vstIdx);
 	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
 	RSMApplyFP = ResourceMgr->GetShaderTemplate(pstIdx);
-	PopLoadThreadEvent(); // shaders
+
+	vspIdx = ResourceMgr->CreateShaderProgram("shaders/Downsample.hlsl", SPT_VERTEX);
+	pspIdx = ResourceMgr->CreateShaderProgram("shaders/Downsample.hlsl", SPT_PIXEL);
+	vstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(vspIdx));
+	DownsampleVP = ResourceMgr->GetShaderTemplate(vstIdx);
+	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
+	DownsampleFP = ResourceMgr->GetShaderTemplate(pstIdx);
+
+	vspIdx = ResourceMgr->CreateShaderProgram("shaders/LumaCalc.hlsl", SPT_VERTEX);
+	pspIdx = ResourceMgr->CreateShaderProgram("shaders/LumaCalc.hlsl", SPT_PIXEL);
+	vstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(vspIdx));
+	LumaCalcVP = ResourceMgr->GetShaderTemplate(vstIdx);
+	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
+	LumaCalcFP = ResourceMgr->GetShaderTemplate(pstIdx);
+
+	vspIdx = ResourceMgr->CreateShaderProgram("shaders/HDRToneMapping.hlsl", SPT_VERTEX);
+	pspIdx = ResourceMgr->CreateShaderProgram("shaders/HDRToneMapping.hlsl", SPT_PIXEL);
+	vstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(vspIdx));
+	HDRToneMappingVP = ResourceMgr->GetShaderTemplate(vstIdx);
+	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
+	HDRToneMappingFP = ResourceMgr->GetShaderTemplate(pstIdx);
+
+	vspIdx = ResourceMgr->CreateShaderProgram("shaders/Bloom.hlsl", SPT_VERTEX);
+	pspIdx = ResourceMgr->CreateShaderProgram("shaders/Bloom.hlsl", SPT_PIXEL);
+	vstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(vspIdx));
+	BloomVP = ResourceMgr->GetShaderTemplate(vstIdx);
+	pstIdx = ResourceMgr->CreateShaderTemplate(ResourceMgr->GetShaderProgram(pspIdx));
+	BloomFP = ResourceMgr->GetShaderTemplate(pstIdx);
+	PopLoadThreadEvent(); //shaders
 
 	PushLoadThreadEvent("Creating shader resource table");
 	// Create shader inputs
@@ -829,10 +953,10 @@ void AllocateRenderResources()
 	psiIdx = ResourceMgr->CreateShaderInput(DepthCopyFP);
 	DepthCopyFInput = ResourceMgr->GetShaderInput(psiIdx);
 
-	vsiIdx = ResourceMgr->CreateShaderInput(PostProcessVP);
-	PostProcessVInput = ResourceMgr->GetShaderInput(vsiIdx);
-	psiIdx = ResourceMgr->CreateShaderInput(PostProcessFP);
-	PostProcessFInput = ResourceMgr->GetShaderInput(psiIdx);
+	vsiIdx = ResourceMgr->CreateShaderInput(ColorCopyVP);
+	ColorCopyVInput = ResourceMgr->GetShaderInput(vsiIdx);
+	psiIdx = ResourceMgr->CreateShaderInput(ColorCopyFP);
+	ColorCopyFInput = ResourceMgr->GetShaderInput(psiIdx);
 
 	vsiIdx = ResourceMgr->CreateShaderInput(SkyBoxVP);
 	SkyBoxVInput = ResourceMgr->GetShaderInput(vsiIdx);
@@ -849,6 +973,26 @@ void AllocateRenderResources()
 	psiIdx = ResourceMgr->CreateShaderInput(RSMApplyFP);
 	RSMApplyFInput = ResourceMgr->GetShaderInput(psiIdx);
 
+	vsiIdx = ResourceMgr->CreateShaderInput(DownsampleVP);
+	DownsampleVInput = ResourceMgr->GetShaderInput(vsiIdx);
+	psiIdx = ResourceMgr->CreateShaderInput(DownsampleFP);
+	DownsampleFInput = ResourceMgr->GetShaderInput(psiIdx);
+
+	vsiIdx = ResourceMgr->CreateShaderInput(LumaCalcVP);
+	LumaCalcVInput = ResourceMgr->GetShaderInput(vsiIdx);
+	psiIdx = ResourceMgr->CreateShaderInput(LumaCalcFP);
+	LumaCalcFInput = ResourceMgr->GetShaderInput(psiIdx);
+
+	vsiIdx = ResourceMgr->CreateShaderInput(HDRToneMappingVP);
+	HDRToneMappingVInput = ResourceMgr->GetShaderInput(vsiIdx);
+	psiIdx = ResourceMgr->CreateShaderInput(HDRToneMappingFP);
+	HDRToneMappingFInput = ResourceMgr->GetShaderInput(psiIdx);
+
+	vsiIdx = ResourceMgr->CreateShaderInput(BloomVP);
+	BloomVInput = ResourceMgr->GetShaderInput(vsiIdx);
+	psiIdx = ResourceMgr->CreateShaderInput(BloomFP);
+	BloomFInput = ResourceMgr->GetShaderInput(psiIdx);
+
 	// Build a lookup table of shader inputs
 	// NB: because this searches for all inputs in all shaders,
 	// regardless if the input belongs to another shader, this
@@ -859,7 +1003,7 @@ void AllocateRenderResources()
 	PopLoadThreadEvent(); // shader resource table
 
 	// Generate Poisson Disk samples
-	PushLoadThreadEvent("Generating Poisson Disk samples");
+	PushLoadThreadEvent("Generating Poisson and Gaussian kernels");
 	std::vector<sPoint> poisson;
 	float minDist = sqrt((float)PCF_KERNEL_SIZE) / (float)PCF_KERNEL_SIZE * 0.8f;
 	float oneOverMinDist = 1.f / minDist;
@@ -900,7 +1044,9 @@ void AllocateRenderResources()
 		// to provide very good quality with very little jitter / noise
 		RSMKernel[i][2] = length(Vec2f(poisson[i].x - 0.5f, poisson[i].y - 0.5f)) * 2.f;
 	}
-	PopLoadThreadEvent(); // poisson
+
+	CreateGaussianFilter(GaussianKernel, 16);
+	PopLoadThreadEvent(); // kernels
 
 	// Initialize the various render targets we will be using
 	PushLoadThreadEvent("Allocating render targets");
@@ -914,7 +1060,7 @@ void AllocateRenderResources()
 	// Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
 	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A8, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], false, true, PF_INTZ);
 	ShadowMapDir = ResourceMgr->GetRenderTarget(rtIdx);
-	ResourceMgr->GetTexture(ShadowMapDir->GetDepthBuffer())->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(ShadowMapDir->GetDepthBuffer())->SetAddressingMode(SAM_BORDER);
 	ResourceMgr->GetTexture(ShadowMapDir->GetDepthBuffer())->SetBorderColor(Vec4f(1.f, 1.f, 1.f, 1.f));
 
 	// Render target in which we accumulate the light contribution from all light sources (floating point color components make it HDR-ready)
@@ -922,6 +1068,7 @@ void AllocateRenderResources()
 	// (the depth is required for correctly rendering the sky and for future stencil optimizations)
 	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A16B16G16R16F, 1.f, 1.f, false, true, PF_D24S8);
 	LightAccumulationBuffer = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(LightAccumulationBuffer->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
 	// Reflective Shadow Map render target
 	rtIdx = ResourceMgr->CreateRenderTarget(2, PF_A8R8G8B8, PF_G16R16F, PF_NONE, PF_NONE, RSM_SIZE, RSM_SIZE, false, true, PF_INTZ);
@@ -934,9 +1081,51 @@ void AllocateRenderResources()
 	ResourceMgr->GetTexture(RSMBuffer->GetDepthBuffer())->SetBorderColor(Vec4f(0.f, 0.f, 0.f, 0.f));
 
 	// Indirect lighting accumulation buffer (quarter resolution)
-	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A8R8G8B8, 0.5f, 0.5f, false, false, PF_NONE);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A16B16G16R16F, 0.5f, 0.5f, false, false, PF_NONE);
 	IndirectLightAccumulationBuffer = ResourceMgr->GetRenderTarget(rtIdx);
 	ResourceMgr->GetTexture(IndirectLightAccumulationBuffer->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+
+	// HDR downsampled buffer (1/16 resolution)
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A16B16G16R16F, 0.25f, 0.25f, false, false, PF_NONE);
+	HDRDownsampleBuffer = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(HDRDownsampleBuffer->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+	// Average luminance buffers (64x64, 16x16, 4x4, two 1x1, one target luma, one current luma)
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 64u, 64u, false, false, PF_NONE);
+	AverageLuminanceBuffer[0] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AverageLuminanceBuffer[0]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 16u, 16u, false, false, PF_NONE);
+	AverageLuminanceBuffer[1] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AverageLuminanceBuffer[1]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 4u, 4u, false, false, PF_NONE);
+	AverageLuminanceBuffer[2] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AverageLuminanceBuffer[2]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 1u, 1u, false, false, PF_NONE);
+	AverageLuminanceBuffer[3] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AverageLuminanceBuffer[3]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+	// Adapted luminance for simulating light adaptation effect
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 1u, 1u, false, false, PF_NONE);
+	AdaptedLuminanceCurr = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AdaptedLuminanceCurr->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_R16F, 1u, 1u, false, false, PF_NONE);
+	AdaptedLuminancePrev = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(AdaptedLuminancePrev->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+	// LDR tone mapped render target
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A8R8G8B8, 1.f, 1.f, false, false, PF_NONE);
+	LDRToneMappedImageBuffer = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(LDRToneMappedImageBuffer->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+	// HDR bloom render targets
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A16B16G16R16F, 0.25f, 0.25f, false, false, PF_NONE);
+	HDRBloomBuffer[0] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(HDRBloomBuffer[0]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(HDRBloomBuffer[0]->GetColorBuffer(0))->SetAddressingMode(SAM_CLAMP);
+	rtIdx = ResourceMgr->CreateRenderTarget(1, PF_A16B16G16R16F, 0.25f, 0.25f, false, false, PF_NONE);
+	HDRBloomBuffer[1] = ResourceMgr->GetRenderTarget(rtIdx);
+	ResourceMgr->GetTexture(HDRBloomBuffer[1]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(HDRBloomBuffer[1]->GetColorBuffer(0))->SetAddressingMode(SAM_CLAMP);
 	PopLoadThreadEvent(); // render targets
 
 	// Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
@@ -1382,8 +1571,8 @@ void GenerateDirectionalShadowMap()
 	bool red, blue, green, alpha;
 	RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
 	RenderContext->GetRenderStateManager()->SetColorWriteEnabled(false, false, false, false);
-	bool scissorEnabled = RenderContext->GetRenderStateManager()->GetScissorEnable();
-	RenderContext->GetRenderStateManager()->SetScissorEnable(true);
+	bool scissorEnabled = RenderContext->GetRenderStateManager()->GetScissorEnabled();
+	RenderContext->GetRenderStateManager()->SetScissorEnabled(true);
 
 	ShadowMapDir->Enable();
 
@@ -1429,7 +1618,7 @@ void GenerateDirectionalShadowMap()
 	ShadowMapDir->Disable();
 
 	RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
-	RenderContext->GetRenderStateManager()->SetScissorEnable(scissorEnabled);
+	RenderContext->GetRenderStateManager()->SetScissorEnabled(scissorEnabled);
 
 	POP_PROFILE_MARKER();
 }
@@ -1537,6 +1726,7 @@ void GenerateGBuffer()
 	// scene isn't very big and we are mostly pixel bound.
 	for (unsigned int mesh = 0; mesh < SponzaScene->arrMesh.size(); mesh++)
 	{
+		PUSH_PROFILE_MARKER(SponzaScene->arrMaterial[SponzaScene->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
 		const unsigned int diffTexIdx = TextureLUT[Model::TextureDesc::TT_DIFFUSE][SponzaScene->arrMesh[mesh]->nMaterialIdx];
 		const unsigned int normalTexIdx = TextureLUT[Model::TextureDesc::TT_HEIGHT][SponzaScene->arrMesh[mesh]->nMaterialIdx];
 		const unsigned int specTexIdx = TextureLUT[Model::TextureDesc::TT_SPECULAR][SponzaScene->arrMesh[mesh]->nMaterialIdx];
@@ -1565,11 +1755,10 @@ void GenerateGBuffer()
 
 		GBufferGenerationFP->Enable(GBufferGenerationFInput);
 
-		PUSH_PROFILE_MARKER(SponzaScene->arrMaterial[SponzaScene->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
 		RenderContext->DrawVertexBuffer(SponzaScene->arrMesh[mesh]->pVertexBuffer);
-		POP_PROFILE_MARKER();
 
 		GBufferGenerationFP->Disable();
+		POP_PROFILE_MARKER();
 	}
 
 	GBufferGenerationVP->Disable();
@@ -1639,11 +1828,11 @@ void DrawSky()
 
 	bool blendEnabled;
 	Blend DstBlend, SrcBlend;
-	blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnable();
+	blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
 	DstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
 	SrcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
 
-	RenderContext->GetRenderStateManager()->SetColorBlendEnable(true);
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
 	RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_ZERO);
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ONE);
 
@@ -1677,7 +1866,7 @@ void DrawSky()
 	SkyBoxFP->Disable();
 	POP_PROFILE_MARKER();
 
-	RenderContext->GetRenderStateManager()->SetColorBlendEnable(blendEnabled);
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnabled);
 	RenderContext->GetRenderStateManager()->SetColorDstBlend(DstBlend);
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(SrcBlend);
 
@@ -1846,8 +2035,8 @@ void AccumulateIndirectLight()
 	if (ShdInputLUT[RSMApplyPS][texIndirectLightAccumulationBuffer] != ~0)
 		RSMApplyFInput->SetTexture(ShdInputLUT[RSMApplyPS][texIndirectLightAccumulationBuffer], IndirectLightAccumulationBuffer->GetColorBuffer(0));
 
-	if (ShdInputLUT[RSMApplyPS][bIsUpsamplePass] != ~0)
-		RSMApplyFInput->SetBool(ShdInputLUT[RSMApplyPS][bIsUpsamplePass], false);
+	if (ShdInputLUT[RSMApplyPS][bIsUpscalePass] != ~0)
+		RSMApplyFInput->SetBool(ShdInputLUT[RSMApplyPS][bIsUpscalePass], false);
 
 	for (unsigned int i = 0; i < RSM_NUM_PASSES; i++)
 	{
@@ -1883,8 +2072,8 @@ void AccumulateIndirectLight()
 		if (ShdInputLUT[RSMApplyPS][f3RSMKernel] != ~0)
 			RSMApplyFInput->SetFloatArray(ShdInputLUT[RSMApplyPS][f3RSMKernel], RSMKernel);
 
-		if (ShdInputLUT[RSMApplyPS][bIsUpsamplePass] != ~0)
-			RSMApplyFInput->SetBool(ShdInputLUT[RSMApplyPS][bIsUpsamplePass], true);
+		if (ShdInputLUT[RSMApplyPS][bIsUpscalePass] != ~0)
+			RSMApplyFInput->SetBool(ShdInputLUT[RSMApplyPS][bIsUpscalePass], true);
 
 		RSMApplyVP->Enable(RSMApplyVInput);
 		RSMApplyFP->Enable(RSMApplyFInput);
@@ -1920,22 +2109,27 @@ void AccumulateLight()
 
 	bool blendEnabled;
 	Blend DstBlend, SrcBlend;
-	blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnable();
+	blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
 	DstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
 	SrcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
 
 	// Additive color blending is required for accumulating light
-	RenderContext->GetRenderStateManager()->SetColorBlendEnable(true);
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
 	RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_ONE);
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ONE);
 
 	// Accumulate the contributions from the various light sources
-	AccumulateAmbientLight();
-	AccumulateDirectionalLight();
-	AccumulateIndirectLight();
+	if(AMBIENT_LIGHT_ENABLED)
+		AccumulateAmbientLight();
+	
+	if(DIRECTIONAL_LIGHT_ENABLED)
+		AccumulateDirectionalLight();
+
+	if(INDIRECT_LIGHT_ENABLED)
+		AccumulateIndirectLight();
 
 	// Reset the render states
-	RenderContext->GetRenderStateManager()->SetColorBlendEnable(blendEnabled);
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnabled);
 	RenderContext->GetRenderStateManager()->SetColorDstBlend(DstBlend);
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(SrcBlend);
 
@@ -1950,32 +2144,443 @@ void AccumulateLight()
 	POP_PROFILE_MARKER();
 }
 
-// Apply postprocessing effects. Afterwards, copy results to the backbuffer.
-void ApplyPostProcessing()
+// Downscale the HDR light accumulation texture
+void HDRDownsamplePass()
 {
-	PUSH_PROFILE_MARKER("ApplyPostProcessing()");
+	PUSH_PROFILE_MARKER("HDRDownsamplePass()");
 
-	RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+	HDRDownsampleBuffer->Enable();
+
+	// Not necessary
+	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+	PUSH_PROFILE_MARKER("Downsample.hlsl");
+	if (ShdInputLUT[DownsampleVS][f2HalfTexelOffset] != ~0)
+		DownsampleVInput->SetFloat2(ShdInputLUT[DownsampleVS][f2HalfTexelOffset], Vec2f(0.5f / HDRDownsampleBuffer->GetWidth(), 0.5f / HDRDownsampleBuffer->GetHeight()));
+
+	if (ShdInputLUT[DownsamplePS][f2TexelSize] != ~0)
+		DownsampleFInput->SetFloat2(ShdInputLUT[DownsamplePS][f2TexelSize], Vec2f(1.f / LightAccumulationBuffer->GetWidth(), 1.f / LightAccumulationBuffer->GetHeight()));
+
+	if (ShdInputLUT[DownsamplePS][texSource] != ~0)
+		DownsampleFInput->SetTexture(ShdInputLUT[DownsamplePS][texSource], LightAccumulationBuffer->GetColorBuffer(0));
+
+	if (ShdInputLUT[DownsamplePS][nDownsampleFactor] != ~0)
+		DownsampleFInput->SetInt(ShdInputLUT[DownsamplePS][nDownsampleFactor], 16);
+
+	if (ShdInputLUT[DownsamplePS][bApplyBrightnessFilter] != ~0)
+		DownsampleFInput->SetBool(ShdInputLUT[DownsamplePS][bApplyBrightnessFilter], false);
+
+	DownsampleVP->Enable(DownsampleVInput);
+	DownsampleFP->Enable(DownsampleFInput);
+
+	RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+	DownsampleVP->Disable();
+	DownsampleFP->Disable();
+	POP_PROFILE_MARKER();
+
+	HDRDownsampleBuffer->Disable();
+	
+	POP_PROFILE_MARKER();
+}
+
+// Measure average luminance level of scene
+void LuminanceMeasurementPass()
+{
+	PUSH_PROFILE_MARKER("LuminanceMeasurementPass()");
+
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		switch (i)
+		{
+		case 0:
+			PUSH_PROFILE_MARKER("64x64");
+			break;
+		case 1:
+			PUSH_PROFILE_MARKER("16x16");
+			break;
+		case 2:
+			PUSH_PROFILE_MARKER("4x4");
+			break;
+		case 3:
+			PUSH_PROFILE_MARKER("1x1");
+		}
+		AverageLuminanceBuffer[i]->Enable();
+		
+		// Not necesarry
+		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+		PUSH_PROFILE_MARKER("LumaCalc.hlsl");
+		if (ShdInputLUT[LumaCalcVS][f2HalfTexelOffset] != ~0)
+			LumaCalcVInput->SetFloat2(ShdInputLUT[LumaCalcVS][f2HalfTexelOffset], Vec2f(0.5f / AverageLuminanceBuffer[i]->GetWidth(), 0.5f / AverageLuminanceBuffer[i]->GetHeight()));
+
+		if (i == 0)
+		{
+			if (ShdInputLUT[LumaCalcPS][f2HalfTexelOffset] != ~0)
+				LumaCalcFInput->SetFloat2(ShdInputLUT[LumaCalcPS][f2HalfTexelOffset], Vec2f(0.5f / HDRDownsampleBuffer->GetWidth(), 0.5f / HDRDownsampleBuffer->GetHeight()));
+
+			if (ShdInputLUT[LumaCalcPS][texLumaCalcInput] != ~0)
+				LumaCalcFInput->SetTexture(ShdInputLUT[LumaCalcPS][texLumaCalcInput], HDRDownsampleBuffer->GetColorBuffer(0));
+
+			if (ShdInputLUT[LumaCalcPS][bInitialLumaPass] != ~0)
+				LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bInitialLumaPass], true);
+
+			if (ShdInputLUT[LumaCalcPS][bFinalLumaPass] != ~0)
+				LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bFinalLumaPass], false);
+
+			if (ShdInputLUT[LumaCalcPS][bLumaAdaptationPass] != ~0)
+				LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bLumaAdaptationPass], false);
+		}
+		else
+		{
+			if (ShdInputLUT[LumaCalcPS][f2HalfTexelOffset] != ~0)
+				LumaCalcFInput->SetFloat2(ShdInputLUT[LumaCalcPS][f2HalfTexelOffset], Vec2f(0.5f / AverageLuminanceBuffer[i - 1]->GetWidth(), 0.5f / AverageLuminanceBuffer[i - 1]->GetHeight()));
+
+			if (ShdInputLUT[LumaCalcPS][texLumaCalcInput] != ~0)
+				LumaCalcFInput->SetTexture(ShdInputLUT[LumaCalcPS][texLumaCalcInput], AverageLuminanceBuffer[i - 1]->GetColorBuffer(0));
+
+			if (ShdInputLUT[LumaCalcPS][bInitialLumaPass] != ~0)
+				LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bInitialLumaPass], false);
+
+			if (ShdInputLUT[LumaCalcPS][bLumaAdaptationPass] != ~0)
+				LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bLumaAdaptationPass], false);
+
+			if (i == 3)
+			{
+				if (ShdInputLUT[LumaCalcPS][bFinalLumaPass] != ~0)
+					LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bFinalLumaPass], true);
+
+				if (ShdInputLUT[LumaCalcPS][f2AvgLumaClamp] != ~0)
+					LumaCalcFInput->SetFloat2(ShdInputLUT[LumaCalcPS][f2AvgLumaClamp], Vec2f(HDR_AVG_LUMA_CLAMP_MIN, HDR_AVG_LUMA_CLAMP_MAX));
+			}
+			else
+			{
+				if (ShdInputLUT[LumaCalcPS][bFinalLumaPass] != ~0)
+					LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bFinalLumaPass], false);
+			}
+		}
+
+		LumaCalcVP->Enable(LumaCalcVInput);
+		LumaCalcFP->Enable(LumaCalcFInput);
+
+		RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+		LumaCalcFP->Disable();
+		LumaCalcVP->Disable();
+		POP_PROFILE_MARKER();
+
+		AverageLuminanceBuffer[i]->Disable();
+		POP_PROFILE_MARKER();
+	}
+
+	PUSH_PROFILE_MARKER("Luminance adaptation");
+
+	static unsigned long long lastTick = GetTickCount64();
+	const float frameTime = gmtl::Math::clamp((float)(GetTickCount64() - lastTick) / 1000.f, 0.f, 1.f / HDR_LUMA_ADAPT_SPEED);
+	lastTick = GetTickCount64();
+
+	RenderTarget* const rtBkp = AdaptedLuminanceCurr;
+	AdaptedLuminanceCurr = AdaptedLuminancePrev;
+	AdaptedLuminancePrev = rtBkp;
+
+	AdaptedLuminanceCurr->Enable();
+
+	PUSH_PROFILE_MARKER("LumaCalc.hlsl");
+	if (ShdInputLUT[LumaCalcVS][f2HalfTexelOffset] != ~0)
+		LumaCalcVInput->SetFloat2(ShdInputLUT[LumaCalcVS][f2HalfTexelOffset], Vec2f(0.5f / AdaptedLuminancePrev->GetWidth(), 0.5f / AdaptedLuminancePrev->GetHeight()));
+
+	if (ShdInputLUT[LumaCalcPS][texLumaCalcInput] != ~0)
+		LumaCalcFInput->SetTexture(ShdInputLUT[LumaCalcPS][texLumaCalcInput], AdaptedLuminancePrev->GetColorBuffer(0));
+
+	if (ShdInputLUT[LumaCalcPS][texLumaTarget] != ~0)
+		LumaCalcFInput->SetTexture(ShdInputLUT[LumaCalcPS][texLumaTarget], AverageLuminanceBuffer[3]->GetColorBuffer(0));
+
+	if (ShdInputLUT[LumaCalcPS][bInitialLumaPass] != ~0)
+		LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bInitialLumaPass], false);
+
+	if (ShdInputLUT[LumaCalcPS][bFinalLumaPass] != ~0)
+		LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bFinalLumaPass], false);
+
+	if (ShdInputLUT[LumaCalcPS][bLumaAdaptationPass] != ~0)
+		LumaCalcFInput->SetBool(ShdInputLUT[LumaCalcPS][bLumaAdaptationPass], true);
+
+	if (ShdInputLUT[LumaCalcPS][fLumaAdaptSpeed] != ~0)
+		LumaCalcFInput->SetFloat(ShdInputLUT[LumaCalcPS][fLumaAdaptSpeed], HDR_LUMA_ADAPT_SPEED);
+
+	if (ShdInputLUT[LumaCalcPS][fFrameTime] != ~0)
+		LumaCalcFInput->SetFloat(ShdInputLUT[LumaCalcPS][fFrameTime], frameTime);
+
+	LumaCalcVP->Enable(LumaCalcVInput);
+	LumaCalcFP->Enable(LumaCalcFInput);
+
+	RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+	LumaCalcFP->Disable();
+	LumaCalcVP->Disable();
+	POP_PROFILE_MARKER();
+
+	AdaptedLuminanceCurr->Disable();
+	POP_PROFILE_MARKER();
+
+	POP_PROFILE_MARKER();
+}
+
+// Tone map the HDR image onto the LDR target
+void HDRToneMappingPass()
+{
+	PUSH_PROFILE_MARKER("HDRToneMappingPass");
+
+	LDRToneMappedImageBuffer->Enable();
+
+	const bool sRGBEnabled = RenderContext->GetRenderStateManager()->GetSRGBWriteEnabled();
+	RenderContext->GetRenderStateManager()->SetSRGBWriteEnabled(true);
+
+	// Not necesarry
+	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+	PUSH_PROFILE_MARKER("HDRToneMapping.hlsl");
+	if (ShdInputLUT[HDRToneMappingVS][f2HalfTexelOffset] != ~0)
+		HDRToneMappingVInput->SetFloat2(ShdInputLUT[HDRToneMappingVS][f2HalfTexelOffset], Vec2f(0.5f / LightAccumulationBuffer->GetWidth(), 0.5f / LightAccumulationBuffer->GetHeight()));
+
+	if (ShdInputLUT[HDRToneMappingPS][texLightAccumulationBuffer] != ~0)
+		HDRToneMappingFInput->SetTexture(ShdInputLUT[HDRToneMappingPS][texLightAccumulationBuffer], LightAccumulationBuffer->GetColorBuffer(0));
+
+	if (ShdInputLUT[HDRToneMappingPS][texAvgLuma] != ~0)
+		HDRToneMappingFInput->SetTexture(ShdInputLUT[HDRToneMappingPS][texAvgLuma], AdaptedLuminanceCurr->GetColorBuffer(0));
+
+	if (ShdInputLUT[HDRToneMappingPS][fExposureBias] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fExposureBias], HDR_EXPOSURE_BIAS);
+
+	if (ShdInputLUT[HDRToneMappingPS][fShoulderStrength] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fShoulderStrength], HDR_TONEMAPPING_SHOULDER_STRENGTH);
+
+	if (ShdInputLUT[HDRToneMappingPS][fLinearStrength] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fLinearStrength], HDR_TONEMAPPING_LINEAR_STRENGTH);
+
+	if (ShdInputLUT[HDRToneMappingPS][fLinearAngle] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fLinearAngle], HDR_TONEMAPPING_LINEAR_ANGLE);
+
+	if (ShdInputLUT[HDRToneMappingPS][fToeStrength] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fToeStrength], HDR_TONEMAPPING_TOE_STRENGTH);
+
+	if (ShdInputLUT[HDRToneMappingPS][fToeNumerator] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fToeNumerator], HDR_TONEMAPPING_TOE_NUMERATOR);
+
+	if (ShdInputLUT[HDRToneMappingPS][fToeDenominator] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fToeDenominator], HDR_TONEMAPPING_TOE_DENOMINATOR);
+
+	if (ShdInputLUT[HDRToneMappingPS][fLinearWhite] != ~0)
+		HDRToneMappingFInput->SetFloat(ShdInputLUT[HDRToneMappingPS][fLinearWhite], HDR_TONEMAPPING_LINEAR_WHITE);
+
+	HDRToneMappingVP->Enable(HDRToneMappingVInput);
+	HDRToneMappingFP->Enable(HDRToneMappingFInput);
+
+	RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+	HDRToneMappingVP->Disable();
+	HDRToneMappingFP->Disable();
+	POP_PROFILE_MARKER();
+
+	RenderContext->GetRenderStateManager()->SetSRGBWriteEnabled(sRGBEnabled);
+
+	LDRToneMappedImageBuffer->Disable();
+
+	POP_PROFILE_MARKER();
+}
+
+void BloomDownsample()
+{
+	PUSH_PROFILE_MARKER("Downsample + brightness filter");
+	HDRBloomBuffer[0]->Enable();
+
+	// Not necesarry
+	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+	PUSH_PROFILE_MARKER("Downsample.hlsl (4x4)");
+	if (ShdInputLUT[DownsampleVS][f2HalfTexelOffset] != ~0)
+		DownsampleVInput->SetFloat2(ShdInputLUT[DownsampleVS][f2HalfTexelOffset], Vec2f(0.5f / HDRBloomBuffer[0]->GetWidth(), 0.5f / HDRBloomBuffer[0]->GetHeight()));
+
+	if (ShdInputLUT[DownsamplePS][f2TexelSize] != ~0)
+		DownsampleFInput->SetFloat2(ShdInputLUT[DownsamplePS][f2TexelSize], Vec2f(1.f / LightAccumulationBuffer->GetWidth(), 1.f / LightAccumulationBuffer->GetHeight()));
+
+	if (ShdInputLUT[DownsamplePS][texSource] != ~0)
+		DownsampleFInput->SetTexture(ShdInputLUT[DownsamplePS][texSource], LightAccumulationBuffer->GetColorBuffer(0));
+
+	if (ShdInputLUT[DownsamplePS][nDownsampleFactor] != ~0)
+		DownsampleFInput->SetInt(ShdInputLUT[DownsamplePS][nDownsampleFactor], 16);
+
+	if (ShdInputLUT[DownsamplePS][bApplyBrightnessFilter] != ~0)
+		DownsampleFInput->SetBool(ShdInputLUT[DownsamplePS][bApplyBrightnessFilter], true);
+
+	if (ShdInputLUT[DownsamplePS][fBrightnessThreshold] != ~0)
+		DownsampleFInput->SetFloat(ShdInputLUT[DownsamplePS][fBrightnessThreshold], BLOOM_BRIGHTNESS_THRESHOLD);
+
+	DownsampleVP->Enable(DownsampleVInput);
+	DownsampleFP->Enable(DownsampleFInput);
+
+	RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+	DownsampleVP->Disable();
+	DownsampleFP->Disable();
+	POP_PROFILE_MARKER();
+
+	HDRBloomBuffer[0]->Disable();
+	POP_PROFILE_MARKER();
+}
+
+void BloomBlur()
+{
+	PUSH_PROFILE_MARKER("Bloom blur pass");
+
+	for (unsigned int i = 0; i < BLOOM_BLUR_KERNEL_COUNT; i++)
+	{
+		char label[10];
+		sprintf_s(label, "Kernel %d", BLOOM_BLUR_KERNEL[i]);
+		PUSH_PROFILE_MARKER(label);
+		HDRBloomBuffer[(i + 1) % 2]->Enable();
+
+		// Not necesarry
+		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+		PUSH_PROFILE_MARKER("Bloom.hlsl");
+		if (ShdInputLUT[BloomVS][f2HalfTexelOffset] != ~0)
+			BloomVInput->SetFloat2(ShdInputLUT[BloomVS][f2HalfTexelOffset], Vec2f(0.5f / HDRBloomBuffer[i % 2]->GetWidth(), 0.5f / HDRBloomBuffer[i % 2]->GetHeight()));
+
+		if (ShdInputLUT[BloomPS][texSource] != ~0)
+		{
+			ResourceMgr->GetTexture(HDRBloomBuffer[i % 2]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+			BloomFInput->SetTexture(ShdInputLUT[BloomPS][texSource], HDRBloomBuffer[i % 2]->GetColorBuffer(0));
+		}
+
+		if (ShdInputLUT[BloomPS][fBloomStrength] != ~0)
+			BloomFInput->SetFloat(ShdInputLUT[BloomPS][fBloomStrength], BLOOM_STRENGTH);
+
+		if (ShdInputLUT[BloomPS][fBloomPower] != ~0)
+			BloomFInput->SetFloat(ShdInputLUT[BloomPS][fBloomPower], BLOOM_POWER);
+
+		if (ShdInputLUT[BloomPS][f2TexelSize] != ~0)
+			BloomFInput->SetFloat2(ShdInputLUT[BloomPS][f2TexelSize], Vec2f(1.f / HDRBloomBuffer[i % 2]->GetWidth(), 1.f / HDRBloomBuffer[i % 2]->GetHeight()));
+
+		if (ShdInputLUT[BloomPS][nKernel] != ~0)
+			BloomFInput->SetInt(ShdInputLUT[BloomPS][nKernel], BLOOM_BLUR_KERNEL[i]);
+
+		BloomVP->Enable(BloomVInput);
+		BloomFP->Enable(BloomFInput);
+
+		RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+		BloomFP->Disable();
+		BloomVP->Disable();
+		POP_PROFILE_MARKER();
+
+		HDRBloomBuffer[(i + 1) % 2]->Disable();
+		POP_PROFILE_MARKER();
+	}
+
+	POP_PROFILE_MARKER();
+}
+
+void BloomApply()
+{
+	PUSH_PROFILE_MARKER("Bloom apply");
+	LightAccumulationBuffer->Enable();
+
+	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+	const Blend dstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
+	const Blend srcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
+
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
+	RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_ONE);
+	RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ONE);
 
 	bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
 	Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-	PUSH_PROFILE_MARKER("PostProcess.hlsl");
-	if (ShdInputLUT[PostProcessVS][f2HalfTexelOffset] != ~0)
-		PostProcessVInput->SetFloat2(ShdInputLUT[PostProcessVS][f2HalfTexelOffset], Vec2f(0.5f / LightAccumulationBuffer->GetWidth(), 0.5f / LightAccumulationBuffer->GetHeight()));
+	PUSH_PROFILE_MARKER("ColorCopy.hlsl");
+	if (ShdInputLUT[ColorCopyVS][f2HalfTexelOffset] != ~0)
+		ColorCopyVInput->SetFloat2(ShdInputLUT[ColorCopyVS][f2HalfTexelOffset], Vec2f(0.5f / HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetWidth(), 0.5f / HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetHeight()));
 
-	if (ShdInputLUT[PostProcessPS][texLightAccumulationBuffer] != ~0)
-		PostProcessFInput->SetTexture(ShdInputLUT[PostProcessPS][texLightAccumulationBuffer], LightAccumulationBuffer->GetColorBuffer(0));
+	if (ShdInputLUT[ColorCopyPS][texSource] != ~0)
+	{
+		ResourceMgr->GetTexture(HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+		ColorCopyFInput->SetTexture(ShdInputLUT[ColorCopyPS][texSource], HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetColorBuffer(0));
+	}
 
-	PostProcessVP->Enable(PostProcessVInput);
-	PostProcessFP->Enable(PostProcessFInput);
+	ColorCopyVP->Enable(ColorCopyVInput);
+	ColorCopyFP->Enable(ColorCopyFInput);
 
 	RenderContext->DrawVertexBuffer(FullScreenQuad);
 
-	PostProcessVP->Disable();
-	PostProcessFP->Disable();
+	ColorCopyFP->Disable();
+	ColorCopyVP->Disable();
+	POP_PROFILE_MARKER();
+
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+	RenderContext->GetRenderStateManager()->SetColorDstBlend(dstBlend);
+	RenderContext->GetRenderStateManager()->SetColorSrcBlend(srcBlend);
+
+	RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWrite);
+	RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
+
+	LightAccumulationBuffer->Disable();
+	POP_PROFILE_MARKER();
+}
+
+// Apply bloom effect
+void BloomPass()
+{
+	PUSH_PROFILE_MARKER("BloomPass()");
+
+	BloomDownsample();
+	BloomBlur();
+	BloomApply();
+
+	POP_PROFILE_MARKER();
+}
+
+// Apply postprocessing effects. Afterwards, copy results to the backbuffer.
+void ApplyPostProcessing()
+{
+	PUSH_PROFILE_MARKER("ApplyPostProcessing()");
+
+	HDRDownsamplePass();
+	LuminanceMeasurementPass();
+	BloomPass();
+	HDRToneMappingPass();
+
+	POP_PROFILE_MARKER();
+}
+
+// Copy texture to the back buffer
+void CopyResultToBackBuffer(RenderTarget* const rt)
+{
+	PUSH_PROFILE_MARKER("CopyResultToBackBuffer()");
+
+	// Not necesarry
+	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+	bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
+	RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
+
+	Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
+	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
+
+	PUSH_PROFILE_MARKER("ColorCopy.hlsl");
+	if (ShdInputLUT[ColorCopyVS][f2HalfTexelOffset] != ~0)
+		ColorCopyVInput->SetFloat2(ShdInputLUT[ColorCopyVS][f2HalfTexelOffset], Vec2f(0.5f / rt->GetWidth(), 0.5f / rt->GetHeight()));
+
+	if (ShdInputLUT[ColorCopyPS][texSource] != ~0)
+		ColorCopyFInput->SetTexture(ShdInputLUT[ColorCopyPS][texSource], rt->GetColorBuffer(0));
+
+	ColorCopyVP->Enable(ColorCopyVInput);
+	ColorCopyFP->Enable(ColorCopyFInput);
+
+	RenderContext->DrawVertexBuffer(FullScreenQuad);
+
+	ColorCopyFP->Disable();
+	ColorCopyVP->Disable();
 	POP_PROFILE_MARKER();
 
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWrite);
@@ -1999,7 +2604,10 @@ void RenderScene()
 
 		AccumulateLight();
 
-		ApplyPostProcessing();
+		if (POST_PROCESSING_ENABLE)
+			ApplyPostProcessing();
+		
+		CopyResultToBackBuffer(POST_PROCESSING_ENABLE ? LDRToneMappedImageBuffer : LightAccumulationBuffer);
 
 		RenderContext->EndFrame();
 

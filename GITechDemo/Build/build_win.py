@@ -4,9 +4,14 @@ import fnmatch
 import errno
 import sys
 
+# Arguments:
+#	'rebuild' to force rebuilding the solution
+#	'profile' to build on the Profile configuration
+
 PROJECT_NAME = "GITechDemo"
 DEFAULT_VSCOMNTOOLS = "VS120COMNTOOLS"
 FORCE_REBUILD = False
+BUILD_CONFIGURATION = "Release"
 
 def copyfiles(srcdir, dstdir, filepattern):
     def failed(exc):
@@ -50,9 +55,9 @@ def copytree(src, dst, symlinks = False, ignore = None):
     else:
       shutil.copy2(s, d)
 
-def buildsln(pathToTools, platform):
+def buildsln(pathToTools, platform, buildConfig):
 	cmd = "\"" + pathToTools + "VsDevCmd.bat\" && "
-	cmd += "MSBuild.exe /maxcpucount /p:Configuration=Release /p:Platform=" + platform
+	cmd += "MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + " /p:Platform=" + platform
 	if(FORCE_REBUILD):
 		cmd += " /t:rebuild "
 	else:
@@ -66,8 +71,11 @@ def buildsln(pathToTools, platform):
 #os.system('reg delete "HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7" /v "12.0"')
 #os.system("reg add \"HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7\" /v \"12.0\" /t REG_SZ /d \"C:\Program Files (x86)\Microsoft Visual Studio 12.0\\\\\"")
 
-if(len(sys.argv) > 1 and sys.argv[1] == "rebuild"):
-	FORCE_REBUILD = True;
+for opt in sys.argv:
+	if(opt == "rebuild"):
+		FORCE_REBUILD = True
+	if(opt == "profile"):
+		BUILD_CONFIGURATION = "Profile"
 
 print("\nStarting build process...\n")
 
@@ -89,31 +97,32 @@ else:
 	print("No compatible version of Visual Studio found!\n")
 
 if(pathToTools):
-	buildsln(pathToTools, "x86")
-	buildsln(pathToTools, "x64")
+	buildsln(pathToTools, "x86", BUILD_CONFIGURATION)
+	buildsln(pathToTools, "x64", BUILD_CONFIGURATION)
 
-print("\nConfiguring build...\n");
+print("\nConfiguring build...\n")
 
 # Create directory structure
+rootBuildDir = "Windows/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME
 makedir("Windows")
-makedir("Windows/bin")
-makedir("Windows/bin/x64")
-makedir("Windows/bin/x86")
-makedir("Windows/data")
+makedir(rootBuildDir + "/bin")
+makedir(rootBuildDir + "/bin/x64")
+makedir(rootBuildDir + "/bin/x86")
+makedir(rootBuildDir + "/data")
 
 # Copy 64bit binaries
-copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", "./Windows/bin/x64", "*.exe")
-copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", "./Windows/bin/x64", "*.dll")
+copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.exe")
+copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.dll")
 
 # Copy 32bit binaries
-copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", "./Windows/bin/x86", "*.exe")
-copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", "./Windows/bin/x86", "*.dll")
+copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.exe")
+copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.dll")
 
 # Copy data
-copytree("../Data/", "./Windows/data")
+copytree("../Data/", rootBuildDir + "/data")
 
 # Create x64 batch files
-x64bat = open("./Windows/run_x64.bat", "w")
+x64bat = open(rootBuildDir + "/run_x64.bat", "w")
 x64bat.write("\
 @echo off\n\
 :A\n\
@@ -124,7 +133,7 @@ exit")
 x64bat.close()
 
 # Create x86 batch files
-x86bat = open("./Windows/run_x86.bat", "w")
+x86bat = open(rootBuildDir + "/run_x86.bat", "w")
 x86bat.write("\
 @echo off\n\
 :A\n\
@@ -134,4 +143,4 @@ start %1../bin/x86/" + PROJECT_NAME + ".exe\n\
 exit")
 x86bat.close()
 
-print("DONE!");
+print("DONE!")

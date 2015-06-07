@@ -28,21 +28,21 @@ namespace LibRendererDll
 	public:
 		const unsigned int MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const;
 
-		const bool	SetColorBlendEnable(const bool enabled);
+		const bool	SetColorBlendEnabled(const bool enabled);
 		const bool	SetColorSrcBlend(const Blend alphaSrc);
 		const bool	SetColorDstBlend(const Blend alphaDst);
-		const bool	SetAlphaTestEnable(const bool enabled);
+		const bool	SetAlphaTestEnabled(const bool enabled);
 		const bool	SetAlphaTestFunc(const Cmp alphaFunc);
 		const bool	SetAlphaTestRef(const float normAlphaRef);
 		const bool	SetColorBlendFactor(const Vec4f rgba);
 		const bool	SetCullMode(const Cull cullMode);
-		const bool	SetZEnable(const ZBuffer enabled);
+		const bool	SetZEnabled(const ZBuffer enabled);
 		const bool	SetZFunc(const Cmp zFunc);
 		const bool	SetZWriteEnabled(const bool enabled);
 		const bool	SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
 		const bool	SetSlopeScaleDepthBias(const float scale);
 		const bool	SetDepthBias(const float bias);
-		const bool	SetStencilEnable(const bool enabled);
+		const bool	SetStencilEnabled(const bool enabled);
 		const bool	SetStencilFunc(const Cmp stencilFunc);
 		const bool	SetStencilRef(const unsigned long stencilRef);
 		const bool	SetStencilMask(const unsigned long stencilMask);
@@ -51,8 +51,9 @@ namespace LibRendererDll
 		const bool	SetStencilZFail(const StencilOp stencilZFail);
 		const bool	SetStencilPass(const StencilOp stencilPass);
 		const bool	SetFillMode(const Fill fillMode);
-		const bool	SetScissorEnable(const bool enabled);
+		const bool	SetScissorEnabled(const bool enabled);
 		const bool	SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
+		const bool	SetSRGBWriteEnabled(const bool enabled);
 
 		void		Reset();
 

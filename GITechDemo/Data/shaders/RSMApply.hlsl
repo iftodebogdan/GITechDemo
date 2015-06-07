@@ -24,9 +24,21 @@ const sampler2D texRSMDepthBuffer;	// RSM depth data
 const sampler2D	texNormalBuffer;	// GBuffer view-space normals
 const sampler2D	texDepthBuffer;		// GBuffer depth values
 
+// Composite matrix for transforming coordinates from render
+// camera projective space to light projective space
+// NB: perspective divide (i.e. w-divide) required
 const float4x4 f44ScreenToLightViewMat;
+
+// Matrix for transforming coordinates from light
+// view space to light projective space
 const float4x4 f44RSMProjMat;
+
+// Matrix for transforming coordinates from
+// light projective space to light view space
 const float4x4 f44RSMInvProjMat;
+
+// Composite matrix for transforming from render
+// camera view space to light view space
 const float4x4 f44ViewToRSMViewMat;
 
 // This kernel is based on a Poisson Disk kernel.
@@ -39,20 +51,27 @@ const float4x4 f44ViewToRSMViewMat;
 // with that density but instead have a much smoother slope.
 // It is this combination of (former) linear weights combined with non-linear
 // sample density that has led to good quality with less noise.
-#define RSM_SAMPLES_PER_PASS (16)
-const float3 f3RSMKernel[RSM_SAMPLES_PER_PASS];
+#define RSM_NUM_PASSES (8)			// The number of passes
+#define RSM_SAMPLES_PER_PASS (16)	// The number of samples from the RSM in each pass
+const float3 f3RSMKernel[RSM_SAMPLES_PER_PASS];	// The kernel for the current pass
 
+// Intensity of the indirect light
 const float fRSMIntensity;
+
+// Scale the kernel for tweaking between more
+// "concentrated" bounces and larger bounce distances
 const float fRSMKernelScale;
 
 // For upsampling
-const sampler2D	texIndirectLightAccumulationBuffer;
-const bool bIsUpsamplePass;
+const sampler2D	texIndirectLightAccumulationBuffer;	// The texture to be upsampled
+const bool bIsUpscalePass;	// Flag for the upscale pass
 
 struct PSOut
 {
 	float4 colorOut	:	SV_TARGET;
 };
+
+bool DoUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut);
 
 void psmain(VSOut input, out PSOut output)
 {
@@ -66,68 +85,14 @@ void psmain(VSOut input, out PSOut output)
 
 	// In order to avoid making a new shader just for this,
 	// do an upscale of the indirect light accumulation buffer here
-	if (bIsUpsamplePass)
-	{
-		// Sample the color from the quarter-resolution render target
-		const float4 f4Color = tex2D(texIndirectLightAccumulationBuffer, input.f2TexCoord);
-
-		// If the sample is black we can safely clip this pixel
-		// so that the GPU doesn't do color blending anymore
-		if (!any(f4Color.xyz))
-			clip(-1);
-
-		// Easier to write f3TexelOffset.xz or f3TexelOffset.zy than
-		// float2(f3TexelOffset.x, 0.f) or float2(0.f, f3TexelOffset.y);
-		const float3	f3TexelOffset = float3(f2HalfTexelOffset * 2.f, 0.f);
-
-		// Sample the normal for our reference pixel (i.e. the one we're shading)
-		const float3 f3RefNormal = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
-		// Sample the neighbours' normals
-		const float3 f3NeighbourNormalN = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord - f3TexelOffset.zy));
-		const float3 f3NeighbourNormalS = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord + f3TexelOffset.zy));
-		const float3 f3NeighbourNormalW = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord - f3TexelOffset.xz));
-		const float3 f3NeighbourNormalE = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord + f3TexelOffset.xz));
-
-		// Sample the depth for our reference pixel
-		const float fRefDepth = fDepth;
-		// Sample the neighbours' depths
-		const float fNeighbourDepthN = tex2D(texDepthBuffer, input.f2TexCoord - f3TexelOffset.zy).r;
-		const float fNeighbourDepthS = tex2D(texDepthBuffer, input.f2TexCoord + f3TexelOffset.zy).r;
-		const float fNeighbourDepthW = tex2D(texDepthBuffer, input.f2TexCoord - f3TexelOffset.xz).r;
-		const float fNeighbourDepthE = tex2D(texDepthBuffer, input.f2TexCoord + f3TexelOffset.xz).r;
-
-		// Calculate a weight based on normal differences between the reference pixel and its neighbours
-		const float fWeightNormalN = pow(saturate(dot(f3RefNormal, f3NeighbourNormalN)), 32);
-		const float fWeightNormalS = pow(saturate(dot(f3RefNormal, f3NeighbourNormalS)), 32);
-		const float fWeightNormalW = pow(saturate(dot(f3RefNormal, f3NeighbourNormalW)), 32);
-		const float fWeightNormalE = pow(saturate(dot(f3RefNormal, f3NeighbourNormalE)), 32);
-
-		// Calculate a weight based on depth differences between the reference pixel and its neighbours
-		const float fWeightDepthN = 1.f / (abs(fRefDepth - fNeighbourDepthN) + 0.00001f);
-		const float fWeightDepthS = 1.f / (abs(fRefDepth - fNeighbourDepthS) + 0.00001f);
-		const float fWeightDepthW = 1.f / (abs(fRefDepth - fNeighbourDepthW) + 0.00001f);
-		const float fWeightDepthE = 1.f / (abs(fRefDepth - fNeighbourDepthE) + 0.00001f);
-
-		// Put all weights into a float4
-		const float4 f4Weight =
-			normalize(float4(
-				fWeightNormalN * fWeightDepthN,
-				fWeightNormalS * fWeightDepthS,
-				fWeightNormalW * fWeightDepthW,
-				fWeightNormalE * fWeightDepthE));
-
-		// Set a threshold which controls the level of sensitivity of the edge detection.
-		// A value of 0 provides good quality and also reduces the number of invalidated
-		// pixels, that would otherwise require resampling from the RSM.
-		const float fWeightThreshold = 0.f;
-		// If none of the weights fall below the threshold, then the pixel is valid and
-		// it doesn't require reshading using the RSM algorithm.
-		if (all(saturate(f4Weight - fWeightThreshold.xxxx)))
-		{
-			output.colorOut = f4Color;
+	if (bIsUpscalePass)
+		if (DoUpscale(input.f2TexCoord, fDepth, output.colorOut))
 			return;
-		}
-	}
+
+	//////////////////////////////////////////////////////////////////
+	// Reflective Shadow Map										//
+	// http://www.vis.uni-stuttgart.de/~dachsbcn/download/rsm.pdf	//
+	//////////////////////////////////////////////////////////////////
 
 	// Calculate normalized device coordinates (NDC) space position of currently shaded pixel
 	const float4 f4ScreenProjSpacePos = float4(input.f2TexCoord * float2(2.f, -2.f) - float2(1.f, -1.f), fDepth, 1.f);
@@ -164,12 +129,76 @@ void psmain(VSOut input, out PSOut output)
 		const float3 f3DeltaPos = f3RSMViewSpacePos - f3RSMSamplePos;
 		// Calculate the light contribution from this VPL
 		output.colorOut +=
-			f4RSMSampleFlux *
+			f4RSMSampleFlux * fRSMIntensity *
 			max(0.f, dot(f3RSMSampleNormal, f3DeltaPos)) *
 			max(0.f, dot(f3RSMViewSpaceNormal, -f3DeltaPos)) /
 			pow(length(f3DeltaPos), 4.f);
 	}
+}
 
-	output.colorOut *= fRSMIntensity;
+bool DoUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
+{
+
+	// Sample the color from the quarter-resolution render target
+	const float4 f4Color = tex2D(texIndirectLightAccumulationBuffer, f2TexCoord);
+
+	// If the sample is black we can safely clip this pixel
+	// so that the GPU doesn't do color blending anymore
+	if (!any(f4Color.xyz))
+		clip(-1);
+
+	// Easier to write f3TexelOffset.xz or f3TexelOffset.zy than
+	// float2(f3TexelOffset.x, 0.f) or float2(0.f, f3TexelOffset.y);
+	const float3	f3TexelOffset = float3(f2HalfTexelOffset * 2.f, 0.f);
+
+	// Sample the normal for our reference pixel (i.e. the one we're shading)
+	const float3 f3RefNormal = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord));
+	// Sample the neighbours' normals
+	const float3 f3NeighbourNormalN = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord - f3TexelOffset.zy));
+	const float3 f3NeighbourNormalS = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord + f3TexelOffset.zy));
+	const float3 f3NeighbourNormalW = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord - f3TexelOffset.xz));
+	const float3 f3NeighbourNormalE = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord + f3TexelOffset.xz));
+
+	// Sample the depth for our reference pixel
+	const float fRefDepth = fDepth;
+	// Sample the neighbours' depths
+	const float fNeighbourDepthN = tex2D(texDepthBuffer, f2TexCoord - f3TexelOffset.zy).r;
+	const float fNeighbourDepthS = tex2D(texDepthBuffer, f2TexCoord + f3TexelOffset.zy).r;
+	const float fNeighbourDepthW = tex2D(texDepthBuffer, f2TexCoord - f3TexelOffset.xz).r;
+	const float fNeighbourDepthE = tex2D(texDepthBuffer, f2TexCoord + f3TexelOffset.xz).r;
+
+	// Calculate a weight based on normal differences between the reference pixel and its neighbours
+	const float fWeightNormalN = pow(saturate(dot(f3RefNormal, f3NeighbourNormalN)), 32);
+	const float fWeightNormalS = pow(saturate(dot(f3RefNormal, f3NeighbourNormalS)), 32);
+	const float fWeightNormalW = pow(saturate(dot(f3RefNormal, f3NeighbourNormalW)), 32);
+	const float fWeightNormalE = pow(saturate(dot(f3RefNormal, f3NeighbourNormalE)), 32);
+
+	// Calculate a weight based on depth differences between the reference pixel and its neighbours
+	const float fWeightDepthN = 1.f / (abs(fRefDepth - fNeighbourDepthN) + 0.00001f);
+	const float fWeightDepthS = 1.f / (abs(fRefDepth - fNeighbourDepthS) + 0.00001f);
+	const float fWeightDepthW = 1.f / (abs(fRefDepth - fNeighbourDepthW) + 0.00001f);
+	const float fWeightDepthE = 1.f / (abs(fRefDepth - fNeighbourDepthE) + 0.00001f);
+
+	// Put all weights into a float4
+	const float4 f4Weight =
+		normalize(float4(
+			fWeightNormalN * fWeightDepthN,
+			fWeightNormalS * fWeightDepthS,
+			fWeightNormalW * fWeightDepthW,
+			fWeightNormalE * fWeightDepthE));
+
+	// Set a threshold which controls the level of sensitivity of the edge detection.
+	// A value of 0 provides good quality and also reduces the number of invalidated
+	// pixels, that would otherwise require resampling from the RSM.
+	const float fWeightThreshold = 0.f;
+	// If none of the weights fall below the threshold, or if the pixel is black,
+	// then the pixel is valid and it doesn't require reshading using the RSM algorithm.
+	if (all(saturate(f4Weight - fWeightThreshold.xxxx)) || !all(f4Color.rgb))
+	{
+		colorOut = f4Color;
+		return true;
+	}
+
+	return false;
 }
 ////////////////////////////////////////////////////////////////////

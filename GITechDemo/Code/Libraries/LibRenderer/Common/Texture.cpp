@@ -110,6 +110,7 @@ Texture::Texture(
 	m_tSamplerStates.vBorderColor = Vec4f(0.f, 0.f, 0.f, 0.f);
 	for (unsigned int dim = 0; dim < 3; dim++)
 		m_tSamplerStates.eAddressingMode[dim] = SAM_WRAP;
+	m_tSamplerStates.bSRGBEnabled = false;
 
 	// Support for deferred initialization (loading from file)
 	if (usage == BU_NONE)
@@ -597,6 +598,11 @@ void Texture::SetAddressingMode(const SamplerAddressingMode samUVW)
 	SetAddressingModeW(samUVW);
 }
 
+void Texture::SetSRGBEnabled(const bool enabled)
+{
+	m_tSamplerStates.bSRGBEnabled = enabled;
+}
+
 const float Texture::GetAnisotropy() const
 {
 	return m_tSamplerStates.fAnisotropy;
@@ -638,6 +644,11 @@ const SamplerAddressingMode Texture::GetAddressingMode() const
 		(GetAddressingModeU() == GetAddressingModeV() &&
 		GetAddressingModeV() == GetAddressingModeW()) ?
 		GetAddressingModeU() : SAM_NONE;
+}
+
+const bool Texture::GetSRGBEnabled() const
+{
+	return m_tSamplerStates.bSRGBEnabled;
 }
 
 const char* Texture::GetSourceFileName()

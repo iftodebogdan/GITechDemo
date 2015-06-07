@@ -256,6 +256,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GaussianFilter.h" />
     <ClInclude Include="GITechDemo.h" />
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="Poisson.h" />
@@ -264,6 +265,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GaussianFilter.cpp" />
     <ClCompile Include="GITechDemo.cpp" />
     <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Poisson.cpp" />
@@ -294,7 +296,7 @@
     <None Include="..\..\..\Data\shaders\DepthCopy.hlsl" />
     <None Include="..\..\..\Data\shaders\DepthPass.hlsl" />
     <None Include="..\..\..\Data\shaders\GBufferGeneration.hlsl" />
-    <None Include="..\..\..\Data\shaders\PostProcess.hlsl" />
+    <None Include="..\..\..\Data\shaders\ColorCopy.hlsl" />
     <None Include="..\..\..\Data\shaders\Skybox.hlsl" />
     <None Include="..\..\..\Data\shaders\Utils.hlsl" />
   </ItemGroup>
@@ -305,6 +307,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Data\shaders\RSMApply.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Data\shaders\Downsample.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Data\shaders\LumaCalc.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Data\shaders\HDRToneMapping.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Data\shaders\Bloom.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

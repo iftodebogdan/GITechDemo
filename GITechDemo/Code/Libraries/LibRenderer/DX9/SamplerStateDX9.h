@@ -41,6 +41,7 @@ namespace LibRendererDll
 		const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
 		const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
 		const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+		const bool	SetSRGBEnabled(const unsigned int slot, const bool enabled);
 
 		void		Reset();
 

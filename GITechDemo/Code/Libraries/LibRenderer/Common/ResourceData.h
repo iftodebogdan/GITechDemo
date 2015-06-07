@@ -283,6 +283,7 @@ namespace LibRendererDll
 		SamplerFilter			eFilter;
 		Vec4f					vBorderColor;
 		SamplerAddressingMode	eAddressingMode[3];
+		bool					bSRGBEnabled;
 	};
 
 	//////////////////////////////////////////////////////////////

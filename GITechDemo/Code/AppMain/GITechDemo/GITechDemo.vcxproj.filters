@@ -39,6 +39,9 @@
     <ClInclude Include="Poisson.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GaussianFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Poisson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussianFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,16 +95,26 @@
     <None Include="..\..\..\Data\shaders\DeferredLightAmb.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\..\Data\shaders\PostProcess.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\..\Data\shaders\RSMApply.hlsl">
       <Filter>Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\..\Data\shaders\RSMCapture.hlsl">
+    <None Include="..\..\..\Data\shaders\RSMCapture.hlsl">
       <Filter>Shaders</Filter>
-    </FxCompile>
+    </None>
+    <None Include="..\..\..\Data\shaders\ColorCopy.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Data\shaders\Bloom.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Data\shaders\Downsample.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Data\shaders\HDRToneMapping.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\..\Data\shaders\LumaCalc.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

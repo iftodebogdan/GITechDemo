@@ -404,25 +404,27 @@ const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int han
 	HRESULT hr = m_pConstantTable->GetConstantDesc(m_pConstantTable->GetConstant(NULL, handle), &constDesc, &count);
 	assert(SUCCEEDED(hr));
 
-	unsigned int size = constDesc.RegisterCount;
+	unsigned int registerSize = 0;
 	switch (constDesc.RegisterSet)
 	{
 	case D3DXRS_FLOAT4:
-		size *= sizeof(float) * 4u;
+		registerSize = sizeof(float) * 4u;
 		break;
 	case D3DXRS_INT4:
-		size *= sizeof(int) * 4u;
+		registerSize = sizeof(int) * 4u;
 		break;
 	case D3DXRS_BOOL:
-		size *= sizeof(BOOL);
+		registerSize = sizeof(BOOL);
 	}
 
 	//assert(size == constDesc.Bytes);
-	size = max(size, constDesc.Bytes);
+	unsigned int constantSize = 0;
+	constantSize = max(constDesc.RegisterCount * registerSize, constDesc.Bytes);
+	constantSize = max(constantSize, constDesc.Elements * constDesc.Rows * registerSize);
 
 	POP_PROFILE_MARKER();
 
-	return size;
+	return constantSize;
 }
 
 void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount)

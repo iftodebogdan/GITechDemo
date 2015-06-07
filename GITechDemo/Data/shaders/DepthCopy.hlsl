@@ -15,7 +15,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texDepthBuffer;
+const sampler2D	texDepthBuffer;	// Source depth texture
 
 struct PSOut
 {

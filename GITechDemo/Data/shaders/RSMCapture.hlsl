@@ -27,7 +27,7 @@ void vsmain(VSIn input, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texDiffuse;
+const sampler2D texDiffuse;	// Diffuse color
 
 struct PSOut
 {
@@ -38,7 +38,7 @@ struct PSOut
 void psmain(VSOut input, out PSOut output)
 {
 	// Sample the diffuse texture
-	float4 f4DiffuseColor = tex2D(texDiffuse, input.f2TexCoord);
+	const float4 f4DiffuseColor = tex2D(texDiffuse, input.f2TexCoord);
 	output.flux = f4DiffuseColor;
 
 	// Vertex normal will suffice

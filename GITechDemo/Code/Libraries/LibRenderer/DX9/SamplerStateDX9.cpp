@@ -268,6 +268,24 @@ const bool SamplerStateDX9::SetAddressingMode(const unsigned int slot, const Sam
 	}
 }
 
+const bool SamplerStateDX9::SetSRGBEnabled(const unsigned int slot, const bool enabled)
+{
+	if (enabled == GetSRGBEnabled(slot))
+		return true;
+
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+	HRESULT hr = device->SetSamplerState(slot, D3DSAMP_SRGBTEXTURE, enabled ? (DWORD)1 : (DWORD)0);
+
+	POP_PROFILE_MARKER();
+
+	if (SUCCEEDED(hr))
+		return SamplerState::SetSRGBEnabled(slot, enabled);
+	else
+		return false;
+}
+
 void SamplerStateDX9::Reset()
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -313,6 +331,10 @@ void SamplerStateDX9::Reset()
 		hr = device->GetSamplerState(i, D3DSAMP_ADDRESSW, &value);
 		assert(SUCCEEDED(hr));
 		m_tCurrentState[i].eAddressingMode[2] = MatchAddressingMode(value);
+
+		hr = device->GetSamplerState(i, D3DSAMP_SRGBTEXTURE, &value);
+		assert(SUCCEEDED(hr));
+		m_tCurrentState[i].bSRGBEnabled = (value != 0);
 	}
 
 	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
@@ -324,6 +346,7 @@ void SamplerStateDX9::Reset()
 		for (unsigned int j = 0; j < 3; j++)
 			SetAddressingMode(i, SAM_WRAP);
 		m_eCurrentMinFilter[i] = D3DTEXF_POINT;
+		SetSRGBEnabled(i, false);
 	}
 
 	POP_PROFILE_MARKER();

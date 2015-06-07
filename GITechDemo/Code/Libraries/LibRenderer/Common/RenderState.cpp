@@ -33,25 +33,25 @@ void RenderState::Reset()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	// Set defaults
-	SetColorBlendEnable(false);
+	SetColorBlendEnabled(false);
 	SetColorSrcBlend(BLEND_ONE);
 	SetColorDstBlend(BLEND_ZERO);
 	SetColorBlendFactor(Vec4f(1.f, 1.f, 1.f, 1.f));
 
-	SetAlphaTestEnable(false);
+	SetAlphaTestEnabled(false);
 	SetAlphaTestFunc(CMP_ALWAYS);
 	SetAlphaTestRef(0.f);
 
 	SetCullMode(CULL_CCW);
 
-	SetZEnable(ZB_ENABLED);
+	SetZEnabled(ZB_ENABLED);
 	SetZFunc(CMP_LESSEQUAL);
 	SetZWriteEnabled(true);
 
 	SetSlopeScaleDepthBias(0.f);
 	SetDepthBias(0.f);
 
-	SetStencilEnable(false);
+	SetStencilEnabled(false);
 	SetStencilFunc(CMP_ALWAYS);
 	SetStencilRef(0);
 	SetStencilMask(ULONG_MAX);
@@ -62,14 +62,16 @@ void RenderState::Reset()
 
 	SetFillMode(FILL_SOLID);
 
-	SetScissorEnable(false);
+	SetScissorEnabled(false);
+
+	SetSRGBWriteEnabled(false);
 
 	POP_PROFILE_MARKER();
 }
 
-const bool RenderState::SetAlphaTestEnable(const bool enabled)
+const bool RenderState::SetAlphaTestEnabled(const bool enabled)
 {
-	m_bAlphaTestEnable = enabled;
+	m_bAlphaTestEnabled = enabled;
 	return true;
 }
 
@@ -85,9 +87,9 @@ const bool RenderState::SetAlphaTestRef(const float normAlphaRef)
 	return true;
 }
 
-const bool RenderState::SetColorBlendEnable(const bool enabled)
+const bool RenderState::SetColorBlendEnabled(const bool enabled)
 {
-	m_bColorBlendEnable = enabled;
+	m_bColorBlendEnabled = enabled;
 	return true;
 }
 
@@ -115,9 +117,9 @@ const bool RenderState::SetCullMode(const Cull cullMode)
 	return true;
 }
 
-const bool RenderState::SetZEnable(const ZBuffer enabled)
+const bool RenderState::SetZEnabled(const ZBuffer enabled)
 {
-	m_eZEnable = enabled;
+	m_eZEnabled = enabled;
 	return true;
 }
 
@@ -129,7 +131,7 @@ const bool RenderState::SetZFunc(const Cmp zFunc)
 
 const bool RenderState::SetZWriteEnabled(const bool enabled)
 {
-	m_bZWriteEnable = enabled;
+	m_bZWriteEnabled = enabled;
 	return true;
 }
 
@@ -154,9 +156,9 @@ const bool RenderState::SetDepthBias(const float bias)
 	return true;
 }
 
-const bool RenderState::SetStencilEnable(const bool enabled)
+const bool RenderState::SetStencilEnabled(const bool enabled)
 {
-	m_bStencilEnable = enabled;
+	m_bStencilEnabled = enabled;
 	return true;
 }
 
@@ -208,15 +210,21 @@ const bool RenderState::SetFillMode(const Fill fillMode)
 	return true;
 }
 
-const bool RenderState::SetScissorEnable(const bool enabled)
+const bool RenderState::SetScissorEnabled(const bool enabled)
 {
-	m_bScissorEnable = enabled;
+	m_bScissorEnabled = enabled;
 	return true;
 }
 
-const bool RenderState::GetAlphaTestEnable() const
+const bool RenderState::SetSRGBWriteEnabled(const bool enabled)
 {
-	return m_bAlphaTestEnable;
+	m_bSRGBEnabled = enabled;
+	return true;
+}
+
+const bool RenderState::GetAlphaTestEnabled() const
+{
+	return m_bAlphaTestEnabled;
 }
 
 const float RenderState::GetAlphaTestRef() const
@@ -229,9 +237,9 @@ const Cmp RenderState::GetAlphaTestFunc() const
 	return m_eAlphaFunc;
 }
 
-const bool RenderState::GetColorBlendEnable() const
+const bool RenderState::GetColorBlendEnabled() const
 {
-	return m_bColorBlendEnable;
+	return m_bColorBlendEnabled;
 }
 
 const Blend RenderState::GetColorSrcBlend() const
@@ -254,9 +262,9 @@ const Cull RenderState::GetCullMode() const
 	return m_eCullMode;
 }
 
-const ZBuffer RenderState::GetZEnable() const
+const ZBuffer RenderState::GetZEnabled() const
 {
-	return m_eZEnable;
+	return m_eZEnabled;
 }
 
 const Cmp RenderState::GetZFunc() const
@@ -266,10 +274,10 @@ const Cmp RenderState::GetZFunc() const
 
 const bool RenderState::GetZWriteEnabled() const
 {
-	return m_bZWriteEnable;
+	return m_bZWriteEnabled;
 }
 
-void RenderState::GetColorWriteEnabled(bool& red, bool& green, bool& blue, bool& alpha)
+void RenderState::GetColorWriteEnabled(bool& red, bool& green, bool& blue, bool& alpha) const
 {
 	red = m_bColorWriteRed;
 	green = m_bColorWriteGreen;
@@ -277,22 +285,22 @@ void RenderState::GetColorWriteEnabled(bool& red, bool& green, bool& blue, bool&
 	alpha = m_bColorWriteAlpha;
 }
 
-const bool RenderState::GetColorWriteRedEnabled()
+const bool RenderState::GetColorWriteRedEnabled() const
 {
 	return m_bColorWriteRed;
 }
 
-const bool RenderState::GetColorWriteGreenEnabled()
+const bool RenderState::GetColorWriteGreenEnabled() const
 {
 	return m_bColorWriteGreen;
 }
 
-const bool RenderState::GetColorWriteBlueEnabled()
+const bool RenderState::GetColorWriteBlueEnabled() const
 {
 	return m_bColorWriteBlue;
 }
 
-const bool RenderState::GetColorWriteAlphaEnabled()
+const bool RenderState::GetColorWriteAlphaEnabled() const
 {
 	return m_bColorWriteAlpha;
 }
@@ -307,9 +315,9 @@ const float RenderState::GetDepthBias() const
 	return m_fDepthBias;
 }
 
-const bool RenderState::GetStencilEnable() const
+const bool RenderState::GetStencilEnabled() const
 {
-	return m_bStencilEnable;
+	return m_bStencilEnabled;
 }
 
 const Cmp RenderState::GetStencilFunc() const
@@ -353,7 +361,12 @@ const Fill RenderState::GetFillMode() const
 	return m_eFillMode;
 }
 
-const bool RenderState::GetScissorEnable()
+const bool RenderState::GetScissorEnabled() const
 {
-	return m_bScissorEnable;
+	return m_bScissorEnabled;
+}
+
+const bool RenderState::GetSRGBWriteEnabled() const
+{
+	return m_bSRGBEnabled;
 }

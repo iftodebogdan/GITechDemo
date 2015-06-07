@@ -118,6 +118,7 @@ void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 					ssm->SetAddressingModeU(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeU());
 					ssm->SetAddressingModeV(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeV());
 					ssm->SetAddressingModeW(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeW());
+					ssm->SetSRGBEnabled(m_arrInputDesc[i].nRegisterIndex, tex->GetSRGBEnabled());
 				}
 			}
 			else
