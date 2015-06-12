@@ -16,9 +16,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{457debdf-a71c-4c9b-8631-455f8c737ef7}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <Filter Include="Shaders\Includes">
+      <UniqueIdentifier>{bdd8a890-e606-4be1-a58f-273661186df5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -47,9 +47,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GITechDemo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GaussianFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,47 +74,66 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Data\shaders\DeferredLightDir.hlsl">
-      <Filter>Shaders</Filter>
+    <None Include="..\..\..\Data\shaders\Include\Utils.hlsl">
+      <Filter>Shaders\Includes</Filter>
     </None>
-    <None Include="..\..\..\Data\shaders\DepthPass.hlsl">
-      <Filter>Shaders</Filter>
+    <None Include="..\..\..\Data\shaders\Include\PostProcessUtils.hlsl">
+      <Filter>Shaders\Includes</Filter>
     </None>
-    <None Include="..\..\..\Data\shaders\GBufferGeneration.hlsl">
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\..\Data\shaders\FXAA.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\Skybox.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\SSAO.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\Utils.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\BokehDoF.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\DepthCopy.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\Bloom.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\DeferredLightAmb.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\ColorCopy.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\RSMApply.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\DeferredLightAmb.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\RSMCapture.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\DeferredLightDir.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\ColorCopy.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\DepthCopy.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\Bloom.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\DepthPass.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\Downsample.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\Downsample.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\HDRToneMapping.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\GBufferGeneration.hlsl">
       <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\..\Data\shaders\LumaCalc.hlsl">
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\HDRToneMapping.hlsl">
       <Filter>Shaders</Filter>
-    </None>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\LumaCalc.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\RSMApply.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\RSMCapture.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\..\Data\shaders\Skybox.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>Shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

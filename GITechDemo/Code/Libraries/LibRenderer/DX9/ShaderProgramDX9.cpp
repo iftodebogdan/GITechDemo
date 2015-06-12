@@ -57,7 +57,7 @@ void ShaderProgramDX9::Enable()
 	assert(m_pVertexShader || m_pPixelShader);
 	
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
+	HRESULT hr = S_FALSE;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -76,7 +76,7 @@ void ShaderProgramDX9::Disable()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
+	HRESULT hr = S_FALSE;
 
 #ifdef _DEBUG
 	IDirect3DVertexShader9* activeVShader = nullptr;
@@ -432,7 +432,7 @@ void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* c
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
+	HRESULT hr = S_FALSE;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -452,7 +452,7 @@ void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
+	HRESULT hr = S_FALSE;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -471,7 +471,7 @@ void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* con
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
+	HRESULT hr = S_FALSE;
 	
 	// Convert the bool (2 bytes) array to a Microsoft BOOL (4 bytes) array
 	BOOL* tempBuffer = new BOOL[registerCount];

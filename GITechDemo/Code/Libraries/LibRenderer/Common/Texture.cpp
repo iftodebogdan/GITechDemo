@@ -324,7 +324,11 @@ const bool Texture::GenerateMips()
 	if (!IsMipmapable())
 		return false;
 
-	Vec4f* rgba = new Vec4f[GetWidth() * GetHeight() * GetDepth()];
+	const unsigned int numTexels = GetWidth() * GetHeight() * GetDepth();
+	Vec4f* rgba = new Vec4f[numTexels];
+
+	if (!numTexels)
+		return false;
 
 	unsigned int faceCount = GetTextureType() == TT_CUBE ? 6 : 1;
 
@@ -346,7 +350,7 @@ const bool Texture::GenerateMips()
 			unsigned int areaSrc = widthSrc * heightSrc;
 			unsigned int areaDst = widthDst * heightDst;
 
-			assert(widthDst != widthSrc || heightDst != heightSrc || depthDst != depthSrc);
+			assert(widthDst < widthSrc || heightDst < heightSrc || depthDst < depthSrc);
 
 			if(IsCompressed())
 				ColorUtility::ConvertFrom[GetTextureFormat()](texelsSrc, rgba, Math::Max(widthSrc, 4u), Math::Max(heightSrc, 4u), 1);
@@ -359,8 +363,8 @@ const bool Texture::GenerateMips()
 				{
 					for (unsigned int x = 0; x < widthDst; x++)
 					{
-						unsigned int uvw = x + y * widthDst + z * areaDst;
-						unsigned int base = 2 * (x + y * widthSrc + z * areaSrc);
+						const unsigned int uvw = x + y * widthDst + z * areaDst;
+						const unsigned int base = 2 * (x + y * widthSrc + z * areaSrc);
 						for (unsigned int c = 0; c < 4; c++)
 						{
 							if (depthSrc > 1)
@@ -389,7 +393,7 @@ const bool Texture::GenerateMips()
 									rgba[base + widthSrc + 1][c]	// ( x + 1	,	y + 1 )
 									);
 							}
-							else
+							else if (widthSrc > 1 && base < numTexels - 1)
 							{
 								rgba[uvw][c] =
 									0.5f *

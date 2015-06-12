@@ -1,4 +1,5 @@
-#include "Utils.hlsl"
+#include "Include/PostProcessUtils.hlsl"
+#include "Include/Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -49,8 +50,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	{
 		const float2 f2Kernel = 2.f * f2HalfTexelOffset / 3.f;
 		float fLogLumSum = 0.f;
-		for (float i = -1.f; i <= 1.f; i++)
-			for (float j = -1.f; j <= 1.f; j++)
+		UNROLL for (float i = -1.f; i <= 1.f; i++)
+			UNROLL for (float j = -1.f; j <= 1.f; j++)
 			{
 				// The average luma can be calculated from part of the source image,
 				// hence the scale of the texture coordinates
@@ -66,8 +67,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	else if(!bLumaAdaptationPass)
 	{
 		float fAvgLuma = 0.f;
-		for (float i = -3.f; i <= 3.f; i += 2.f)
-			for (float j = -3.f; j <= 3.f; j += 2.f)
+		UNROLL for (float i = -3.f; i <= 3.f; i += 2.f)
+			UNROLL for (float j = -3.f; j <= 3.f; j += 2.f)
 				fAvgLuma += tex2D(texLumaCalcInput, input.f2TexCoord + f2HalfTexelOffset * float2(i, j)).r;
 
 		// On the final pass, we do an exp() and store the value into

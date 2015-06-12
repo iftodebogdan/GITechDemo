@@ -1,4 +1,5 @@
-#include "Utils.hlsl"
+#include "Include/PostProcessUtils.hlsl"
+#include "Include/Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -27,11 +28,14 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	f4Color = float4(0.f, 0.f, 0.f, 0.f);
 
-	if(nDownsampleFactor == 16)
+	if (nDownsampleFactor == 16)
 		f4Color = Downsample4x4(texSource, input.f2TexCoord, f2TexelSize);
 
-	if(nDownsampleFactor == 4)
+	if (nDownsampleFactor == 4)
 		f4Color = Downsample2x2(texSource, input.f2TexCoord, f2TexelSize);
+
+	if (nDownsampleFactor == 1)
+		f4Color = tex2D(texSource, input.f2TexCoord);
 
 	if (bApplyBrightnessFilter)
 		f4Color.rgb = max(0.f, f4Color.rgb - fBrightnessThreshold);

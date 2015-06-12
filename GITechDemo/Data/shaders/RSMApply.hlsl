@@ -1,4 +1,5 @@
-#include "Utils.hlsl"
+#include "Include/PostProcessUtils.hlsl"
+#include "Include/Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -109,7 +110,7 @@ void psmain(VSOut input, out PSOut output)
 
 	// Sample around the corresponding location in the RSM
 	// and accumulate light contribution from each VPL
-	for (unsigned int i = 0; i < RSM_SAMPLES_PER_PASS; i++)
+	UNROLL for (unsigned int i = 0; i < RSM_SAMPLES_PER_PASS; i++)
 	{
 		// Add a bias to the texture coordinate calculated above
 		const float2 f2RSMSampleTexCoord = f2RSMTexCoord + f3RSMKernel[i].xy * fRSMKernelScale;

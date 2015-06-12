@@ -1,3 +1,6 @@
+#include "Include/PostProcessUtils.hlsl"
+#include "Include/Utils.hlsl"
+
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
 
@@ -91,6 +94,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Convert back to gamma space (not required for Duiker tonemap)
 	// NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()
 	//f4Color = float4(pow(abs(f3FinalColor), 1.f / 2.2f), 1);
-	f4Color = float4(f3FinalColor, 1.f);
+	// Encode gamma-corrected luma in the alpha channel for FXAA
+	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), 1.f / 2.2f));
 }
 ////////////////////////////////////////////////////////////////////

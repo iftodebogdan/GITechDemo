@@ -1,4 +1,5 @@
-#include "Utils.hlsl"
+#include "Include/PostProcessUtils.hlsl"
+#include "Include/Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float4x4 f44InvProjMat;
@@ -49,9 +50,9 @@ const float		fCascadeBlendSize;	// Size of the blend band for blurring between c
 // directly in the shader, instead of from the
 // application (so that they are known at compile time)
 // NB: Also, we don't want to waste ALU calculating them
-static const int	nCascadeCount = 4;			// Number of cascades
-static const int	nCascadesPerRow = 2;		// Number of cascades per row, i.e. ceil(sqrt(nCascadeCount))
-static const float	fCascadeNormSize = 0.5f;	// Normalized size of a cascade, i.e. 1.f / nCascadesPerRow
+#define nCascadeCount		(4)		// Number of cascades
+#define nCascadesPerRow		(2)		// Number of cascades per row, i.e. ceil(sqrt(nCascadeCount))
+#define fCascadeNormSize	(0.5f)	// Normalized size of a cascade, i.e. 1.f / nCascadesPerRow
 
 // PCF method
 #define PCF_SAMPLE	PCF4x4PoissonRotatedx4
@@ -100,7 +101,7 @@ void psmain(VSOut input, out PSOut output)
 
 	// Step 2: Find the best valid cascade
 	int nValidCascade = 0;
-	for(int cascade = nCascadeCount - 1; cascade >= 0; cascade--)
+	UNROLL for(int cascade = nCascadeCount - 1; cascade >= 0; cascade--)
 	{
 		// Iterate through all AABBs and check if the point
 		// is inside of one of them
