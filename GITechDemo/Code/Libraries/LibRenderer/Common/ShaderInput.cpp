@@ -104,17 +104,17 @@ void ShaderInput::SetBoolArray(const unsigned int handle, const bool* const data
 	}
 }
 
-void ShaderInput::SetBoolArray(const unsigned int handle, const Vec2f* const data)
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec<bool, 2>* const data)
 {
 	SetBoolArray(handle, (const bool* const)data);
 }
 
-void ShaderInput::SetBoolArray(const unsigned int handle, const Vec3f* const data)
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec<bool, 3>* const data)
 {
 	SetBoolArray(handle, (const bool* const)data);
 }
 
-void ShaderInput::SetBoolArray(const unsigned int handle, const Vec4f* const data)
+void ShaderInput::SetBoolArray(const unsigned int handle, const Vec<bool, 4>* const data)
 {
 	SetBoolArray(handle, (const bool* const)data);
 }
@@ -220,17 +220,17 @@ void ShaderInput::SetIntArray(const unsigned int handle, const int* const data)
 	}
 }
 
-void ShaderInput::SetIntArray(const unsigned int handle, const Vec2f* const data)
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec2i* const data)
 {
 	SetIntArray(handle, (const int* const)data);
 }
 
-void ShaderInput::SetIntArray(const unsigned int handle, const Vec3f* const data)
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec3i* const data)
 {
 	SetIntArray(handle, (const int* const)data);
 }
 
-void ShaderInput::SetIntArray(const unsigned int handle, const Vec4f* const data)
+void ShaderInput::SetIntArray(const unsigned int handle, const Vec4i* const data)
 {
 	SetIntArray(handle, (const int* const)data);
 }

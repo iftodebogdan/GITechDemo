@@ -1,5 +1,5 @@
-#include "Include/PostProcessUtils.hlsl"
-#include "Include/Utils.hlsl"
+#include "PostProcessUtils.hlsl"
+#include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -39,6 +39,9 @@ const float fFrameTime;
 // Minimum and maximum values for average luma
 const float2 f2AvgLumaClamp;
 
+// Size of a texel
+const float2 f2TexelSize;
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	f4Color = float4(0.f, 0.f, 0.f, 0.f);
@@ -48,7 +51,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// containing the log() of averages
 	if (bInitialLumaPass)
 	{
-		const float2 f2Kernel = 2.f * f2HalfTexelOffset / 3.f;
+		const float2 f2Kernel = f2TexelSize / 3.f;
 		float fLogLumSum = 0.f;
 		UNROLL for (float i = -1.f; i <= 1.f; i++)
 			UNROLL for (float j = -1.f; j <= 1.f; j++)
@@ -67,9 +70,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	else if(!bLumaAdaptationPass)
 	{
 		float fAvgLuma = 0.f;
-		UNROLL for (float i = -3.f; i <= 3.f; i += 2.f)
-			UNROLL for (float j = -3.f; j <= 3.f; j += 2.f)
-				fAvgLuma += tex2D(texLumaCalcInput, input.f2TexCoord + f2HalfTexelOffset * float2(i, j)).r;
+		UNROLL for (float i = -1.5f; i <= 1.5f; i += 1.f)
+			UNROLL for (float j = -1.5f; j <= 1.5f; j += 1.f)
+				fAvgLuma += tex2D(texLumaCalcInput, input.f2TexCoord + f2TexelSize * float2(i, j)).r;
 
 		// On the final pass, we do an exp() and store the value into
 		// the final 1x1 average luma texture

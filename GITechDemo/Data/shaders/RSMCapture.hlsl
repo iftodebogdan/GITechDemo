@@ -1,4 +1,4 @@
-#include "Include/Utils.hlsl"
+#include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float4x4 f44LightWorldViewProjMat;

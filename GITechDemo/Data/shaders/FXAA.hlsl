@@ -62,7 +62,7 @@ Etc.
 (2.)
 Then include this file,
 
-#include "Include/Fxaa3_11.h"
+#include "Fxaa3_11.h"
 
 (3.)
 Then call the FXAA pixel shader from within your desired shader.

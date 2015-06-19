@@ -48,9 +48,9 @@ namespace LibRendererDll
 
 		// Set bools
 		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const bool* const data);
-		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec2f* const data);
-		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec3f* const data);
-		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec4f* const data);
+		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec<bool, 2>* const data);
+		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec<bool, 3>* const data);
+		LIBRENDERER_DLL void	SetBoolArray(const unsigned int handle, const Vec<bool, 4>* const data);
 		LIBRENDERER_DLL void	SetBool(const unsigned int handle, const bool data);
 		LIBRENDERER_DLL void	SetBool2(const unsigned int handle, const Vec<bool, 2> data);
 		LIBRENDERER_DLL void	SetBool3(const unsigned int handle, const Vec<bool, 3> data);
@@ -70,9 +70,9 @@ namespace LibRendererDll
 
 		// Set integers
 		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const int* const data);
-		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec2f* const data);
-		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec3f* const data);
-		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec4f* const data);
+		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec2i* const data);
+		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec3i* const data);
+		LIBRENDERER_DLL void	SetIntArray(const unsigned int handle, const Vec4i* const data);
 		LIBRENDERER_DLL void	SetInt(const unsigned int handle, const int data);
 		LIBRENDERER_DLL void	SetInt2(const unsigned int handle, const Vec2i data);
 		LIBRENDERER_DLL void	SetInt3(const unsigned int handle, const Vec3i data);

@@ -209,6 +209,9 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	unsigned int sizeZ = m_nDimension[0][2];
 	m_nMipOffset[0] = 0; // Initialize the first element of the array
 
+	// Reset the size
+	m_nSize = 0;
+
 	if (IsCompressed())
 	{
 		for (unsigned int level = 0; level < m_nMipCount; level++)

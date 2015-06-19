@@ -9,7 +9,7 @@ import sys
 #	'profile' to build on the Profile configuration
 
 PROJECT_NAME = "GITechDemo"
-DEFAULT_VSCOMNTOOLS = "VS120COMNTOOLS"
+DEFAULT_VSCOMNTOOLS = "VS140COMNTOOLS"
 FORCE_REBUILD = False
 BUILD_CONFIGURATION = "Release"
 
@@ -85,10 +85,10 @@ elif(os.getenv("VS140COMNTOOLS")):	# Visual Studio 2015
 	pathToTools = os.getenv("VS140COMNTOOLS")
 elif(os.getenv("VS120COMNTOOLS")):	# Visual Studio 2013
 	pathToTools = os.getenv("VS120COMNTOOLS")
-#elif(os.getenv("VS110COMNTOOLS")):	# Visual Studio 2012
-#	pathToTools = os.getenv("VS110COMNTOOLS")
-#elif(os.getenv("VS100COMNTOOLS")):	# Visual Studio 2010
-#	pathToTools = os.getenv("VS100COMNTOOLS")
+elif(os.getenv("VS110COMNTOOLS")):	# Visual Studio 2012
+	pathToTools = os.getenv("VS110COMNTOOLS")
+elif(os.getenv("VS100COMNTOOLS")):	# Visual Studio 2010
+	pathToTools = os.getenv("VS100COMNTOOLS")
 #elif(os.getenv("VS90COMNTOOLS")):	# Visual Studio 2008
 #	pathToTools = os.getenv("VS90COMNTOOLS")
 #elif(os.getenv("VS80COMNTOOLS")):	# Visual Studio 2005
@@ -111,12 +111,12 @@ makedir(rootBuildDir + "/bin/x86")
 makedir(rootBuildDir + "/data")
 
 # Copy 64bit binaries
-copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.exe")
-copyfiles("../Bin/x64/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.dll")
+copyfiles("../Bin/x64/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.exe")
+copyfiles("../Bin/x64/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.dll")
 
 # Copy 32bit binaries
-copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.exe")
-copyfiles("../Bin/Win32/Release/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.dll")
+copyfiles("../Bin/Win32/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.exe")
+copyfiles("../Bin/Win32/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.dll")
 
 # Copy data
 copytree("../Data/", rootBuildDir + "/data")

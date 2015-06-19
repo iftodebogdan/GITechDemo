@@ -1,5 +1,5 @@
-#include "Include/PostProcessUtils.hlsl"
-#include "Include/Utils.hlsl"
+#include "PostProcessUtils.hlsl"
+#include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float4x4 f44InvProjMat;
