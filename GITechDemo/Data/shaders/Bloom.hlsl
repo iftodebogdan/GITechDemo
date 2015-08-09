@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
@@ -18,15 +18,18 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texSource;	// The texture to be blurred
-const float fBloomStrength;	// Intensity of bloom
-const float fBloomPower;	// Exponent of bloom
-const float2 f2TexelSize;	// Size of a texel
-const int nKernel;			// Kernel size for current pass
+const sampler2D	texSource;		// The texture to be blurred
+const float fBloomStrength;		// Intensity of bloom
+const float fBloomPower;		// Exponent of bloom
+const float2 f2TexelSize;		// Size of a texel
+const int nKernel;				// Kernel size for current pass
+const bool bAdjustIntensity;	// Apply the effects of fBloomStrength and fBloomPower
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	f4Color = KawaseBlur(texSource, f2TexelSize, input.f2TexCoord, nKernel);
-	f4Color = pow(abs(f4Color), fBloomPower) * fBloomStrength;
+
+	if(bAdjustIntensity)
+		f4Color = pow(abs(f4Color), fBloomPower) * fBloomStrength;
 }
 ////////////////////////////////////////////////////////////////////

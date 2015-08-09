@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;

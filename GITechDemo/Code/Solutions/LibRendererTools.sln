@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22512.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelCompiler", "..\Tools\ModelCompiler.vcxproj", "{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}"
 EndProject
@@ -23,10 +23,10 @@ Global
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Debug|x64.Build.0 = Debug|x64
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Debug|x86.ActiveCfg = Debug|Win32
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Debug|x86.Build.0 = Debug|Win32
-		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x64.ActiveCfg = Profile|x64
-		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x64.Build.0 = Profile|x64
-		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x86.ActiveCfg = Profile|Win32
-		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x86.Build.0 = Profile|Win32
+		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x64.ActiveCfg = Release|x64
+		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x64.Build.0 = Release|x64
+		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x86.ActiveCfg = Release|Win32
+		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Profile|x86.Build.0 = Release|Win32
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Release|x64.ActiveCfg = Release|x64
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Release|x64.Build.0 = Release|x64
 		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}.Release|x86.ActiveCfg = Release|Win32
@@ -47,10 +47,10 @@ Global
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Debug|x64.Build.0 = Debug|x64
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Debug|x86.ActiveCfg = Debug|Win32
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Debug|x86.Build.0 = Debug|Win32
-		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x64.ActiveCfg = Profile|x64
-		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x64.Build.0 = Profile|x64
-		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x86.ActiveCfg = Profile|Win32
-		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x86.Build.0 = Profile|Win32
+		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x64.ActiveCfg = Release|x64
+		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x64.Build.0 = Release|x64
+		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x86.ActiveCfg = Release|Win32
+		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Profile|x86.Build.0 = Release|Win32
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Release|x64.ActiveCfg = Release|x64
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Release|x64.Build.0 = Release|x64
 		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}.Release|x86.ActiveCfg = Release|Win32

@@ -11,45 +11,15 @@ namespace GITechDemoApp
 	class GITechDemo : public App
 	{
 	public:
-		GITechDemo();
-		~GITechDemo();
+		IMPLEMENT_APP(GITechDemo)
 
-		void Init(void* hWnd);
-		void Update(const float fDeltaTime);
-		void Draw();
+		const float GetDeltaTime() { return m_fDeltaTime; }
 
 	private:
 		void AllocateRenderResources();
-		void UpdateMatrices();
-		void GenerateDirectionalShadowMap();
-		void GenerateRSM();
-		void GenerateGBuffer();
-		void CopyDepthBuffer();
-		void DrawSky();
-		void CalculateAmbientOcclusion();
-		void BlurAmbientOcclusion();
-		void ApplyAmbientOcclusion();
-		void AccumulateAmbientOcclusion();
-		void AccumulateAmbientLight();
-		void AccumulateDirectionalLight();
-		void AccumulateIndirectLight();
-		void AccumulateLight();
-		void HDRDownsamplePass();
-		void LuminanceMeasurementPass();
-		void HDRToneMappingPass();
-		void FxaaPass();
-		void BloomDownsample();
-		void BloomBlur();
-		void BloomApply();
-		void BloomPass();
-		void CalculateDoF();
-		void ApplyDoF();
-		void DepthOfFieldPass();
-		void ApplyPostProcessing();
-		void CopyResultToBackBuffer(LibRendererDll::RenderTarget* const rt);
-		void RenderScene();
+		void* m_pHWND;
 
-		void* pHWND;
+		float m_fDeltaTime;
 	};
 }
 #endif

@@ -43,7 +43,7 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
 		virtual LIBRENDERER_DLL const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
 		virtual LIBRENDERER_DLL const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
-		virtual LIBRENDERER_DLL const bool	SetBorderColor(const unsigned int slot, const Vec4f rgba);
+		virtual LIBRENDERER_DLL const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba);
 		virtual LIBRENDERER_DLL const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
 		virtual LIBRENDERER_DLL const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
 		virtual LIBRENDERER_DLL const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
@@ -53,7 +53,7 @@ namespace LibRendererDll
 		LIBRENDERER_DLL const float					GetAnisotropy(const unsigned int slot) const;
 		LIBRENDERER_DLL const float					GetMipLodBias(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerFilter			GetFilter(const unsigned int slot) const;
-		LIBRENDERER_DLL const Vec4f					GetBorderColor(const unsigned int slot) const;
+		LIBRENDERER_DLL const Vec4f&				GetBorderColor(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeU(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeV(const unsigned int slot) const;
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingModeW(const unsigned int slot) const;

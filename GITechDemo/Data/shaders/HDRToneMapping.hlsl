@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
@@ -18,7 +18,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texLightAccumulationBuffer;	// Source HDR texture
+const sampler2D	texSource;	// Source HDR texture
 const sampler2D texAvgLuma;	// 1x1 average luma texture
 
 const float fExposureBias;	// Exposure amount
@@ -33,7 +33,7 @@ const float fLinearWhite;		// = 11.2;
 
 float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 {
-	return f3Color * (1.f / (1 + fAvgLuma));
+	return f3Color * rcp(1 + fAvgLuma);
 }
 
 float3 DuikerOptimizedTonemap(const float3 f3Color)
@@ -69,8 +69,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	//////////////////////////////////////////////////////////////////
 
 	// Linear gamma conversion done by SamplerState::SetSRGBEnabled()
-	//float3 f3Color = pow(abs(tex2D(texLightAccumulationBuffer, input.f2TexCoord)), 2.2f).rgb;
-	float3 f3Color = tex2D(texLightAccumulationBuffer, input.f2TexCoord).rgb;
+	//float3 f3Color = pow(abs(tex2D(texSource, input.f2TexCoord)), 2.2f).rgb;
+	float3 f3Color = tex2D(texSource, input.f2TexCoord).rgb;
 
 	float fAvgLuma = tex2D(texAvgLuma, float2(0.5f, 0.5f)).r;
 	f3Color /= fAvgLuma;
@@ -93,8 +93,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 	// Convert back to gamma space (not required for Duiker tonemap)
 	// NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()
-	//f4Color = float4(pow(abs(f3FinalColor), 1.f / 2.2f), 1);
+	//f4Color = float4(pow(abs(f3FinalColor), rcp(2.2f)), 1);
 	// Encode gamma-corrected luma in the alpha channel for FXAA
-	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), 1.f / 2.2f));
+	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), rcp(2.2f)));
 }
 ////////////////////////////////////////////////////////////////////

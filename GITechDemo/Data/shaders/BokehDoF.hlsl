@@ -1,5 +1,8 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
+
+// Disable "warning X4122: sum of ... and ... cannot be represented accurately in double precision"
+#pragma warning (disable: 4122)
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -20,6 +23,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D texSource;		// Source texture to be blurred
 const sampler2D texDepthBuffer;	// Source depth buffer
+const sampler2D texTargetFocus;	// Used for autofocus
 
 const float2 f2TexSourceSize;	// Size in texels of source image
 const float2 f2TexelSize;		// Size of a single texel of source image
@@ -201,7 +205,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float fFocalPoint;
 
 	if (bAutofocus)
-		fFocalPoint = ReconstructDepth(tex2D(texDepthBuffer, f2FocusPoint).r);
+		fFocalPoint = ReconstructDepth(tex2D(texTargetFocus, f2FocusPoint).r);
 	else
 		fFocalPoint = fFocalDepth;
 
@@ -356,10 +360,17 @@ float3 CalculateColor(float2 f2Coords, float fDofBlurFactor)
 
 	if (fBokehFringe)
 	{
+		// The effect is more intense towards the exterior of the screen
+		// NB: The distance of the screen coordinates from the screen center is normalized
+		// by multiplying to the inverse of the length of the screen diagonal in normalized
+		// screen space units: 
+		// distance * (1.f / (0.5f * sqrt(2.f))) = distance * (2.f / sqrt(2.f)) = distance * sqrt(2.f) = distance * 1.414213562f
+		const float fFringeFactor = smoothstep(0.f, 1.f, distance(f2Coords, float2(0.5f, 0.5f)) * 1.414213562f);
+
 		// Apply chromatic aberration effect
-		f3Color.r = tex2D(texSource, f2Coords + float2( 0.f,	 1.f)	* f2TexelSize * fBokehFringe * fDofBlurFactor).r;
-		f3Color.g = tex2D(texSource, f2Coords + float2(-0.866f, -0.5f)	* f2TexelSize * fBokehFringe * fDofBlurFactor).g;
-		f3Color.b = tex2D(texSource, f2Coords + float2( 0.866f,	-0.5f)	* f2TexelSize * fBokehFringe * fDofBlurFactor).b;
+		f3Color.r = tex2D(texSource, f2Coords + fFringeFactor * float2(0.f, 1.f)		* f2TexelSize * fBokehFringe * fDofBlurFactor).r;
+		f3Color.g = tex2D(texSource, f2Coords + fFringeFactor * float2(-0.866f, -0.5f)	* f2TexelSize * fBokehFringe * fDofBlurFactor).g;
+		f3Color.b = tex2D(texSource, f2Coords + fFringeFactor * float2( 0.866f,	-0.5f)	* f2TexelSize * fBokehFringe * fDofBlurFactor).b;
 	}
 	else
 		f3Color = tex2D(texSource, f2Coords).rgb;

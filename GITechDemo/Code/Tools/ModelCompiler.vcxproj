@@ -27,24 +27,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -106,9 +102,10 @@
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\assimp.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -132,9 +129,10 @@
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\assimp.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -162,9 +160,10 @@
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\assimp.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -192,9 +191,10 @@
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
+    <CustomBuildStep />
     <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\assimp.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Command>DEL /F /Q "$(OutDir)"</Command>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>

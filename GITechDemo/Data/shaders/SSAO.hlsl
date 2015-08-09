@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
@@ -30,10 +30,13 @@ const float fSSAOIntensity;		// Overall intensity of the SSAO effect
 const float fSSAOScale;			// Scale for the occlusion attenuation with distance
 const float fSSAOBias;			// Bias for the occlusion attenuation with normal differences
 
-const bool bBlurPass;		// Switch for blur code pass
-const sampler2D texSource;	// Source texture for blurring
-const float2 f2TexelSize;	// Size of a texel
-const int nKernel;			// Kernel size for the current pass
+static const float2 f2Kernel[4] =
+{
+	float2(	 1.f,	 0.f),
+	float2(	-1.f,	 0.f),
+	float2(	 0.f,	 1.f),
+	float2(	 0.f,	-1.f)
+};
 
 /*
 	Simple Screen-Space Ambient Occlusion shader.
@@ -57,52 +60,40 @@ float AOCalc(const float2 f2TexCoord, const float2 f2Offset, const float3 f3Posi
 	const float3 f3Dir = normalize(f3PosDiff);
 	const float f3Dist = length(f3PosDiff) * fSSAOScale;
 
-	return max(0.f, dot(f3Normal, f3Dir) - fSSAOBias) * (1.f / (1.f + f3Dist)) * fSSAOIntensity;
+	return max(0.f, dot(f3Normal, f3Dir) - fSSAOBias) * rcp(1.f + f3Dist) * fSSAOIntensity;
 }
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-	if (bBlurPass)
+	const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+	const float4 f4ProjPosition = float4(input.f2ScreenPos, fDepth, 1.f);
+	const float4 f4PositionPreW = mul(f44InvProjMat, f4ProjPosition);
+	const float3 f3Position = f4PositionPreW.xyz / f4PositionPreW.w;
+	const float3 f3Normal = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
+	//const float2 f2Rand = float2(GenerateRandomNumber(input.f2TexCoord.xy), GenerateRandomNumber(input.f2TexCoord.yx));
+
+	float fAO = 0.0f;
+	const float fRad = fSSAOSampleRadius / f3Position.z;
+
+	UNROLL for (int i = 0; i < 4; i++)
 	{
-		f4Color = KawaseBlur(texSource, f2TexelSize, input.f2TexCoord, nKernel);
+		// Noise isn't really needed since we'll be blurring the AO mask
+		// and it won't look biased towards any discernable direction.
+		//const float2 f2Offset1 = reflect(f2Kernel[i], f2Rand) * fRad;
+		const float2 f2Offset1 = f2Kernel[i] * fRad;
+		const float2 f2Offset2 = float2(
+			f2Offset1.x * 0.707f - f2Offset1.y * 0.707f,
+			f2Offset1.x * 0.707f + f2Offset1.y * 0.707f
+			);
+
+		fAO += AOCalc(input.f2TexCoord, f2Offset1 * 0.25f, f3Position, f3Normal);
+		fAO += AOCalc(input.f2TexCoord, f2Offset2 * 0.5f, f3Position, f3Normal);
+		fAO += AOCalc(input.f2TexCoord, f2Offset1 * 0.75f, f3Position, f3Normal);
+		fAO += AOCalc(input.f2TexCoord, f2Offset2, f3Position, f3Normal);
 	}
-	else
-	{
-		const float2 f2Kernel[4] =
-		{
-			float2(	 1.f,	 0.f),
-			float2(	-1.f,	 0.f),
-			float2(	 0.f,	 1.f),
-			float2(	 0.f,	-1.f)
-		};
 
-		const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
-		const float4 f4ProjPosition = float4(input.f2ScreenPos, fDepth, 1.f);
-		const float4 f4PositionPreW = mul(f44InvProjMat, f4ProjPosition);
-		const float3 f3Position = f4PositionPreW.xyz / f4PositionPreW.w;
-		const float3 f3Normal = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
-		const float2 f2Rand = float2(GenerateRandomNumber(input.f2TexCoord.xy), GenerateRandomNumber(input.f2TexCoord.yx));
+	fAO *= 0.0625f;
 
-		float fAO = 0.0f;
-		const float fRad = fSSAOSampleRadius / f3Position.z;
-
-		UNROLL for (int i = 0; i < 4; i++)
-		{
-			const float2 f2Offset1 = reflect(f2Kernel[i], f2Rand) * fRad;
-			const float2 f2Offset2 = float2(
-				f2Offset1.x * 0.707f - f2Offset1.y * 0.707f,
-				f2Offset1.x * 0.707f + f2Offset1.y * 0.707f
-				);
-
-			fAO += AOCalc(input.f2TexCoord, f2Offset1 * 0.25f, f3Position, f3Normal);
-			fAO += AOCalc(input.f2TexCoord, f2Offset2 * 0.5f, f3Position, f3Normal);
-			fAO += AOCalc(input.f2TexCoord, f2Offset1 * 0.75f, f3Position, f3Normal);
-			fAO += AOCalc(input.f2TexCoord, f2Offset2, f3Position, f3Normal);
-		}
-
-		fAO /= 16.f;
-
-		f4Color = float4(fAO, fAO, fAO, 1.f);
-	}
+	f4Color = float4(fAO, fAO, fAO, 1.f);
 }
 ////////////////////////////////////////////////////////////////////

@@ -135,14 +135,22 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 		if (strlen(entryPoint) == 0)
 			entryPoint = "psmain";
 	}
+
 	LPD3DXBUFFER compiledData = nullptr;
 	LPD3DXBUFFER errorMsg = nullptr;
 	m_szEntryPoint = entryPoint;
 	m_szProfile = profile;
 	DWORD flags = NULL;
-#ifdef _DEBUG
+
+#if defined(_DEBUG) || defined(_PROFILE)
 	flags |= D3DXSHADER_DEBUG;
 #endif
+
+#ifndef _DEBUG
+	flags |= D3DXSHADER_OPTIMIZATION_LEVEL3;
+	//flags |= D3DXSHADER_AVOID_FLOW_CONTROL;
+#endif
+
 	HRESULT hr = D3DXCompileShaderFromFile(filePath, NULL, NULL, entryPoint, profile,
 		flags, &compiledData, &errorMsg, &m_pConstantTable);
 
@@ -205,7 +213,7 @@ const unsigned int ShaderProgramDX9::GetConstantCount() const
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	D3DXCONSTANTTABLE_DESC constDesc;
-	HRESULT hr = m_pConstantTable->GetDesc(&constDesc);
+	HRESULT hr = m_pConstantTable ? m_pConstantTable->GetDesc(&constDesc) : E_FAIL;
 	assert(SUCCEEDED(hr));
 	
 	POP_PROFILE_MARKER();

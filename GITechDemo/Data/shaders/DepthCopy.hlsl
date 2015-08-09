@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
@@ -17,7 +17,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texDepthBuffer;	// Source depth texture
+const sampler2D	texSource;	// Source depth texture
 
 struct PSOut
 {
@@ -28,6 +28,6 @@ struct PSOut
 void psmain(VSOut input, out PSOut output)
 {
 	output.f4DummyColor	= float4(1.f, 0.f, 1.f, 1.f);
-	output.fDepth		= tex2D(texDepthBuffer, input.f2TexCoord).r;
+	output.fDepth		= tex2D(texSource, input.f2TexCoord).r;
 }
 ////////////////////////////////////////////////////////////////////

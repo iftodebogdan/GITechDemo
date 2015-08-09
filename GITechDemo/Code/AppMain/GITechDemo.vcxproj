@@ -130,7 +130,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,7 +150,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +172,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -194,7 +194,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -216,7 +216,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -238,7 +238,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -254,24 +254,56 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\AmbientOcclusionPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\BloomPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DepthOfFieldPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\FXAAPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\GBufferPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HDRToneMappingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\LightingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\PostProcessingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RenderPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RenderScheme.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\SkyPass.h" />
     <ClInclude Include="GITechDemo\Utilities\GaussianFilter.h" />
     <ClInclude Include="GITechDemo\GITechDemo.h" />
     <ClInclude Include="GITechDemo\Utilities\PerlinNoise.h" />
     <ClInclude Include="GITechDemo\Utilities\Poisson.h" />
     <ClInclude Include="Framework\Windows\Resource.h" />
-    <ClInclude Include="GITechDemo\Resources\RenderResource.h" />
-    <ClInclude Include="GITechDemo\Resources\RenderResourceDeclaration.h" />
+    <ClInclude Include="GITechDemo\Resources\RenderResourceTemplate.h" />
+    <ClInclude Include="GITechDemo\Resources\RenderResources.h" />
     <ClInclude Include="Framework\Windows\stdafx.h" />
     <ClInclude Include="Framework\Windows\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GITechDemo\RenderScheme\AmbientOcclusionPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\BloomPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DepthOfFieldPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\FXAAPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\GBufferPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HDRToneMappingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\LightingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\PostProcessingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RenderPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RenderScheme.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\SkyPass.cpp" />
     <ClCompile Include="GITechDemo\Utilities\GaussianFilter.cpp" />
     <ClCompile Include="Framework\Windows\main.cpp" />
     <ClCompile Include="GITechDemo\GITechDemo.cpp" />
     <ClCompile Include="GITechDemo\Utilities\PerlinNoise.cpp" />
     <ClCompile Include="GITechDemo\Utilities\Poisson.cpp" />
-    <ClCompile Include="GITechDemo\Resources\RenderResource.cpp" />
-    <ClCompile Include="GITechDemo\Resources\RenderResourceDefinition.cpp" />
+    <ClCompile Include="GITechDemo\Resources\RenderResourceTemplate.cpp" />
+    <ClCompile Include="GITechDemo\Resources\RenderResources.cpp" />
     <ClCompile Include="Framework\Windows\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -312,39 +344,6 @@
     <None Include="..\..\Data\shaders\Common.hlsl">
       <FileType>Document</FileType>
     </None>
-    <FxCompile Include="..\..\Data\shaders\DeferredLightAmb.hlsl">
-      <FileType>Document</FileType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ObjectFileOutput>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ObjectFileOutput>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-      </ObjectFileOutput>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ObjectFileOutput>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ObjectFileOutput>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">psmain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">3.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-      </ObjectFileOutput>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Pixel</ShaderType>
-    </FxCompile>
     <FxCompile Include="..\..\Data\shaders\DeferredLightDir.hlsl">
       <FileType>Document</FileType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">psmain</EntryPointName>
@@ -510,7 +509,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Pixel</ShaderType>
     </FxCompile>
-    <None Include="..\..\Data\shaders\PostProcessUtils.hlsl">
+    <None Include="..\..\Data\shaders\PostProcessingUtils.hlsl">
       <FileType>Document</FileType>
     </None>
     <FxCompile Include="..\..\Data\shaders\Skybox.hlsl">
@@ -546,6 +545,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Pixel</ShaderType>
     </FxCompile>
+    <None Include="..\..\Data\shaders\RSMCommon.hlsl" />
+    <None Include="..\..\Data\shaders\RSMUpscale.hlsl" />
     <None Include="..\..\Data\shaders\Utils.hlsl">
       <FileType>Document</FileType>
     </None>

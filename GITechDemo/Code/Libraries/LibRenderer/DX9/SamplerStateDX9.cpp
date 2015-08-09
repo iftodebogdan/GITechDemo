@@ -166,7 +166,7 @@ const bool SamplerStateDX9::SetFilter(const unsigned int slot, const SamplerFilt
 		return false;
 }
 
-const bool SamplerStateDX9::SetBorderColor(const unsigned int slot, const Vec4f rgba)
+const bool SamplerStateDX9::SetBorderColor(const unsigned int slot, const Vec4f& rgba)
 {
 	assert(
 		rgba[0] >= 0.f && rgba[0] <= 1.f &&

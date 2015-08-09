@@ -1,8 +1,14 @@
 #ifndef APP_H_
 #define APP_H_
 
-#define CREATE_APP(CLASS) \
-	App* AppMain = new CLASS();
+#define CREATE_APP(CLASS) App* AppMain = new CLASS();
+
+#define IMPLEMENT_APP(CLASS) \
+	CLASS (); \
+	~ CLASS (); \
+	void Init(void* hWnd); \
+	void Update(const float fDeltaTime); \
+	void Draw();
 
 #include <gmtl\gmtl.h>
 using namespace gmtl;
@@ -16,7 +22,6 @@ public:
 	virtual void Update(const float fDeltaTime) = 0;
 	virtual void Draw() = 0;
 
-protected:
 	struct Camera
 	{
 		Camera() : fSpeedFactor(1.f) {}
@@ -25,10 +30,12 @@ protected:
 		Matrix44f mRot;
 		Vec3f vMoveVec;
 		float fSpeedFactor;
-	} tCamera;
+	};
 
-public:
 	Camera& GetCamera() { return tCamera; }
+
+protected:
+	Camera tCamera;
 };
 
 extern App* AppMain;

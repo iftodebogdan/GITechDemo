@@ -1,5 +1,5 @@
-#ifndef POISSON_H_
-#define POISSON_H_
+#ifndef POISSON_H
+#define POISSON_H
 
 #include <vector>
 
@@ -34,4 +34,4 @@ struct sPoint
 
 std::vector<sPoint> GeneratePoissonPoints(float MinDist, int NewPointsCount, size_t NumPoints);
 
-#endif // POISSON_H_
+#endif // POISSON_H

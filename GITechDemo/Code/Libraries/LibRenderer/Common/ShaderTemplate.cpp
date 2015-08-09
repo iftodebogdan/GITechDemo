@@ -85,6 +85,8 @@ const unsigned int ShaderTemplate::GetTotalSizeOfInputConstants() const
 
 void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 {
+	PUSH_PROFILE_MARKER((m_pProgram->m_szSrcFile + " : " + m_pProgram->m_szEntryPoint + "() - " + m_pProgram->m_szProfile).c_str());
+
 	assert(m_pShaderInput == nullptr);
 	//assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
@@ -92,6 +94,8 @@ void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 
 	for (unsigned int i = 0, n = (unsigned int)m_arrInputDesc.size(); i < n; i++)
 	{
+		PUSH_PROFILE_MARKER(m_arrInputDesc[i].szName.c_str());
+
 		if (m_arrInputDesc[i].eInputType >= IT_BOOL && m_arrInputDesc[i].eInputType <= IT_FLOAT)
 		{
 			m_pProgram->SetValue(
@@ -107,8 +111,12 @@ void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 			{
 				const unsigned int texIdx = *(unsigned int*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
 				const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
+
 				if (tex)
 				{
+					if(strlen(tex->GetSourceFileName()))
+						PUSH_PROFILE_MARKER(tex->GetSourceFileName());
+
 					tex->Enable(m_arrInputDesc[i].nRegisterIndex);
 					SamplerState* ssm = Renderer::GetInstance()->GetSamplerStateManager();
 					ssm->SetAnisotropy(m_arrInputDesc[i].nRegisterIndex, tex->GetAnisotropy());
@@ -119,14 +127,21 @@ void ShaderTemplate::Enable(ShaderInput* const shaderInput)
 					ssm->SetAddressingModeV(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeV());
 					ssm->SetAddressingModeW(m_arrInputDesc[i].nRegisterIndex, tex->GetAddressingModeW());
 					ssm->SetSRGBEnabled(m_arrInputDesc[i].nRegisterIndex, tex->GetSRGBEnabled());
+
+					if (strlen(tex->GetSourceFileName()))
+						POP_PROFILE_MARKER();
 				}
 			}
 			else
 				assert(false); // shouldn't happen
 		}
+
+		POP_PROFILE_MARKER();
 	}
 
 	m_pProgram->Enable();
+
+	POP_PROFILE_MARKER();
 }
 
 void ShaderTemplate::Disable()

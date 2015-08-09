@@ -21,7 +21,7 @@ void vsmain(VSIn input, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const samplerCUBE texSkyTex;	// Sky cubemap
+const samplerCUBE texSkyCube;	// Sky cubemap
 
 const float3 f3LightDir;	// Direction of sunlight
 const float fSunRadius;		// Determines sun radius
@@ -38,7 +38,7 @@ void psmain(VSOut input, out PSOut output)
 	const float3 f3SunDir	=	normalize(-f3LightDir);
 	const float	fSunDot		=	dot(normalize(input.f3TexCoord), f3SunDir);
 
-	output.f4SkyColor		=	texCUBE(texSkyTex, input.f3TexCoord);
+	output.f4SkyColor		=	texCUBE(texSkyCube, input.f3TexCoord);
 	output.f4SkyColor		+=	pow(max(0.f, fSunDot), fSunRadius) * fSunBrightness;
 }
 ////////////////////////////////////////////////////////////////////

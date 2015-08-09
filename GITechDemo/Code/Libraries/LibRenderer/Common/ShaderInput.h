@@ -123,7 +123,7 @@ namespace LibRendererDll
 
 		LIBRENDERER_DLL const unsigned int		GetInputCount() const;
 		LIBRENDERER_DLL const bool				GetInputHandleByName(const char* const inputName, unsigned int& inputHandle) const;
-		LIBRENDERER_DLL const ShaderInputDesc	GetInputDesc(const unsigned int handle) const;
+		LIBRENDERER_DLL const ShaderInputDesc&	GetInputDesc(const unsigned int handle) const;
 		//////////////////////////////////////////////////////////////////
 
 	protected:

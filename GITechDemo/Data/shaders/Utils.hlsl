@@ -53,7 +53,7 @@ float GenerateRandomNumber(float2 p)
 // Poisson Disk kernel																										//
 // https://electronicmeteor.wordpress.com/2013/02/05/poisson-disc-shadow-sampling-ridiculously-easy-and-good-looking-too/	//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const float2 poissonDisk[16];
+const float2 f2PoissonDisk[16];
 
 float PCF2x2Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
 {
@@ -65,7 +65,7 @@ float PCF2x2Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			tex2D(
 			shadowMap,
 			texCoord +
-			poissonDisk[i] * oneOverShadowMapSize
+			f2PoissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
 		percentLit += isLit;
 	}
@@ -83,7 +83,7 @@ float PCF3x3Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			tex2D(
 			shadowMap,
 			texCoord +
-			poissonDisk[i] * oneOverShadowMapSize
+			f2PoissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
 		percentLit += isLit;
 	}
@@ -101,7 +101,7 @@ float PCF12TapPoisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 t
 			tex2D(
 			shadowMap,
 			texCoord +
-			poissonDisk[i] * oneOverShadowMapSize
+			f2PoissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
 		percentLit += isLit;
 	}
@@ -119,7 +119,7 @@ float PCF4x4Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
 			tex2D(
 			shadowMap,
 			texCoord +
-			poissonDisk[i] * oneOverShadowMapSize
+			f2PoissonDisk[i] * oneOverShadowMapSize
 			).r > depthCompare;
 		percentLit += isLit;
 	}
@@ -132,31 +132,31 @@ float PCF4x4PoissonRotatedx4(sampler2D shadowMap, float2 oneOverShadowMapSize, f
 {
 	float percentLit = 0.f;
 
-	[loop] for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		int isLit =
 			tex2D(
 				shadowMap,
 				texCoord +
-				poissonDisk[i].xy * oneOverShadowMapSize
+				f2PoissonDisk[i].xy * oneOverShadowMapSize
 				).r > depthCompare;
 		isLit +=
 			tex2D(
 				shadowMap,
 				texCoord +
-				float2(1.f - poissonDisk[i].y, poissonDisk[i].x) * oneOverShadowMapSize
+				float2(1.f - f2PoissonDisk[i].y, f2PoissonDisk[i].x) * oneOverShadowMapSize
 				).r > depthCompare;
 		isLit +=
 			tex2D(
 				shadowMap,
 				texCoord +
-				(float2(1.f, 1.f) - poissonDisk[i].xy) * oneOverShadowMapSize
+				(float2(1.f, 1.f) - f2PoissonDisk[i].xy) * oneOverShadowMapSize
 				).r > depthCompare;
 		isLit +=
 			tex2D(
 				shadowMap,
 				texCoord +
-				float2(poissonDisk[i].y, 1.f - poissonDisk[i].x) * oneOverShadowMapSize
+				float2(f2PoissonDisk[i].y, 1.f - f2PoissonDisk[i].x) * oneOverShadowMapSize
 				).r > depthCompare;
 		percentLit += isLit;
 	}

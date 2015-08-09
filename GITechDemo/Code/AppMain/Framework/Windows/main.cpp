@@ -100,6 +100,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		if (msg.message == WM_QUIT)
 			break;
 
+		// Update camera
 		delta = pos - center;
 		center += Vec2i(wRect.left, wRect.top);
 
@@ -115,11 +116,22 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			SetCursorPos(center[0], center[1]);
 		}
 
-		AppMain->Update(0);
+		// Calculate delta time and update app
+		static unsigned long long lastTick = GetTickCount64();
+		const unsigned long long currTick = GetTickCount64();
+		AppMain->Update((float)(currTick - lastTick) / 1000.f);
+		lastTick = currTick;
+
+		// Draw scene
 		AppMain->Draw();
 	}
 
 	delete AppMain;
+
+#ifdef _DEBUG
+	// Free the console
+	FreeConsole();
+#endif
 
 	return (int) msg.wParam;
 }

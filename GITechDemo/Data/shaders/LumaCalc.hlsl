@@ -1,4 +1,4 @@
-#include "PostProcessUtils.hlsl"
+#include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
@@ -58,7 +58,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 			{
 				// The average luma can be calculated from part of the source image,
 				// hence the scale of the texture coordinates
-				const float2 f2ScaledTexCoord = input.f2TexCoord * float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
+				const float2 f2ScaledTexCoord = input.f2TexCoord;// *float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
 				const float3 f3Sample = tex2D(texLumaCalcInput, f2ScaledTexCoord + f2Kernel * float2(i, j)).rgb;
 				fLogLumSum += log(dot(f3Sample, LUMINANCE_VECTOR) + 0.0001f);
 			}

@@ -132,8 +132,8 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingMode() const;
 				LIBRENDERER_DLL	const bool					GetSRGBEnabled() const;
 
-				// Retrieve the path to the file from which the texture was loaded from
-				LIBRENDERER_DLL	const	char*	GetSourceFileName();
+				// Retrieve the path to the file from which the texture was loaded
+				LIBRENDERER_DLL	const	char*	GetSourceFileName() const;
 
 		/* Get the number of dimensions a texture of the specified type has */
 		static	LIBRENDERER_DLL const	unsigned int	GetDimensionCount(const TexType texType);

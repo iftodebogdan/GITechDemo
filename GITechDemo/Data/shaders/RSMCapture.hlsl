@@ -1,7 +1,7 @@
 #include "Utils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
-const float4x4 f44LightWorldViewProjMat;
+const float4x4 f44RSMWorldViewProjMat;
 const float4x4 f44LightWorldViewMat;
 
 struct VSIn
@@ -20,7 +20,7 @@ struct VSOut
 
 void vsmain(VSIn input, out VSOut output)
 {
-	output.f4Position = mul(f44LightWorldViewProjMat, input.f4Position);
+	output.f4Position = mul(f44RSMWorldViewProjMat, input.f4Position);
 	output.f2TexCoord = input.f2TexCoord;
 	output.f3Normal = normalize(mul((float3x3)f44LightWorldViewMat, input.f3Normal));
 }

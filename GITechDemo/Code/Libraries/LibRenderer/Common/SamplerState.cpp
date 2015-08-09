@@ -59,7 +59,7 @@ const bool SamplerState::SetFilter(const unsigned int slot, const SamplerFilter 
 	return true;
 }
 
-const bool SamplerState::SetBorderColor(const unsigned int slot, const Vec4f rgba)
+const bool SamplerState::SetBorderColor(const unsigned int slot, const Vec4f& rgba)
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
 	m_tCurrentState[slot].vBorderColor = rgba;
@@ -120,7 +120,7 @@ const SamplerFilter SamplerState::GetFilter(const unsigned int slot) const
 	return m_tCurrentState[slot].eFilter;
 }
 
-const Vec4f SamplerState::GetBorderColor(const unsigned int slot) const
+const Vec4f& SamplerState::GetBorderColor(const unsigned int slot) const
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
 	return m_tCurrentState[slot].vBorderColor;

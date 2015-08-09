@@ -51,13 +51,13 @@ using namespace gmtl;
 	extern int g_nProfileMarkerCounter;
 	#ifndef PUSH_PROFILE_MARKER
 		#define PUSH_PROFILE_MARKER(label) \
-			if(Renderer::GetInstance()) \
-				Renderer::GetInstance()->PushProfileMarker(label);
+			if(LibRendererDll::Renderer::GetInstance()) \
+				LibRendererDll::Renderer::GetInstance()->PushProfileMarker(label);
 	#endif
 	#ifndef POP_PROFILE_MARKER
 		#define POP_PROFILE_MARKER() \
-			if(Renderer::GetInstance()) \
-				Renderer::GetInstance()->PopProfileMarker();
+			if(LibRendererDll::Renderer::GetInstance()) \
+				LibRendererDll::Renderer::GetInstance()->PopProfileMarker();
 	#endif
 #else
 	#ifndef PUSH_PROFILE_MARKER
@@ -68,13 +68,7 @@ using namespace gmtl;
 	#endif
 #endif
 
-// Declare new data types
 #include "../Utility/HalfFloat.h"
-typedef LibRendererDll::HalfFloat half;
-typedef unsigned char byte;
-typedef unsigned short word;
-typedef unsigned long dword;
-typedef unsigned long long qword;
 
 namespace LibRendererTools
 {
@@ -84,6 +78,21 @@ namespace LibRendererTools
 
 namespace LibRendererDll
 {
+	// DATA TYPES //////////////////////////////////
+
+	typedef HalfFloat			half;
+	typedef unsigned char		byte;
+	typedef unsigned short		word;
+	typedef unsigned long		dword;
+	typedef unsigned long long	qword;
+
+	typedef unsigned int		Sampler1D;
+	typedef unsigned int		Sampler2D;
+	typedef unsigned int		Sampler3D;
+	typedef unsigned int		SamplerCUBE;
+
+	////////////////////////////////////////////////
+
 	// APIS /////////////////////////////////////////////////////////////
 
 	// Available rendering APIs to be used when instantiating the renderer

@@ -59,7 +59,8 @@ void ModelCompiler::Run(int argc, char* argv[])
 	{
 		cout << "Usage: ModelCompiler [options] Path\\To\\model_file.ext" << endl << endl;
 		cout << "Options:" << endl;
-		cout << "-q\tQuiet. Does not produce output to the console window (only log file)" << endl;
+		cout << "-q\t\tQuiet. Does not produce output to the console window" << endl;
+		cout << "-d output/dir/\tOverride default output directory (output/dir/ must exist!)" << endl;
 		return;
 	}
 
@@ -90,14 +91,10 @@ void ModelCompiler::Run(int argc, char* argv[])
 
 	unsigned long long startTick = GetTickCount64();
 
-	// Create an instance of the Importer class
 	Assimp::Importer importer;
 	const aiScene* scene = nullptr;
 
-	// And have it read the given file with some example postprocessing
-	// Usually - if speed is not the most important aspect for you - you'll
-	// propably to request more postprocessing than we do in this example.
-	unsigned int ppFlags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded;// | aiProcess_OptimizeGraph | aiProcess_PreTransformVertices | aiProcess_Debone;
+	unsigned int ppFlags = aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded | aiProcess_OptimizeGraph;
 	ppFlags &= ~aiProcess_FindDegenerates;
 
 	scene = importer.ReadFile(argv[argc - 1], ppFlags);

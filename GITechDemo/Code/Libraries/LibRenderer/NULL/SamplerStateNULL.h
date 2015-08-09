@@ -29,7 +29,7 @@ namespace LibRendererDll
 		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy) { return true; }
 		const bool	SetMipLodBias(const unsigned int slot, const float lodBias) { return true; }
 		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter) { return true; }
-		const bool	SetBorderColor(const unsigned int slot, const Vec4f rgba) { return true; }
+		const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba) { return true; }
 		const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU) { return true; }
 		const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV) { return true; }
 		const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW) { return true; }

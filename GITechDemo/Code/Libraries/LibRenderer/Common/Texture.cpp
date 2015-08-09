@@ -658,7 +658,7 @@ const bool Texture::GetSRGBEnabled() const
 	return m_tSamplerStates.bSRGBEnabled;
 }
 
-const char* Texture::GetSourceFileName()
+const char* Texture::GetSourceFileName() const
 {
 	return m_szSourceFile.c_str();
 }

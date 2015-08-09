@@ -52,9 +52,9 @@ const char* Version = "1.1.2 (09/04/2015)";
 
 const float MinDistance = sqrt( float(NumPoints) ) / float(NumPoints);
 
-std::random_device rd;
-std::mt19937 gen( rd() );
-std::uniform_real_distribution<> dis( 0.0, 1.0 );
+std::random_device* rd;
+std::mt19937* gen;//(rd());
+std::uniform_real_distribution<>* dis;//(0.0, 1.0);
 
 float* g_DensityMap = NULL;
 
@@ -70,7 +70,7 @@ struct sGridPoint
 
 float RandomFloat()
 {
-	return static_cast<float>( dis( gen ) );
+	return static_cast<float>( (*dis)( *gen ) );
 }
 
 float GetDistance( const sPoint& P1, const sPoint& P2 )
@@ -135,7 +135,7 @@ private:
 sPoint PopRandom( std::vector<sPoint>& Points )
 {
 	std::uniform_int_distribution<> dis( 0, (int)Points.size() - 1 );
-	int Idx = dis( gen );
+	int Idx = dis( *gen );
 	sPoint P = Points[ Idx ];
 	Points.erase( Points.begin() + Idx );
 	return P;
@@ -162,6 +162,10 @@ sPoint GenerateRandomPointAround( const sPoint& P, float MinDist )
 
 std::vector<sPoint> GeneratePoissonPoints( float MinDist, int NewPointsCount, size_t NumPoints )
 {
+	rd = new std::random_device();
+	gen = new std::mt19937(*rd);
+	dis = new std::uniform_real_distribution<>(0.0, 1.0);
+
 	std::vector<sPoint> SamplePoints;
 	std::vector<sPoint> ProcessList;
 
