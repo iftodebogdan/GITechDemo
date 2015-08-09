@@ -40,7 +40,7 @@ dlldata.c
 *_i.h
 *.ilk
 *.meta
-*.obj
+#*.obj
 *.pch
 *.pdb
 *.pgc
@@ -59,8 +59,6 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
-
-!/*/[Dd]ata[Ss]rc/**/*.obj
 
 # Chutzpah Test files
 _Chutzpah*
