@@ -9,7 +9,7 @@ import sys
 #	'profile' to build on the Profile configuration
 
 PROJECT_NAME = "GITechDemo"
-DEFAULT_VSCOMNTOOLS = "VS140COMNTOOLS"
+DEFAULT_VSCOMNTOOLS = "VS100COMNTOOLS"
 FORCE_REBUILD = False
 BUILD_CONFIGURATION = "Release"
 
@@ -55,15 +55,15 @@ def copytree(src, dst, symlinks = False, ignore = None):
     else:
       shutil.copy2(s, d)
 
-def buildsln(pathToTools, platform, buildConfig):
-	cmd = "\"" + pathToTools + "VsDevCmd.bat\" && "
-	cmd += "MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + " /p:Platform=" + platform
+def buildsln(pathToTools, envSetupBat, platform, buildConfig):
+	os.environ["PATH"] += os.pathsep + pathToTools
+	cmd =envSetupBat + " && MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + " /p:Platform=" + platform
 	if(FORCE_REBUILD):
 		cmd += " /t:rebuild "
 	else:
 		cmd += " "
-	cmd += os.getcwd() + "/../Code/Solutions/"
-	cmd += PROJECT_NAME + ".sln"
+	cmd += "\"" + os.getcwd() + "/../Code/Solutions/"
+	cmd += PROJECT_NAME + ".sln\""
 	#print(cmd)
 	os.system(cmd)
 
@@ -79,8 +79,16 @@ for opt in sys.argv:
 
 print("\nStarting build process...\n")
 
+envSetupBat = "VsDevCmd.bat"
+
 if(os.getenv(DEFAULT_VSCOMNTOOLS)):
 	pathToTools = os.getenv(DEFAULT_VSCOMNTOOLS)
+	if(
+		DEFAULT_VSCOMNTOOLS == "VS100COMNTOOLS" or
+		DEFAULT_VSCOMNTOOLS == "VS90COMNTOOLS" or
+		DEFAULT_VSCOMNTOOLS == "VS80COMNTOOLS"
+	):
+		envSetupBat = "vsvars32.bat"
 elif(os.getenv("VS140COMNTOOLS")):	# Visual Studio 2015
 	pathToTools = os.getenv("VS140COMNTOOLS")
 elif(os.getenv("VS120COMNTOOLS")):	# Visual Studio 2013
@@ -89,16 +97,19 @@ elif(os.getenv("VS110COMNTOOLS")):	# Visual Studio 2012
 	pathToTools = os.getenv("VS110COMNTOOLS")
 elif(os.getenv("VS100COMNTOOLS")):	# Visual Studio 2010
 	pathToTools = os.getenv("VS100COMNTOOLS")
+	envSetupBat = "vsvars32.bat"
 #elif(os.getenv("VS90COMNTOOLS")):	# Visual Studio 2008
 #	pathToTools = os.getenv("VS90COMNTOOLS")
+#	envSetupBat = "vsvars32.bat"
 #elif(os.getenv("VS80COMNTOOLS")):	# Visual Studio 2005
 #	pathToTools = os.getenv("VS80COMNTOOLS")
+#	envSetupBat = "vsvars32.bat"
 else:
 	print("No compatible version of Visual Studio found!\n")
 
 if(pathToTools):
-	buildsln(pathToTools, "x86", BUILD_CONFIGURATION)
-	buildsln(pathToTools, "x64", BUILD_CONFIGURATION)
+	buildsln(pathToTools, envSetupBat, "x86", BUILD_CONFIGURATION)
+	buildsln(pathToTools, envSetupBat, "x64", BUILD_CONFIGURATION)
 
 print("\nConfiguring build...\n")
 

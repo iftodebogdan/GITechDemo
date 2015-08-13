@@ -38,6 +38,10 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		f4Color = tex2D(texSource, input.f2TexCoord);
 
 	if (bApplyBrightnessFilter)
-		f4Color.rgb = max(0.f, f4Color.rgb - fBrightnessThreshold);
+	{
+		const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
+		f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
+		f4Color.rgb /= fBrightness;
+	}
 }
 ////////////////////////////////////////////////////////////////////

@@ -211,9 +211,9 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearWhite,			float,			11.2f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLumaAdaptSpeed,		float,			1.f						);
 	// Bloom
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,	float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,	float,			0.5f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomPower,			float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomStrength,		float,			0.3f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomStrength,		float,			0.25f					);
 	// FXAA
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaSubpix,			float,			0.75f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThreshold,	float,			0.166f					);
