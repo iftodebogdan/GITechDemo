@@ -34,9 +34,8 @@ HalfFloat::HalfFloat(const float value)
 			if (biasExp != 0)
 			{
 				// Truncate 23-bit mantissa to 10 bits.
-				unsigned short signBit =
-					(unsigned short)((bits & 0x80000000) >> 16);
-				unsigned int mantissa = (bits & 0x007FFFFF) >> 13;
+				unsigned short signBit	= (unsigned short)((bits & 0x80000000) >> 16);
+				unsigned short mantissa	= (unsigned short)((bits & 0x007FFFFF) >> 13);
 				biasExp = (biasExp - 0x0070) << 10;
 				m_hValue = signBit | biasExp | mantissa;
 			}
@@ -81,6 +80,3 @@ HalfFloat::operator float() const
 		return 0.0f;
 	}
 }
-
-
-

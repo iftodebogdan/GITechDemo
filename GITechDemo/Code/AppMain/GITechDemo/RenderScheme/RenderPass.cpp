@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
+#include <Renderer.h>
 using namespace LibRendererDll;
 
 #include "GITechDemo.h"

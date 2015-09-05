@@ -1,29 +1,24 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "Texture.h"
-#include "ResourceManager.h"
-#include "IndexBuffer.h"
-#include "VertexBuffer.h"
-#include "VertexFormat.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <Texture.h>
+#include <ResourceManager.h>
+#include <IndexBuffer.h>
+#include <VertexBuffer.h>
+#include <VertexFormat.h>
 using namespace LibRendererDll;
 
-#include "App.h"
+#include "GITechDemo.h"
 
 #include "SkyPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
-
-namespace GITechDemoApp
-{
-	// A cube used to draw the sky
-	VertexBuffer*	SkyBoxCube = nullptr;
-}
+#include "RenderResourcesDef.h"
 
 SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
+	, m_pSkyBoxCube(nullptr)
 {}
 
 SkyPass::~SkyPass()
@@ -66,19 +61,19 @@ void SkyPass::CreateSkyBoxVB()
 	ib->Unlock();
 
 	const unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 8, ib);
-	SkyBoxCube = ResourceMgr->GetVertexBuffer(vbIdx);
+	m_pSkyBoxCube = ResourceMgr->GetVertexBuffer(vbIdx);
 
-	SkyBoxCube->Lock(BL_WRITE_ONLY);
-	SkyBoxCube->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(1) = Vec4f(1.f, 1.f, 1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(2) = Vec4f(-1.f, -1.f, 1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(3) = Vec4f(1.f, -1.f, 1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(4) = Vec4f(-1.f, 1.f, -1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(5) = Vec4f(1.f, 1.f, -1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(6) = Vec4f(-1.f, -1.f, -1.f, 1.f);
-	SkyBoxCube->Position<Vec4f>(7) = Vec4f(1.f, -1.f, -1.f, 1.f);
-	SkyBoxCube->Update();
-	SkyBoxCube->Unlock();
+	m_pSkyBoxCube->Lock(BL_WRITE_ONLY);
+	m_pSkyBoxCube->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(1) = Vec4f(1.f, 1.f, 1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(2) = Vec4f(-1.f, -1.f, 1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(3) = Vec4f(1.f, -1.f, 1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(4) = Vec4f(-1.f, 1.f, -1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(5) = Vec4f(1.f, 1.f, -1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(6) = Vec4f(-1.f, -1.f, -1.f, 1.f);
+	m_pSkyBoxCube->Position<Vec4f>(7) = Vec4f(1.f, -1.f, -1.f, 1.f);
+	m_pSkyBoxCube->Update();
+	m_pSkyBoxCube->Unlock();
 }
 
 void SkyPass::OnUpdate(const float fDeltaTime)
@@ -86,10 +81,10 @@ void SkyPass::OnUpdate(const float fDeltaTime)
 	if (!AppMain)
 		return;
 
-	if (!SkyBoxCube)
+	if (!m_pSkyBoxCube)
 		CreateSkyBoxVB();
 
-	f44SkyViewProjMat = f44ViewProjMat * makeTrans(-AppMain->GetCamera().vPos, Type2Type<Matrix44f>());
+	f44SkyViewProjMat = f44ViewProjMat * makeTrans(-((GITechDemo*)AppMain)->GetCamera().vPos, Type2Type<Matrix44f>());
 
 	SkyTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 	SkyTexture.GetTexture()->SetSRGBEnabled(true);
@@ -119,7 +114,7 @@ void SkyPass::OnDraw()
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_LESSEQUAL);
 
 	SkyBoxShader.Enable();
-	RenderContext->DrawVertexBuffer(SkyBoxCube);
+	RenderContext->DrawVertexBuffer(m_pSkyBoxCube);
 	SkyBoxShader.Disable();
 
 	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnabled);

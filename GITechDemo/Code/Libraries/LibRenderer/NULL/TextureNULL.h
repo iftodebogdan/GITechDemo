@@ -26,8 +26,8 @@ namespace LibRendererDll
 	class TextureNULL : public Texture
 	{
 	public:
-		void		Enable(const unsigned int texUnit) const {}
-		void		Disable(const unsigned int texUnit) const {}
+		void		Enable(const unsigned int /*texUnit*/) const {}
+		void		Disable(const unsigned int /*texUnit*/) const {}
 		const bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(mipmapLevel, lockMode); }
 		const bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(cubeFace, mipmapLevel, lockMode); }
 		void		Unlock() { Texture::Unlock(); }

@@ -1,14 +1,15 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "RSMDirectionalLightPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {

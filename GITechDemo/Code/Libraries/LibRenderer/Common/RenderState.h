@@ -57,7 +57,7 @@ namespace LibRendererDll
 
 		virtual	LIBRENDERER_DLL	const bool	SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
 
-		virtual	LIBRENDERER_DLL	const bool	SetSlopeScaleDepthBias(const float scale);
+		virtual	LIBRENDERER_DLL	const bool	SetSlopeScaledDepthBias(const float scale);
 		virtual	LIBRENDERER_DLL	const bool	SetDepthBias(const float bias);
 
 		virtual	LIBRENDERER_DLL	const bool	SetStencilEnabled(const bool enabled);
@@ -98,7 +98,7 @@ namespace LibRendererDll
 		LIBRENDERER_DLL	const bool			GetColorWriteBlueEnabled() const;
 		LIBRENDERER_DLL	const bool			GetColorWriteAlphaEnabled() const;
 
-		LIBRENDERER_DLL	const float			GetSlopeScaleDepthBias() const;
+		LIBRENDERER_DLL	const float			GetSlopeScaledDepthBias() const;
 		LIBRENDERER_DLL	const float			GetDepthBias() const;
 
 		LIBRENDERER_DLL	const bool			GetStencilEnabled() const;
@@ -146,7 +146,7 @@ namespace LibRendererDll
 		bool			m_bColorWriteAlpha;
 
 		// Depth bias states
-		float			m_fSlopeScaleDepthBias;
+		float			m_fSlopeScaledDepthBias;
 		float			m_fDepthBias;
 
 		// Stencil states

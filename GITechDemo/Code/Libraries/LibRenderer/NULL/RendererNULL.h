@@ -33,19 +33,19 @@ namespace LibRendererDll
 		static	RendererNULL*	GetInstance() { assert(ms_eAPI == API_NULL); return (RendererNULL*)ms_pInstance; };
 
 		void	Initialize(void* hWnd);
-		void	SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) {}
-		void	SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) {}
-		void	CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar) {}
-		void	CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar) {}
+		void	SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
+		void	SetViewport(const Vec2i /*size*/, const Vec2i /*offset = Vec2i(0, 0)*/) {}
+		void	CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar);
+		void	CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar);
 
 		const bool	BeginFrame() { return true; }
 		void		EndFrame() {}
 		void		SwapBuffers() {}
-		void		Clear(const Vec4f rgba, const float z, const unsigned int stencil) {}
-		void		DrawVertexBuffer(VertexBuffer* vb) {}
+		void		Clear(const Vec4f /*rgba*/, const float /*z*/, const unsigned int /*stencil*/) {}
+		void		DrawVertexBuffer(VertexBuffer* /*vb*/) {}
 
-		void		PushProfileMarker(const char* const label) {}
-		void		PopProfileMarker() {}
+		void		PushProfileMarker(const char* const label);
+		void		PopProfileMarker();
 
 		friend class Renderer;
 	};

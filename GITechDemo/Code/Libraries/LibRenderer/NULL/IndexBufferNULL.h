@@ -28,7 +28,7 @@ namespace LibRendererDll
 	public:
 		void	Enable() {}
 		void	Disable() {}
-		void	Lock(const BufferLocking lockMode) {}
+		void	Lock(const BufferLocking /*lockMode*/) {}
 		void	Unlock() {}
 		void	Update() {}
 

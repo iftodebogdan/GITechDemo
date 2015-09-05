@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "Poisson.h"
@@ -11,12 +12,12 @@ using namespace LibRendererDll;
 #include "DirectionalIndirectLightPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
 	bool INDIRECT_LIGHT_ENABLED = true;
-	bool USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER = true;
+	bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
 
 	extern const unsigned int RSM_SIZE = 512;
 	const unsigned int RSM_NUM_PASSES = 1;
@@ -100,7 +101,7 @@ void DirectionalIndirectLightPass::OnDraw()
 
 	LibRendererDll::RenderTarget* const rtBkp = LibRendererDll::RenderTarget::GetActiveRenderTarget();
 	
-	if (USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
+	if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
 	{
 		rtBkp->Disable();
 		IndirectLightAccumulationBuffer.Enable();
@@ -116,8 +117,10 @@ void DirectionalIndirectLightPass::OnDraw()
 
 	for (unsigned int i = 0; i < RSM_NUM_PASSES; i++, f3RSMKernel += RSM_SAMPLES_PER_PASS)
 	{
+#if ENABLE_PROFILE_MARKERS
 		char marker[16];
 		sprintf_s(marker, "Pass %d", i);
+#endif
 		PUSH_PROFILE_MARKER(marker);
 		
 		RSMApplyShader.Enable();
@@ -131,7 +134,7 @@ void DirectionalIndirectLightPass::OnDraw()
 
 	POP_PROFILE_MARKER();
 
-	if (USE_QUARTER_RES_INDIRECT_LIGHT_ACCUMULATION_BUFFER)
+	if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
 	{
 		IndirectLightAccumulationBuffer.Disable();
 		rtBkp->Enable();

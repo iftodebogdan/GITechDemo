@@ -332,9 +332,9 @@ const bool RenderStateDX9::SetColorWriteEnabled(const bool red, const bool green
 		return false;
 }
 
-const bool RenderStateDX9::SetSlopeScaleDepthBias(const float scale)
+const bool RenderStateDX9::SetSlopeScaledDepthBias(const float scale)
 {
-	if (scale == GetSlopeScaleDepthBias())
+	if (scale == GetSlopeScaledDepthBias())
 		return true;
 
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
@@ -346,7 +346,7 @@ const bool RenderStateDX9::SetSlopeScaleDepthBias(const float scale)
 	POP_PROFILE_MARKER();
 
 	if (SUCCEEDED(hr))
-		return RenderState::SetSlopeScaleDepthBias(scale);
+		return RenderState::SetSlopeScaledDepthBias(scale);
 	else
 		return false;
 }
@@ -679,7 +679,7 @@ void RenderStateDX9::Reset()
 
 	hr = device->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &value);
 	assert(SUCCEEDED(hr));
-	m_fSlopeScaleDepthBias = *(float*)&value;
+	m_fSlopeScaledDepthBias = *(float*)&value;
 
 	hr = device->GetRenderState(D3DRS_DEPTHBIAS, &value);
 	assert(SUCCEEDED(hr));

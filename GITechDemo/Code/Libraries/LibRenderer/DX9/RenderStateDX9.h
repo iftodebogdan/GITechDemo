@@ -40,7 +40,7 @@ namespace LibRendererDll
 		const bool	SetZFunc(const Cmp zFunc);
 		const bool	SetZWriteEnabled(const bool enabled);
 		const bool	SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
-		const bool	SetSlopeScaleDepthBias(const float scale);
+		const bool	SetSlopeScaledDepthBias(const float scale);
 		const bool	SetDepthBias(const float bias);
 		const bool	SetStencilEnabled(const bool enabled);
 		const bool	SetStencilFunc(const Cmp stencilFunc);

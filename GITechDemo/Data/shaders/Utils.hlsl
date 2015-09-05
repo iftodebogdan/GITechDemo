@@ -49,6 +49,11 @@ float GenerateRandomNumber(float2 p)
 // http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html	//
 //////////////////////////////////////////////////////////////////
 
+float NoPCF(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, float depthCompare)
+{
+	return tex2D(shadowMap, texCoord.xy).r > depthCompare;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Poisson Disk kernel																										//
 // https://electronicmeteor.wordpress.com/2013/02/05/poisson-disc-shadow-sampling-ridiculously-easy-and-good-looking-too/	//

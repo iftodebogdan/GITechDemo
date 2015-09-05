@@ -28,7 +28,7 @@ namespace LibRendererDll
 	public:
 		void	Enable() { RenderTarget::Enable(); }
 		void	Disable() { RenderTarget::Disable(); }
-		void	CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) {}
+		void	CopyColorBuffer(const unsigned int /*colorBufferIdx*/, Texture* /*texture*/) {}
 
 		void	Bind() {}
 		void	Unbind() {}

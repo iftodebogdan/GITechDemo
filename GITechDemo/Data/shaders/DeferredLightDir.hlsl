@@ -33,7 +33,6 @@ const samplerCUBE texIrradianceMap;	// Irradiance map for Cook-Torrance BRDF
 const samplerCUBE texEnvMap;		// Environment map for Cook-Torrance BRDF
 
 const sampler2D	texShadowMap;			// Cascaded shadow maps
-const float		fShadowDepthBias;		// Depth bias for shadowing
 const float2	f2OneOverShadowMapSize;	// 1 / shadow map width/height
 
 const float	fDiffuseFactor;		// Scale value for diffuse light
@@ -51,8 +50,8 @@ const float4x4	f44ScreenToLightViewMat;	// Composite matrix for transforming scr
 #define	NUM_CASCADES (4)		// Number of supported cascades
 const bool		bDebugCascades;	// Visual cascade debug option
 const float2	f2CascadeBoundsMin[NUM_CASCADES];	// Light-view space AABBs corresponding
-const float2	f2CascadeBoundsMax[NUM_CASCADES];	// To each shadow cascade
-const float4x4	f44CascadeProjMat[NUM_CASCADES];	// Light space projection matrix
+const float2	f2CascadeBoundsMax[NUM_CASCADES];	// to each shadow cascade
+const float4x4	f44CascadeProjMat[NUM_CASCADES];	// light space projection matrix
 const float		fCascadeBlendSize;	// Size of the blend band for blurring between cascade boundaries
 
 // For performance reasons, we set these variables
@@ -74,17 +73,6 @@ static const float fCascadeNormSize = rcp(nCascadesPerRow);				// Normalized siz
 	#define PCF_SAMPLE3	PCF2x2Poisson
 #else
 	#define PCF_SAMPLE	PCF4x4PoissonRotatedx4
-#endif
-
-// Conditional shadow depth bias modifier
-// NB: Similar to the above, DEPTH_BIAS_MODIFIER0 corresponds to most detailed cascade (highest resolution),
-// whereas DEPTH_BIAS_MODIFIER3 corresponds to the least detailed cascade (lowest resolution)
-#define USE_CONDITIONAL_DEPTH_BIAS (1)
-#if USE_CONDITIONAL_DEPTH_BIAS
-	#define DEPTH_BIAS_MODIFIER0 (1)
-	#define DEPTH_BIAS_MODIFIER1 (1)
-	#define DEPTH_BIAS_MODIFIER2 (2)
-	#define DEPTH_BIAS_MODIFIER3 (4)
 #endif
 
 // BRDF model
@@ -164,76 +152,31 @@ void psmain(VSOut input, out PSOut output)
 		fCascadeNormSize +
 		float2(fCascadeNormSize * fmod(nValidCascade, nCascadesPerRow), fCascadeNormSize * floor(nValidCascade / nCascadesPerRow));
 
-	// Conditional PCF shadow sampling and conditional shadow depth bias 2-in-1
-#if USE_CONDITIONAL_PCF || USE_CONDITIONAL_DEPTH_BIAS
-
-	float fPercentLit = 1.f;
-	float fShadowDepthBiasFinal = fShadowDepthBias;
-
+	// Conditional PCF shadow sampling
+#if USE_CONDITIONAL_PCF
+	float fPercentLit;
 	switch (nValidCascade)
 	{
 	case 0:
-
-	#if USE_CONDITIONAL_DEPTH_BIAS
-		fShadowDepthBiasFinal *= DEPTH_BIAS_MODIFIER0;
-	#endif
-
-	#if USE_CONDITIONAL_PCF
-		fPercentLit = PCF_SAMPLE0(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	#endif
-
+		fPercentLit = PCF_SAMPLE0(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z);
 		break;
-
 	case 1:
-
-	#if USE_CONDITIONAL_DEPTH_BIAS
-		fShadowDepthBiasFinal *= DEPTH_BIAS_MODIFIER1;
-	#endif
-
-	#if USE_CONDITIONAL_PCF
-		fPercentLit = PCF_SAMPLE1(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	#endif
-
+		fPercentLit = PCF_SAMPLE1(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z);
 		break;
-
 	case 2:
-
-	#if USE_CONDITIONAL_DEPTH_BIAS
-		fShadowDepthBiasFinal *= DEPTH_BIAS_MODIFIER2;
-	#endif
-
-	#if USE_CONDITIONAL_PCF
-		fPercentLit = PCF_SAMPLE2(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	#endif
-
+		fPercentLit = PCF_SAMPLE2(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z);
 		break;
-
 	case 3:
-
-	#if USE_CONDITIONAL_DEPTH_BIAS
-		fShadowDepthBiasFinal *= DEPTH_BIAS_MODIFIER3;
-	#endif
-
-	#if USE_CONDITIONAL_PCF
-		fPercentLit = PCF_SAMPLE3(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	#endif
-
+		fPercentLit = PCF_SAMPLE3(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z);
 		break;
 	}
-
-	#if !USE_CONDITIONAL_PCF
-	fPercentLit = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	#endif
-
 #else
-
-	float fShadowDepthBiasFinal = fShadowDepthBias;
-	float fPercentLit = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z - fShadowDepthBiasFinal);
-	//float fPercentLit = tex2D(texShadowMap, f3CascadeTexCoord.xy).r > f3CascadeTexCoord.z - fShadowDepthBiasFinal;
-
+	float fPercentLit = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3CascadeTexCoord.xy, f3CascadeTexCoord.z);
+	//float fPercentLit = tex2D(texShadowMap, f3CascadeTexCoord.xy).r > f3CascadeTexCoord.z;
 #endif
 	
 	// If required, blend between cascade seams
+	float fBlendAmount = 0.f;
 	if (fCascadeBlendSize != 0.f)
 	{
 		float3 f3LQCascadeTexCoord = mul(f44CascadeProjMat[nValidCascade + 1], f4LightViewPos).xyz;
@@ -285,7 +228,7 @@ void psmain(VSOut input, out PSOut output)
 				(f2CascadeBoundsMin[nValidCascade] + fScaledBlendSize.xx) - f4LightViewPos.xy,
 				f4LightViewPos.xy - (f2CascadeBoundsMax[nValidCascade] - fScaledBlendSize.xx)
 				);
-			const float fBlendAmount = 
+			fBlendAmount = 
 				max(
 					max(
 						f4BlendAmount.x,
@@ -313,18 +256,18 @@ void psmain(VSOut input, out PSOut output)
 				switch (nValidCascade)
 				{
 				case 0:
-					fPercentLitLQ = PCF_SAMPLE1(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBiasFinal);
+					fPercentLitLQ = PCF_SAMPLE1(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z);
 					break;
 				case 1:
-					fPercentLitLQ = PCF_SAMPLE2(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBiasFinal);
+					fPercentLitLQ = PCF_SAMPLE2(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z);
 					break;
 				case 2:
-					fPercentLitLQ = PCF_SAMPLE3(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBiasFinal);
+					fPercentLitLQ = PCF_SAMPLE3(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z);
 					break;
 				}
 			#else
-				const float fPercentLitLQ = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z - fShadowDepthBiasFinal);
-				//float fPercentLitLQ = tex2D(texShadowMap, f3LQCascadeTexCoord.xy).r > f3LQCascadeTexCoord.z - fShadowDepthBiasFinal;
+				const float fPercentLitLQ = PCF_SAMPLE(texShadowMap, f2OneOverShadowMapSize, f3LQCascadeTexCoord.xy, f3LQCascadeTexCoord.z);
+				//float fPercentLitLQ = tex2D(texShadowMap, f3LQCascadeTexCoord.xy).r > f3LQCascadeTexCoord.z;
 			#endif
 
 				if (fPercentLitLQ > 0.f && fPercentLitLQ < 1.f) // Only blend at shadow edges (i.e. the penumbra region)
@@ -354,7 +297,16 @@ void psmain(VSOut input, out PSOut output)
 	
 	// CSM debug
 	if (bDebugCascades)
-		output.colorOut += float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f) * 0.5f;
+	{
+		const float fBrightness = dot(output.colorOut.rgb, LUMINANCE_VECTOR);
+		output.colorOut += float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f) * fBrightness * 0.5f;
+		if (fBlendAmount > 0.f)
+		{
+			output.colorOut = float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f);
+			output.colorOut += float4((nValidCascade + 1) % 3 == 0, (nValidCascade + 1) % 3 == 1, (nValidCascade + 1) % 3 == 2, 0.f);
+			output.colorOut *= fBrightness * fBlendAmount;
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -430,7 +382,7 @@ float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, 
 	const float3 f3DiffuseColor = f3DiffuseAlbedo / PI * (1.f - f3Fresnel);
 	const float3 f3SpecularColor = fDistrib * f3Fresnel * fVis;
 
-	const float3 f3EnvAlbedo = texCUBElod(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
+	const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
 	const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness2, f3Normal, -f3ViewVec);
 
 	const float3 f3Irradiance = texCUBE(texIrradianceMap, mul((float3x3)f44InvViewMat, f3Normal)).rgb;
@@ -486,7 +438,7 @@ float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialT
 	const float3 f3DiffuseColor = f3DiffuseAlbedo / PI * (1.f - f3Fresnel);
 	const float3 f3SpecularColor = fDistrib * fGeom * f3Fresnel * rcp(4.f * fNdotL * fNdotV);
 
-	const float3 f3EnvAlbedo = texCUBElod(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
+	const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
 	const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness2, f3Normal, -f3ViewVec);
 
 	const float3 f3Irradiance = texCUBE(texIrradianceMap, mul((float3x3)f44InvViewMat, f3Normal)).rgb;

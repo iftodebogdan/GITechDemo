@@ -93,7 +93,13 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	{
 		const float fCurrLuma = tex2D(texLumaCalcInput, float2(0.5f, 0.5f)).r;
 		const float fTargetLuma = tex2D(texLumaTarget, float2(0.5f, 0.5f)).r;
-		const float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (rcp(fLumaAdaptSpeed) * fFrameTime);
+		float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (rcp(clamp(fLumaAdaptSpeed, 0.01f, 3.402823466e+38f)) * fFrameTime);
+
+		if (fCurrLuma < fTargetLuma)
+			fNewLuma = clamp(fNewLuma, fCurrLuma, fTargetLuma);
+		else
+			fNewLuma = clamp(fNewLuma, fTargetLuma, fCurrLuma);
+
 		f4Color = float4(fNewLuma, fNewLuma, fNewLuma, 1.f);
 	}
 }

@@ -1,19 +1,20 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "HDRToneMappingPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
-	bool HDR_TONEMAPPING_ENABLED = true;
+	bool HDR_TONE_MAPPING_ENABLED = true;
 }
 
 HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* const parentPass)
@@ -54,7 +55,7 @@ void HDRToneMappingPass::OnUpdate(const float fDeltaTime)
 // Measure average luminance level of scene
 void HDRToneMappingPass::LuminanceMeasurementPass()
 {
-	if (!HDR_TONEMAPPING_ENABLED)
+	if (!HDR_TONE_MAPPING_ENABLED)
 		return;
 
 	Renderer* RenderContext = Renderer::GetInstance();

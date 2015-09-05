@@ -9,7 +9,7 @@ GITechDemoApp::RenderPass GITechDemoApp::RenderScheme::RootPass("Root Pass", nul
 
 #define ROOT_PASS RenderScheme::GetRootPass()
 
-#define IMPLEMENT_CHILD_PASS(Object, Class, Name, Parent) namespace GITechDemoApp { static Class Object ( Name, & Parent ); }
+#define IMPLEMENT_CHILD_PASS(Object, Class, Name, Parent) namespace GITechDemoApp { Class Object ( Name, & Parent ); }
 ///////////////////////////////////////////////////////////
 
 //////////////////////////////
@@ -22,7 +22,7 @@ IMPLEMENT_CHILD_PASS(SHADOW_MAP_DIRECTIONAL_LIGHT_PASS, ShadowMapDirectionalLigh
 IMPLEMENT_CHILD_PASS(RSM_DIRECTIONAL_LIGHT_PASS, RSMDirectionalLightPass, "RSM Directional Light Pass", ROOT_PASS)
 
 #include "GBufferPass.h"
-IMPLEMENT_CHILD_PASS(GBUFFER_PASS, GBufferPass, "GBuffer Pass", ROOT_PASS)
+IMPLEMENT_CHILD_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer Pass", ROOT_PASS)
 
 #include "LightingPass.h"
 IMPLEMENT_CHILD_PASS(LIGHTING_PASS, LightingPass, "Lighting Pass", ROOT_PASS)
@@ -56,3 +56,6 @@ IMPLEMENT_CHILD_PASS(HDR_TONE_MAPPING_PASS, HDRToneMappingPass, "HDR Tone Mappin
 
 #include "FXAAPass.h"
 IMPLEMENT_CHILD_PASS(FXAA_PASS, FXAAPass, "FXAA Pass", POST_PROCESSING_PASS)
+
+#include "HUDPass.h"
+IMPLEMENT_CHILD_PASS(HUD_PASS, HUDPass, "HUD", ROOT_PASS)

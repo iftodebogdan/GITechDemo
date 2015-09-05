@@ -120,7 +120,6 @@ const bool	bManualDof;		// true - artist friendly verison, false - physically ba
 // General options
 const bool		bDebugFocus;	// Show debug auto focus point and focal range
 const bool		bAutofocus;		// Use auto focus? (overrides 'fFocalDepth')
-const float2	f2FocusPoint;	// Auto focus point on screen ((0.f, 0.f) - lower-left corner, (1.f, 1.f) - upper-right corner)
 const float		fMaxBlur;		// Blurriness factor (0.f = no blur, 1.f default)
 
 // Brightness filter (directly affects bokeh abundance and prominence)
@@ -205,7 +204,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float fFocalPoint;
 
 	if (bAutofocus)
-		fFocalPoint = ReconstructDepth(tex2D(texTargetFocus, f2FocusPoint).r);
+		fFocalPoint = ReconstructDepth(tex2D(texTargetFocus, float2(0.5f, 0.5f)).r);
 	else
 		fFocalPoint = fFocalDepth;
 

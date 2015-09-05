@@ -1,20 +1,21 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "FXAAPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
 	bool FXAA_ENABLED = true;
-	extern bool HDR_TONEMAPPING_ENABLED;
+	extern bool HDR_TONE_MAPPING_ENABLED;
 }
 
 FXAAPass::FXAAPass(const char* const passName, RenderPass* const parentPass)
@@ -37,7 +38,7 @@ void FXAAPass::OnUpdate(const float fDeltaTime)
 	ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 	ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 
-	const LibRendererDll::RenderTarget* const srcRT = HDR_TONEMAPPING_ENABLED ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
+	const LibRendererDll::RenderTarget* const srcRT = HDR_TONE_MAPPING_ENABLED ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
 	f2HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
 	f2HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
 	texSource = srcRT->GetColorBuffer(0);

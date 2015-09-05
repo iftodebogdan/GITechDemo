@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "Texture.h"
-#include "RenderState.h"
+#include <Renderer.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderState.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "BloomPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
@@ -99,8 +100,10 @@ void BloomPass::BloomBlur()
 
 	for (unsigned int i = 0; i < BLOOM_BLUR_KERNEL_COUNT; i++)
 	{
+#if ENABLE_PROFILE_MARKERS
 		char label[10];
 		sprintf_s(label, "Kernel %d", BLOOM_BLUR_KERNEL[i]);
+#endif
 		PUSH_PROFILE_MARKER(label);
 
 		HDRBloomBuffer[(i + 1) % 2]->Enable();

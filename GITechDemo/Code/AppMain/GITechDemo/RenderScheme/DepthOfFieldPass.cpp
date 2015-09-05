@@ -1,21 +1,22 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "DepthOfFieldPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 #include "GITechDemo.h"
 
 namespace GITechDemoApp
 {
-	bool DOF_ENABLED = true;
+	bool DOF_ENABLED = false;
 	bool DOF_USE_QUARTER_RESOLUTION_BUFFER = false;
 	float DOF_AUTOFOCUS_TIME = 0.25f;
 }

@@ -33,12 +33,12 @@ const float fLinearWhite;		// = 11.2;
 
 float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 {
-	return f3Color * rcp(1 + fAvgLuma);
+	return f3Color * rcp(1.f + fAvgLuma);
 }
 
 float3 DuikerOptimizedTonemap(const float3 f3Color)
 {
-	float3 x = max(0, f3Color - 0.004);
+	float3 x = max(0, f3Color - 0.004f);
 	return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
 }
 

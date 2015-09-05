@@ -89,7 +89,7 @@ const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float a
 			if (SUCCEEDED(hr1))
 				m_eCurrentMinFilter[slot] = D3DTEXF_ANISOTROPIC;
 		}
-		else if (aniso <= 1.f && m_eCurrentMinFilter[slot] != MinMagFilterDX9[GetFilter(slot)])
+		else if (aniso <= 1.f && m_eCurrentMinFilter[slot] != (_D3DTEXTUREFILTERTYPE)MinMagFilterDX9[GetFilter(slot)])
 		{
 			hr1 = device->SetSamplerState(slot, D3DSAMP_MINFILTER, MinMagFilterDX9[GetFilter(slot)]);
 			if (SUCCEEDED(hr1))

@@ -97,17 +97,23 @@ void ResourceManager::BindAll()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
-		m_arrVertexFormat[i]->Bind();
+		if (m_arrVertexFormat[i])
+			m_arrVertexFormat[i]->Bind();
 	for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
-		m_arrIndexBuffer[i]->Bind();
+		if (m_arrIndexBuffer[i])
+			m_arrIndexBuffer[i]->Bind();
 	for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
-		m_arrVertexBuffer[i]->Bind();
+		if (m_arrVertexBuffer[i])
+			m_arrVertexBuffer[i]->Bind();
 	//for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-	//	m_arrShaderProgram[i]->Bind();
+	//	if (m_arrShaderProgram[i])
+	//		m_arrShaderProgram[i]->Bind();
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-		m_arrTexture[i]->Bind();
+		if (m_arrTexture[i])
+			m_arrTexture[i]->Bind();
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
-		m_arrRenderTarget[i]->Bind();
+		if (m_arrRenderTarget[i])
+			m_arrRenderTarget[i]->Bind();
 
 	POP_PROFILE_MARKER();
 }
@@ -117,17 +123,23 @@ void ResourceManager::UnbindAll()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
-		m_arrVertexFormat[i]->Unbind();
+		if (m_arrVertexFormat[i])
+			m_arrVertexFormat[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
-		m_arrIndexBuffer[i]->Unbind();
+		if (m_arrIndexBuffer[i])
+			m_arrIndexBuffer[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
-		m_arrVertexBuffer[i]->Unbind();
+		if (m_arrVertexBuffer[i])
+			m_arrVertexBuffer[i]->Unbind();
 	//for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-	//	m_arrShaderProgram[i]->Unbind();
+	//	if (m_arrShaderProgram[i])
+	//		m_arrShaderProgram[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-		m_arrTexture[i]->Unbind();
+		if (m_arrTexture[i])
+			m_arrTexture[i]->Unbind();
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
-		m_arrRenderTarget[i]->Unbind();
+		if (m_arrRenderTarget[i])
+			m_arrRenderTarget[i]->Unbind();
 
 	POP_PROFILE_MARKER();
 }
@@ -166,7 +178,7 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	unsigned int texIdx = -1;
+	unsigned int texIdx = ~0u;
 	std::ifstream texFile;
 	texFile.open(pathToFile, std::ios::binary);
 	if (texFile.is_open())
@@ -188,7 +200,7 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 
 	std::ifstream modelFile;
 	modelFile.open(pathToFile, std::ios::binary);
-	unsigned int modelIdx = -1;
+	unsigned int modelIdx = ~0u;
 	if (modelFile.is_open())
 	{
 		m_arrModel.push_back(new Model);
@@ -206,29 +218,29 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
 {
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-		if (m_arrTexture[i]->m_szSourceFile == pathToFile)
+		if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile == pathToFile)
 			return i;
 
 	if (!strict)
 		for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-			if (m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
+			if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
 				return i;
 
-	return -1;
+	return ~0u;
 }
 
 const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
-		if (m_arrModel[i]->szSourceFile == pathToFile)
+		if (m_arrModel[i] && m_arrModel[i]->szSourceFile == pathToFile)
 			return i;
 
 	if(!strict)
 		for (unsigned int i = 0; i < m_arrModel.size(); i++)
-			if (m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
+			if (m_arrModel[i] && m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
 				return i;
 
-	return -1;
+	return ~0u;
 }
 
 VertexFormat* const ResourceManager::GetVertexFormat(const unsigned int idx) const

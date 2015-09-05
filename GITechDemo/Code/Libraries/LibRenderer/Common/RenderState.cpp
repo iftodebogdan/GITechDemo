@@ -48,7 +48,7 @@ void RenderState::Reset()
 	SetZFunc(CMP_LESSEQUAL);
 	SetZWriteEnabled(true);
 
-	SetSlopeScaleDepthBias(0.f);
+	SetSlopeScaledDepthBias(0.f);
 	SetDepthBias(0.f);
 
 	SetStencilEnabled(false);
@@ -144,9 +144,9 @@ const bool RenderState::SetColorWriteEnabled(const bool red, const bool green, c
 	return true;
 }
 
-const bool RenderState::SetSlopeScaleDepthBias(const float scale)
+const bool RenderState::SetSlopeScaledDepthBias(const float scale)
 {
-	m_fSlopeScaleDepthBias = scale;
+	m_fSlopeScaledDepthBias = scale;
 	return true;
 }
 
@@ -305,9 +305,9 @@ const bool RenderState::GetColorWriteAlphaEnabled() const
 	return m_bColorWriteAlpha;
 }
 
-const float RenderState::GetSlopeScaleDepthBias() const
+const float RenderState::GetSlopeScaledDepthBias() const
 {
-	return m_fSlopeScaleDepthBias;
+	return m_fSlopeScaledDepthBias;
 }
 
 const float RenderState::GetDepthBias() const

@@ -98,8 +98,8 @@ Texture::Texture(
 	, m_eTexType(texType)
 	, m_nMipCount(mipCount)
 	, m_bIsLocked(false)
-	, m_nLockedMip(-1)
-	, m_nLockedCubeFace(-1)
+	, m_nLockedMip(~0u)
+	, m_nLockedCubeFace(~0u)
 	, m_bIsDynamicRT(false)
 	, m_fWidthRatio(1.f)
 	, m_fHeightRatio(1.f)
@@ -520,7 +520,7 @@ const bool Texture::IsMipmapable() const
 	return ms_bIsMipmapable[m_eTexFormat];
 }
 
-const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
+const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking /*lockMode*/)
 {
 	assert(!m_bIsLocked);
 	m_bIsLocked = true;
@@ -529,7 +529,7 @@ const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking loc
 	return true;
 }
 
-const bool Texture::Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode)
+const bool Texture::Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking /*lockMode*/)
 {
 	assert(!m_bIsLocked);
 	m_bIsLocked = true;
@@ -542,8 +542,8 @@ void Texture::Unlock()
 {
 	assert(m_bIsLocked);
 	m_bIsLocked = false;
-	m_nLockedMip = -1;
-	m_nLockedCubeFace = -1;
+	m_nLockedMip = ~0u;
+	m_nLockedCubeFace = ~0u;
 }
 
 const bool Texture::IsLocked() const

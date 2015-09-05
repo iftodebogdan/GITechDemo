@@ -492,7 +492,7 @@ Model::Mesh::~Mesh()
 			resMan->ReleaseVertexFormat(nVfIdx);
 			resMan->ReleaseIndexBuffer(nIbIdx);
 			resMan->ReleaseVertexBuffer(nVbIdx);
-			nVfIdx = nIbIdx = nVbIdx = -1;
+			nVfIdx = nIbIdx = nVbIdx = ~0u;
 			pVertexFormat = nullptr;
 			pIndexBuffer = nullptr;
 			pVertexBuffer = nullptr;

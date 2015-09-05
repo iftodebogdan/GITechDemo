@@ -36,41 +36,35 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -98,45 +92,45 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;</LibraryPath>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -217,11 +211,11 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
     <CustomBuildStep />
@@ -262,11 +256,11 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
     <PostBuildEvent />
@@ -346,57 +340,57 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="SDK\DX9\Include\d3dx9tex.h" />
     <ClInclude Include="SDK\DX9\Include\d3dx9xof.h" />
     <ClInclude Include="Common\VertexFormat.h" />
-    <ClInclude Include="SDK\gmtl\AABox.h" />
-    <ClInclude Include="SDK\gmtl\AABoxOps.h" />
-    <ClInclude Include="SDK\gmtl\AxisAngle.h" />
-    <ClInclude Include="SDK\gmtl\AxisAngleOps.h" />
-    <ClInclude Include="SDK\gmtl\Comparitors.h" />
-    <ClInclude Include="SDK\gmtl\Config.h" />
-    <ClInclude Include="SDK\gmtl\Containment.h" />
-    <ClInclude Include="SDK\gmtl\Coord.h" />
-    <ClInclude Include="SDK\gmtl\CoordOps.h" />
-    <ClInclude Include="SDK\gmtl\Defines.h" />
-    <ClInclude Include="SDK\gmtl\EulerAngle.h" />
-    <ClInclude Include="SDK\gmtl\EulerAngleOps.h" />
-    <ClInclude Include="SDK\gmtl\External\OpenSGConvert.h" />
-    <ClInclude Include="SDK\gmtl\Fit\GaussPointsFit.h" />
-    <ClInclude Include="SDK\gmtl\Frustum.h" />
-    <ClInclude Include="SDK\gmtl\FrustumOps.h" />
-    <ClInclude Include="SDK\gmtl\Generate.h" />
-    <ClInclude Include="SDK\gmtl\gmtl.h" />
-    <ClInclude Include="SDK\gmtl\Helpers.h" />
-    <ClInclude Include="SDK\gmtl\Intersection.h" />
-    <ClInclude Include="SDK\gmtl\LineSeg.h" />
-    <ClInclude Include="SDK\gmtl\LineSegOps.h" />
-    <ClInclude Include="SDK\gmtl\Math.h" />
-    <ClInclude Include="SDK\gmtl\Matrix.h" />
-    <ClInclude Include="SDK\gmtl\MatrixOps.h" />
-    <ClInclude Include="SDK\gmtl\Misc\MatrixConvert.h" />
-    <ClInclude Include="SDK\gmtl\Numerics\Eigen.h" />
-    <ClInclude Include="SDK\gmtl\OOBox.h" />
-    <ClInclude Include="SDK\gmtl\Output.h" />
-    <ClInclude Include="SDK\gmtl\ParametricCurve.h" />
-    <ClInclude Include="SDK\gmtl\Plane.h" />
-    <ClInclude Include="SDK\gmtl\PlaneOps.h" />
-    <ClInclude Include="SDK\gmtl\Point.h" />
-    <ClInclude Include="SDK\gmtl\Quat.h" />
-    <ClInclude Include="SDK\gmtl\QuatOps.h" />
-    <ClInclude Include="SDK\gmtl\Ray.h" />
-    <ClInclude Include="SDK\gmtl\RayOps.h" />
-    <ClInclude Include="SDK\gmtl\Sphere.h" />
-    <ClInclude Include="SDK\gmtl\SphereOps.h" />
-    <ClInclude Include="SDK\gmtl\Tri.h" />
-    <ClInclude Include="SDK\gmtl\TriOps.h" />
-    <ClInclude Include="SDK\gmtl\Util\Assert.h" />
-    <ClInclude Include="SDK\gmtl\Util\Meta.h" />
-    <ClInclude Include="SDK\gmtl\Util\StaticAssert.h" />
-    <ClInclude Include="SDK\gmtl\Vec.h" />
-    <ClInclude Include="SDK\gmtl\VecBase.h" />
-    <ClInclude Include="SDK\gmtl\VecExprMeta.h" />
-    <ClInclude Include="SDK\gmtl\VecOps.h" />
-    <ClInclude Include="SDK\gmtl\VecOpsMeta.h" />
-    <ClInclude Include="SDK\gmtl\Version.h" />
-    <ClInclude Include="SDK\gmtl\Xforms.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\AABox.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\AABoxOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\AxisAngle.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\AxisAngleOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Comparitors.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Config.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Containment.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Coord.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\CoordOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Defines.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\EulerAngle.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\EulerAngleOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\External\OpenSGConvert.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Fit\GaussPointsFit.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Frustum.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\FrustumOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Generate.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\gmtl.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Helpers.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Intersection.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\LineSeg.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\LineSegOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Math.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Matrix.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\MatrixOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Misc\MatrixConvert.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Numerics\Eigen.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\OOBox.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Output.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\ParametricCurve.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Plane.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\PlaneOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Point.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Quat.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\QuatOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Ray.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\RayOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Sphere.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\SphereOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Tri.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\TriOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\Assert.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\Meta.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\StaticAssert.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Vec.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecBase.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecExprMeta.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecOps.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecOpsMeta.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Version.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\Xforms.h" />
     <ClInclude Include="SDK\vld\include\vld.h" />
     <ClInclude Include="SDK\vld\include\vld_def.h" />
     <ClInclude Include="stdafx.h" />
@@ -404,6 +398,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="DX9\VertexBufferDX9.h" />
     <ClInclude Include="Utility\ColorUtility.h" />
     <ClInclude Include="Utility\HalfFloat.h" />
+    <ClInclude Include="Utility\Mutex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\ResourceSerialization.cpp" />

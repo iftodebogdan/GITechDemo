@@ -24,9 +24,34 @@
 #include "SamplerStateNULL.h"
 using namespace LibRendererDll;
 
-void RendererNULL::Initialize(void* hWnd)
+void RendererNULL::Initialize(void* /*hWnd*/)
 {
 	m_pResourceManager = new ResourceManagerNULL();
 	m_pRenderState = new RenderStateNULL();
 	m_pSamplerState = new SamplerStateNULL();
+}
+
+void RendererNULL::SetBackBufferSize(const Vec2i size, const Vec2i offset)
+{
+	Renderer::SetBackBufferSize(size, offset);
+}
+
+void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+{
+	gmtl::setPerspective(matProj, gmtl::Math::rad2Deg(fovYRad), aspectRatio, zNear, zFar);
+}
+
+void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
+{
+	gmtl::setOrtho(matProj, left, top, right, bottom, zNear, zFar);
+}
+
+void RendererNULL::PushProfileMarker(const char* const label)
+{
+	Renderer::PushProfileMarker(label);
+}
+
+void RendererNULL::PopProfileMarker()
+{
+	Renderer::PopProfileMarker();
 }

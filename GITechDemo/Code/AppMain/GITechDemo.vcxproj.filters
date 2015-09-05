@@ -16,11 +16,11 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{457debdf-a71c-4c9b-8631-455f8c737ef7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Build">
+      <UniqueIdentifier>{b444acb2-7ea9-4b03-881e-a4de0a0df295}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Framework\Windows\Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\Windows\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -40,9 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GITechDemo\Utilities\Poisson.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GITechDemo\Resources\RenderResourceTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\GBufferPass.h">
@@ -90,17 +87,32 @@
     <ClInclude Include="GITechDemo\RenderScheme\AmbientOcclusionPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GITechDemo\Resources\RenderResources.h">
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h">
+    <ClInclude Include="GITechDemo\RenderScheme\HUDPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\FrameworkWin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\RenderResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\RenderResourcesDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\ArtistParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Framework\Windows\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Windows\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -114,9 +126,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\Utilities\Poisson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GITechDemo\Resources\RenderResourceTemplate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\GBufferPass.cpp">
@@ -164,10 +173,28 @@
     <ClCompile Include="GITechDemo\RenderScheme\AmbientOcclusionPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GITechDemo\Resources\RenderResources.cpp">
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp">
+    <ClCompile Include="GITechDemo\RenderScheme\HUDPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Windows\FrameworkWin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\RenderResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\RenderResourcesDef.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\ArtistParameter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\ArtistParametersDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -180,53 +207,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Data\shaders\Bloom.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\BokehDoF.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\ColorCopy.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\DeferredLightDir.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\DepthCopy.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\DepthPass.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\Downsample.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\FXAA.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\GBufferGeneration.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\HDRToneMapping.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\LumaCalc.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\RSMApply.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\RSMCapture.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\Skybox.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\shaders\SSAO.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\Data\shaders\Common.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -236,11 +216,26 @@
     <None Include="..\..\Data\shaders\RSMCommon.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\Data\shaders\RSMUpscale.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\Data\shaders\PostProcessingUtils.hlsl">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\DataSrc\compile_utility_textures.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\DataSrc\compile_sponza_model.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="GITechDemo\Framework.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GITechDemo\small.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GITechDemo\UtahTeapot.ico">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -250,5 +245,58 @@
     <ResourceCompile Include="Framework\Windows\Framework.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Data\shaders\Bloom.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\BokehDoF.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\ColorCopy.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DeferredLightDir.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DepthCopy.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DepthPass.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\Downsample.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\FXAA.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\GBufferGeneration.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\HDRToneMapping.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\HUDText.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LumaCalc.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMApply.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMCapture.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMUpscale.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\Skybox.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\SSAO.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

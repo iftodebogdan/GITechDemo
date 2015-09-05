@@ -234,7 +234,7 @@ void TextureDX9::Bind()
 	else
 		pool = D3DPOOL_DEFAULT;
 
-	HRESULT hr;
+	HRESULT hr = E_FAIL;
 	DWORD usageFlags;
 	unsigned int mipCount;
 	switch (GetTextureType())

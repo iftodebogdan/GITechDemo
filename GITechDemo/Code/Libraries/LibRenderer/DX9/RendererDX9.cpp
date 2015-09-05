@@ -398,7 +398,7 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 		depthStencil->Release();
 	}
 
-	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_RGBA((DWORD)rgba[0], (DWORD)rgba[1], (DWORD)rgba[2], (DWORD)rgba[3]), 1.0f, 0);
+	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_RGBA((DWORD)rgba[0], (DWORD)rgba[1], (DWORD)rgba[2], (DWORD)rgba[3]), z, stencil);
 	assert(SUCCEEDED(hr));
 
 	POP_PROFILE_MARKER();
@@ -408,24 +408,16 @@ void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, flo
 {
 	D3DXMATRIXA16 mat;
 	D3DXMatrixPerspectiveFovLH(&mat, fovYRad, aspectRatio, zNear, zFar);
-
-	// Transpose our matrix, making it column-major in order to adhere to the GMTL standard
-	matProj(0, 0) = mat._11; matProj(0, 1) = mat._21; matProj(0, 2) = mat._31; matProj(0, 3) = mat._41;
-	matProj(1, 0) = mat._12; matProj(1, 1) = mat._22; matProj(1, 2) = mat._32; matProj(1, 3) = mat._42;
-	matProj(2, 0) = mat._13; matProj(2, 1) = mat._23; matProj(2, 2) = mat._33; matProj(2, 3) = mat._43;
-	matProj(3, 0) = mat._14; matProj(3, 1) = mat._24; matProj(3, 2) = mat._34; matProj(3, 3) = mat._44;
+	assert(sizeof(mat.m) == sizeof(matProj.mData));
+	matProj.set(mat);
 }
 
 void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
 {
 	D3DXMATRIXA16 mat;
 	D3DXMatrixOrthoOffCenterLH(&mat, left, right, bottom, top, zNear, zFar);
-
-	// Transpose our matrix, making it column-major in order to adhere to the GMTL standard
-	matProj(0, 0) = mat._11; matProj(0, 1) = mat._21; matProj(0, 2) = mat._31; matProj(0, 3) = mat._41;
-	matProj(1, 0) = mat._12; matProj(1, 1) = mat._22; matProj(1, 2) = mat._32; matProj(1, 3) = mat._42;
-	matProj(2, 0) = mat._13; matProj(2, 1) = mat._23; matProj(2, 2) = mat._33; matProj(2, 3) = mat._43;
-	matProj(3, 0) = mat._14; matProj(3, 1) = mat._24; matProj(3, 2) = mat._34; matProj(3, 3) = mat._44;
+	assert(sizeof(mat.m) == sizeof(matProj.mData));
+	matProj.set(mat);
 }
 
 void RendererDX9::PushProfileMarker(const char* const label)

@@ -1,8 +1,9 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "Poisson.h"
@@ -10,24 +11,24 @@ using namespace LibRendererDll;
 #include "DirectionalLightPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
 	bool DIRECTIONAL_LIGHT_ENABLED = true;
 
 	extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
-	extern const unsigned int PCF_KERNEL_SIZE;
+	extern const unsigned int PCF_MAX_SAMPLE_COUNT;
 }
 
 DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
 {
-	f2PoissonDisk = new Vec2f[PCF_KERNEL_SIZE];
+	f2PoissonDisk = new Vec2f[PCF_MAX_SAMPLE_COUNT];
 
 	// Generate Poisson-disk sampling pattern
 	std::vector<sPoint> poisson;
-	float minDist = sqrt((float)PCF_KERNEL_SIZE) / (float)PCF_KERNEL_SIZE * 0.8f;
+	float minDist = sqrt((float)PCF_MAX_SAMPLE_COUNT) / (float)PCF_MAX_SAMPLE_COUNT * 0.8f;
 	float oneOverMinDist = 1.f / minDist;
 	const float sqrt2 = sqrt(2.f);
 	do
@@ -36,12 +37,12 @@ DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPas
 			GeneratePoissonPoints(
 				minDist,
 				30,
-				PCF_KERNEL_SIZE
+				PCF_MAX_SAMPLE_COUNT
 				);
-	} while (poisson.size() != PCF_KERNEL_SIZE);
+	} while (poisson.size() != PCF_MAX_SAMPLE_COUNT);
 
 	// Normalize the kernel
-	for (unsigned int i = 0; i < PCF_KERNEL_SIZE; i++)
+	for (unsigned int i = 0; i < PCF_MAX_SAMPLE_COUNT; i++)
 	{
 		f2PoissonDisk[i][0] = poisson[i].x * oneOverMinDist * sqrt2;
 		f2PoissonDisk[i][1] = poisson[i].y * oneOverMinDist * sqrt2;
@@ -75,6 +76,9 @@ void DirectionalLightPass::OnUpdate(const float fDeltaTime)
 
 void DirectionalLightPass::OnDraw()
 {
+	if (!DIRECTIONAL_LIGHT_ENABLED)
+		return;
+
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;

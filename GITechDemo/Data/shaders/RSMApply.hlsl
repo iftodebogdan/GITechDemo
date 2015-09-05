@@ -20,7 +20,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texDepthBuffer;	// GBuffer depth values
+const sampler2D	texDepthBuffer;	// G-Buffer depth values
 
 struct PSOut
 {

@@ -3,6 +3,11 @@
 
 #include "RenderPass.h"
 
+namespace LibRendererDll
+{
+	class VertexBuffer;
+}
+
 namespace GITechDemoApp
 {
 	class SkyPass : public RenderPass
@@ -11,6 +16,9 @@ namespace GITechDemoApp
 
 	private:
 		void CreateSkyBoxVB();
+
+		// A cube used to draw the sky
+		LibRendererDll::VertexBuffer*	m_pSkyBoxCube;
 	};
 }
 

@@ -2,18 +2,19 @@
 
 #include "PerlinNoise.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
-#include "VertexBuffer.h"
-#include "VertexFormat.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <VertexBuffer.h>
+#include <VertexFormat.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "ShadowMapDirectionalLightPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
@@ -25,26 +26,29 @@ namespace GITechDemoApp
 	float CASCADE_SPLIT_FACTOR = 0.7f;
 	float CASCADE_MAX_VIEW_DEPTH = 3000.f;
 
-	extern const unsigned int PCF_KERNEL_SIZE = 16;
+	extern const unsigned int PCF_MAX_SAMPLE_COUNT = 16;
 	const unsigned int NUM_CASCADES = 4;
 
 	extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
+
+	float DEPTH_BIAS[NUM_CASCADES] = { 0.0025f, 0.0025f, 0.003f, 0.003f };
+	float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES] = { 4.f, 5.f, 5.5f, 5.5f };
 
 	AABoxf SceneAABB;
 	AABoxf SceneLightSpaceAABB;
 
 	// The vertices corresponding to DX9's clip space cuboid
 	// used when partitioning the view frustum for CSM
-	const Vec4f cuboidVerts[8] =
+	const Vec4f cuboidVerts[] =
 	{
 		Vec4f(-1.f,	 1.f,	1.f,	1.f),
-		Vec4f(1.f,	 1.f,	1.f,	1.f),
+		Vec4f( 1.f,	 1.f,	1.f,	1.f),
 		Vec4f(-1.f,	-1.f,	1.f,	1.f),
-		Vec4f(1.f,	-1.f,	1.f,	1.f),
+		Vec4f( 1.f,	-1.f,	1.f,	1.f),
 		Vec4f(-1.f,	 1.f,	0.f,	1.f),
-		Vec4f(1.f,	 1.f,	0.f,	1.f),
+		Vec4f( 1.f,	 1.f,	0.f,	1.f),
 		Vec4f(-1.f,	-1.f,	0.f,	1.f),
-		Vec4f(1.f,	-1.f,	0.f,	1.f)
+		Vec4f( 1.f,	-1.f,	0.f,	1.f)
 	};
 	////////////////////////////////////
 }
@@ -254,29 +258,29 @@ void ShadowMapDirectionalLightPass::OnUpdate(const float fDeltaTime)
 				ViewFrustumPartitionLightSpaceAABB.mMax[2] = lsFrustumVerts[2];
 		}
 
-		// Enlarge the light view frustum in order to avoid GITechDemo::PCF shadow sampling from
+		// Enlarge the light view frustum in order to avoid PCF shadow sampling from
 		// sampling outside of a shadow map cascade
 		const unsigned int cascadesPerRow = (unsigned int)Math::ceil(Math::sqrt((float)NUM_CASCADES));
 		const unsigned int cascadeSize = SHADOW_MAP_SIZE[0] / cascadesPerRow;
-		//float pcfScale = ((float)PCF_KERNEL_SIZE * 2.f ) / (float)cascadeSize;
-		//Vec3f aabbDiag = ViewFrustumPartitionLightSpaceAABB.mMax - ViewFrustumPartitionLightSpaceAABB.mMin;
-		float offsetForPCF = 4.f * (float)PCF_KERNEL_SIZE * sqrt(2.f); // TODO: recheck the math on this one
+		float pcfScale = (float)PCF_MAX_SAMPLE_COUNT * 0.5f * sqrt(2.f) / (float)cascadeSize;
+		Vec3f aabbDiag = ViewFrustumPartitionLightSpaceAABB.mMax - ViewFrustumPartitionLightSpaceAABB.mMin;
+		Vec2f offsetForPCF = Vec2f(aabbDiag[0], aabbDiag[1]) * pcfScale;
 
 		// Snap the ortographic projection to texel-sized increments in order to prevent shadow edges from jittering.
 		// However, because we're tightly fitting the cascade around the view frustum, jittering will still be
 		// present when rotating the camera, but not when zooming or strafing.
 		Vec2f worldUnitsPerTexel = Vec2f(
-			ViewFrustumPartitionLightSpaceAABB.mMax[0] - ViewFrustumPartitionLightSpaceAABB.mMin[0] + 2.f * offsetForPCF,
-			ViewFrustumPartitionLightSpaceAABB.mMax[1] - ViewFrustumPartitionLightSpaceAABB.mMin[1] + 2.f * offsetForPCF) /
+			ViewFrustumPartitionLightSpaceAABB.mMax[0] - ViewFrustumPartitionLightSpaceAABB.mMin[0] + 2.f * offsetForPCF[0],
+			ViewFrustumPartitionLightSpaceAABB.mMax[1] - ViewFrustumPartitionLightSpaceAABB.mMin[1] + 2.f * offsetForPCF[1]) /
 			Math::floor((float)SHADOW_MAP_SIZE[0] / Math::ceil(Math::sqrt((float)NUM_CASCADES))/*cascades per row*/);
 
 		// Calculate the projection matrix for the current shadow map cascade
 		RenderContext->CreateOrthographicMatrix(
 			f44CascadeProjMat[cascade],
-			Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[0] - offsetForPCF) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
-			Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[1] + offsetForPCF) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
-			Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[0] + offsetForPCF) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
-			Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[1] - offsetForPCF) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
+			Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[0]	- offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
+			Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[1]	+ offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
+			Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[0]	+ offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
+			Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[1]	- offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
 			SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
 
 		// Store the light space coordinates of the bounds of the current shadow map cascade
@@ -328,14 +332,19 @@ void ShadowMapDirectionalLightPass::OnDraw()
 	const unsigned int cascadeSize = SHADOW_MAP_SIZE[0] / cascadesPerRow;
 	for (unsigned int cascade = 0; cascade < NUM_CASCADES; cascade++)
 	{
+#if ENABLE_PROFILE_MARKERS
 		char tmpBuf[16];
 		sprintf_s(tmpBuf, "Cascade %d", cascade);
+#endif
 		PUSH_PROFILE_MARKER(tmpBuf);
 
 		const Vec2i size(cascadeSize, cascadeSize);
 		const Vec2i offset(cascadeSize * (cascade % cascadesPerRow), cascadeSize * (cascade / cascadesPerRow));
 		RenderContext->SetViewport(size, offset);
 		RenderContext->GetRenderStateManager()->SetScissor(size, offset);
+
+		RenderContext->GetRenderStateManager()->SetDepthBias(DEPTH_BIAS[cascade]);
+		RenderContext->GetRenderStateManager()->SetSlopeScaledDepthBias(SLOPE_SCALED_DEPTH_BIAS[cascade]);
 
 		f44WorldViewProjMat = f44LightWorldViewProjMat[cascade];
 
@@ -356,6 +365,9 @@ void ShadowMapDirectionalLightPass::OnDraw()
 	}
 
 	ShadowMapDir.Disable();
+
+	RenderContext->GetRenderStateManager()->SetDepthBias(0.f);
+	RenderContext->GetRenderStateManager()->SetSlopeScaledDepthBias(0.f);
 
 	RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
 	RenderContext->GetRenderStateManager()->SetScissorEnabled(scissorEnabled);

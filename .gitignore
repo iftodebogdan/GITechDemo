@@ -19,6 +19,9 @@ bld/
 [Oo]bj/
 [Bb]in[Tt]emp/
 
+*.vsasm
+*.psasm
+
 # Roslyn cache directories
 *.ide/
 

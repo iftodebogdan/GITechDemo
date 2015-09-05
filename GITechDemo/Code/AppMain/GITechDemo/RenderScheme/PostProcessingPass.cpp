@@ -1,20 +1,21 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "PostProcessingPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
 	bool POST_PROCESSING_ENABLED = true;
 
-	// Tonemapping
-	extern bool HDR_TONEMAPPING_ENABLED;
+	// Tone mapping
+	extern bool HDR_TONE_MAPPING_ENABLED;
 	// Bloom
 	extern bool BLOOM_ENABLED;
 	// FXAA
@@ -43,7 +44,7 @@ void PostProcessingPass::OnUpdate(const float fDeltaTime)
 		if (BLOOM_ENABLED)
 			m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-		if (HDR_TONEMAPPING_ENABLED)
+		if (HDR_TONE_MAPPING_ENABLED)
 			m_pFinalImageBuffer = LDRToneMappedImageBuffer.GetRenderTarget();
 
 		if (FXAA_ENABLED)

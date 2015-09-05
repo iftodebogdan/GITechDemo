@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "App.h"
@@ -11,11 +12,11 @@ using namespace LibRendererDll;
 #include "GBufferPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
-	/* GBuffer generation */
+	/* G-Buffer generation */
 	bool GBUFFER_Z_PREPASS = false;
 }
 
@@ -60,7 +61,7 @@ void GBufferPass::OnDraw()
 	RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
 
 	// A depth prepass is useful if we have expensive pixel shaders in our
-	// GBuffer generation process. It allows us to avoid shading pixels
+	// G-Buffer generation process. It allows us to avoid shading pixels
 	// that eventually get overwritten by other pixels that have smaller
 	// depth values. We are not fill-rate bound, so the depth prepass is disabled.
 	if (GBUFFER_Z_PREPASS)

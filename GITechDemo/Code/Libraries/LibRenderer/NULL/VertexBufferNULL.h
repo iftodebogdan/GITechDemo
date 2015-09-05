@@ -30,9 +30,9 @@ namespace LibRendererDll
 	class VertexBufferNULL : public VertexBuffer
 	{
 	public:
-		void	Enable(const unsigned int offset = 0) {}
+		void	Enable(const unsigned int /*offset = 0*/) {}
 		void	Disable() {}
-		void	Lock(const BufferLocking lockMode) {}
+		void	Lock(const BufferLocking /*lockMode*/) {}
 		void	Unlock() {}
 		void	Update() {}
 

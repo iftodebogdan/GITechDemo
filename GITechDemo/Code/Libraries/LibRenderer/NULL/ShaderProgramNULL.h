@@ -29,33 +29,33 @@ namespace LibRendererDll
 	class ShaderProgramNULL : public ShaderProgram
 	{
 	private:
-		ShaderProgramNULL(const ShaderProgramType programType, const char* srcData = "", const char* entryPoint = "", const char* profile = "")
+		ShaderProgramNULL(const ShaderProgramType programType, const char* /*srcData = ""*/, const char* /*entryPoint = ""*/, const char* /*profile = ""*/)
 			: ShaderProgram(programType) {}
 		~ShaderProgramNULL() {}
 
 		void Enable() {}
 		void Disable() {}
-		const bool Compile(const char* srcData, char* const errors, const char* entryPoint = "", const char* profile = "") { return true; }
+		const bool Compile(const char* /*srcData*/, char* const /*errors*/, const char* /*entryPoint = ""*/, const char* /*profile = ""*/) { return true; }
 		
 		void Bind() {}
 		void Unbind() {}
 
 		const unsigned int GetConstantCount() const { return 0; }
-		const char* GetConstantName(const unsigned int handle) const { return ""; }
-		const InputType GetConstantType(const unsigned int handle) const { return IT_NONE; }
-		const RegisterType GetConstantRegisterType(const unsigned int handle) const { return RT_NONE; }
-		const unsigned int GetConstantRegisterIndex(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantRegisterCount(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantRowCount(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantColumnCount(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantArrayElementCount(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantStructMemberCount(const unsigned int handle) const { return 0; }
-		const unsigned int GetConstantSizeBytes(const unsigned int handle) const { return 0; }
+		const char* GetConstantName(const unsigned int /*handle*/) const { return ""; }
+		const InputType GetConstantType(const unsigned int /*handle*/) const { return IT_NONE; }
+		const RegisterType GetConstantRegisterType(const unsigned int /*handle*/) const { return RT_NONE; }
+		const unsigned int GetConstantRegisterIndex(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantRegisterCount(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantRowCount(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantColumnCount(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantArrayElementCount(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantStructMemberCount(const unsigned int /*handle*/) const { return 0; }
+		const unsigned int GetConstantSizeBytes(const unsigned int /*handle*/) const { return 0; }
 
-		void SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount) {}
-		void SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount) {}
-		void SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount) {}
-		void SetTexture(const unsigned int registerIndex, const Texture* const tex) {}
+		void SetFloat(const unsigned int /*registerIndex*/, const float* const /*data*/, const unsigned int /*registerCount*/) {}
+		void SetInt(const unsigned int /*registerIndex*/, const int* const /*data*/, const unsigned int /*registerCount*/) {}
+		void SetBool(const unsigned int /*registerIndex*/, const bool* const /*data*/, const unsigned int /*registerCount*/) {}
+		void SetTexture(const unsigned int /*registerIndex*/, const Texture* const /*tex*/) {}
 
 		friend class ResourceManagerNULL;
 	};

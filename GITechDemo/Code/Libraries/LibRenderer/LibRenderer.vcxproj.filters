@@ -13,20 +13,68 @@
     <Filter Include="SDK\DX9">
       <UniqueIdentifier>{9ac381ef-b408-4115-96c3-e6f42f9e81f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SDK\DX9\Include">
-      <UniqueIdentifier>{1f44b508-2285-4781-a140-124efc709298}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SDK\DX9\Lib">
-      <UniqueIdentifier>{52a11e51-d079-4de2-88fa-f8b686fe4657}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SDK\DX9\Lib\x86">
-      <UniqueIdentifier>{2cbc280c-766e-4e71-ac28-7d531638edea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SDK\DX9\Lib\x64">
-      <UniqueIdentifier>{99ca2b10-8aa9-4a4d-a505-44db1dd94344}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl">
+      <UniqueIdentifier>{5bb3b6bb-fc19-44b2-831b-22f05e809442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld">
+      <UniqueIdentifier>{e81de7bb-e6e4-4312-a501-828cb3edbb7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\include">
+      <UniqueIdentifier>{1f44b508-2285-4781-a140-124efc709298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\lib">
+      <UniqueIdentifier>{52a11e51-d079-4de2-88fa-f8b686fe4657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\lib\x86">
+      <UniqueIdentifier>{2cbc280c-766e-4e71-ac28-7d531638edea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\DX9\lib\x64">
+      <UniqueIdentifier>{99ca2b10-8aa9-4a4d-a505-44db1dd94344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\include">
+      <UniqueIdentifier>{e0bb3fe3-5875-4d51-adc7-059b4ce9ac3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\lib">
+      <UniqueIdentifier>{6e3a5ad6-4f85-4f9c-b812-c56de21114d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\bin">
+      <UniqueIdentifier>{c57a9bcb-08a6-4974-baf2-3e1fe48685e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\bin\x86">
+      <UniqueIdentifier>{2d390e5b-940c-422b-bb40-c91339ea550c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\bin\x64">
+      <UniqueIdentifier>{e5ee058e-1fc7-428a-be1c-e3bf8e58c14f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\lib\x86">
+      <UniqueIdentifier>{6426b60a-9a24-4064-badd-10bd92ae99e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\vld\lib\x64">
+      <UniqueIdentifier>{69777518-0526-43d2-8f0a-68e380276013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl\Util">
+      <UniqueIdentifier>{8eae4715-580e-448f-86eb-847566c542d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl\Numerics">
+      <UniqueIdentifier>{e4b869f8-da89-4ab0-9332-5a6e4a24783b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl\Misc">
+      <UniqueIdentifier>{8dd77dd3-3d24-49c6-b867-08ceab2e53c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl\Fit">
+      <UniqueIdentifier>{9bef4b63-9a85-4c3b-af2f-35d8d39b0a96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDK\gmtl\External">
+      <UniqueIdentifier>{cbbbd886-d6d3-4d8b-887e-c2c150d9524e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{19ed8260-c898-4af5-aaaa-7b725117f2d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NULL">
+      <UniqueIdentifier>{c7d8505b-d140-4e76-99be-18af54c0096d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -49,37 +97,37 @@
       <Filter>DX9</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3d9.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9anim.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9core.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9effect.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9math.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9mesh.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9shader.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9shape.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9tex.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="SDK\DX9\Include\d3dx9xof.h">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </ClInclude>
     <ClInclude Include="DX9\IndexBufferDX9.h">
       <Filter>DX9</Filter>
@@ -99,88 +147,253 @@
     <ClInclude Include="Common\VertexFormat.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Common\Texture.h" />
-    <ClInclude Include="DX9\TextureDX9.h" />
-    <ClInclude Include="SDK\gmtl\External\OpenSGConvert.h" />
-    <ClInclude Include="SDK\gmtl\Fit\GaussPointsFit.h" />
-    <ClInclude Include="SDK\gmtl\Misc\MatrixConvert.h" />
-    <ClInclude Include="SDK\gmtl\Numerics\Eigen.h" />
-    <ClInclude Include="SDK\gmtl\Util\Assert.h" />
-    <ClInclude Include="SDK\gmtl\Util\Meta.h" />
-    <ClInclude Include="SDK\gmtl\Util\StaticAssert.h" />
-    <ClInclude Include="SDK\gmtl\AABox.h" />
-    <ClInclude Include="SDK\gmtl\AABoxOps.h" />
-    <ClInclude Include="SDK\gmtl\AxisAngle.h" />
-    <ClInclude Include="SDK\gmtl\AxisAngleOps.h" />
-    <ClInclude Include="SDK\gmtl\Comparitors.h" />
-    <ClInclude Include="SDK\gmtl\Config.h" />
-    <ClInclude Include="SDK\gmtl\Containment.h" />
-    <ClInclude Include="SDK\gmtl\Coord.h" />
-    <ClInclude Include="SDK\gmtl\CoordOps.h" />
-    <ClInclude Include="SDK\gmtl\Defines.h" />
-    <ClInclude Include="SDK\gmtl\EulerAngle.h" />
-    <ClInclude Include="SDK\gmtl\EulerAngleOps.h" />
-    <ClInclude Include="SDK\gmtl\Frustum.h" />
-    <ClInclude Include="SDK\gmtl\FrustumOps.h" />
-    <ClInclude Include="SDK\gmtl\Generate.h" />
-    <ClInclude Include="SDK\gmtl\gmtl.h" />
-    <ClInclude Include="SDK\gmtl\Helpers.h" />
-    <ClInclude Include="SDK\gmtl\Intersection.h" />
-    <ClInclude Include="SDK\gmtl\LineSeg.h" />
-    <ClInclude Include="SDK\gmtl\LineSegOps.h" />
-    <ClInclude Include="SDK\gmtl\Math.h" />
-    <ClInclude Include="SDK\gmtl\Matrix.h" />
-    <ClInclude Include="SDK\gmtl\MatrixOps.h" />
-    <ClInclude Include="SDK\gmtl\OOBox.h" />
-    <ClInclude Include="SDK\gmtl\Output.h" />
-    <ClInclude Include="SDK\gmtl\ParametricCurve.h" />
-    <ClInclude Include="SDK\gmtl\Plane.h" />
-    <ClInclude Include="SDK\gmtl\PlaneOps.h" />
-    <ClInclude Include="SDK\gmtl\Point.h" />
-    <ClInclude Include="SDK\gmtl\Quat.h" />
-    <ClInclude Include="SDK\gmtl\QuatOps.h" />
-    <ClInclude Include="SDK\gmtl\Ray.h" />
-    <ClInclude Include="SDK\gmtl\RayOps.h" />
-    <ClInclude Include="SDK\gmtl\Sphere.h" />
-    <ClInclude Include="SDK\gmtl\SphereOps.h" />
-    <ClInclude Include="SDK\gmtl\Tri.h" />
-    <ClInclude Include="SDK\gmtl\TriOps.h" />
-    <ClInclude Include="SDK\gmtl\Vec.h" />
-    <ClInclude Include="SDK\gmtl\VecBase.h" />
-    <ClInclude Include="SDK\gmtl\VecExprMeta.h" />
-    <ClInclude Include="SDK\gmtl\VecOps.h" />
-    <ClInclude Include="SDK\gmtl\VecOpsMeta.h" />
-    <ClInclude Include="SDK\gmtl\Version.h" />
-    <ClInclude Include="SDK\gmtl\Xforms.h" />
-    <ClInclude Include="Common\ShaderTemplate.h" />
-    <ClInclude Include="Common\ShaderProgram.h" />
-    <ClInclude Include="DX9\ShaderProgramDX9.h" />
-    <ClInclude Include="Common\ShaderInput.h" />
-    <ClInclude Include="SDK\vld\include\vld.h" />
-    <ClInclude Include="SDK\vld\include\vld_def.h" />
-    <ClInclude Include="SDK\DX9\include\d3d9caps.h" />
-    <ClInclude Include="SDK\DX9\include\d3d9types.h" />
-    <ClInclude Include="Common\RenderState.h" />
-    <ClInclude Include="DX9\RenderStateDX9.h" />
-    <ClInclude Include="Common\SamplerState.h" />
-    <ClInclude Include="DX9\SamplerStateDX9.h" />
-    <ClInclude Include="Common\RenderTarget.h" />
-    <ClInclude Include="DX9\RenderTargetDX9.h" />
-    <ClInclude Include="Common\ResourceManager.h" />
-    <ClInclude Include="DX9\ResourceManagerDX9.h" />
-    <ClInclude Include="NULL\IndexBufferNULL.h" />
-    <ClInclude Include="NULL\RendererNULL.h" />
-    <ClInclude Include="NULL\RenderStateNULL.h" />
-    <ClInclude Include="NULL\RenderTargetNULL.h" />
-    <ClInclude Include="NULL\ResourceManagerNULL.h" />
-    <ClInclude Include="NULL\SamplerStateNULL.h" />
-    <ClInclude Include="NULL\ShaderProgramNULL.h" />
-    <ClInclude Include="NULL\TextureNULL.h" />
-    <ClInclude Include="NULL\VertexBufferNULL.h" />
-    <ClInclude Include="NULL\VertexFormatNULL.h" />
-    <ClInclude Include="Common\ResourceData.h" />
-    <ClInclude Include="Utility\ColorUtility.h" />
-    <ClInclude Include="Utility\HalfFloat.h" />
+    <ClInclude Include="SDK\gmtl\include\gmtl\AABox.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\AABoxOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\AxisAngle.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\AxisAngleOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Comparitors.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Config.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Containment.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Coord.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\CoordOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Defines.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\EulerAngle.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\EulerAngleOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Frustum.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\FrustumOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Generate.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\gmtl.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Helpers.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Intersection.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\LineSeg.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\LineSegOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Math.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Matrix.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\MatrixOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\OOBox.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Output.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\ParametricCurve.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Plane.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\PlaneOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Point.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Quat.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\QuatOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Ray.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\RayOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Sphere.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\SphereOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Tri.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\TriOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Vec.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecBase.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecExprMeta.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecOps.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\VecOpsMeta.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Version.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\include\d3d9caps.h">
+      <Filter>SDK\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\DX9\include\d3d9types.h">
+      <Filter>SDK\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\vld\include\vld.h">
+      <Filter>SDK\vld\include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\vld\include\vld_def.h">
+      <Filter>SDK\vld\include</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Xforms.h">
+      <Filter>SDK\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\External\OpenSGConvert.h">
+      <Filter>SDK\gmtl\External</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Fit\GaussPointsFit.h">
+      <Filter>SDK\gmtl\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Misc\MatrixConvert.h">
+      <Filter>SDK\gmtl\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Numerics\Eigen.h">
+      <Filter>SDK\gmtl\Numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\Assert.h">
+      <Filter>SDK\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\Meta.h">
+      <Filter>SDK\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\gmtl\include\gmtl\Util\StaticAssert.h">
+      <Filter>SDK\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\HalfFloat.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ColorUtility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\IndexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RendererNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RenderStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RenderTargetNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\ResourceManagerNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\SamplerStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\ShaderProgramNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\TextureNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\VertexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\VertexFormatNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\RenderStateDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\RenderTargetDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ResourceManagerDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\SamplerStateDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ShaderProgramDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\TextureDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\RenderState.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\RenderTarget.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceData.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ResourceManager.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\SamplerState.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ShaderInput.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ShaderProgram.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ShaderTemplate.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Texture.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Mutex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -217,72 +430,148 @@
     <ClCompile Include="Common\VertexFormat.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Common\Texture.cpp" />
-    <ClCompile Include="DX9\TextureDX9.cpp" />
-    <ClCompile Include="Common\ShaderTemplate.cpp" />
-    <ClCompile Include="Common\ShaderProgram.cpp" />
-    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
-    <ClCompile Include="Common\ShaderInput.cpp" />
-    <ClCompile Include="Common\RenderState.cpp" />
-    <ClCompile Include="DX9\RenderStateDX9.cpp" />
-    <ClCompile Include="Common\SamplerState.cpp" />
-    <ClCompile Include="DX9\SamplerStateDX9.cpp" />
-    <ClCompile Include="Common\RenderTarget.cpp" />
-    <ClCompile Include="DX9\RenderTargetDX9.cpp" />
-    <ClCompile Include="Common\ResourceManager.cpp" />
-    <ClCompile Include="DX9\ResourceManagerDX9.cpp" />
-    <ClCompile Include="NULL\IndexBufferNULL.cpp" />
-    <ClCompile Include="NULL\RendererNULL.cpp" />
-    <ClCompile Include="NULL\RenderStateNULL.cpp" />
-    <ClCompile Include="NULL\RenderTargetNULL.cpp" />
-    <ClCompile Include="NULL\ResourceManagerNULL.cpp" />
-    <ClCompile Include="NULL\SamplerStateNULL.cpp" />
-    <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
-    <ClCompile Include="NULL\TextureNULL.cpp" />
-    <ClCompile Include="NULL\VertexBufferNULL.cpp" />
-    <ClCompile Include="NULL\VertexFormatNULL.cpp" />
-    <ClCompile Include="Common\ResourceSerialization.cpp" />
-    <ClCompile Include="Utility\ColorUtility.cpp" />
-    <ClCompile Include="Utility\HalfFloat.cpp" />
+    <ClCompile Include="Utility\HalfFloat.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\ColorUtility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\IndexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RendererNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RenderStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RenderTargetNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\ResourceManagerNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\SamplerStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\ShaderProgramNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\TextureNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\VertexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\VertexFormatNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\RenderStateDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\RenderTargetDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ResourceManagerDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\SamplerStateDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ShaderProgramDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\TextureDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\RenderState.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\RenderTarget.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceManager.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ResourceSerialization.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\SamplerState.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ShaderInput.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ShaderProgram.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ShaderTemplate.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Texture.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="LibRenderer.licenseheader" />
     <None Include="SDK\DX9\Include\d3dx9math.inl">
-      <Filter>SDK\DX9\Include</Filter>
+      <Filter>SDK\DX9\include</Filter>
     </None>
     <None Include="Common\VertexBuffer.inl">
       <Filter>Common</Filter>
     </None>
-    <None Include="Common\ShaderInput.inl" />
-    <None Include="SDK\vld\bin\x64\dbghelp.dll" />
-    <None Include="SDK\vld\bin\x64\vld_x64.dll" />
-    <None Include="SDK\vld\bin\x86\dbghelp.dll" />
-    <None Include="SDK\vld\bin\x86\vld_x86.dll" />
-    <None Include="SDK\vld\bin\x64\Microsoft.DTfW.DHL.manifest" />
-    <None Include="SDK\vld\bin\x86\Microsoft.DTfW.DHL.manifest" />
+    <None Include="SDK\vld\bin\x64\dbghelp.dll">
+      <Filter>SDK\vld\bin\x64</Filter>
+    </None>
+    <None Include="SDK\vld\bin\x86\dbghelp.dll">
+      <Filter>SDK\vld\bin\x86</Filter>
+    </None>
+    <None Include="SDK\vld\bin\x64\vld_x64.dll">
+      <Filter>SDK\vld\bin\x64</Filter>
+    </None>
+    <None Include="SDK\vld\bin\x86\vld_x86.dll">
+      <Filter>SDK\vld\bin\x86</Filter>
+    </None>
+    <None Include="SDK\vld\bin\x64\Microsoft.DTfW.DHL.manifest">
+      <Filter>SDK\vld\bin\x64</Filter>
+    </None>
+    <None Include="SDK\vld\bin\x86\Microsoft.DTfW.DHL.manifest">
+      <Filter>SDK\vld\bin\x86</Filter>
+    </None>
+    <None Include="Common\ShaderInput.inl">
+      <Filter>Common</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Library Include="SDK\DX9\Lib\x64\d3d9.lib">
-      <Filter>SDK\DX9\Lib\x64</Filter>
+      <Filter>SDK\DX9\lib\x64</Filter>
     </Library>
     <Library Include="SDK\DX9\Lib\x64\d3dx9.lib">
-      <Filter>SDK\DX9\Lib\x64</Filter>
+      <Filter>SDK\DX9\lib\x64</Filter>
     </Library>
     <Library Include="SDK\DX9\Lib\x64\DxErr.lib">
-      <Filter>SDK\DX9\Lib\x64</Filter>
+      <Filter>SDK\DX9\lib\x64</Filter>
     </Library>
     <Library Include="SDK\DX9\Lib\x86\d3d9.lib">
-      <Filter>SDK\DX9\Lib\x86</Filter>
+      <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
     <Library Include="SDK\DX9\Lib\x86\d3dx9.lib">
-      <Filter>SDK\DX9\Lib\x86</Filter>
+      <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
     <Library Include="SDK\DX9\Lib\x86\DxErr.lib">
-      <Filter>SDK\DX9\Lib\x86</Filter>
+      <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
-    <Library Include="SDK\vld\lib\x64\vld.lib" />
-    <Library Include="SDK\vld\lib\x86\vld.lib" />
-    <Library Include="SDK\DX9\lib\x64\d3dx9d.lib" />
-    <Library Include="SDK\DX9\lib\x86\d3dx9d.lib" />
+    <Library Include="SDK\DX9\lib\x64\d3dx9d.lib">
+      <Filter>SDK\DX9\lib\x64</Filter>
+    </Library>
+    <Library Include="SDK\DX9\lib\x86\d3dx9d.lib">
+      <Filter>SDK\DX9\lib\x86</Filter>
+    </Library>
+    <Library Include="SDK\vld\lib\x86\vld.lib">
+      <Filter>SDK\vld\lib\x86</Filter>
+    </Library>
+    <Library Include="SDK\vld\lib\x64\vld.lib">
+      <Filter>SDK\vld\lib\x64</Filter>
+    </Library>
   </ItemGroup>
 </Project>

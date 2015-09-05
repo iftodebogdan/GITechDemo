@@ -2147,8 +2147,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float4 f4360RcpFrameOpt2 = float4(8.f * f2TexelSize, -4.f * f2TexelSize);
 	
 	const float fFxaaEdgeSharpness = 8.0f;
-	const float fFxaaEdgeThreshold = 0.125f;
-	const float fFxaaEdgeThresholdMin = 0.05f;
+	//const float fFxaaEdgeThreshold = 0.125f;
+	//const float fFxaaEdgeThresholdMin = 0.05f;
 	const float4 f4Fxaa360ConstDir = float4(1.0f, -1.0f, 0.25f, -0.25f);
 	//////////////////////////////////////////////////////////////////////////////////////
 

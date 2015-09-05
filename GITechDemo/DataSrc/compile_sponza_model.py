@@ -1,10 +1,10 @@
-import os
+﻿import os
 import subprocess
 import time
 
-###########
+#############
 #	Model	#
-###########
+#############
 
 pathToModelFile = "models/sponza/"
 modelFile = "sponza.obj"
@@ -18,9 +18,9 @@ subprocess.call([modelCompilerExe, "-q", "-d", outputPath, pathToModelFile + mod
 
 ##########################################
 
-###########
+#################
 #	Textures	#
-###########
+#################
 
 pathToTextureFiles = "models/sponza/textures/"
 outputPath = "../Data/models/sponza/textures/"

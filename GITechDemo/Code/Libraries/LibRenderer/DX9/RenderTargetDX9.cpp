@@ -41,13 +41,14 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
 
 	if (hasDepthStencil)
 	{
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -71,13 +72,14 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
 
 	if (hasDepthStencil)
 	{
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -102,13 +104,14 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
 
 	if (hasDepthStencil)
 	{
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -133,13 +136,14 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
 
 	if (hasDepthStencil)
 	{
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -334,13 +338,14 @@ void RenderTargetDX9::Bind()
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)(m_pColorBuffer[i]))->GetTextureDX9()))->GetSurfaceLevel(0, &m_pColorSurface[i]);
+		hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
 		assert(SUCCEEDED(hr));
 	}
 
 	if (m_bHasDepthStencil)
 	{
-		hr = ((IDirect3DTexture9*)(((TextureDX9*)m_pDepthBuffer)->GetTextureDX9()))->GetSurfaceLevel(0, &m_pDepthSurface);
+		IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
 

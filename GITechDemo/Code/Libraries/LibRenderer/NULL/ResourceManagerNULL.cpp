@@ -83,7 +83,7 @@ const unsigned int ResourceManagerNULL::CreateVertexBuffer(
 
 const unsigned int ResourceManagerNULL::CreateShaderProgram(const ShaderProgramType programType)
 {
-	m_arrShaderProgram.push_back(new ShaderProgramNULL(programType));
+	m_arrShaderProgram.push_back(new ShaderProgramNULL(programType, "", "", ""));
 	return (unsigned int)m_arrShaderProgram.size() - 1;
 }
 

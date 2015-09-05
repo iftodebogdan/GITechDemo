@@ -1,4 +1,4 @@
-import os
+﻿import os
 import shutil
 import fnmatch
 import errno
@@ -14,50 +14,49 @@ FORCE_REBUILD = False
 BUILD_CONFIGURATION = "Release"
 
 def copyfiles(srcdir, dstdir, filepattern):
-    def failed(exc):
-        raise exc
-
-    for dirpath, dirs, files in os.walk(srcdir, topdown=True, onerror=failed):
-        for file in fnmatch.filter(files, filepattern):
-            shutil.copy2(os.path.join(dirpath, file), dstdir)
-        break # no recursion
+	def failed(exc):
+		raise exc
+	for dirpath, dirs, files in os.walk(srcdir, topdown=True, onerror=failed):
+		for file in fnmatch.filter(files, filepattern):
+			shutil.copy2(os.path.join(dirpath, file), dstdir)
+		break # no recursion
 
 def makedir(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
+	try:
+		os.makedirs(path)
+	except OSError as exception:
+		if exception.errno != errno.EEXIST:
+			raise
 
 def copytree(src, dst, symlinks = False, ignore = None):
-  if not os.path.exists(dst):
-    os.makedirs(dst)
-    shutil.copystat(src, dst)
-  lst = os.listdir(src)
-  if ignore:
-    excl = ignore(src, lst)
-    lst = [x for x in lst if x not in excl]
-  for item in lst:
-    s = os.path.join(src, item)
-    d = os.path.join(dst, item)
-    if symlinks and os.path.islink(s):
-      if os.path.lexists(d):
-        os.remove(d)
-      os.symlink(os.readlink(s), d)
-      try:
-        st = os.lstat(s)
-        mode = stat.S_IMODE(st.st_mode)
-        os.lchmod(d, mode)
-      except:
-        pass # lchmod not available
-    elif os.path.isdir(s):
-      copytree(s, d, symlinks, ignore)
-    else:
-      shutil.copy2(s, d)
+	if not os.path.exists(dst):
+		os.makedirs(dst)
+		shutil.copystat(src, dst)
+	lst = os.listdir(src)
+	if ignore:
+		excl = ignore(src, lst)
+		lst = [x for x in lst if x not in excl]
+	for item in lst:
+		s = os.path.join(src, item)
+		d = os.path.join(dst, item)
+		if symlinks and os.path.islink(s):
+			if os.path.lexists(d):
+				os.remove(d)
+			os.symlink(os.readlink(s), d)
+			try:
+				st = os.lstat(s)
+				mode = stat.S_IMODE(st.st_mode)
+				os.lchmod(d, mode)
+			except:
+				pass # lchmod not available
+		elif os.path.isdir(s):
+			copytree(s, d, symlinks, ignore)
+		else:
+			shutil.copy2(s, d)
 
 def buildsln(pathToTools, envSetupBat, platform, buildConfig):
 	os.environ["PATH"] += os.pathsep + pathToTools
-	cmd =envSetupBat + " && MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + " /p:Platform=" + platform
+	cmd = envSetupBat + " && MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + " /p:Platform=" + platform
 	if(FORCE_REBUILD):
 		cmd += " /t:rebuild "
 	else:
@@ -126,8 +125,8 @@ copyfiles("../Bin/x64/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBu
 copyfiles("../Bin/x64/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x64", "*.dll")
 
 # Copy 32bit binaries
-copyfiles("../Bin/Win32/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.exe")
-copyfiles("../Bin/Win32/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.dll")
+copyfiles("../Bin/x86/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.exe")
+copyfiles("../Bin/x86/" + BUILD_CONFIGURATION + "/" + PROJECT_NAME + "/", rootBuildDir + "/bin/x86", "*.dll")
 
 # Copy data
 copytree("../Data/", rootBuildDir + "/data")

@@ -1,43 +1,48 @@
 #ifndef APP_H_
 #define APP_H_
 
-#define CREATE_APP(CLASS) App* AppMain = new CLASS();
-
-#define IMPLEMENT_APP(CLASS) \
-	CLASS (); \
-	~ CLASS (); \
-	void Init(void* hWnd); \
-	void Update(const float fDeltaTime); \
-	void Draw();
+#include <gainput/gainput.h>
 
 #include <gmtl\gmtl.h>
 using namespace gmtl;
 
-class App
+#define CREATE_APP(CLASS) \
+	CLASS AppMainRef; \
+	AppFramework::App* AppFramework::AppMain = &AppMainRef;
+
+#define IMPLEMENT_APP(CLASS) \
+	CLASS (); \
+	~ CLASS (); \
+	bool Init(void* hWnd); \
+	void LoadResources(unsigned int thId, unsigned int thCount); \
+	void Update(const float fDeltaTime); \
+	void Draw();
+
+namespace gainput
 {
-public:
-	virtual ~App() {}
+	class InputManager;
+}
 
-	virtual void Init(void* hWnd) = 0;
-	virtual void Update(const float fDeltaTime) = 0;
-	virtual void Draw() = 0;
-
-	struct Camera
+namespace AppFramework
+{
+	class App
 	{
-		Camera() : fSpeedFactor(1.f) {}
+	public:
+		App() { m_pInputManager = new gainput::InputManager(); }
+		virtual ~App() { if (m_pInputManager) delete m_pInputManager; }
 
-		Vec3f vPos;
-		Matrix44f mRot;
-		Vec3f vMoveVec;
-		float fSpeedFactor;
+		virtual bool Init(void* hWnd) = 0;
+		virtual void LoadResources(unsigned int thId, unsigned int thCount) = 0;
+		virtual void Update(const float fDeltaTime) = 0;
+		virtual void Draw() = 0;
+
+		gainput::InputManager* GetInputManager() { return m_pInputManager; }
+
+	protected:
+		gainput::InputManager* m_pInputManager;
 	};
 
-	Camera& GetCamera() { return tCamera; }
-
-protected:
-	Camera tCamera;
-};
-
-extern App* AppMain;
+	extern App* AppMain;
+}
 
 #endif

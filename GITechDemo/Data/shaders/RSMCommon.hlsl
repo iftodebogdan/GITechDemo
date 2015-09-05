@@ -5,7 +5,7 @@ const sampler2D	texRSMFluxBuffer;	// RSM flux data
 const sampler2D texRSMNormalBuffer;	// RSM normal data
 const sampler2D texRSMDepthBuffer;	// RSM depth data
 
-const sampler2D	texNormalBuffer;	// GBuffer view-space normals
+const sampler2D	texNormalBuffer;	// G-Buffer view-space normals
 
 // Composite matrix for transforming coordinates from render
 // camera projective space to light projective space

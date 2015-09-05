@@ -152,7 +152,7 @@ DeviceCaps Renderer::GetDeviceCaps()
 	return m_tDeviceCaps;
 }
 
-void Renderer::PushProfileMarker(const char* const label)
+void Renderer::PushProfileMarker(const char* const /*label*/)
 {
 	ms_nProfileMarkerCounter++;
 }

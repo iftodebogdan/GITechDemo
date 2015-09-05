@@ -157,7 +157,7 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 #ifdef _DEBUG
 	if (errorMsg)
 	{
-		DWORD size = errorMsg->GetBufferSize();
+		//DWORD size = errorMsg->GetBufferSize();
 		const char* data = (const char*)errorMsg->GetBufferPointer();
 		cout << endl << data << endl;
 		assert(compiledData);
@@ -213,6 +213,7 @@ const unsigned int ShaderProgramDX9::GetConstantCount() const
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	D3DXCONSTANTTABLE_DESC constDesc;
+	memset(&constDesc, 0, sizeof(constDesc));
 	HRESULT hr = m_pConstantTable ? m_pConstantTable->GetDesc(&constDesc) : E_FAIL;
 	assert(SUCCEEDED(hr));
 	

@@ -405,7 +405,7 @@ void ColorUtility::ConvertFromA32B32G32R32F(const byte * const inData, Vec4f * c
 	}
 }
 
-void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
 {
 	assert(width % 4 == 0 && height % 4 == 0);
 
@@ -418,7 +418,6 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 			unsigned int block = blockX + blockY * numBlocksX;
 			word color0 = *((word*)(blockData + block));
 			word color1 = *(((word*)(blockData + block)) + 1);
-			word colorFinal = 0;
 
 			byte r0, g0, b0, r1, g1, b1;
 			ExtractR5G6B5(color0, r0, g0, b0);
@@ -442,7 +441,6 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 				for (unsigned int texelY = 0; texelY < 4; texelY++)
 					for (unsigned int texelX = 0; texelX < 4; texelX++)
 					{
-						unsigned int texel = texelX + texelY * 4;
 						byte encodedColor = 0;
 						switch (texelX)
 						{
@@ -504,7 +502,6 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 				for (unsigned int texelY = 0; texelY < 4; texelY++)
 					for (unsigned int texelX = 0; texelX < 4; texelX++)
 					{
-						unsigned int texel = texelX + texelY * 4;
 						byte encodedColor = 0;
 						switch (texelX)
 						{
@@ -553,12 +550,12 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 		}
 }
 
-void ColorUtility::ConvertFromDXT3(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromDXT3(const byte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
 
-void ColorUtility::ConvertFromDXT5(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromDXT5(const byte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
@@ -793,7 +790,7 @@ void ColorUtility::ConvertToA32B32G32R32F(const Vec4f * const inRGBA, byte * con
 	}
 }
 
-void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
 {
 	// Algorithm inspired from http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/dxtc/doc/cuda_dxtc.pdf
 
@@ -970,12 +967,12 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 		}
 }
 
-void ColorUtility::ConvertToDXT3(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToDXT3(const Vec4f * const /*inRGBA*/, byte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
 
-void ColorUtility::ConvertToDXT5(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToDXT5(const Vec4f * const /*inRGBA*/, byte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }

@@ -20,7 +20,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texDepthBuffer;	// GBuffer depth values
+const sampler2D	texDepthBuffer;	// G-Buffer depth values
 
 struct PSOut
 {
@@ -103,7 +103,7 @@ bool DoUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 
 	// If none of the weights fall below the threshold, or if the pixel is black,
 	// then it is valid and it doesn't require reshading using the RSM algorithm.
-	if (all(saturate(f4Weight - fWeightThreshold.xxxx)) || !all(f4Color.rgb))
+	if (all(saturate(f4Weight - fWeightThreshold.xxxx)) || !any(f4Color.rgb))
 	{
 		colorOut = f4Color;
 		return true;

@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "RenderState.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <ResourceManager.h>
+#include <RenderState.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "AmbientOcclusionPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
@@ -94,8 +95,10 @@ void AmbientOcclusionPass::BlurAmbientOcclusion()
 
 	for (unsigned int i = 0; i < BlurKernelCount; i++)
 	{
+#if ENABLE_PROFILE_MARKERS
 		char label[10];
 		sprintf_s(label, "Kernel %d", SSAO_BLUR_KERNEL[i]);
+#endif
 		PUSH_PROFILE_MARKER(label);
 
 		AmbientOcclusionBuffer[(i + 1) % 2]->Enable();

@@ -40,6 +40,7 @@
 
 //////////////////////////////////////////////////////////
 // Similar to the above early depth test, but tailored	//
-// specifically for alpha testing						//
+// specifically for alpha testing. If the alpha is less	//
+// the threshold, then the pixel is clipped.			//
 //////////////////////////////////////////////////////////
 #define ALPHA_TEST(alpha, threshold) clip(-step(alpha, threshold))

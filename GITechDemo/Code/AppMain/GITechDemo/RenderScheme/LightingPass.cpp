@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
-#include "Renderer.h"
-#include "RenderState.h"
-#include "ResourceManager.h"
-#include "Texture.h"
+#include <Renderer.h>
+#include <RenderState.h>
+#include <ResourceManager.h>
+#include <Texture.h>
+#include <RenderTarget.h>
 using namespace LibRendererDll;
 
 #include "LightingPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResources.h"
+#include "RenderResourcesDef.h"
 
 LightingPass::LightingPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
@@ -42,7 +43,7 @@ void LightingPass::OnUpdate(const float fDeltaTime)
 }
 
 // This function copy-resolves the INTZ depth texture we use when generating the
-// GBuffer (since we can sample it like a regular texture) to the D24S8 depth
+// G-Buffer (since we can sample it like a regular texture) to the D24S8 depth
 // surface of the light accumulation buffer for depth testing (e.g. when rendering the sky)
 // Having the correct depth allows us to do some more optimizations which also make use of
 // the stencil (e.g. rendering a cone corresponding to the spot light and marking the pixels
