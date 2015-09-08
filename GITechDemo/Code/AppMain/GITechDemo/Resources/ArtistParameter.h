@@ -25,7 +25,7 @@ namespace GITechDemoApp
 		void SetupInput(gainput::InputManager* pInputManager);
 
 		static void CreateInstance() { ms_pInstance = new ArtistParameterManager(); }
-		static void DestroyInstance() { if (ms_pInstance) delete ms_pInstance; }
+		static void DestroyInstance() { if (ms_pInstance) delete ms_pInstance; ms_pInstance = nullptr; }
 		static ArtistParameterManager* GetArtistParameterManager() { return ms_pInstance; }
 
 	protected:

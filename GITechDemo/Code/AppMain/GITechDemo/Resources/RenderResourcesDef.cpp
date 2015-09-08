@@ -27,6 +27,28 @@ namespace GITechDemoApp
 	VertexBuffer*	FullScreenTri = nullptr;
 
 	//////////////
+	// Shaders	//
+	//////////////
+	IMPLEMENT_SHADER(BokehDofShader, "shaders/BokehDoF.hlsl");
+	IMPLEMENT_SHADER(RSMUpscaleShader, "shaders/RSMUpscale.hlsl");
+	IMPLEMENT_SHADER(RSMApplyShader, "shaders/RSMApply.hlsl");
+	IMPLEMENT_SHADER(DeferredLightDirShader, "shaders/DeferredLightDir.hlsl");
+	IMPLEMENT_SHADER(SkyBoxShader, "shaders/SkyBox.hlsl");
+	IMPLEMENT_SHADER(GBufferGenerationShader, "shaders/GBufferGeneration.hlsl");
+	IMPLEMENT_SHADER(DepthPassShader, "shaders/DepthPass.hlsl");
+	IMPLEMENT_SHADER(DepthCopyShader, "shaders/DepthCopy.hlsl");
+	IMPLEMENT_SHADER(ColorCopyShader, "shaders/ColorCopy.hlsl");
+	IMPLEMENT_SHADER(RSMCaptureShader, "shaders/RSMCapture.hlsl");
+	IMPLEMENT_SHADER(DownsampleShader, "shaders/Downsample.hlsl");
+	IMPLEMENT_SHADER(LumaCalcShader, "shaders/LumaCalc.hlsl");
+	IMPLEMENT_SHADER(HDRToneMappingShader, "shaders/HDRToneMapping.hlsl");
+	IMPLEMENT_SHADER(BloomShader, "shaders/Bloom.hlsl");
+	IMPLEMENT_SHADER(FxaaShader, "shaders/FXAA.hlsl");
+	IMPLEMENT_SHADER(SsaoShader, "shaders/SSAO.hlsl");
+	IMPLEMENT_SHADER(HUDTextShader, "shaders/HUDText.hlsl");
+	//------------------------------------------------------
+
+	//////////////
 	// Models	//
 	//////////////
 	IMPLEMENT_MODEL(SponzaScene,	"models/sponza/sponza.lrm");
@@ -133,33 +155,11 @@ namespace GITechDemoApp
 	};
 	//------------------------------------------------------
 
-	//////////////
-	// Shaders	//
-	//////////////
-	IMPLEMENT_SHADER(SkyBoxShader,				"shaders/SkyBox.hlsl");
-	IMPLEMENT_SHADER(GBufferGenerationShader,	"shaders/GBufferGeneration.hlsl");
-	IMPLEMENT_SHADER(DeferredLightDirShader,	"shaders/DeferredLightDir.hlsl");
-	IMPLEMENT_SHADER(DepthPassShader,			"shaders/DepthPass.hlsl");
-	IMPLEMENT_SHADER(DepthCopyShader,			"shaders/DepthCopy.hlsl");
-	IMPLEMENT_SHADER(ColorCopyShader,			"shaders/ColorCopy.hlsl");
-	IMPLEMENT_SHADER(RSMCaptureShader,			"shaders/RSMCapture.hlsl");
-	IMPLEMENT_SHADER(RSMApplyShader,			"shaders/RSMApply.hlsl");
-	IMPLEMENT_SHADER(RSMUpscaleShader,			"shaders/RSMUpscale.hlsl");
-	IMPLEMENT_SHADER(DownsampleShader,			"shaders/Downsample.hlsl");
-	IMPLEMENT_SHADER(LumaCalcShader,			"shaders/LumaCalc.hlsl");
-	IMPLEMENT_SHADER(HDRToneMappingShader,		"shaders/HDRToneMapping.hlsl");
-	IMPLEMENT_SHADER(BloomShader,				"shaders/Bloom.hlsl");
-	IMPLEMENT_SHADER(FxaaShader,				"shaders/FXAA.hlsl");
-	IMPLEMENT_SHADER(SsaoShader,				"shaders/SSAO.hlsl");
-	IMPLEMENT_SHADER(BokehDofShader,			"shaders/BokehDoF.hlsl");
-	IMPLEMENT_SHADER(HUDTextShader,				"shaders/HUDText.hlsl");
-	//------------------------------------------------------
-
 	//////////////////////////////////////
 	// Shader constants - artist driven	//
 	//////////////////////////////////////
 	/* General parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZNear,				float,			2.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZNear,				float,			10.f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZFar,					float,			5000.f					);
 
 	/* Directional light parameters */
@@ -176,7 +176,7 @@ namespace GITechDemoApp
 
 	/* Cascaded Shadow Map parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugCascades,		bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCascadeBlendSize,		float,			25.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCascadeBlendSize,		float,			50.f					);
 
 	/* Reflective Shadow Map parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMIntensity,			float,			550.f					);

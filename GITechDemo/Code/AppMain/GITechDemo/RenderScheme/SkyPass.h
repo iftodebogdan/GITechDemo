@@ -14,11 +14,14 @@ namespace GITechDemoApp
 	{
 		IMPLEMENT_RENDER_PASS(SkyPass);
 
-	private:
+	public:
 		void CreateSkyBoxVB();
+		void ReleaseSkyBoxVB();
 
+	private:
 		// A cube used to draw the sky
 		LibRendererDll::VertexBuffer*	m_pSkyBoxCube;
+		unsigned int					m_nSkyBoxCubeIdx;
 	};
 }
 

@@ -19,8 +19,10 @@ namespace AppFramework
 		virtual void GetClientArea(int& left, int& top, int& right, int& bottom) = 0;
 		virtual void GetWindowArea(int& left, int& top, int& right, int& bottom) = 0;
 
+		virtual unsigned int	GetTicks() = 0; // in microseconds
+		virtual void			Sleep(const unsigned int miliseconds) = 0;
+
 	protected:
-		virtual unsigned int	GetTicks() = 0;
 		virtual float			CalculateDeltaTime() = 0; // in miliseconds
 
 		static Framework*	m_pInstance;

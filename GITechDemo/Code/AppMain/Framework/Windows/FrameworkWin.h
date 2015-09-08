@@ -26,6 +26,9 @@ namespace AppFramework
 		void GetClientArea(int& left, int& top, int& right, int& bottom);
 		void GetWindowArea(int& left, int& top, int& right, int& bottom);
 
+		unsigned int	GetTicks(); // in microseconds
+		void			Sleep(const unsigned int miliseconds);
+
 	private:
 		// Windows specific stuff
 		ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -39,9 +42,7 @@ namespace AppFramework
 		HWND		m_hWnd;
 		int			m_nCmdShow;
 
-		// High resolution timer, adapted from SDL
-		unsigned int	GetTicks();
-		float			CalculateDeltaTime(); // in miliseconds
+		float		CalculateDeltaTime(); // in miliseconds
 
 		// Rendering pause
 		void		PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
@@ -49,7 +50,8 @@ namespace AppFramework
 
 		// Error handling
 		void ErrorExit(LPTSTR lpszFunction);
-		
+
+		// High resolution timer, adapted from SDL
 		// The first (low-resolution) ticks value of the application
 		unsigned int	m_nStartTicks;
 		bool			m_bTicksStarted;

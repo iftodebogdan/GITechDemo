@@ -204,3 +204,17 @@ void HUDPass::OnDraw()
 
 	Clear();
 }
+
+void HUDPass::ReleaseHUDTexture()
+{
+	Renderer* RenderContext = Renderer::GetInstance();
+	if (RenderContext)
+	{
+		ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+		if (ResourceMgr && m_nHUDTextureIdx != ~0u)
+			ResourceMgr->ReleaseTexture(m_nHUDTextureIdx);
+	}
+
+	m_nHUDTextureIdx = ~0u;
+	m_pHUDTexture = nullptr;
+}

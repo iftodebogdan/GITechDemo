@@ -6,6 +6,8 @@
 #include "App.h"
 using namespace AppFramework;
 
+#include <Utility/Mutex.h>
+
 namespace gainput
 {
 	class InputMap;
@@ -36,6 +38,8 @@ namespace GITechDemoApp
 		void* m_pHWND;
 		float m_fDeltaTime;
 		gainput::InputMap* m_pInputMap;
+
+		MUTEX mResInitMutex;
 
 		enum Command
 		{

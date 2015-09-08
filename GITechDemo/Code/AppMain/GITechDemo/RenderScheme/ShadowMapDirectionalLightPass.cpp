@@ -24,15 +24,15 @@ namespace GITechDemoApp
 
 	// Cascaded Shadow Maps (CSM) and directional light related variables
 	float CASCADE_SPLIT_FACTOR = 0.7f;
-	float CASCADE_MAX_VIEW_DEPTH = 3000.f;
+	float CASCADE_MAX_VIEW_DEPTH = 2500.f;
 
 	extern const unsigned int PCF_MAX_SAMPLE_COUNT = 16;
 	const unsigned int NUM_CASCADES = 4;
 
 	extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
 
-	float DEPTH_BIAS[NUM_CASCADES] = { 0.0025f, 0.0025f, 0.003f, 0.003f };
-	float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES] = { 4.f, 5.f, 5.5f, 5.5f };
+	float DEPTH_BIAS[NUM_CASCADES]				= {	0.0095f,	0.002f,		0.003f,		0.002f	};
+	float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES]	= {	5.f,		5.5f,		6.f,		5.5f	};
 
 	AABoxf SceneAABB;
 	AABoxf SceneLightSpaceAABB;

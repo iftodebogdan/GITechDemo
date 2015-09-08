@@ -179,6 +179,9 @@ void RendererDX9::Initialize(void* hWnd)
 #endif
 	//------------------------------------------------------------------------------
 
+	// Support for multithreading
+	BehaviorFlags |= D3DCREATE_MULTITHREADED;
+
 	if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWnd,
 		BehaviorFlags,
 		&m_ePresentParameters, &m_pd3dDevice)))

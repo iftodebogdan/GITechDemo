@@ -14,6 +14,7 @@ using namespace gmtl;
 	CLASS (); \
 	~ CLASS (); \
 	bool Init(void* hWnd); \
+	void Release(); \
 	void LoadResources(unsigned int thId, unsigned int thCount); \
 	void Update(const float fDeltaTime); \
 	void Draw();
@@ -32,6 +33,7 @@ namespace AppFramework
 		virtual ~App() { if (m_pInputManager) delete m_pInputManager; }
 
 		virtual bool Init(void* hWnd) = 0;
+		virtual void Release() = 0;
 		virtual void LoadResources(unsigned int thId, unsigned int thCount) = 0;
 		virtual void Update(const float fDeltaTime) = 0;
 		virtual void Draw() = 0;

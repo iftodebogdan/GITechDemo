@@ -31,7 +31,10 @@ ArtistParameterManager::ArtistParameterManager()
 ArtistParameterManager::~ArtistParameterManager()
 {
 	if (m_pInputMap)
+	{
 		delete m_pInputMap;
+		m_pInputMap = nullptr;
+	}
 }
 
 void ArtistParameterManager::Update()

@@ -12,6 +12,7 @@ using namespace AppFramework;
 #include <fcntl.h>
 #include <mmsystem.h>
 #include <strsafe.h>
+using namespace std;
 
 namespace AppFramework
 {
@@ -42,7 +43,22 @@ void FrameworkWin::Init(HINSTANCE& hInstance, int& nCmdShow)
 
 int FrameworkWin::Run()
 {
-#ifdef _DEBUG
+	// TODO: Place code here.
+	MSG msg; memset(&msg, 0, sizeof(msg));
+	HACCEL hAccelTable;
+
+	// Initialize global strings
+	LoadString(m_hInstance, IDS_APP_TITLE, m_szTitle, MAX_LOADSTRING);
+	LoadString(m_hInstance, IDC_FRAMEWORK, m_szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(m_hInstance);
+
+	// Perform application initialization:
+	if (!InitInstance(m_hInstance, m_nCmdShow))
+	{
+		return FALSE;
+	}
+
+#if (1) //_DEBUG
 	// Allocate the console
 	AllocConsole();
 
@@ -60,21 +76,6 @@ int FrameworkWin::Run()
 	*stdin = *hf_in;
 #endif
 
-	// TODO: Place code here.
-	MSG msg; memset(&msg, 0, sizeof(msg));
-	HACCEL hAccelTable;
-
-	// Initialize global strings
-	LoadString(m_hInstance, IDS_APP_TITLE, m_szTitle, MAX_LOADSTRING);
-	LoadString(m_hInstance, IDC_FRAMEWORK, m_szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(m_hInstance);
-
-	// Perform application initialization:
-	if (!InitInstance(m_hInstance, m_nCmdShow))
-	{
-		return FALSE;
-	}
-
 	hAccelTable = LoadAccelerators(m_hInstance, MAKEINTRESOURCE(IDC_FRAMEWORK));
 
 	// Force display and system to be in a working state by resetting
@@ -85,13 +86,14 @@ int FrameworkWin::Run()
 	bool bAppRdy = false;				// App can be updated
 	PHANDLE hThread = nullptr;			// Array of thread handles
 	unsigned int* nThArgs = nullptr;	// Array of thread arguments
+	unsigned int startLoadingTicks = 0;	// Timestamp for timing resource loading
 
 	// Acquire system information
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
 
-	// Create one thread per CPU (minus the one for the UI)
-	DWORD dwCPUCount = sysinfo.dwNumberOfProcessors - 1;
+	// Create one thread per CPU
+	DWORD dwCPUCount = sysinfo.dwNumberOfProcessors;
 	if (dwCPUCount < 1)
 		dwCPUCount = 1;
 
@@ -104,6 +106,9 @@ int FrameworkWin::Run()
 	// Initialize app
 	if (AppMain->Init(m_hWnd))
 	{
+		cout << "Starting " << dwCPUCount << " threads for loading resources." << endl << endl;
+		startLoadingTicks = GetTicks();
+
 		// Create some threads for loading data. Applications can decide how to schedule
 		// their tasks based on provided thread index and total thread count.
 		DWORD(WINAPI* pThread)(LPVOID) = &AppMainLoadResources_wrapper;
@@ -119,7 +124,6 @@ int FrameworkWin::Run()
 				ErrorExit(TEXT("CreateThread()"));
 				bExit = true;
 			}
-			/*
 			else
 			{
 				// Set the loading threads' priorities to above normal
@@ -129,8 +133,10 @@ int FrameworkWin::Run()
 					bExit = true;
 				}
 			}
-			*/
 		}
+
+		// Reduce this thread's priority since it isn't doing anything important
+		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	}
 	else
 	{
@@ -153,12 +159,12 @@ int FrameworkWin::Run()
 				DispatchMessage(&msg);
 			}
 
-			if (pInputMgr)
+			if (pInputMgr && bAppRdy)
 				pInputMgr->HandleMessage(msg);
 		}
 
 		// Update input
-		if (pInputMgr)
+		if (pInputMgr && bAppRdy)
 		{
 			RECT rc;
 			RECT wRect;
@@ -200,34 +206,61 @@ int FrameworkWin::Run()
 							if (lpExitCode == STILL_ACTIVE)
 							{
 								bAppRdy = false;
-							}
-							else
-							{
-								CloseHandle(hThread[i]);
-								hThread[i] = nullptr;
+								break;
 							}
 						}
 						else
 						{
 							ErrorExit(TEXT("GetExitCodeThread()"));
 							bExit = true;
+							break;
 						}
 					}
 				}
+
+				// Restore thread priority if resources are loaded
+				if (bAppRdy)
+				{
+					cout << endl << "Resources successfully loaded in " << (float)(GetTicks() - startLoadingTicks) / 1000000.f << " seconds." << endl;
+					SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+				#if !(_DEBUG)
+					Sleep(2000);
+					// Free the console
+					FreeConsole();
+				#endif
+					BringWindowToTop(m_hWnd);
+					SetFocus(m_hWnd);
+				}
+
+				// Give some CPU time to other threads
+				Sleep(1);
 			}
 			else
 				bExit = true;
 		}
 	}
 
+	WaitForMultipleObjects(dwCPUCount, hThread, TRUE, INFINITE);
+	for (unsigned int i = 0; i < dwCPUCount; i++)
+	{
+		if (hThread[i])
+			CloseHandle(hThread[i]);
+		hThread[i] = nullptr;
+	}
+
 	// Reset execution state
 	SetThreadExecutionState(ES_CONTINUOUS);
+
+	// Release app resources
+	AppMain->Release();
 
 	// Release previously allocated memory
 	delete[] nThArgs;
 	delete[] hThread;
 
-#ifdef _DEBUG
+	DestroyWindow(m_hWnd);
+
+#if _DEBUG
 	// Free the console
 	FreeConsole();
 #endif
@@ -452,7 +485,7 @@ unsigned int FrameworkWin::GetTicks()
 		now = timeGetTime();
 	}
 
-	return (now - m_nStartTicks);
+	return (now - m_nStartTicks) * 1000;
 }
 
 float FrameworkWin::CalculateDeltaTime()
@@ -462,6 +495,11 @@ float FrameworkWin::CalculateDeltaTime()
 	const unsigned int deltaTicks = ticksNow - m_nTicksPrev;
 	m_nTicksPrev = ticksNow;
 	return (float)deltaTicks / 1000.f;
+}
+
+void FrameworkWin::Sleep(const unsigned int miliseconds)
+{
+	::Sleep(miliseconds);
 }
 
 void FrameworkWin::ErrorExit(LPTSTR lpszFunction)

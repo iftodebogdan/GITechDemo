@@ -33,7 +33,17 @@ using namespace LibRendererDll;
 #include <fstream>
 
 ResourceManager::ResourceManager()
-{}
+{
+	MUTEX_INIT(mVFMutex);
+	MUTEX_INIT(mIBMutex);
+	MUTEX_INIT(mVBMutex);
+	MUTEX_INIT(mShdInMutex);
+	MUTEX_INIT(mShdProgMutex);
+	MUTEX_INIT(mShdTmplMutex);
+	MUTEX_INIT(mTexMutex);
+	MUTEX_INIT(mRTMutex);
+	MUTEX_INIT(mModelMutex);
+}
 
 ResourceManager::~ResourceManager()
 {
@@ -52,6 +62,16 @@ ResourceManager::~ResourceManager()
 		GetRenderTargetCount() ||
 		GetModelCount())
 		ReleaseAll();
+
+	MUTEX_DESTROY(mVFMutex);
+	MUTEX_DESTROY(mIBMutex);
+	MUTEX_DESTROY(mVBMutex);
+	MUTEX_DESTROY(mShdInMutex);
+	MUTEX_DESTROY(mShdProgMutex);
+	MUTEX_DESTROY(mShdTmplMutex);
+	MUTEX_DESTROY(mTexMutex);
+	MUTEX_DESTROY(mRTMutex);
+	MUTEX_DESTROY(mModelMutex);
 
 	POP_PROFILE_MARKER();
 }
@@ -146,8 +166,12 @@ void ResourceManager::UnbindAll()
 
 const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shaderTemplate)
 {
-	m_arrShaderInput.push_back(new ShaderInput(shaderTemplate));
-	return (unsigned int)m_arrShaderInput.size() - 1;
+	ShaderInput* const shdIn = new ShaderInput(shaderTemplate);
+	MUTEX_LOCK(mShdInMutex);
+	m_arrShaderInput.push_back(shdIn);
+	const unsigned int ret = (unsigned int)m_arrShaderInput.size() - 1;
+	MUTEX_UNLOCK(mShdInMutex);
+	return ret;
 }
 
 const unsigned int ResourceManager::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors, const char* entryPoint, const char* profile)
@@ -167,11 +191,15 @@ const unsigned int ResourceManager::CreateShaderTemplate(ShaderProgram* const sh
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	m_arrShaderTemplate.push_back(new ShaderTemplate(shaderProgram));
+	ShaderTemplate* const shdTmpl = new ShaderTemplate(shaderProgram);
+	MUTEX_LOCK(mShdTmplMutex);
+	m_arrShaderTemplate.push_back(shdTmpl);
+	const unsigned int ret = (unsigned int)m_arrShaderTemplate.size() - 1;
+	MUTEX_UNLOCK(mShdTmplMutex);
 
 	POP_PROFILE_MARKER();
 
-	return (unsigned int)m_arrShaderTemplate.size() - 1;
+	return ret;
 }
 
 const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
@@ -183,10 +211,12 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 	texFile.open(pathToFile, std::ios::binary);
 	if (texFile.is_open())
 	{
+		MUTEX_LOCK(mTexMutex);
 		texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
+		GetTexture(texIdx)->m_szSourceFile = pathToFile;
+		MUTEX_UNLOCK(mTexMutex);
 		texFile >> *GetTexture(texIdx);
 		texFile.close();
-		GetTexture(texIdx)->m_szSourceFile = pathToFile;
 	}
 
 	POP_PROFILE_MARKER();
@@ -203,11 +233,14 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 	unsigned int modelIdx = ~0u;
 	if (modelFile.is_open())
 	{
-		m_arrModel.push_back(new Model);
-		modelFile >> *m_arrModel.back();
-		modelFile.close();
-		m_arrModel.back()->szSourceFile = pathToFile;
+		Model* const mdl = new Model;
+		mdl->szSourceFile = pathToFile;
+		MUTEX_LOCK(mModelMutex);
+		m_arrModel.push_back(mdl);
 		modelIdx = (unsigned int)m_arrModel.size() - 1;
+		MUTEX_UNLOCK(mModelMutex);
+		modelFile >> *mdl;
+		modelFile.close();
 	}
 
 	POP_PROFILE_MARKER();
@@ -217,83 +250,117 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 
 const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
 {
+	MUTEX_LOCK(mTexMutex);
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile == pathToFile)
+		{
+			MUTEX_UNLOCK(mTexMutex);
 			return i;
+		}
 
 	if (!strict)
 		for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 			if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
+			{
+				MUTEX_UNLOCK(mTexMutex);
 				return i;
+			}
 
+	MUTEX_UNLOCK(mTexMutex);
 	return ~0u;
 }
 
 const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
+	MUTEX_LOCK(mModelMutex);
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		if (m_arrModel[i] && m_arrModel[i]->szSourceFile == pathToFile)
+		{
+			MUTEX_UNLOCK(mModelMutex);
 			return i;
+		}
 
 	if(!strict)
 		for (unsigned int i = 0; i < m_arrModel.size(); i++)
 			if (m_arrModel[i] && m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
+			{
+				MUTEX_UNLOCK(mModelMutex);
 				return i;
+			}
 
+	MUTEX_UNLOCK(mModelMutex);
 	return ~0u;
 }
 
 VertexFormat* const ResourceManager::GetVertexFormat(const unsigned int idx) const
 {
 	assert(idx < m_arrVertexFormat.size());
+	if (idx >= m_arrVertexFormat.size())
+		return nullptr;
 	return m_arrVertexFormat[idx];
 }
 
 IndexBuffer* const ResourceManager::GetIndexBuffer(const unsigned int idx) const
 {
 	assert(idx < m_arrIndexBuffer.size());
+	if (idx >= m_arrIndexBuffer.size())
+		return nullptr;
 	return m_arrIndexBuffer[idx];
 }
 
 VertexBuffer* const ResourceManager::GetVertexBuffer(const unsigned int idx) const
 {
 	assert(idx < m_arrVertexBuffer.size());
+	if (idx >= m_arrVertexBuffer.size())
+		return nullptr;
 	return m_arrVertexBuffer[idx];
 }
 
 ShaderInput* const ResourceManager::GetShaderInput(const unsigned int idx) const
 {
 	assert(idx < m_arrShaderInput.size());
+	if (idx >= m_arrShaderInput.size())
+		return nullptr;
 	return m_arrShaderInput[idx];
 }
 
 ShaderProgram* const ResourceManager::GetShaderProgram(const unsigned int idx) const
 {
 	assert(idx < m_arrShaderProgram.size());
+	if (idx >= m_arrShaderProgram.size())
+		return nullptr;
 	return m_arrShaderProgram[idx];
 }
 
 ShaderTemplate* const ResourceManager::GetShaderTemplate(const unsigned idx) const
 {
 	assert(idx < m_arrShaderTemplate.size());
+	if (idx >= m_arrShaderTemplate.size())
+		return nullptr;
 	return m_arrShaderTemplate[idx];
 }
 
 Texture* const ResourceManager::GetTexture(const unsigned int idx) const
 {
 	assert(idx < m_arrTexture.size());
+	if (idx >= m_arrTexture.size())
+		return nullptr;
 	return m_arrTexture[idx];
 }
 
 RenderTarget* const ResourceManager::GetRenderTarget(const unsigned int idx) const
 {
 	assert(idx < m_arrRenderTarget.size());
+	if (idx >= m_arrRenderTarget.size())
+		return nullptr;
 	return m_arrRenderTarget[idx];
 }
 
 Model* const ResourceManager::GetModel(const unsigned int idx) const
 {
 	assert(idx < m_arrModel.size());
+	if (idx >= m_arrModel.size())
+		return nullptr;
 	return m_arrModel[idx];
 }
 
@@ -347,6 +414,9 @@ void ResourceManager::ReleaseVertexFormat(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrVertexFormat.size());
+	if (idx >= m_arrVertexFormat.size())
+		return;
+
 	delete m_arrVertexFormat[idx];
 	m_arrVertexFormat[idx] = nullptr;
 
@@ -358,6 +428,9 @@ void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrIndexBuffer.size());
+	if (idx >= m_arrIndexBuffer.size())
+		return;
+
 	delete m_arrIndexBuffer[idx];
 	m_arrIndexBuffer[idx] = nullptr;
 
@@ -369,6 +442,9 @@ void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrVertexBuffer.size());
+	if (idx >= m_arrVertexBuffer.size())
+		return;
+
 	delete m_arrVertexBuffer[idx];
 	m_arrVertexBuffer[idx] = nullptr;
 
@@ -378,6 +454,9 @@ void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
 void ResourceManager::ReleaseShaderInput(const unsigned int idx)
 {
 	assert(idx < m_arrShaderInput.size());
+	if (idx >= m_arrShaderInput.size())
+		return;
+
 	delete m_arrShaderInput[idx];
 	m_arrShaderInput[idx] = nullptr;
 }
@@ -387,6 +466,9 @@ void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrShaderProgram.size());
+	if (idx >= m_arrShaderProgram.size())
+		return;
+
 	delete m_arrShaderProgram[idx];
 	m_arrShaderProgram[idx] = nullptr;
 
@@ -396,6 +478,9 @@ void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 void ResourceManager::ReleaseShaderTemplate(const unsigned idx)
 {
 	assert(idx < m_arrShaderTemplate.size());
+	if (idx >= m_arrShaderTemplate.size())
+		return;
+
 	delete m_arrShaderTemplate[idx];
 	m_arrShaderTemplate[idx] = nullptr;
 }
@@ -405,6 +490,9 @@ void ResourceManager::ReleaseTexture(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrTexture.size());
+	if (idx >= m_arrTexture.size())
+		return;
+
 	delete m_arrTexture[idx];
 	m_arrTexture[idx] = nullptr;
 
@@ -416,6 +504,9 @@ void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrRenderTarget.size());
+	if (idx >= m_arrRenderTarget.size())
+		return;
+
 	delete m_arrRenderTarget[idx];
 	m_arrRenderTarget[idx] = nullptr;
 
@@ -427,6 +518,9 @@ void ResourceManager::ReleaseModel(const unsigned int idx)
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(idx < m_arrRenderTarget.size());
+	if (idx > m_arrRenderTarget.size())
+		return;
+
 	delete m_arrModel[idx];
 	m_arrModel[idx] = nullptr;
 

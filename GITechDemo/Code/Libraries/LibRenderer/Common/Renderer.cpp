@@ -27,6 +27,8 @@
 #include "RenderState.h"
 #include "SamplerState.h"
 
+#include "Utility/Mutex.h"
+
 #ifdef _WIN32
 #include "RendererDX9.h"
 #include "RendererNULL.h"
@@ -37,6 +39,8 @@ using namespace LibRendererDll;
 Renderer* Renderer::ms_pInstance = nullptr;
 API Renderer::ms_eAPI = API_NONE;
 int Renderer::ms_nProfileMarkerCounter = 0;
+static bool bCounterMutexInit = false;
+static MUTEX mCounterMutex; // A mutex to guarantee thread-safety for ms_nProfileMarkerCounter
 
 Renderer::Renderer()
 	: m_vBackBufferSize(800, 600)
@@ -44,7 +48,13 @@ Renderer::Renderer()
 	, m_pResourceManager(nullptr)
 	, m_pRenderState(nullptr)
 	, m_pSamplerState(nullptr)
-{}
+{
+	if (!bCounterMutexInit)
+	{
+		bCounterMutexInit = true;
+		MUTEX_INIT(mCounterMutex);
+	}
+}
 
 Renderer::~Renderer()
 {
@@ -56,6 +66,12 @@ Renderer::~Renderer()
 
 	if (m_pSamplerState)
 		delete m_pSamplerState;
+
+	if (bCounterMutexInit)
+	{
+		bCounterMutexInit = false;
+		MUTEX_DESTROY(mCounterMutex);
+	}
 }
 
 void Renderer::CreateInstance(API eApi)
@@ -154,10 +170,15 @@ DeviceCaps Renderer::GetDeviceCaps()
 
 void Renderer::PushProfileMarker(const char* const /*label*/)
 {
+	MUTEX_LOCK(mCounterMutex);
 	ms_nProfileMarkerCounter++;
+	MUTEX_UNLOCK(mCounterMutex);
 }
 
 void Renderer::PopProfileMarker()
 {
+	MUTEX_LOCK(mCounterMutex);
 	ms_nProfileMarkerCounter--;
+	assert(ms_nProfileMarkerCounter >= 0);
+	MUTEX_UNLOCK(mCounterMutex);
 }

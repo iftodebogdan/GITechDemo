@@ -95,6 +95,9 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Irradiance factor",			"Scale value for irradiance map (Cook-Torrance only)",					"Directional light",		fIrradianceFactor.GetCurrentValue(),		0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Reflection factor",			"Scale value for reflection map (Cook-Torrance only)",					"Directional light",		fReflectionFactor.GetCurrentValue(),		0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Light animation",			"Directional light animation toggle",									"Directional light",		DIRECTIONAL_LIGHT_ANIMATION_ENABLED,		1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Light direction - X axis",	"Directional light direction on the X axis of the world",				"Directional light",		f3LightDir.GetCurrentValue()[0],			0.01f);
+	IMPLEMENT_ARTIST_PARAMETER("Light direction - Z axis",	"Directional light direction on the Z axis of the world",				"Directional light",		f3LightDir.GetCurrentValue()[2],			0.01f);
+
 
 	// CSM
 	IMPLEMENT_ARTIST_PARAMETER("Debug cascades",			"Draw cascades with different colors",									"Cascaded shadow map",		bDebugCascades.GetCurrentValue(),			1.f);

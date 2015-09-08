@@ -50,6 +50,8 @@ void HDRToneMappingPass::OnUpdate(const float fDeltaTime)
 	AdaptedLuminance[1] = rtBkp;
 
 	fFrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
+
+	texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
 }
 
 // Measure average luminance level of scene
@@ -136,7 +138,6 @@ void HDRToneMappingPass::LuminanceAdaptationPass()
 
 	f2HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
 	texLumaCalcInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
-	texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
 	bInitialLumaPass = false;
 	bFinalLumaPass = false;
 	bLumaAdaptationPass = true;

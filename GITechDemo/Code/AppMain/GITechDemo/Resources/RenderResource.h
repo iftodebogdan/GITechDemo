@@ -17,6 +17,8 @@ namespace LibRendererDll
 	class RenderTarget;
 }
 
+#include <Utility/Mutex.h>
+
 namespace GITechDemoApp
 {
 	class RenderResource
@@ -35,25 +37,38 @@ namespace GITechDemoApp
 
 		static void SetResourceManager(LibRendererDll::ResourceManager* const resMgr);
 
+		static const vector<RenderResource*>& GetResourceList() { return arrResources; }
+
 		static void InitAllResources();
 		static void InitAllModels();
 		static void InitAllTextures();
 		static void InitAllShaders();
 		static void InitAllRenderTargets();
 
+		static void FreeAll();
+
+		const char* GetDesc() { return szDesc.c_str(); }
 		const ResourceType GetResourceType() { return eResType; }
+
 		const bool IsInitialized() { return bInitialized; }
+		virtual const bool Init();
+		virtual void Free();
+
+		const bool	TryLockRes() { return MUTEX_TRYLOCK(mResMutex); }
+		void		LockRes() { MUTEX_LOCK(mResMutex); }
+		void		UnlockRes() { MUTEX_UNLOCK(mResMutex); }
 
 	protected:
 		RenderResource(const char* filePath, ResourceType resType);
-		virtual ~RenderResource() {}
-
-		virtual void Init();
+		virtual ~RenderResource();
 
 		unsigned int	nId;
 		string			szDesc;
 		ResourceType	eResType;
 		bool			bInitialized;
+
+		MUTEX			mResMutex;
+		MUTEX			mInitMutex;
 
 		static vector<RenderResource*> arrResources;
 		static LibRendererDll::ResourceManager* ResMgr;
@@ -71,9 +86,11 @@ namespace GITechDemoApp
 		const unsigned int	GetTexture(const LibRendererDll::Model::TextureDesc::TextureType texType, const unsigned int nMatIdx) { return TextureLUT[texType][nMatIdx]; }
 
 	protected:
-		void	Init();
+		const bool Init();
+		void Free();
 
 		LibRendererDll::Model*	pModel;
+		unsigned int			nModelIdx;
 
 		// A lookup table for textures (faster than searching everytime by its file name when setting materials)
 		// Usage: TextureIndex = TextureLUT[TextureType][MaterialIndex]
@@ -89,8 +106,11 @@ namespace GITechDemoApp
 		LibRendererDll::Texture* const		GetTexture() { return pTexture; }
 		const unsigned int	GetTextureIndex() { return nTexIdx; }
 
+		const char* GetFilePath() { return szDesc.c_str(); }
+
 	protected:
-		void	Init();
+		const bool Init();
+		void Free();
 
 		LibRendererDll::Texture* pTexture;
 		unsigned int nTexIdx;
@@ -106,12 +126,13 @@ namespace GITechDemoApp
 			: RenderResource(name, RES_SHADER_CONSTANT)
 		{
 			currentValue = defaultVal;
+			bInitialized = true;
 		}
 
 		ShaderConstantTemplate(const char* name)
 			: RenderResource(name, RES_SHADER_CONSTANT)
 		{
-
+			bInitialized = true;
 		}
 
 		const char* GetName() { return szDesc.c_str(); }
@@ -132,29 +153,29 @@ namespace GITechDemoApp
 		T		currentValue;
 
 		template<class T>
-		friend T operator * (const T lhs, const ShaderConstantTemplate<T> rhs);
+		friend T operator * (const T& lhs, const ShaderConstantTemplate<T>& rhs);
 
 		template<class T>
-		friend T operator * (const ShaderConstantTemplate<T> lhs, const T rhs);
+		friend T operator * (const ShaderConstantTemplate<T>& lhs, const T& rhs);
 
 		template<class T, class U>
-		friend T operator * (const ShaderConstantTemplate<T> lhs, const ShaderConstantTemplate<U> rhs);
+		friend T operator * (const ShaderConstantTemplate<T>& lhs, const ShaderConstantTemplate<U>& rhs);
 
 		template<class DATA_TYPE, unsigned SIZE>
-		friend Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE> lhs, ShaderConstantTemplate<T> rhs);
+		friend Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& lhs, ShaderConstantTemplate<T>& rhs);
 	};
 
 	template<class T>
-	T operator * (const T lhs, const ShaderConstantTemplate<T> rhs) { return lhs * rhs.currentValue; }
+	T operator * (const T& lhs, const ShaderConstantTemplate<T>& rhs) { return lhs * rhs.currentValue; }
 
 	template<class T>
-	T operator * (const ShaderConstantTemplate<T> lhs, const T rhs) { return lhs.currentValue * rhs; }
+	T operator * (const ShaderConstantTemplate<T>& lhs, const T& rhs) { return lhs.currentValue * rhs; }
 
 	template<class T, class U>
-	T operator * (const ShaderConstantTemplate<T> lhs, const ShaderConstantTemplate<U> rhs) { return lhs.currentValue * rhs.currentValue; }
+	T operator * (const ShaderConstantTemplate<T>& lhs, const ShaderConstantTemplate<U>& rhs) { return lhs.currentValue * rhs.currentValue; }
 
 	template<class DATA_TYPE, unsigned SIZE, class T>
-	Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE> lhs, ShaderConstantTemplate<T> rhs) { return lhs * rhs.currentValue; }
+	Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& lhs, ShaderConstantTemplate<T>& rhs) { return lhs * rhs.currentValue; }
 
 	class Shader : public RenderResource
 	{
@@ -176,16 +197,23 @@ namespace GITechDemoApp
 			unsigned int		nNumArrayElem;
 		};
 
-		void Init();
+		const bool Init();
+		void Free();
 
 		LibRendererDll::ShaderProgram*	pVertexShaderProg;
+		unsigned int					nVertexShaderProgIdx;
 		LibRendererDll::ShaderProgram*	pPixelShaderProg;
+		unsigned int					nPixelShaderProgIdx;
 
 		LibRendererDll::ShaderTemplate* pVertexShaderTemplate;
+		unsigned int					nVertexShaderTemplateIdx;
 		LibRendererDll::ShaderTemplate* pPixelShaderTemplate;
+		unsigned int					nPixelShaderTemplateIdx;
 
 		LibRendererDll::ShaderInput*	pVertexShaderInput;
+		unsigned int					nVertexShaderInputIdx;
 		LibRendererDll::ShaderInput*	pPixelShaderInput;
+		unsigned int					nPixelShaderInputIdx;
 
 		vector<ShaderConstantInstance>	arrConstantList;
 	};
@@ -210,9 +238,11 @@ namespace GITechDemoApp
 		LibRendererDll::RenderTarget* const GetRenderTarget() { return pRenderTarget; }
 
 	protected:
-		void Init();
+		const bool Init();
+		void Free();
 
 		LibRendererDll::RenderTarget*	pRenderTarget;
+		unsigned int nRenderTargetIdx;
 		unsigned int nTargetCount;
 		LibRendererDll::PixelFormat ePixelFormatRT0;
 		LibRendererDll::PixelFormat ePixelFormatRT1;

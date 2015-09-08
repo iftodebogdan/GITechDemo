@@ -19,6 +19,7 @@ using namespace GITechDemoApp;
 SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
 	, m_pSkyBoxCube(nullptr)
+	, m_nSkyBoxCubeIdx(~0u)
 {}
 
 SkyPass::~SkyPass()
@@ -60,8 +61,8 @@ void SkyPass::CreateSkyBoxVB()
 	ib->Update();
 	ib->Unlock();
 
-	const unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 8, ib);
-	m_pSkyBoxCube = ResourceMgr->GetVertexBuffer(vbIdx);
+	m_nSkyBoxCubeIdx = ResourceMgr->CreateVertexBuffer(vf, 8, ib);
+	m_pSkyBoxCube = ResourceMgr->GetVertexBuffer(m_nSkyBoxCubeIdx);
 
 	m_pSkyBoxCube->Lock(BL_WRITE_ONLY);
 	m_pSkyBoxCube->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
@@ -76,13 +77,24 @@ void SkyPass::CreateSkyBoxVB()
 	m_pSkyBoxCube->Unlock();
 }
 
+void SkyPass::ReleaseSkyBoxVB()
+{
+	Renderer* RenderContext = Renderer::GetInstance();
+	if (RenderContext)
+	{
+		ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+		if (ResourceMgr && m_nSkyBoxCubeIdx != ~0u)
+			ResourceMgr->ReleaseVertexBuffer(m_nSkyBoxCubeIdx);
+	}
+
+	m_nSkyBoxCubeIdx = ~0u;
+	m_pSkyBoxCube = nullptr;
+}
+
 void SkyPass::OnUpdate(const float fDeltaTime)
 {
 	if (!AppMain)
 		return;
-
-	if (!m_pSkyBoxCube)
-		CreateSkyBoxVB();
 
 	f44SkyViewProjMat = f44ViewProjMat * makeTrans(-((GITechDemo*)AppMain)->GetCamera().vPos, Type2Type<Matrix44f>());
 

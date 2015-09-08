@@ -28,6 +28,26 @@ namespace GITechDemoApp
 		COOK_TORRANCE_BECKMANN
 	};
 
+	// Shaders
+	DECLARE_SHADER(BokehDofShader);
+	DECLARE_SHADER(RSMUpscaleShader);
+	DECLARE_SHADER(RSMApplyShader);
+	DECLARE_SHADER(DeferredLightDirShader);
+	DECLARE_SHADER(SkyBoxShader);
+	DECLARE_SHADER(GBufferGenerationShader);
+	DECLARE_SHADER(DepthPassShader);
+	DECLARE_SHADER(DepthCopyShader);
+	DECLARE_SHADER(ColorCopyShader);
+	DECLARE_SHADER(RSMCaptureShader);
+	DECLARE_SHADER(DownsampleShader);
+	DECLARE_SHADER(LumaCalcShader);
+	DECLARE_SHADER(HDRToneMappingShader);
+	DECLARE_SHADER(BloomShader);
+	DECLARE_SHADER(FxaaShader);
+	DECLARE_SHADER(SsaoShader);
+	DECLARE_SHADER(HUDTextShader);
+	//------------------------------------------------------
+
 	// Models (manage their own textures, no need to declare them)
 	DECLARE_MODEL(SponzaScene);
 	//------------------------------------------------------
@@ -77,26 +97,6 @@ namespace GITechDemoApp
 	extern RenderTarget* AmbientOcclusionQuarterBuffer[2];
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
-	//------------------------------------------------------
-
-	// Shaders
-	DECLARE_SHADER(SkyBoxShader);
-	DECLARE_SHADER(GBufferGenerationShader);
-	DECLARE_SHADER(DeferredLightDirShader);
-	DECLARE_SHADER(DepthPassShader);
-	DECLARE_SHADER(DepthCopyShader);
-	DECLARE_SHADER(ColorCopyShader);
-	DECLARE_SHADER(RSMCaptureShader);
-	DECLARE_SHADER(RSMApplyShader);
-	DECLARE_SHADER(RSMUpscaleShader);
-	DECLARE_SHADER(DownsampleShader);
-	DECLARE_SHADER(LumaCalcShader);
-	DECLARE_SHADER(HDRToneMappingShader);
-	DECLARE_SHADER(BloomShader);
-	DECLARE_SHADER(FxaaShader);
-	DECLARE_SHADER(SsaoShader);
-	DECLARE_SHADER(BokehDofShader);
-	DECLARE_SHADER(HUDTextShader);
 	//------------------------------------------------------
 
 	// Shader constants

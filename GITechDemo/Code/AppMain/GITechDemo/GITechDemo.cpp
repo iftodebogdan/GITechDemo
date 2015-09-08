@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <time.h>
+#include <sstream>
 
 #include <Renderer.h>
 #include <ResourceManager.h>
@@ -18,15 +19,20 @@ using namespace AppFramework;
 #include "RenderScheme.h"
 #include "PerlinNoise.h"
 #include "ArtistParameter.h"
+#include "SkyPass.h"
+#include "HUDPass.h"
 using namespace GITechDemoApp;
 
 CREATE_APP(GITechDemo)
 
-// Utility define for scheduling resource loading tasks.
-//	'taskIdx'	-	An unique ID for this task
-//	'thId'		-	The current thread ID
-//	'thCount'	-	The total number of threads
-#define IMPLEMENT_TASK(taskIdx, thId, thCount) if(taskIdx % thCount == thId)
+namespace GITechDemoApp
+{
+	static bool bExtraResInit = false;
+
+	extern SkyPass SKY_PASS;
+	extern HUDPass HUD_PASS;
+	extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
+}
 
 namespace GITechDemoApp
 {
@@ -43,6 +49,7 @@ namespace GITechDemoApp
 	float CAMERA_SPEED_UP_FACTOR = 5.f;
 	float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
 	float CAMERA_ROTATE_SPEED = 75.f;
+
 }
 
 GITechDemo::GITechDemo()
@@ -50,15 +57,13 @@ GITechDemo::GITechDemo()
 	, m_fDeltaTime(0.f)
 	, m_pHWND(nullptr)
 	, m_pInputMap(nullptr)
-{}
+{
+	MUTEX_INIT(mResInitMutex);
+}
 
 GITechDemo::~GITechDemo()
 {
-	if(m_pInputMap)
-		delete m_pInputMap;
-	
-	ArtistParameterManager::DestroyInstance();
-	Renderer::DestroyInstance();
+	MUTEX_DESTROY(mResInitMutex);
 }
 
 bool GITechDemo::Init(void* hWnd)
@@ -126,6 +131,24 @@ bool GITechDemo::Init(void* hWnd)
 	return true;
 }
 
+void GITechDemo::Release()
+{
+	if (m_pInputMap)
+	{
+		delete m_pInputMap;
+		m_pInputMap = nullptr;
+	}
+
+	bExtraResInit = false;
+	FullScreenTri = nullptr;
+	SKY_PASS.ReleaseSkyBoxVB();
+	HUD_PASS.ReleaseHUDTexture();
+
+	RenderResource::FreeAll();
+	ArtistParameterManager::DestroyInstance();
+	Renderer::DestroyInstance();
+}
+
 void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
@@ -136,78 +159,60 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 	if (!ResourceMgr)
 		return;
 
-#if ENABLE_PROFILE_MARKERS
-	char label[256];
-	sprintf_s(label, "Thread %d of %d - " __FUNCSIG__, thId + 1, thCount);
-#endif
-	PUSH_PROFILE_MARKER(label);
-
-	//RenderResource::InitAllResources();
-
-	IMPLEMENT_TASK(0, thId, thCount)
+	bool bAllInitialized = false;
+	do
 	{
-		// First of all, load the scene (models + textures)
-		RenderResource::InitAllModels();
+		bAllInitialized = true;
+		const vector<RenderResource*>& resList = RenderResource::GetResourceList();
+		for (unsigned int i = 0; i < resList.size(); i++)
+		{
+			if (!resList[i]->IsInitialized())
+			{
+				bAllInitialized = false;
+				if (resList[i]->TryLockRes())
+				{
+					std::stringstream msg;
+					msg << "Thread " << thId << " - ";
+					msg << ResourceTypeMap[resList[i]->GetResourceType()] << ": \"" << resList[i]->GetDesc() << "\"";
+					cout << msg.str() + " (start)\n";
+					resList[i]->Init();
+					cout << msg.str() + " (finish)\n";
+					resList[i]->UnlockRes();
+				}
+			}
+		}
+	} while (!bAllInitialized);
 
-		// Load utility textures
-		RenderResource::InitAllTextures();
-
-		// Initialize the various render targets we will be using
-		RenderResource::InitAllRenderTargets();
-
-		// Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
-		/*
-		You can view the triangle as half of the quad required to fill a screen that's twice as
-		high and twice as wide as our actual screen. The diagram below should help you visualize.
-		Note that, as opposed to the traditional fullscreen quad composed of two triangles, this
-		method avoids any artifact on the screen's diagonal, where the two triangles would line up.
-		Also, it avoids having to shade twice along the screen's diagonal.
-
-		|-------------------------------------------------------------------------------------------------
-		|||============================================||                                          /====/
-		|||											   ||                                    /====/
-		|||											   ||                              /====/
-		|||											   ||                        /====/
-		|||											   ||                  /====/
-		|||											   ||            /====/
-		|||											   ||      /====/
-		|||============================================||/====/
-		|                                         /====/
-		|                                   /====/
-		|                             /====/
-		|                       /====/
-		|                 /====/
-		|           /====/
-		|     /====/
-		|====/
-		*/
-
-		unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAU_POSITION, VAT_FLOAT4, 0);
-		VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
-
-		unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
-		IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
-		const unsigned int fsqIndices[] = { 0, 1, 2 };
-		ib->SetIndices(fsqIndices, 3);
-
-		unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
-		FullScreenTri = ResourceMgr->GetVertexBuffer(vbIdx);
-
-		FullScreenTri->Lock(BL_WRITE_ONLY);
-		FullScreenTri->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
-		FullScreenTri->Position<Vec4f>(1) = Vec4f(3.f, 1.f, 1.f, 1.f);
-		FullScreenTri->Position<Vec4f>(2) = Vec4f(-1.f, -3.f, 1.f, 1.f);
-		FullScreenTri->Update();
-		FullScreenTri->Unlock();
-	}
-
-	IMPLEMENT_TASK(1, thId, thCount)
+	// Allow only the first thread to get here to initialize the rest of the resources
+	if (MUTEX_TRYLOCK(mResInitMutex))
 	{
-		// Load shaders
-		RenderResource::InitAllShaders();
-	}
+		if (!bExtraResInit)
+		{
+			// Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
+			unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAU_POSITION, VAT_FLOAT4, 0);
+			VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
 
-	POP_PROFILE_MARKER();
+			unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
+			IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
+			const unsigned int fsqIndices[] = { 0, 1, 2 };
+			ib->SetIndices(fsqIndices, 3);
+
+			unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
+			FullScreenTri = ResourceMgr->GetVertexBuffer(vbIdx);
+
+			FullScreenTri->Lock(BL_WRITE_ONLY);
+			FullScreenTri->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
+			FullScreenTri->Position<Vec4f>(1) = Vec4f(3.f, 1.f, 1.f, 1.f);
+			FullScreenTri->Position<Vec4f>(2) = Vec4f(-1.f, -3.f, 1.f, 1.f);
+			FullScreenTri->Update();
+			FullScreenTri->Unlock();
+
+			SKY_PASS.CreateSkyBoxVB();
+
+			bExtraResInit = true;
+		}
+		MUTEX_UNLOCK(mResInitMutex);
+	}
 }
 
 void GITechDemo::Update(const float fDeltaTime)
@@ -398,15 +403,8 @@ void GITechDemo::Update(const float fDeltaTime)
 		float noiseZ = PerlinNoise.Get(0, time * 1000.f / (float)INT_MAX);
 		((Vec3f&)f3LightDir)[0] = noiseX;
 		((Vec3f&)f3LightDir)[2] = noiseZ;
+		((Vec3f&)f3LightDir)[1] = -1.f;
 	}
-	else
-	{
-		static float staticX = 0.f;
-		static float staticZ = -0.075f;
-		((Vec3f&)f3LightDir)[0] = staticX;
-		((Vec3f&)f3LightDir)[2] = staticZ;
-	}
-	((Vec3f&)f3LightDir)[1] = -1.f;
 	gmtl::normalize((Vec3f&)f3LightDir);
 
 	// Precalculate some parts of the equation for reconstructing

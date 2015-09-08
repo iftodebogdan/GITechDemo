@@ -42,6 +42,7 @@ namespace GITechDemoApp
 		void PrintLn(const char* const text) { m_szTextBuf = m_szTextBuf + text + "\n"; }
 		void Print(const char* const text) { m_szTextBuf += text; }
 
+		void ReleaseHUDTexture();
 	};
 }
 
