@@ -270,8 +270,9 @@ void psmain(VSOut input, out PSOut output)
 				//float fPercentLitLQ = tex2D(texShadowMap, f3LQCascadeTexCoord.xy).r > f3LQCascadeTexCoord.z;
 			#endif
 
-				if (fPercentLitLQ > 0.f && fPercentLitLQ < 1.f) // Only blend at shadow edges (i.e. the penumbra region)
-					fPercentLit = lerp(fPercentLit, fPercentLitLQ, fBlendAmount);
+				// This causes some issues with lower quality cascades where there might be some light bleeding
+				//if (fPercentLitLQ > 0.f && fPercentLitLQ < 1.f) // Only blend at shadow edges (i.e. the penumbra region)
+				fPercentLit = lerp(fPercentLit, fPercentLitLQ, fBlendAmount);
 			}
 		}
 	}

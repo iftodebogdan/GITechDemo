@@ -28,14 +28,26 @@
 #include "ResourceManagerDX9.h"
 using namespace LibRendererDll;
 
+#include <Utility/Mutex.h>
+
+// Mutexes for each resource pool
+extern MUTEX	VFMutex;
+extern MUTEX	IBMutex;
+extern MUTEX	VBMutex;
+extern MUTEX	ShdInMutex;
+extern MUTEX	ShdProgMutex;
+extern MUTEX	ShdTmplMutex;
+extern MUTEX	TexMutex;
+extern MUTEX	RTMutex;
+extern MUTEX	ModelMutex;
 
 const unsigned int ResourceManagerDX9::CreateVertexFormat(const unsigned int attributeCount)
 {
 	VertexFormat* const vf = new VertexFormatDX9(attributeCount);
-	MUTEX_LOCK(mVFMutex);
+	MUTEX_LOCK(VFMutex);
 	m_arrVertexFormat.push_back(vf);
 	const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
-	MUTEX_UNLOCK(mVFMutex);
+	MUTEX_UNLOCK(VFMutex);
 	return ret;
 }
 
@@ -66,10 +78,10 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
 	vf->SetStride(offset);
 	vf->Update();
 
-	MUTEX_LOCK(mVFMutex);
+	MUTEX_LOCK(VFMutex);
 	m_arrVertexFormat.push_back(vf);
 	const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
-	MUTEX_UNLOCK(mVFMutex);
+	MUTEX_UNLOCK(VFMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -83,10 +95,10 @@ const unsigned int ResourceManagerDX9::CreateIndexBuffer(
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IndexBuffer* ib = new IndexBufferDX9(indexCount, indexFormat, usage);
-	MUTEX_LOCK(mIBMutex);
+	MUTEX_LOCK(IBMutex);
 	m_arrIndexBuffer.push_back(ib);
 	const unsigned int ret = (unsigned int)m_arrIndexBuffer.size() - 1;
-	MUTEX_UNLOCK(mIBMutex);
+	MUTEX_UNLOCK(IBMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -100,10 +112,10 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	VertexBuffer* vb = new VertexBufferDX9((VertexFormatDX9*)vertexFormat, vertexCount, (IndexBufferDX9*)indexBuffer, usage);
-	MUTEX_LOCK(mVBMutex);
+	MUTEX_LOCK(VBMutex);
 	m_arrVertexBuffer.push_back(vb);
 	const unsigned int ret = (unsigned int)m_arrVertexBuffer.size() - 1;
-	MUTEX_UNLOCK(mVBMutex);
+	MUTEX_UNLOCK(VBMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -113,10 +125,10 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
 const unsigned int ResourceManagerDX9::CreateShaderProgram(const ShaderProgramType programType)
 {
 	ShaderProgram* sp = new ShaderProgramDX9(programType);
-	MUTEX_LOCK(mShdProgMutex);
+	MUTEX_LOCK(ShdProgMutex);
 	m_arrShaderProgram.push_back(sp);
 	const unsigned int ret = (unsigned int)m_arrShaderProgram.size() - 1;
-	MUTEX_UNLOCK(mShdProgMutex);
+	MUTEX_UNLOCK(ShdProgMutex);
 	return ret;
 }
 
@@ -128,10 +140,10 @@ const unsigned int ResourceManagerDX9::CreateTexture(
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	Texture* tex = new TextureDX9(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
-	MUTEX_LOCK(mTexMutex);
+	MUTEX_LOCK(TexMutex);
 	m_arrTexture.push_back(tex);
 	const unsigned int ret = (unsigned int)m_arrTexture.size() - 1;
-	MUTEX_UNLOCK(mTexMutex);
+	MUTEX_UNLOCK(TexMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -144,10 +156,10 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
-	MUTEX_LOCK(mRTMutex);
+	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-	MUTEX_UNLOCK(mRTMutex);
+	MUTEX_UNLOCK(RTMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -160,10 +172,10 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
-	MUTEX_LOCK(mRTMutex);
+	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-	MUTEX_UNLOCK(mRTMutex);
+	MUTEX_UNLOCK(RTMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -179,10 +191,10 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	RenderTarget* rt = new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
 		width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
-	MUTEX_LOCK(mRTMutex);
+	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-	MUTEX_UNLOCK(mRTMutex);
+	MUTEX_UNLOCK(RTMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -198,10 +210,10 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	RenderTarget* rt = new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
 		widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
-	MUTEX_LOCK(mRTMutex);
+	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-	MUTEX_UNLOCK(mRTMutex);
+	MUTEX_UNLOCK(RTMutex);
 
 	POP_PROFILE_MARKER();
 

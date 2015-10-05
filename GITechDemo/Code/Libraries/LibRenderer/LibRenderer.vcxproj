@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -92,45 +92,45 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;</LibraryPath>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)SDK;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -144,11 +144,11 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);$(ProjectDir)SDK\vld\lib\$(Platform);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(Platform)\*.*" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -176,11 +176,11 @@ DEL /F /Q "$(OutDir)\vld_x86.dll"</Command>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);$(ProjectDir)SDK\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);$(ProjectDir)SDK\vld\lib\$(Platform);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)SDK\vld\bin\$(Platform)\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
@@ -214,7 +214,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
@@ -237,7 +237,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent />
@@ -259,7 +259,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
@@ -283,7 +283,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)SDK\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent />
@@ -474,24 +474,24 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <None Include="Common\VertexBuffer.inl" />
     <None Include="SDK\vld\bin\x64\dbghelp.dll" />
     <None Include="SDK\vld\bin\x64\vld_x64.dll" />
-    <None Include="SDK\vld\bin\x86\dbghelp.dll" />
-    <None Include="SDK\vld\bin\x86\vld_x86.dll" />
+    <None Include="SDK\vld\bin\Win32\dbghelp.dll" />
+    <None Include="SDK\vld\bin\Win32\vld_x86.dll" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="SDK\DX9\Lib\x64\d3d9.lib" />
     <Library Include="SDK\DX9\Lib\x64\d3dx9.lib" />
     <Library Include="SDK\DX9\lib\x64\d3dx9d.lib" />
     <Library Include="SDK\DX9\Lib\x64\DxErr.lib" />
-    <Library Include="SDK\DX9\Lib\x86\d3d9.lib" />
-    <Library Include="SDK\DX9\Lib\x86\d3dx9.lib" />
-    <Library Include="SDK\DX9\lib\x86\d3dx9d.lib" />
-    <Library Include="SDK\DX9\Lib\x86\DxErr.lib" />
+    <Library Include="SDK\DX9\Lib\Win32\d3d9.lib" />
+    <Library Include="SDK\DX9\Lib\Win32\d3dx9.lib" />
+    <Library Include="SDK\DX9\lib\Win32\d3dx9d.lib" />
+    <Library Include="SDK\DX9\Lib\Win32\DxErr.lib" />
     <Library Include="SDK\vld\lib\x64\vld.lib" />
-    <Library Include="SDK\vld\lib\x86\vld.lib" />
+    <Library Include="SDK\vld\lib\Win32\vld.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SDK\vld\bin\x64\Microsoft.DTfW.DHL.manifest" />
-    <None Include="SDK\vld\bin\x86\Microsoft.DTfW.DHL.manifest" />
+    <None Include="SDK\vld\bin\Win32\Microsoft.DTfW.DHL.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,8 +27,6 @@
 #endif
 #endif // LIBRENDERER_DLL
 
-#include "Utility/Mutex.h"
-
 namespace LibRendererDll
 {
 	class VertexFormat;
@@ -144,17 +142,6 @@ namespace LibRendererDll
 
 		// High level resources (comprised of low level resources)
 		std::vector<Model*>				m_arrModel;
-
-		// Mutexes for each resource pool
-		MUTEX	mVFMutex;
-		MUTEX	mIBMutex;
-		MUTEX	mVBMutex;
-		MUTEX	mShdInMutex;
-		MUTEX	mShdProgMutex;
-		MUTEX	mShdTmplMutex;
-		MUTEX	mTexMutex;
-		MUTEX	mRTMutex;
-		MUTEX	mModelMutex;
 
 		friend class Renderer;
 	};

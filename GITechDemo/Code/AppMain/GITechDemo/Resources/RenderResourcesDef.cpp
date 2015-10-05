@@ -179,8 +179,8 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCascadeBlendSize,		float,			50.f					);
 
 	/* Reflective Shadow Map parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMIntensity,			float,			550.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMKernelScale,		float,			0.02f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMIntensity,			float,			500.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMKernelScale,		float,			0.025f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fWeightThreshold,		float,			0.002f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugUpscalePass,		bool,			false					);
 

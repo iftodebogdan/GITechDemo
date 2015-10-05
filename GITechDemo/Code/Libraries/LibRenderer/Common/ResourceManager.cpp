@@ -32,17 +32,37 @@ using namespace LibRendererDll;
 
 #include <fstream>
 
+#include <Utility/Mutex.h>
+
+// Mutexes for each resource pool
+MUTEX	VFMutex;
+MUTEX	IBMutex;
+MUTEX	VBMutex;
+MUTEX	ShdInMutex;
+MUTEX	ShdProgMutex;
+MUTEX	ShdTmplMutex;
+MUTEX	TexMutex;
+MUTEX	RTMutex;
+MUTEX	ModelMutex;
+
+bool	bMutexesInitialized = false;
+
 ResourceManager::ResourceManager()
 {
-	MUTEX_INIT(mVFMutex);
-	MUTEX_INIT(mIBMutex);
-	MUTEX_INIT(mVBMutex);
-	MUTEX_INIT(mShdInMutex);
-	MUTEX_INIT(mShdProgMutex);
-	MUTEX_INIT(mShdTmplMutex);
-	MUTEX_INIT(mTexMutex);
-	MUTEX_INIT(mRTMutex);
-	MUTEX_INIT(mModelMutex);
+	if (!bMutexesInitialized)
+	{
+		MUTEX_INIT(VFMutex);
+		MUTEX_INIT(IBMutex);
+		MUTEX_INIT(VBMutex);
+		MUTEX_INIT(ShdInMutex);
+		MUTEX_INIT(ShdProgMutex);
+		MUTEX_INIT(ShdTmplMutex);
+		MUTEX_INIT(TexMutex);
+		MUTEX_INIT(RTMutex);
+		MUTEX_INIT(ModelMutex);
+
+		bMutexesInitialized = true;
+	}
 }
 
 ResourceManager::~ResourceManager()
@@ -63,15 +83,20 @@ ResourceManager::~ResourceManager()
 		GetModelCount())
 		ReleaseAll();
 
-	MUTEX_DESTROY(mVFMutex);
-	MUTEX_DESTROY(mIBMutex);
-	MUTEX_DESTROY(mVBMutex);
-	MUTEX_DESTROY(mShdInMutex);
-	MUTEX_DESTROY(mShdProgMutex);
-	MUTEX_DESTROY(mShdTmplMutex);
-	MUTEX_DESTROY(mTexMutex);
-	MUTEX_DESTROY(mRTMutex);
-	MUTEX_DESTROY(mModelMutex);
+	if (bMutexesInitialized)
+	{
+		MUTEX_DESTROY(VFMutex);
+		MUTEX_DESTROY(IBMutex);
+		MUTEX_DESTROY(VBMutex);
+		MUTEX_DESTROY(ShdInMutex);
+		MUTEX_DESTROY(ShdProgMutex);
+		MUTEX_DESTROY(ShdTmplMutex);
+		MUTEX_DESTROY(TexMutex);
+		MUTEX_DESTROY(RTMutex);
+		MUTEX_DESTROY(ModelMutex);
+
+		bMutexesInitialized = false;
+	}
 
 	POP_PROFILE_MARKER();
 }
@@ -167,10 +192,10 @@ void ResourceManager::UnbindAll()
 const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shaderTemplate)
 {
 	ShaderInput* const shdIn = new ShaderInput(shaderTemplate);
-	MUTEX_LOCK(mShdInMutex);
+	MUTEX_LOCK(ShdInMutex);
 	m_arrShaderInput.push_back(shdIn);
 	const unsigned int ret = (unsigned int)m_arrShaderInput.size() - 1;
-	MUTEX_UNLOCK(mShdInMutex);
+	MUTEX_UNLOCK(ShdInMutex);
 	return ret;
 }
 
@@ -192,10 +217,10 @@ const unsigned int ResourceManager::CreateShaderTemplate(ShaderProgram* const sh
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	ShaderTemplate* const shdTmpl = new ShaderTemplate(shaderProgram);
-	MUTEX_LOCK(mShdTmplMutex);
+	MUTEX_LOCK(ShdTmplMutex);
 	m_arrShaderTemplate.push_back(shdTmpl);
 	const unsigned int ret = (unsigned int)m_arrShaderTemplate.size() - 1;
-	MUTEX_UNLOCK(mShdTmplMutex);
+	MUTEX_UNLOCK(ShdTmplMutex);
 
 	POP_PROFILE_MARKER();
 
@@ -211,10 +236,10 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 	texFile.open(pathToFile, std::ios::binary);
 	if (texFile.is_open())
 	{
-		MUTEX_LOCK(mTexMutex);
+		MUTEX_LOCK(TexMutex);
 		texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
 		GetTexture(texIdx)->m_szSourceFile = pathToFile;
-		MUTEX_UNLOCK(mTexMutex);
+		MUTEX_UNLOCK(TexMutex);
 		texFile >> *GetTexture(texIdx);
 		texFile.close();
 	}
@@ -235,10 +260,10 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 	{
 		Model* const mdl = new Model;
 		mdl->szSourceFile = pathToFile;
-		MUTEX_LOCK(mModelMutex);
+		MUTEX_LOCK(ModelMutex);
 		m_arrModel.push_back(mdl);
 		modelIdx = (unsigned int)m_arrModel.size() - 1;
-		MUTEX_UNLOCK(mModelMutex);
+		MUTEX_UNLOCK(ModelMutex);
 		modelFile >> *mdl;
 		modelFile.close();
 	}
@@ -250,11 +275,11 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 
 const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
 {
-	MUTEX_LOCK(mTexMutex);
+	MUTEX_LOCK(TexMutex);
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile == pathToFile)
 		{
-			MUTEX_UNLOCK(mTexMutex);
+			MUTEX_UNLOCK(TexMutex);
 			return i;
 		}
 
@@ -262,21 +287,21 @@ const unsigned int ResourceManager::FindTexture(const char * pathToFile, const b
 		for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 			if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
 			{
-				MUTEX_UNLOCK(mTexMutex);
+				MUTEX_UNLOCK(TexMutex);
 				return i;
 			}
 
-	MUTEX_UNLOCK(mTexMutex);
+	MUTEX_UNLOCK(TexMutex);
 	return ~0u;
 }
 
 const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
-	MUTEX_LOCK(mModelMutex);
+	MUTEX_LOCK(ModelMutex);
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		if (m_arrModel[i] && m_arrModel[i]->szSourceFile == pathToFile)
 		{
-			MUTEX_UNLOCK(mModelMutex);
+			MUTEX_UNLOCK(ModelMutex);
 			return i;
 		}
 
@@ -284,11 +309,11 @@ const unsigned int ResourceManager::FindModel(const char * pathToFile, const boo
 		for (unsigned int i = 0; i < m_arrModel.size(); i++)
 			if (m_arrModel[i] && m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
 			{
-				MUTEX_UNLOCK(mModelMutex);
+				MUTEX_UNLOCK(ModelMutex);
 				return i;
 			}
 
-	MUTEX_UNLOCK(mModelMutex);
+	MUTEX_UNLOCK(ModelMutex);
 	return ~0u;
 }
 

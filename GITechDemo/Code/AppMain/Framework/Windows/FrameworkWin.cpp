@@ -378,7 +378,7 @@ LRESULT CALLBACK FrameworkWin::WndProc(HWND hWnd, UINT message, WPARAM wParam, L
 	//case WM_NCACTIVATE:	// Causes a focus issue with the assert dialog
 	case WM_MOUSEACTIVATE:
 	case WM_ACTIVATEAPP:
-		while (IsCursorHidden())
+		if (IsCursorHidden())
 			ShowCursor(true);
 		break;
 	default:
@@ -409,7 +409,8 @@ INT_PTR CALLBACK FrameworkWin::About(HWND hDlg, UINT message, WPARAM wParam, LPA
 
 void FrameworkWin::ShowCursor(const bool bShow)
 {
-	::ShowCursor(bShow);
+	// Loop until counter is reset
+	while((::ShowCursor(bShow) < 0) == bShow);
 }
 
 bool FrameworkWin::IsCursorHidden()

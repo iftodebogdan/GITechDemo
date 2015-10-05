@@ -415,7 +415,7 @@ NOTE the other tuning knobs are now in the shader function inputs!
 //  _ = the lowest digit is directly related to performance
 // _  = the highest digit is directly related to style
 // 
-#define FXAA_QUALITY__PRESET 10
+#define FXAA_QUALITY__PRESET 12
 #endif
 
 

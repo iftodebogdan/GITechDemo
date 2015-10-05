@@ -239,6 +239,9 @@ void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
 	pp.BackBufferWidth = size[0];
 	pp.BackBufferHeight = size[1];
 
+	// Windowed or fullscreen?
+	//pp.Windowed = false;
+
 	// Unbind resources
 	GetResourceManager()->UnbindAll();
 

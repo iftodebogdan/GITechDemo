@@ -163,7 +163,7 @@ sPoint GenerateRandomPointAround( const sPoint& P, float MinDist )
 std::vector<sPoint> GeneratePoissonPoints( float MinDist, int NewPointsCount, size_t NumPoints )
 {
 	rd = new std::random_device();
-	gen = new std::mt19937(*rd);
+	gen = new std::mt19937((*rd)());
 	dis = new std::uniform_real_distribution<>(0.0, 1.0);
 
 	std::vector<sPoint> SamplePoints;

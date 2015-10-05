@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -90,33 +90,33 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -346,7 +346,10 @@
     <Image Include="Framework\Windows\small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Build\build_win.py" />
+    <None Include="..\..\Build\build_project_win.py" />
+    <None Include="..\..\Build\build_tools_win.py" />
+    <None Include="..\..\Build\build_data_win.py" />
+    <None Include="..\..\Build\utils.py" />
     <None Include="..\..\DataSrc\compile_sponza_model.py" />
     <None Include="..\..\DataSrc\compile_utility_textures.py" />
     <None Include="..\..\Data\shaders\Common.hlsl">

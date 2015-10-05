@@ -523,19 +523,19 @@
     <None Include="SDK\vld\bin\x64\dbghelp.dll">
       <Filter>SDK\vld\bin\x64</Filter>
     </None>
-    <None Include="SDK\vld\bin\x86\dbghelp.dll">
+    <None Include="SDK\vld\bin\Win32\dbghelp.dll">
       <Filter>SDK\vld\bin\x86</Filter>
     </None>
     <None Include="SDK\vld\bin\x64\vld_x64.dll">
       <Filter>SDK\vld\bin\x64</Filter>
     </None>
-    <None Include="SDK\vld\bin\x86\vld_x86.dll">
+    <None Include="SDK\vld\bin\Win32\vld_x86.dll">
       <Filter>SDK\vld\bin\x86</Filter>
     </None>
     <None Include="SDK\vld\bin\x64\Microsoft.DTfW.DHL.manifest">
       <Filter>SDK\vld\bin\x64</Filter>
     </None>
-    <None Include="SDK\vld\bin\x86\Microsoft.DTfW.DHL.manifest">
+    <None Include="SDK\vld\bin\Win32\Microsoft.DTfW.DHL.manifest">
       <Filter>SDK\vld\bin\x86</Filter>
     </None>
     <None Include="Common\ShaderInput.inl">
@@ -552,22 +552,22 @@
     <Library Include="SDK\DX9\Lib\x64\DxErr.lib">
       <Filter>SDK\DX9\lib\x64</Filter>
     </Library>
-    <Library Include="SDK\DX9\Lib\x86\d3d9.lib">
+    <Library Include="SDK\DX9\Lib\Win32\d3d9.lib">
       <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
-    <Library Include="SDK\DX9\Lib\x86\d3dx9.lib">
+    <Library Include="SDK\DX9\Lib\Win32\d3dx9.lib">
       <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
-    <Library Include="SDK\DX9\Lib\x86\DxErr.lib">
+    <Library Include="SDK\DX9\Lib\Win32\DxErr.lib">
       <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
     <Library Include="SDK\DX9\lib\x64\d3dx9d.lib">
       <Filter>SDK\DX9\lib\x64</Filter>
     </Library>
-    <Library Include="SDK\DX9\lib\x86\d3dx9d.lib">
+    <Library Include="SDK\DX9\lib\Win32\d3dx9d.lib">
       <Filter>SDK\DX9\lib\x86</Filter>
     </Library>
-    <Library Include="SDK\vld\lib\x86\vld.lib">
+    <Library Include="SDK\vld\lib\Win32\vld.lib">
       <Filter>SDK\vld\lib\x86</Filter>
     </Library>
     <Library Include="SDK\vld\lib\x64\vld.lib">

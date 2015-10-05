@@ -29,9 +29,9 @@ HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
 	, m_pHUDTexture(nullptr)
 	, m_nHUDTextureIdx(-1)
 {
-	FT_Library		fontLibrary;
-	FT_Face			face;
-	FT_GlyphSlot	slot;
+	FT_Library		fontLibrary = nullptr;
+	FT_Face			face = nullptr;
+	FT_GlyphSlot	slot = nullptr;
 
 	FT_Error error = FT_Err_Ok;
 	error = FT_Init_FreeType(&fontLibrary);

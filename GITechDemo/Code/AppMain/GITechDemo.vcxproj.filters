@@ -225,9 +225,6 @@
     <None Include="..\..\DataSrc\compile_sponza_model.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="..\..\Build\build_win.py">
-      <Filter>Build</Filter>
-    </None>
     <None Include="GITechDemo\Framework.ico">
       <Filter>Resource Files</Filter>
     </None>
@@ -236,6 +233,18 @@
     </None>
     <None Include="GITechDemo\UtahTeapot.ico">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Build\build_project_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_tools_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\utils.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_data_win.py">
+      <Filter>Build</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

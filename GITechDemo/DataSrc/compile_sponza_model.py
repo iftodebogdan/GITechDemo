@@ -1,6 +1,23 @@
 ﻿import os
 import subprocess
 import time
+import sys
+
+#############################################################################
+#		Arguments:															#
+#---------------------------------------------------------------------------#
+#	'win32' to use the 32 bit version of the tools							#
+#	'x64' to use the 64 bit version of the tools (default)					#
+#############################################################################
+
+defaultArchitecture = "x64"
+
+# Process command arguments
+for opt in sys.argv:
+	if(opt.lower() == "x64"):
+		defaultArchitecture = "x64"
+	if(opt.lower() == "win32"):
+		defaultArchitecture = "Win32"
 
 #############
 #	Model	#
@@ -9,7 +26,7 @@ import time
 pathToModelFile = "models/sponza/"
 modelFile = "sponza.obj"
 outputPath = "../Data/models/sponza/"
-modelCompilerExe = "../Bin/x64/Release/LibRendererTools/ModelCompiler.exe"
+modelCompilerExe = "../Bin/" + defaultArchitecture + "/Release/LibRendererTools/ModelCompiler.exe"
 
 start = time.clock()
 
@@ -24,7 +41,7 @@ subprocess.call([modelCompilerExe, "-q", "-d", outputPath, pathToModelFile + mod
 
 pathToTextureFiles = "models/sponza/textures/"
 outputPath = "../Data/models/sponza/textures/"
-textureCompilerExe = "../Bin/x64/Release/LibRendererTools/TextureCompiler.exe"
+textureCompilerExe = "../Bin/" + defaultArchitecture + "/Release/LibRendererTools/TextureCompiler.exe"
 
 for root, dir, files in os.walk(pathToTextureFiles):
 	for name in files:
@@ -35,6 +52,6 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			else:
 				subprocess.call([textureCompilerExe, "-q", "-f", "A8R8G8B8", "-d", outputPath, os.path.join(root, name)])
 
-print "Done in " + str(time.clock() - start) + " seconds";
+print "Done in " + str(time.clock() - start) + " seconds.";
 
 ##########################################
