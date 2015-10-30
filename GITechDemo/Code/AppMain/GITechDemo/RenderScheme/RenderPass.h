@@ -8,8 +8,8 @@
 	Class (const char* const passName, RenderPass* const parentPass); \
 	~ Class (); \
 	protected: \
-	void OnUpdate(const float fDeltaTime); \
-	void OnDraw();
+	void Update(const float fDeltaTime); \
+	void Draw();
 
 namespace GITechDemoApp
 {
@@ -23,8 +23,8 @@ namespace GITechDemoApp
 		const char* GetPassName() { return m_szPassName.c_str(); }
 
 	protected:
-		virtual void OnUpdate(const float fDeltaTime) {}
-		virtual void OnDraw() {}
+		virtual void Update(const float fDeltaTime) {}
+		virtual void Draw();
 
 		void DrawChildren();
 
@@ -33,8 +33,6 @@ namespace GITechDemoApp
 		RenderPass();
 		RenderPass(const RenderPass&);
 		void operator=(const RenderPass&) {}
-
-		void Draw();
 
 		std::string					m_szPassName;
 		std::vector<RenderPass*>	m_arrChildList;

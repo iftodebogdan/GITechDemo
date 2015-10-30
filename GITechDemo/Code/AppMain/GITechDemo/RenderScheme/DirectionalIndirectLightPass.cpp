@@ -62,7 +62,7 @@ DirectionalIndirectLightPass::~DirectionalIndirectLightPass()
 		delete[] f3RSMKernel;
 }
 
-void DirectionalIndirectLightPass::OnUpdate(const float fDeltaTime)
+void DirectionalIndirectLightPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -84,7 +84,7 @@ void DirectionalIndirectLightPass::OnUpdate(const float fDeltaTime)
 	texSource = IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 }
 
-void DirectionalIndirectLightPass::OnDraw()
+void DirectionalIndirectLightPass::Draw()
 {
 	if (!INDIRECT_LIGHT_ENABLED)
 		return;

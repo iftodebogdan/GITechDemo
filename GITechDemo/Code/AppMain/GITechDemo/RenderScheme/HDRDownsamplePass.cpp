@@ -19,7 +19,7 @@ HDRDownsamplePass::HDRDownsamplePass(const char* const passName, RenderPass* con
 HDRDownsamplePass::~HDRDownsamplePass()
 {}
 
-void HDRDownsamplePass::OnUpdate(const float fDeltaTime)
+void HDRDownsamplePass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -65,7 +65,7 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
 	pDest->Disable();
 }
 
-void HDRDownsamplePass::OnDraw()
+void HDRDownsamplePass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

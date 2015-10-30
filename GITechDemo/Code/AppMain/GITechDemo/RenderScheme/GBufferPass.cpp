@@ -27,7 +27,7 @@ GBufferPass::GBufferPass(const char* const passName, RenderPass* const parentPas
 GBufferPass::~GBufferPass()
 {}
 
-void GBufferPass::OnUpdate(const float fDeltaTime)
+void GBufferPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -45,7 +45,7 @@ void GBufferPass::OnUpdate(const float fDeltaTime)
 	f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
 }
 
-void GBufferPass::OnDraw()
+void GBufferPass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

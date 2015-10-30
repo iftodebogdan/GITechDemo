@@ -32,7 +32,7 @@ PostProcessingPass::PostProcessingPass(const char* const passName, RenderPass* c
 PostProcessingPass::~PostProcessingPass()
 {}
 
-void PostProcessingPass::OnUpdate(const float fDeltaTime)
+void PostProcessingPass::Update(const float fDeltaTime)
 {
 	if (POST_PROCESSING_ENABLED)
 	{
@@ -88,7 +88,7 @@ void PostProcessingPass::CopyResultToBackBuffer(LibRendererDll::RenderTarget* co
 	POP_PROFILE_MARKER();
 }
 
-void PostProcessingPass::OnDraw()
+void PostProcessingPass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

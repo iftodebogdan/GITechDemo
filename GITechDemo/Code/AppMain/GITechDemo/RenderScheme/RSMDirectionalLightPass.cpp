@@ -26,7 +26,7 @@ RSMDirectionalLightPass::RSMDirectionalLightPass(const char* const passName, Ren
 RSMDirectionalLightPass::~RSMDirectionalLightPass()
 {}
 
-void RSMDirectionalLightPass::OnUpdate(const float fDeltaTime)
+void RSMDirectionalLightPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -69,7 +69,7 @@ void RSMDirectionalLightPass::OnUpdate(const float fDeltaTime)
 	}
 }
 
-void RSMDirectionalLightPass::OnDraw()
+void RSMDirectionalLightPass::Draw()
 {
 	if (!INDIRECT_LIGHT_ENABLED)
 		return;

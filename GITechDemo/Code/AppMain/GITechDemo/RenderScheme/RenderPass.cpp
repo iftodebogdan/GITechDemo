@@ -35,8 +35,8 @@ void RenderPass::DrawChildren()
 		if (m_arrChildList[child] != nullptr)
 		{
 			PUSH_PROFILE_MARKER(m_arrChildList[child]->GetPassName());
-			m_arrChildList[child]->OnUpdate(((GITechDemo*)AppMain)->GetDeltaTime());
-			m_arrChildList[child]->OnDraw();
+			m_arrChildList[child]->Update(((GITechDemo*)AppMain)->GetDeltaTime());
+			m_arrChildList[child]->Draw();
 			POP_PROFILE_MARKER();
 		}
 	}

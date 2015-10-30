@@ -24,7 +24,7 @@ HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* c
 HDRToneMappingPass::~HDRToneMappingPass()
 {}
 
-void HDRToneMappingPass::OnUpdate(const float fDeltaTime)
+void HDRToneMappingPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -182,7 +182,7 @@ void HDRToneMappingPass::ToneMappingPass()
 	POP_PROFILE_MARKER();
 }
 
-void HDRToneMappingPass::OnDraw()
+void HDRToneMappingPass::Draw()
 {
 	LuminanceMeasurementPass();
 	LuminanceAdaptationPass();

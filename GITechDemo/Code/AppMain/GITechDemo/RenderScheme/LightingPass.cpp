@@ -19,7 +19,7 @@ LightingPass::LightingPass(const char* const passName, RenderPass* const parentP
 LightingPass::~LightingPass()
 {}
 
-void LightingPass::OnUpdate(const float fDeltaTime)
+void LightingPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -79,7 +79,7 @@ void LightingPass::CopyDepthBuffer()
 	POP_PROFILE_MARKER();
 }
 
-void LightingPass::OnDraw()
+void LightingPass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

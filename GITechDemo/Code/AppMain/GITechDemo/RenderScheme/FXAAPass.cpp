@@ -25,7 +25,7 @@ FXAAPass::FXAAPass(const char* const passName, RenderPass* const parentPass)
 FXAAPass::~FXAAPass()
 {}
 
-void FXAAPass::OnUpdate(const float fDeltaTime)
+void FXAAPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -46,7 +46,7 @@ void FXAAPass::OnUpdate(const float fDeltaTime)
 
 }
 
-void FXAAPass::OnDraw()
+void FXAAPass::Draw()
 {
 	if (!FXAA_ENABLED)
 		return;

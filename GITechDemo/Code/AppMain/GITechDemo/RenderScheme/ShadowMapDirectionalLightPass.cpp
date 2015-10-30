@@ -24,7 +24,7 @@ namespace GITechDemoApp
 
 	// Cascaded Shadow Maps (CSM) and directional light related variables
 	float CASCADE_SPLIT_FACTOR = 0.7f;
-	float CASCADE_MAX_VIEW_DEPTH = 2500.f;
+	float CASCADE_MAX_VIEW_DEPTH = 3000.f;
 
 	extern const unsigned int PCF_MAX_SAMPLE_COUNT = 16;
 	const unsigned int NUM_CASCADES = 4;
@@ -118,7 +118,7 @@ void ShadowMapDirectionalLightPass::UpdateSceneAABB()
 	SceneAABB.setInitialized();
 }
 
-void ShadowMapDirectionalLightPass::OnUpdate(const float fDeltaTime)
+void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -307,7 +307,7 @@ void ShadowMapDirectionalLightPass::OnUpdate(const float fDeltaTime)
 	}
 }
 
-void ShadowMapDirectionalLightPass::OnDraw()
+void ShadowMapDirectionalLightPass::Draw()
 {
 	if (!DIRECTIONAL_LIGHT_ENABLED)
 		return;

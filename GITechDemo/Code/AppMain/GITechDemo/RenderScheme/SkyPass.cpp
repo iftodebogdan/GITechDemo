@@ -91,7 +91,7 @@ void SkyPass::ReleaseSkyBoxVB()
 	m_pSkyBoxCube = nullptr;
 }
 
-void SkyPass::OnUpdate(const float fDeltaTime)
+void SkyPass::Update(const float fDeltaTime)
 {
 	if (!AppMain)
 		return;
@@ -107,7 +107,7 @@ void SkyPass::OnUpdate(const float fDeltaTime)
 // Draw a world axis-aligned cube with its' center coinciding with the camera's position.
 // The vertex shader sets the visible face(s) at max depth so as to not draw over
 // other objects that aren't inside the cube (which, at 2x2x2, is quite small)
-void SkyPass::OnDraw()
+void SkyPass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

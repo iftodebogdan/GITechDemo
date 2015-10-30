@@ -24,6 +24,9 @@ namespace GITechDemoApp
 		void Update();
 		void SetupInput(gainput::InputManager* pInputManager);
 
+		bool IsDrawingOnHUD() { return m_nCurrParam != -1; }
+		unsigned int GetParameterCount() { return (unsigned int)ms_arrParams.size(); }
+
 		static void CreateInstance() { ms_pInstance = new ArtistParameterManager(); }
 		static void DestroyInstance() { if (ms_pInstance) delete ms_pInstance; ms_pInstance = nullptr; }
 		static ArtistParameterManager* GetArtistParameterManager() { return ms_pInstance; }

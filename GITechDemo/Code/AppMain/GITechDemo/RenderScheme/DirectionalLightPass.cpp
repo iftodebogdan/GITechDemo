@@ -55,7 +55,7 @@ DirectionalLightPass::~DirectionalLightPass()
 		delete[] f2PoissonDisk;
 }
 
-void DirectionalLightPass::OnUpdate(const float fDeltaTime)
+void DirectionalLightPass::Update(const float fDeltaTime)
 {
 	f2HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
 	texDiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
@@ -74,7 +74,7 @@ void DirectionalLightPass::OnUpdate(const float fDeltaTime)
 	texEnvMap = EnvironmentTexture.GetTextureIndex();
 }
 
-void DirectionalLightPass::OnDraw()
+void DirectionalLightPass::Draw()
 {
 	if (!DIRECTIONAL_LIGHT_ENABLED)
 		return;

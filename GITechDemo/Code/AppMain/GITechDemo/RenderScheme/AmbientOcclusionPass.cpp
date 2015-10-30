@@ -30,7 +30,7 @@ AmbientOcclusionPass::AmbientOcclusionPass(const char* const passName, RenderPas
 AmbientOcclusionPass::~AmbientOcclusionPass()
 {}
 
-void AmbientOcclusionPass::OnUpdate(const float fDeltaTime)
+void AmbientOcclusionPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -182,7 +182,7 @@ void AmbientOcclusionPass::ApplyAmbientOcclusion()
 	POP_PROFILE_MARKER();
 }
 
-void AmbientOcclusionPass::OnDraw()
+void AmbientOcclusionPass::Draw()
 {
 	if (!AMBIENT_OCCLUSION_ENABLED)
 		return;

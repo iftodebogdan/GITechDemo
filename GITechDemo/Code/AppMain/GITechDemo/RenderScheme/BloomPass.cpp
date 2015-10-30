@@ -26,7 +26,7 @@ BloomPass::BloomPass(const char* const passName, RenderPass* const parentPass)
 BloomPass::~BloomPass()
 {}
 
-void BloomPass::OnUpdate(const float fDeltaTime)
+void BloomPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -189,7 +189,7 @@ void BloomPass::BloomApply()
 	POP_PROFILE_MARKER();
 }
 
-void BloomPass::OnDraw()
+void BloomPass::Draw()
 {
 	if (!BLOOM_ENABLED)
 		return;

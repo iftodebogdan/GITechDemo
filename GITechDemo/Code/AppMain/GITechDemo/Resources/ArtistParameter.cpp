@@ -122,16 +122,15 @@ void ArtistParameterManager::Update()
 			sprintf_s(szTempBuffer, "Step:     Negate", fStep);
 			HUD_PASS.PrintLn(szTempBuffer);
 
-			if (cmd & APM_CMD_STEP_UP || cmd & APM_CMD_STEP_DOWN)
+			if (cmd & (APM_CMD_STEP_UP | APM_CMD_STEP_DOWN))
 				*(bool*)pCurrAP->pParam = !(*(bool*)pCurrAP->pParam);
 		}
 		else
 			assert(0);
 
 		HUD_PASS.PrintLn("");
-		HUD_PASS.PrintLn("Hold CtrlR or ShiftR to scale step value.");
+		HUD_PASS.PrintLn("Hold RCtrl or RShift to scale step value.");
 	}
-
 }
 
 void ArtistParameterManager::SetupInput(gainput::InputManager* pInputManager)

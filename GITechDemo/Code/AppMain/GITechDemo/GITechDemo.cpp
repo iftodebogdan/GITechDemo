@@ -324,9 +324,7 @@ void GITechDemo::Update(const float fDeltaTime)
 			Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
 
 		// Update mouse cursor
-		if (cmd & APP_CMD_CTRL_PITCH ||
-			cmd & APP_CMD_CTRL_YAW ||
-			cmd & APP_CMD_CTRL_ROLL)
+		if (cmd & (APP_CMD_CTRL_PITCH | APP_CMD_CTRL_YAW | APP_CMD_CTRL_ROLL))
 		{
 			int wLeft, wTop, wRight, wBottom;
 			pFW->GetWindowArea(wLeft, wTop, wRight, wBottom);
@@ -433,6 +431,26 @@ void GITechDemo::Update(const float fDeltaTime)
 	ArtistParameterManager* const pAPM = ArtistParameterManager::GetArtistParameterManager();
 	if (pAPM)
 		pAPM->Update();
+
+	// Draw controls on HUD
+	static bool bDrawControls = true;
+	if(!pAPM->IsDrawingOnHUD() && bDrawControls)
+	{
+		HUD_PASS.PrintLn("Left mouse button (hold) + mouse move: control camera pitch/yaw");
+		HUD_PASS.PrintLn("Right mouse button (hold) + mouse move: control camera roll");
+		HUD_PASS.PrintLn("W/A/S/D: move camera forward/backward/left/right");
+		HUD_PASS.PrintLn("LShift (hold): faster camera movement");
+		HUD_PASS.PrintLn("LCtrl (hold): slower camera movement");
+
+		if (pAPM->GetParameterCount() > 0)
+		{
+			HUD_PASS.PrintLn("");
+			HUD_PASS.PrintLn("Directional arrows up/down: cycle configurable parameters");
+			HUD_PASS.PrintLn("Directional arrows left/right: modify currently selected parameter");
+		}
+	}
+	if (cmd & (APP_CMD_FORWARD | APP_CMD_BACKWARD | APP_CMD_LEFT | APP_CMD_RIGHT))
+		bDrawControls = false;
 
 	POP_PROFILE_MARKER();
 }

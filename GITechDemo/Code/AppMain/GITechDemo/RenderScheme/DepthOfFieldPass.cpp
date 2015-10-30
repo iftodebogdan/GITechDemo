@@ -28,7 +28,7 @@ DepthOfFieldPass::DepthOfFieldPass(const char* const passName, RenderPass* const
 DepthOfFieldPass::~DepthOfFieldPass()
 {}
 
-void DepthOfFieldPass::OnUpdate(const float fDeltaTime)
+void DepthOfFieldPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -200,7 +200,7 @@ void DepthOfFieldPass::ApplyDoF()
 	POP_PROFILE_MARKER();
 }
 
-void DepthOfFieldPass::OnDraw()
+void DepthOfFieldPass::Draw()
 {
 	if (!DOF_ENABLED)
 		return;

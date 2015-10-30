@@ -84,7 +84,7 @@ HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
 HUDPass::~HUDPass()
 {}
 
-void HUDPass::OnUpdate(const float fDeltaTime)
+void HUDPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -115,7 +115,7 @@ void HUDPass::OnUpdate(const float fDeltaTime)
 	texSource = m_nHUDTextureIdx;
 }
 
-void HUDPass::OnDraw()
+void HUDPass::Draw()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
