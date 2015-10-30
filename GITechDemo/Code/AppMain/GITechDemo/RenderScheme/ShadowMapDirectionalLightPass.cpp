@@ -31,8 +31,8 @@ namespace GITechDemoApp
 
 	extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
 
-	float DEPTH_BIAS[NUM_CASCADES]				= {	0.004f,		0.002f,		0.003f,		0.002f	};
-	float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES]	= {	5.f,		5.5f,		6.f,		5.5f	};
+	float DEPTH_BIAS[NUM_CASCADES]				= {	0.002f,		0.002f,		0.0015f,	0.001f	};
+	float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES]	= {	2.f,		2.5f,		2.5f,		1.5f	};
 
 	AABoxf SceneAABB;
 	AABoxf SceneLightSpaceAABB;

@@ -9,8 +9,8 @@ float4 EncodeNormal(float3 n)
 {
 	n = normalize(n);
 	const float scale = 1.7777f;
-	float2 enc = n.xy / (n.z + 1.f);
-	enc /= scale;
+	float2 enc = n.xy * rcp(n.z + 1.f);
+	enc *= rcp(scale);
 	enc = enc * 0.5f + 0.5f;
 	return float4(enc, 0.f, 0.f);
 }
@@ -19,7 +19,7 @@ float3 DecodeNormal(float4 enc)
 {
 	const float scale = 1.7777f;
 	const float3 nn = enc.xyz * float3(2.f * scale, 2.f * scale, 0.f) + float3(-scale, -scale, 1.f);
-	const float g = 2.f / dot(nn.xyz, nn.xyz);
+	const float g = 2.f * rcp(dot(nn.xyz, nn.xyz));
 	const float3 n = float3(g * nn.xy, g - 1.f);
 	return normalize(n);
 }

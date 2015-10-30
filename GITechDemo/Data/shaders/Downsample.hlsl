@@ -41,7 +41,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	{
 		const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
 		f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
-		//f4Color.rgb /= fBrightness;
+		//f4Color.rgb *= rcp(fBrightness);
 		f4Color.rgb *= rcp(1.f + fBrightness);
 	}
 }

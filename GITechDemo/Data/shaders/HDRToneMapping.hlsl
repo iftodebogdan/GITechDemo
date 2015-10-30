@@ -39,7 +39,7 @@ float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 float3 DuikerOptimizedTonemap(const float3 f3Color)
 {
 	float3 x = max(0, f3Color - 0.004f);
-	return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
+	return (x * (6.2f * x + 0.5f)) * rcp(x * (6.2f * x + 1.7f) + 0.06f);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ float3 FilmicTonemap(const float3 f3Color)
 				f3Color * (fShoulderStrength * f3Color + fLinearStrength)
 				+ fToeStrength * fToeDenominator
 			)
-		) - fToeNumerator / fToeDenominator;
+		) - fToeNumerator * rcp(fToeDenominator);
 }
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
@@ -73,7 +73,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float3 f3Color = tex2D(texSource, input.f2TexCoord).rgb;
 
 	float fAvgLuma = tex2D(texAvgLuma, float2(0.5f, 0.5f)).r;
-	f3Color /= fAvgLuma;
+	f3Color *= rcp(fAvgLuma);
 
 	//////////////////////////////////////////
 	// Apply tone mapping operator			//
@@ -88,7 +88,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 	// Uncharted 2
 	float3 f3FinalColor = FilmicTonemap(f3Color * fExposureBias);
-	const float3 f3WhiteScale = 1.0f / FilmicTonemap(fLinearWhite);
+	const float3 f3WhiteScale = rcp(FilmicTonemap(fLinearWhite));
 	f3FinalColor *= f3WhiteScale;
 
 	// Convert back to gamma space (not required for Duiker tonemap)

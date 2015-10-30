@@ -72,7 +72,7 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 	// Transform pixel coordinates from NDC space to RSM view space
 	const float4 f4RSMViewSpacePos = mul(f44ScreenToLightViewMat, f4ScreenProjSpacePos);
 	// Perspective w-divide
-	const float3 f3RSMViewSpacePos = f4RSMViewSpacePos.xyz / f4RSMViewSpacePos.w;
+	const float3 f3RSMViewSpacePos = f4RSMViewSpacePos.xyz * rcp(f4RSMViewSpacePos.w);
 	// Sample normal for currently shaded pixel and transform to RSM view space
 	const float3 f3RSMViewSpaceNormal = mul((float3x3)f44ViewToRSMViewMat, DecodeNormal(tex2D(texNormalBuffer, f2TexCoord)));
 	// Transform point to RSM NDC space

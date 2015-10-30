@@ -51,7 +51,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// containing the log() of averages
 	if (bInitialLumaPass)
 	{
-		const float2 f2Kernel = f2TexelSize / 3.f;
+		const float2 f2Kernel = f2TexelSize * 0.33333333f;
 		float fLogLumSum = 0.f;
 		UNROLL for (float i = -1.f; i <= 1.f; i++)
 			UNROLL for (float j = -1.f; j <= 1.f; j++)
@@ -63,7 +63,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 				fLogLumSum += log(dot(f3Sample, LUMINANCE_VECTOR) + 0.0001f);
 			}
 
-		fLogLumSum /= 9.f;
+		fLogLumSum *= 0.11111111f;
 		f4Color = float4(fLogLumSum, fLogLumSum, fLogLumSum, 1.f);
 	}
 	// The rest of the passes further downscale the average luma texture
@@ -78,11 +78,11 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		// the final 1x1 average luma texture
 		if (bFinalLumaPass)
 		{
-			fAvgLuma = exp(fAvgLuma / 16.f);
+			fAvgLuma = exp(fAvgLuma * 0.0625f);
 			fAvgLuma = clamp(fAvgLuma, f2AvgLumaClamp.x, f2AvgLumaClamp.y);
 		}
 		else
-			fAvgLuma /= 16.f;
+			fAvgLuma *= 0.0625f;
 
 		f4Color = float4(fAvgLuma, fAvgLuma, fAvgLuma, 1.f);
 	}

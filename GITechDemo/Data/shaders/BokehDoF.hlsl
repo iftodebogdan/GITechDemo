@@ -157,9 +157,9 @@ const float	fVignFade;		//	F-stops until vignette fades
 #define DEPTH_BLUR_SAMPLE_COUNT (9)
 static const float fKernelWeight[DEPTH_BLUR_SAMPLE_COUNT] =
 {
-	1.f / 16.f, 2.f / 16.f, 1.f / 16.f,
-	2.f / 16.f, 4.f / 16.f, 2.f / 16.f,
-	1.f / 16.f, 2.f / 16.f, 1.f / 16.f
+	1/16, 2/16, 1/16,
+	2/16, 4/16, 2/16,
+	1/16, 2/16, 1/16
 };
 static const float2 f2KernelOffset[DEPTH_BLUR_SAMPLE_COUNT] =
 {
@@ -214,8 +214,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	if (bManualDof)
 	{
 		const float fFocalPlane	= fLinearDepth - fFocalPoint;
-		const float fFarPlane	= (fFocalPlane - fFarDofStart) / fFarDofFalloff;
-		const float fNearPlane	= (-fFocalPlane - fNearDofStart) / fNearDofFalloff;
+		const float fFarPlane	= (fFocalPlane - fFarDofStart) * rcp(fFarDofFalloff);
+		const float fNearPlane	= (-fFocalPlane - fNearDofStart) * rcp(fNearDofFalloff);
 		//fDofBlurFactor		= (fFocalPlane > 0.f) ? fFarPlane : fNearPlane;
 		fDofBlurFactor			= lerp(fNearPlane, fFarPlane, fFocalPlane > 0.f);	// Avoid dynamic branching
 	}
@@ -248,8 +248,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Since fDofBlurFactor >= 0.05f is coherent across the screen			//
 	// (i.e. the focal plane has a coherent coverage), dynamic branching	//
 	// isn't such a big deal when compared to a bunch of sin() and cos().	//
-	// NB: See note about dynamic branching in DeferredLightDir.hlsl		//
-	// NB2: Yes, I have tested it both ways: dynamic branching version		//
+	// NB: I have tested it both ways and the dynamic branching version		//
 	// is faster than extra ALU by about 13% on AMD Mobility Radeon HD 5650	//
 	//----------------------------------------------------------------------//
 	if (fDofBlurFactor >= 0.05f)
@@ -258,18 +257,18 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 		DOF_UNROLL_LV1 for (int i = 1; i <= nRingCount; i++)
 		{
-			const int fRingSampleCount = i * nSampleCount;
+			const int nRingSampleCount = i * nSampleCount;
 
-			DOF_UNROLL_LV2 for (int j = 0; j < fRingSampleCount; j++)
+			DOF_UNROLL_LV2 for (int j = 0; j < nRingSampleCount; j++)
 			{
 				// Distribute the samples across the ring's edge evenly
-				const float		fStep			=	PI * 2.f / float(fRingSampleCount);
-				const float		fAngle			=	float(j) * fStep;
-				const float2	f2RingPattern	=	float2(cos(fAngle), sin(fAngle)) * float(i);
+				const float		fStep			=	PI * 2.f * rcp(nRingSampleCount);
+				const float		fAngle			=	j * fStep;
+				const float2	f2RingPattern	=	float2(cos(fAngle), sin(fAngle)) * i;
 
 				// Shift sampling weights toward bokeh edge according to the value of 'fBokehBias'
-				float3	f3ColorAdd		=	CalculateColor(input.f2TexCoord + f2RingPattern * f2BlurStepFactor, fDofBlurFactor) * lerp(1.f, (float(i)) / (float(nRingCount)), fBokehBias);
-				float	fSampleDivAdd	=	lerp(1.f, (float(i)) / (float(nRingCount)), fBokehBias);
+				float3	f3ColorAdd		=	CalculateColor(input.f2TexCoord + f2RingPattern * f2BlurStepFactor, fDofBlurFactor) * lerp(1.f, i * rcp(nRingCount), fBokehBias);
+				float	fSampleDivAdd	=	lerp(1.f, i * rcp(nRingCount), fBokehBias);
 
 				// Optionally, use pentagon shape for bokeh
 				if (bPentagonBokeh)
@@ -284,7 +283,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 			}
 		}
 
-		f3Color /= fSampleDiv;
+		f3Color *= rcp(fSampleDiv);
 	}
 
 	// Apply vignetting
@@ -302,7 +301,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 // Generate pentagon pattern
 float GeneratePentagon(float2 f2Coords)
 {
-	const float fScale = float(nRingCount) - 1.3f;
+	const float fScale = nRingCount - 1.3f;
 
 	const float4 f4HS0 = float4( 1.f,			 0.f,			0.f,	1.f);
 	const float4 f4HS1 = float4( 0.309016994f,	 0.951056516f,	0.f,	1.f);
@@ -343,7 +342,7 @@ float BlurDepth(float2 f2Coords)
 	// overlapping in and out of focus objects would be bigger as the resolution got lower.
 	// Just maintain a proper aspect ratio so that the kernel is always square.
 	//float2 f2KernelSize = f2TexelSize * fDepthBlurSize;
-	const float2 f2KernelSize = float2(fDepthBlurSize, f2TexelSize.y * fDepthBlurSize / f2TexelSize.x);
+	const float2 f2KernelSize = float2(fDepthBlurSize, f2TexelSize.y * fDepthBlurSize * rcp(f2TexelSize.x));
 
 	float fDepth = 0.f;
 	UNROLL for (int i = 0; i < DEPTH_BLUR_SAMPLE_COUNT; i++)
@@ -416,6 +415,6 @@ float3 DebugFocus(float3 f3Color, float fDofBlurFactor, float fLinearDepth)
 // Calculate vignetting effect factor of a pixel
 float CalculateVignetting(float2 f2Coords)
 {
-	const float fFadeFactor = fFStop / fVignFade;
+	const float fFadeFactor = fFStop * rcp(fVignFade);
 	return smoothstep(fVignOut + fFadeFactor, fVignIn + fFadeFactor, distance(f2Coords, float2(0.5f, 0.5f)));
 }

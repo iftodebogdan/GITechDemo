@@ -25,7 +25,7 @@ const float fZFar;
 const float2 f2LinearDepthEquation;
 float ReconstructDepth(float fHyperbolicDepth)
 {
-	return f2LinearDepthEquation.x / (fHyperbolicDepth - f2LinearDepthEquation.y);
+	return f2LinearDepthEquation.x * rcp(fHyperbolicDepth - f2LinearDepthEquation.y);
 }
 
 
