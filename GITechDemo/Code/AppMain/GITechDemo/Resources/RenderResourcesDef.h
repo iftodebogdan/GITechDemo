@@ -46,6 +46,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER(FxaaShader);
 	DECLARE_SHADER(SsaoShader);
 	DECLARE_SHADER(HUDTextShader);
+	DECLARE_SHADER(MotionBlurShader);
 	//------------------------------------------------------
 
 	// Models (manage their own textures, no need to declare them)
@@ -84,6 +85,7 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(DepthOfFieldQuarterBuffer);
 	DECLARE_RENDER_TARGET(AutofocusBuffer0);
 	DECLARE_RENDER_TARGET(AutofocusBuffer1);
+	DECLARE_RENDER_TARGET(MotionBlurBuffer);
 
 	enum HDRDownsampleBufferIndex {
 		QUARTER = 0,
@@ -228,6 +230,8 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f2LinearDepthEquation, Vec2f);
 	DECLARE_SHADER_CONSTANT(texTargetFocus, LibRendererDll::Sampler2D);
 	DECLARE_SHADER_CONSTANT(f3TextColor, Vec3f);
+	DECLARE_SHADER_CONSTANT(f44PrevViewProjMat, Matrix44f);
+	DECLARE_SHADER_CONSTANT(fMotionBlurIntensity, float);
 	//-------------------------------------------------------
 }
 

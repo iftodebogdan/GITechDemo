@@ -46,6 +46,7 @@ namespace GITechDemoApp
 	IMPLEMENT_SHADER(FxaaShader, "shaders/FXAA.hlsl");
 	IMPLEMENT_SHADER(SsaoShader, "shaders/SSAO.hlsl");
 	IMPLEMENT_SHADER(HUDTextShader, "shaders/HUDText.hlsl");
+	IMPLEMENT_SHADER(MotionBlurShader, "shaders/MotionBlur.hlsl");
 	//------------------------------------------------------
 
 	//////////////
@@ -121,6 +122,9 @@ namespace GITechDemoApp
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldQuarterBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 	IMPLEMENT_RENDER_TARGET(AutofocusBuffer0, 1, PF_R32F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
 	IMPLEMENT_RENDER_TARGET(AutofocusBuffer1, 1, PF_R32F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
+
+	// Motion blur render target
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(MotionBlurBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 
 	// Arrays of render targets for easier handling
 	RenderTarget* HDRDownsampleBuffer[2] = {
@@ -237,6 +241,8 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignOut,				float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignIn,				float,			0.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignFade,				float,			22.f					);
+	// Motion blur
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMotionBlurIntensity,	float,			0.01f					);
 
 	/* HUD parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,			Vec3f,			Vec3f(1.f, 1.f, 1.f)	);
@@ -312,5 +318,6 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bAdjustIntensity,						bool			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2LinearDepthEquation,				Vec2f			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texTargetFocus,						Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f44PrevViewProjMat,					Matrix44f		);
 	//--------------------------------------------------------------------------
 }

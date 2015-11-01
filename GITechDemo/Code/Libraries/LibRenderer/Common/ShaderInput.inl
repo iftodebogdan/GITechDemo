@@ -16,6 +16,7 @@
 // You should have received a copy of the GNU General Public License    //
 // along with this program. If not, see <http://www.gnu.org/licenses/>. //
 //////////////////////////////////////////////////////////////////////////
+
 template < typename T, const unsigned int ROWS, const unsigned int COLS >
 inline void ShaderInput::SetMatrix(const unsigned int handle, const Matrix<T, ROWS, COLS> data)
 {

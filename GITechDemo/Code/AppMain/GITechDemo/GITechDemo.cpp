@@ -421,8 +421,14 @@ void GITechDemo::Update(const float fDeltaTime)
 
 	// Calculate some composite matrices
 	gmtl::invertFull((Matrix44f&)f44InvViewMat, (Matrix44f&)f44ViewMat);
+	f44PrevViewProjMat = f44ViewProjMat; // View-projection matrix from last frame
 	f44ViewProjMat = f44ProjMat * f44ViewMat;
 	f44InvViewProjMat = f44InvViewMat * f44InvProjMat;
+
+	// For the first frame, set the last frame's view-projection matrix
+	// to the current frame's view-projection matrix
+	if (f44PrevViewProjMat.GetCurrentValue() == MAT_IDENTITY44F)
+		f44PrevViewProjMat = f44ViewProjMat;
 
 	// Set the size of the backbuffer accordingly 
 	RenderContext->SetBackBufferSize(viewportSize);

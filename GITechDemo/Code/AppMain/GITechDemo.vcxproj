@@ -269,6 +269,7 @@
     <ClInclude Include="GITechDemo\RenderScheme\HDRToneMappingPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\HUDPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\LightingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\MotionBlurPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\PostProcessingPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\RenderPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\RenderScheme.h" />
@@ -299,6 +300,7 @@
     <ClCompile Include="GITechDemo\RenderScheme\HDRToneMappingPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\HUDPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\LightingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\MotionBlurPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\PostProcessingPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\RenderPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\RenderScheme.cpp" />
@@ -695,6 +697,39 @@ call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(
       <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
 call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
 call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\MotionBlur.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /T vs_3_0 /E vsmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>

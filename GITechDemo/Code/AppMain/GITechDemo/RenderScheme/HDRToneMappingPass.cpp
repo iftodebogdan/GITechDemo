@@ -57,9 +57,6 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 // Measure average luminance level of scene
 void HDRToneMappingPass::LuminanceMeasurementPass()
 {
-	if (!HDR_TONE_MAPPING_ENABLED)
-		return;
-
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;
@@ -184,6 +181,9 @@ void HDRToneMappingPass::ToneMappingPass()
 
 void HDRToneMappingPass::Draw()
 {
+	if (!HDR_TONE_MAPPING_ENABLED)
+		return;
+
 	LuminanceMeasurementPass();
 	LuminanceAdaptationPass();
 	ToneMappingPass();

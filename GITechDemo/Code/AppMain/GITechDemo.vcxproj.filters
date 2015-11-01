@@ -111,6 +111,9 @@
     <ClInclude Include="GITechDemo\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\MotionBlurPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\Windows\stdafx.cpp">
@@ -197,6 +200,9 @@
     <ClCompile Include="GITechDemo\Resources\ArtistParametersDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\MotionBlurPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Framework\Windows\Framework.ico">
@@ -245,6 +251,9 @@
     </None>
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\MotionBlur.hlsl">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

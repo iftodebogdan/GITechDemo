@@ -60,6 +60,9 @@ namespace GITechDemoApp
 	extern bool DOF_USE_QUARTER_RESOLUTION_BUFFER;
 	extern float DOF_AUTOFOCUS_TIME;
 
+	// Motion blur
+	extern bool MOTION_BLUR_ENABLED;
+
 	// Bloom
 	extern bool BLOOM_ENABLED;
 
@@ -168,6 +171,10 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting in",				"Vignetting inner border",												"Bokeh DoF",				fVignIn.GetCurrentValue(),					0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting fade",			"F-stops until vignette fades",											"Bokeh DoF",				fVignFade.GetCurrentValue(),				1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"Bokeh DoF",				DOF_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
+
+	// Motion blur
+	IMPLEMENT_ARTIST_PARAMETER("Motion blur enable",		"Toggle the rendering of the motion blur effect",						"Motion blur",				MOTION_BLUR_ENABLED,						1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Motion blur intensity",		"The intensity of the motion blur effect",								"Motion blur",				fMotionBlurIntensity.GetCurrentValue(),		0.01f);
 
 	// Bloom
 	IMPLEMENT_ARTIST_PARAMETER("Bloom enable",				"Toggle the rendering of the bloom effect",								"Bloom",					BLOOM_ENABLED,								1.f);

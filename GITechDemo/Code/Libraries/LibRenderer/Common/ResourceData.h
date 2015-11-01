@@ -112,7 +112,7 @@ namespace LibRendererDll
 	{
 		BU_NONE,
 
-		BU_STATIC,			// Informs the system that the application writes only to the buffer
+		BU_STATIC,			// Informs the system that the application only writes once to the buffer
 		BU_DYNAMIC,			// Set to indicate that the buffer requires dynamic memory use
 		BU_RENDERTAGET,		// The resource will be a render target
 		BU_DEPTHSTENCIL,	// The resource will be a depth stencil buffer

@@ -3,59 +3,82 @@
 #include "RenderScheme.h"
 
 //////////////////////////
-// Some utility defines	//
+// Some useful defines	//
 //////////////////////////
-GITechDemoApp::RenderPass GITechDemoApp::RenderScheme::RootPass("Root Pass", nullptr);
-
+#define CREATE_ROOT_PASS() GITechDemoApp::RenderPass GITechDemoApp::RenderScheme::RootPass("Root Pass", nullptr);
 #define ROOT_PASS RenderScheme::GetRootPass()
-
-#define IMPLEMENT_CHILD_PASS(Object, Class, Name, Parent) namespace GITechDemoApp { Class Object ( Name, & Parent ); }
+#define ADD_RENDER_PASS(Object, Class, Name, Parent) namespace GITechDemoApp { Class Object ( Name, & Parent ); }
 ///////////////////////////////////////////////////////////
+
+
 
 //////////////////////////////
 // Start adding passes here	//
 //////////////////////////////
-#include "ShadowMapDirectionalLightPass.h"
-IMPLEMENT_CHILD_PASS(SHADOW_MAP_DIRECTIONAL_LIGHT_PASS, ShadowMapDirectionalLightPass, "Shadow Map Directional Light Pass", ROOT_PASS)
 
-#include "RSMDirectionalLightPass.h"
-IMPLEMENT_CHILD_PASS(RSM_DIRECTIONAL_LIGHT_PASS, RSMDirectionalLightPass, "RSM Directional Light Pass", ROOT_PASS)
+// The root pass (mandatory)
+CREATE_ROOT_PASS()
 
-#include "GBufferPass.h"
-IMPLEMENT_CHILD_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer Pass", ROOT_PASS)
+	// Render the shadow map cascades for the directional light
+	#include "ShadowMapDirectionalLightPass.h"
+	ADD_RENDER_PASS(SHADOW_MAP_DIRECTIONAL_LIGHT_PASS, ShadowMapDirectionalLightPass, "Shadow Map Directional Light Pass", ROOT_PASS)
 
-#include "LightingPass.h"
-IMPLEMENT_CHILD_PASS(LIGHTING_PASS, LightingPass, "Lighting Pass", ROOT_PASS)
+	// Render the reflective shadow map for the directional light
+	#include "RSMDirectionalLightPass.h"
+	ADD_RENDER_PASS(RSM_DIRECTIONAL_LIGHT_PASS, RSMDirectionalLightPass, "RSM Directional Light Pass", ROOT_PASS)
 
-#include "SkyPass.h"
-IMPLEMENT_CHILD_PASS(SKY_PASS, SkyPass, "Sky Pass", LIGHTING_PASS)
+	// Generate the geometry buffer
+	#include "GBufferPass.h"
+	ADD_RENDER_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer Pass", ROOT_PASS)
 
-#include "DirectionalLightPass.h"
-IMPLEMENT_CHILD_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light Pass", LIGHTING_PASS)
+	// Compute scene lighting
+	#include "LightingPass.h"
+	ADD_RENDER_PASS(LIGHTING_PASS, LightingPass, "Lighting Pass", ROOT_PASS)
 
-#include "DirectionalIndirectLightPass.h"
-IMPLEMENT_CHILD_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Directional Indirect Light Pass", LIGHTING_PASS)
+		// Render the sky box
+		#include "SkyPass.h"
+		ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky Pass", LIGHTING_PASS)
 
-#include "PostProcessingPass.h"
-IMPLEMENT_CHILD_PASS(POST_PROCESSING_PASS, PostProcessingPass, "Post-Processing Pass", ROOT_PASS)
+		// Compute direct light contribution from the directional light
+		#include "DirectionalLightPass.h"
+		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light Pass", LIGHTING_PASS)
 
-#include "AmbientOcclusionPass.h"
-IMPLEMENT_CHILD_PASS(AMBIENT_OCCLUSION_PASS, AmbientOcclusionPass, "Ambient Occlusion Pass", POST_PROCESSING_PASS)
+		// Compute indirect (1 unoccluded bounce) light contribution from the directional light
+		#include "DirectionalIndirectLightPass.h"
+		ADD_RENDER_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Directional Indirect Light Pass", LIGHTING_PASS)
 
-#include "HDRDownsamplePass.h"
-IMPLEMENT_CHILD_PASS(HDR_DOWNSAMPLE_PASS, HDRDownsamplePass, "HDR Downsample Pass", POST_PROCESSING_PASS)
+	// Apply post-processing effect chain
+	#include "PostProcessingPass.h"
+	ADD_RENDER_PASS(POST_PROCESSING_PASS, PostProcessingPass, "Post-Processing Pass", ROOT_PASS)
 
-#include "DepthOfFieldPass.h"
-IMPLEMENT_CHILD_PASS(DEPTH_OF_FIELD_PASS, DepthOfFieldPass, "Depth of Field Pass", POST_PROCESSING_PASS)
+		// Screen space ambient occlusion
+		#include "AmbientOcclusionPass.h"
+		ADD_RENDER_PASS(AMBIENT_OCCLUSION_PASS, AmbientOcclusionPass, "Ambient Occlusion Pass", POST_PROCESSING_PASS)
 
-#include "BloomPass.h"
-IMPLEMENT_CHILD_PASS(BLOOM_PASS, BloomPass, "Bloom Pass", POST_PROCESSING_PASS)
+		// HDR framebuffer downsampling (1/4 and 1/16) for bloom, tone mapping, etc.
+		#include "HDRDownsamplePass.h"
+		ADD_RENDER_PASS(HDR_DOWNSAMPLE_PASS, HDRDownsamplePass, "HDR Downsample Pass", POST_PROCESSING_PASS)
 
-#include "HDRToneMappingPass.h"
-IMPLEMENT_CHILD_PASS(HDR_TONE_MAPPING_PASS, HDRToneMappingPass, "HDR Tone Mapping Pass", POST_PROCESSING_PASS)
+		// Depth of field effect with bokeh (dynamic branching, pixel shader only)
+		#include "DepthOfFieldPass.h"
+		ADD_RENDER_PASS(DEPTH_OF_FIELD_PASS, DepthOfFieldPass, "Depth of Field Pass", POST_PROCESSING_PASS)
 
-#include "FXAAPass.h"
-IMPLEMENT_CHILD_PASS(FXAA_PASS, FXAAPass, "FXAA Pass", POST_PROCESSING_PASS)
+		// Motion blur effect
+		#include "MotionBlurPass.h"
+		ADD_RENDER_PASS(MOTION_BLUR_PASS, MotionBlurPass, "Motion Blur Pass", POST_PROCESSING_PASS)
 
-#include "HUDPass.h"
-IMPLEMENT_CHILD_PASS(HUD_PASS, HUDPass, "HUD", ROOT_PASS)
+		// Bloom (light bleeding) effect
+		#include "BloomPass.h"
+		ADD_RENDER_PASS(BLOOM_PASS, BloomPass, "Bloom Pass", POST_PROCESSING_PASS)
+
+		// Tone mapping (HDR linear space to LDR gamma space conversion)
+		#include "HDRToneMappingPass.h"
+		ADD_RENDER_PASS(HDR_TONE_MAPPING_PASS, HDRToneMappingPass, "HDR Tone Mapping Pass", POST_PROCESSING_PASS)
+
+		// Fast approximate anti-aliasing
+		#include "FXAAPass.h"
+		ADD_RENDER_PASS(FXAA_PASS, FXAAPass, "FXAA Pass", POST_PROCESSING_PASS)
+
+	// Head-up display
+	#include "HUDPass.h"
+	ADD_RENDER_PASS(HUD_PASS, HUDPass, "HUD", ROOT_PASS)

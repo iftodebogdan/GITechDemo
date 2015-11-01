@@ -12,6 +12,12 @@ using namespace GITechDemoApp;
 
 #include "RenderResourcesDef.h"
 
+namespace GITechDemoApp
+{
+	extern bool BLOOM_ENABLED;
+	extern bool HDR_TONE_MAPPING_ENABLED;
+}
+
 HDRDownsamplePass::HDRDownsamplePass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
 {}
@@ -67,6 +73,9 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
 
 void HDRDownsamplePass::Draw()
 {
+	if (!BLOOM_ENABLED && !HDR_TONE_MAPPING_ENABLED)
+		return;
+
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;

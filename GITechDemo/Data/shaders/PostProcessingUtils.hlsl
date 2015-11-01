@@ -11,15 +11,12 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Reconstruct the depth in world space coordinates from the hyperbolic depth				//
+// Reconstruct the depth in view space coordinates from the hyperbolic depth				//
 //------------------------------------------------------------------------------------------//
 // LinearDepth = (fZNear * fZFar / (fZNear - fZFar)) / (Depth - (fZFar / (fZFar - fZNear)))	//
 // f2LinearDepthEquation.x = fZNear * fZFar / (fZNear - fZFar)								//
 // f2LinearDepthEquation.y = fZFar / (fZFar - fZNear)										//
 //////////////////////////////////////////////////////////////////////////////////////////////
-//static const float fZNear = 1.f;
-//static const float fZFar = 5000.f;
-//static const float2 f2LinearDepthEquation = float2(fZNear * fZFar / (fZNear - fZFar), fZFar / (fZFar - fZNear));
 const float fZNear;
 const float fZFar;
 const float2 f2LinearDepthEquation;
