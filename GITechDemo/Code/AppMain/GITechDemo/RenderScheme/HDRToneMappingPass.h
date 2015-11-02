@@ -7,7 +7,7 @@ namespace GITechDemoApp
 {
 	class HDRToneMappingPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(HDRToneMappingPass);
+		IMPLEMENT_RENDER_PASS(HDRToneMappingPass)
 
 	private:
 		void LuminanceMeasurementPass();

@@ -31,6 +31,8 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			print "Compiling texture \"" + os.path.join(root, name) + "\""
 			if name == 'sky.dds':
 				subprocess.call([textureCompilerExe, "-q", "-f", "A16B16G16R16F", "-d", outputPath, os.path.join(root, name)])
+			elif name == 'LensFlareDirt.png' or name == 'LensFlareGhostColorLUT.png' or name == 'LensFlareStarBurst.png':
+				subprocess.call([textureCompilerExe, "-q", "-f", "A8R8G8B8", "-mip",  "1", "-d", outputPath, os.path.join(root, name)])
 			else:
 				subprocess.call([textureCompilerExe, "-q", "-f", "A8R8G8B8", "-d", outputPath, os.path.join(root, name)])
 

@@ -127,9 +127,12 @@ void ArtistParameterManager::Update()
 		}
 		else
 			assert(0);
-
-		HUD_PASS.PrintLn("");
-		HUD_PASS.PrintLn("Hold RCtrl or RShift to scale step value.");
+		
+		if (pCurrAP->nTypeHash != typeid(bool).hash_code())
+		{
+			HUD_PASS.PrintLn("");
+			HUD_PASS.PrintLn("Hold RCtrl or RShift to scale step value.");
+		}
 	}
 }
 

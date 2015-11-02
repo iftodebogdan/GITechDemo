@@ -7,7 +7,7 @@ namespace GITechDemoApp
 {
 	class RSMDirectionalLightPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(RSMDirectionalLightPass);
+		IMPLEMENT_RENDER_PASS(RSMDirectionalLightPass)
 	};
 }
 

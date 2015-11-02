@@ -7,7 +7,7 @@ namespace GITechDemoApp
 {
 	class ShadowMapDirectionalLightPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(ShadowMapDirectionalLightPass);
+		IMPLEMENT_RENDER_PASS(ShadowMapDirectionalLightPass)
 
 	private:
 		void UpdateSceneAABB();

@@ -47,6 +47,8 @@ namespace GITechDemoApp
 	IMPLEMENT_SHADER(SsaoShader, "shaders/SSAO.hlsl");
 	IMPLEMENT_SHADER(HUDTextShader, "shaders/HUDText.hlsl");
 	IMPLEMENT_SHADER(MotionBlurShader, "shaders/MotionBlur.hlsl");
+	IMPLEMENT_SHADER(LensFlareFeaturesShader, "shaders/LensFlareFeatures.hlsl");
+	IMPLEMENT_SHADER(LensFlareApplyShader, "shaders/LensFlareApply.hlsl");
 	//------------------------------------------------------
 
 	//////////////
@@ -58,9 +60,12 @@ namespace GITechDemoApp
 	//////////////
 	// Textures	//
 	//////////////
-	IMPLEMENT_TEXTURE(SkyTexture,			"textures/sky.lrt");
-	IMPLEMENT_TEXTURE(IrradianceTexture,	"textures/irradiance.lrt");
-	IMPLEMENT_TEXTURE(EnvironmentTexture,	"textures/envmap.lrt");
+	IMPLEMENT_TEXTURE(SkyTexture,				"textures/sky.lrt");
+	IMPLEMENT_TEXTURE(IrradianceTexture,		"textures/irradiance.lrt");
+	IMPLEMENT_TEXTURE(EnvironmentTexture,		"textures/envmap.lrt");
+	IMPLEMENT_TEXTURE(LensFlareGhostColorLUT,	"textures/LensFlareGhostColorLUT.lrt");
+	IMPLEMENT_TEXTURE(LensFlareDirt,			"textures/LensFlareDirt.lrt");
+	IMPLEMENT_TEXTURE(LensFlareStarBurst,		"textures/LensFlareStarBurst.lrt");
 	//------------------------------------------------------
 
 	//////////////////////
@@ -102,8 +107,8 @@ namespace GITechDemoApp
 	IMPLEMENT_RENDER_TARGET(AdaptedLuminance1, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
 
 	// HDR bloom render targets
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(HDRBloomBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.25f, 0.25f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(HDRBloomBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.25f, 0.25f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(BloomBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.25f, 0.25f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(BloomBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.25f, 0.25f, PF_NONE);
 
 	// LDR tone mapped render target
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(LDRToneMappedImageBuffer, 1, PF_A8R8G8B8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
@@ -126,6 +131,10 @@ namespace GITechDemoApp
 	// Motion blur render target
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(MotionBlurBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 
+	// Lens flare render targets
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(LensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(LensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	
 	// Arrays of render targets for easier handling
 	RenderTarget* HDRDownsampleBuffer[2] = {
 		&HDRDownsampleQuarterBuffer,
@@ -137,9 +146,9 @@ namespace GITechDemoApp
 		&AverageLuminanceBuffer2,
 		&AverageLuminanceBuffer3
 	};
-	RenderTarget* HDRBloomBuffer[2] = {
-		&HDRBloomBuffer0,
-		&HDRBloomBuffer1
+	RenderTarget* BloomBuffer[2] = {
+		&BloomBuffer0,
+		&BloomBuffer1
 	};
 	RenderTarget* AmbientOcclusionFullBuffer[2] = {
 		&AmbientOcclusionFullBuffer0,
@@ -157,92 +166,107 @@ namespace GITechDemoApp
 		&AutofocusBuffer0,
 		&AutofocusBuffer1
 	};
+	RenderTarget* LensFlareBuffer[2] = {
+		&LensFlareBuffer0,
+		&LensFlareBuffer1
+	};
 	//------------------------------------------------------
 
 	//////////////////////////////////////
 	// Shader constants - artist driven	//
 	//////////////////////////////////////
 	/* General parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZNear,				float,			10.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZFar,					float,			5000.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZNear,					float,			10.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fZFar,						float,			5000.f					);
 
 	/* Directional light parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fDiffuseFactor,		float,			20.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSpecFactor,			float,			25.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fAmbientFactor,		float,			0.25f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fIrradianceFactor,		float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fReflectionFactor,		float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(nBRDFModel,			unsigned int,	COOK_TORRANCE_BECKMANN	);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fDiffuseFactor,			float,			20.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSpecFactor,				float,			25.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fAmbientFactor,			float,			0.25f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fIrradianceFactor,			float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fReflectionFactor,			float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(nBRDFModel,				unsigned int,	COOK_TORRANCE_BECKMANN	);
 
 	/* Sun parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSunRadius,			float,			1000.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSunBrightness,		float,			500.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSunRadius,				float,			1000.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSunBrightness,			float,			500.f					);
 
 	/* Cascaded Shadow Map parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugCascades,		bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCascadeBlendSize,		float,			50.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugCascades,			bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCascadeBlendSize,			float,			50.f					);
 
 	/* Reflective Shadow Map parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMIntensity,			float,			500.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMKernelScale,		float,			0.025f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fWeightThreshold,		float,			0.002f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugUpscalePass,		bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMIntensity,				float,			500.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fRSMKernelScale,			float,			0.025f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fWeightThreshold,			float,			0.002f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugUpscalePass,			bool,			false					);
 
 	/* Screen-Space Ambient Occlusion */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOSampleRadius,		float,			10.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOIntensity,		float,			5.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOScale,			float,			0.05f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOBias,				float,			0.25f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOSampleRadius,			float,			10.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOIntensity,			float,			5.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOScale,				float,			0.05f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSSAOBias,					float,			0.25f					);
 
 	/* Post-processing parameters */
 	// Tone mapping
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fExposureBias,			float,			0.15f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(f2AvgLumaClamp,		Vec2f,			Vec2f(0.00001f, 0.25f)	);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fShoulderStrength,		float,			0.15f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearStrength,		float,			0.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearAngle,			float,			0.07f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeStrength,			float,			3.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeNumerator,			float,			0.02f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeDenominator,		float,			0.25f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearWhite,			float,			11.2f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLumaAdaptSpeed,		float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fExposureBias,				float,			0.15f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(f2AvgLumaClamp,			Vec2f,			Vec2f(0.00001f, 0.25f)	);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fShoulderStrength,			float,			0.15f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearStrength,			float,			0.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearAngle,				float,			0.07f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeStrength,				float,			3.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeNumerator,				float,			0.02f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeDenominator,			float,			0.25f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearWhite,				float,			11.2f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLumaAdaptSpeed,			float,			1.f						);
 	// Bloom
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,	float,			0.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomPower,			float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomStrength,		float,			0.75f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,		float,			0.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomPower,				float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomStrength,			float,			0.75f					);
 	// FXAA
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaSubpix,			float,			0.75f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThreshold,	float,			0.166f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThresholdMin,	float,			0.0833f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaSubpix,				float,			0.75f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThreshold,		float,			0.166f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThresholdMin,		float,			0.0833f					);
 	// DoF
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalDepth,			float,			100.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalLength,			float,			75.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFStop,				float,			3.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCoC,					float,			0.02f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofStart,			float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofFalloff,		float,			2.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofStart,			float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofFalloff,		float,			3.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bManualDof,			bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugFocus,			bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAutofocus,			bool,			true					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMaxBlur,				float,			1.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightThreshold,	float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightGain,		float,			10.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehBias,			float,			0.75f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehFringe,			float,			2.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bPentagonBokeh,		bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fPentagonFeather,		float,			0.4f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bUseNoise,				bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNoiseAmount,			float,			0.0001f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bBlurDepth,			bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fDepthBlurSize,		float,			0.001f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bVignetting,			bool,			true					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignOut,				float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignIn,				float,			0.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignFade,				float,			22.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalDepth,				float,			100.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalLength,				float,			75.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFStop,					float,			3.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCoC,						float,			0.02f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofStart,				float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofFalloff,			float,			2.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofStart,				float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofFalloff,			float,			3.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bManualDof,				bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugFocus,				bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAutofocus,				bool,			true					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMaxBlur,					float,			1.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightThreshold,		float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightGain,			float,			10.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehBias,				float,			0.75f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehFringe,				float,			2.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bPentagonBokeh,			bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fPentagonFeather,			float,			0.4f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bUseNoise,					bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNoiseAmount,				float,			0.0001f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bBlurDepth,				bool,			false					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fDepthBlurSize,			float,			0.001f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bVignetting,				bool,			true					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignOut,					float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignIn,					float,			0.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignFade,					float,			22.f					);
 	// Motion blur
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMotionBlurIntensity,	float,			0.01f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMotionBlurIntensity,		float,			0.01f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(nMotionBlurNumSamples,		int,			5						);
+	// Lens flare
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(nGhostSamples,				int,			5						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fGhostDispersal,			float,			0.37f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fGhostRadialWeightExp,		float,			1.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHaloSize,					float,			0.6f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHaloRadialWeightExp,		float,			5.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bChromaShift,				bool,			true					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fShiftFactor,				float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensDirtIntensity,		float,			0.3f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensStarBurstIntensity,	float,			0.5f					);
 
 	/* HUD parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,			Vec3f,			Vec3f(1.f, 1.f, 1.f)	);
@@ -319,5 +343,10 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2LinearDepthEquation,				Vec2f			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texTargetFocus,						Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f44PrevViewProjMat,					Matrix44f		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texGhostColorLUT,						Sampler1D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareFeatures,					Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareDirt,						Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareStarBurst,				Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f33LensFlareStarBurstMat,				Matrix33f		);
 	//--------------------------------------------------------------------------
 }

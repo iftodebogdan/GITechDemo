@@ -114,6 +114,9 @@
     <ClInclude Include="GITechDemo\RenderScheme\MotionBlurPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\LensFlarePass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\Windows\stdafx.cpp">
@@ -203,6 +206,9 @@
     <ClCompile Include="GITechDemo\RenderScheme\MotionBlurPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\LensFlarePass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Framework\Windows\Framework.ico">
@@ -252,9 +258,8 @@
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="..\..\Data\shaders\MotionBlur.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="..\..\Data\shaders\LensFlare.hlsl" />
+    <None Include="..\..\Data\shaders\LensFlareApply.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">
@@ -316,5 +321,6 @@
     <CustomBuild Include="..\..\Data\shaders\SSAO.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\MotionBlur.hlsl" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ namespace GITechDemoApp
 {
 	class SkyPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(SkyPass);
+		IMPLEMENT_RENDER_PASS(SkyPass)
 
 	public:
 		void CreateSkyBoxVB();

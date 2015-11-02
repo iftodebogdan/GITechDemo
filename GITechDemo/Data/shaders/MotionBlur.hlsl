@@ -27,12 +27,15 @@ const float4x4 f44InvViewProjMat;	// Inverse view-projection matrix
 const float4x4 f44PrevViewProjMat;	// Previous frame's view-projection matrix
 const float fFrameTime;				// Frame duration
 const float fMotionBlurIntensity;	// Intensity of the motion blur effect
-
-// The number of samples along the velocity vector
-#define MOTION_BLUR_NUM_SAMPLES (5)
+const int nMotionBlurNumSamples;	// The number of samples along the velocity vector
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
+	//////////////////////////////////////////////////////////////////
+	// Motion blur effect											//
+	// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html	//
+	//////////////////////////////////////////////////////////////////
+
 	f4Color = float4(0.f, 0.f, 0.f, 1.f);
 
 	// Compute NDC space position
@@ -51,12 +54,12 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float2 f2Velocity =
 		(f4NDCPos.xy - f4PrevNDCPos.xy) * rcp(fFrameTime) // Speed (NDC units / s)
 		* fMotionBlurIntensity // Scale velocity by intensity value
-		* rcp(MOTION_BLUR_NUM_SAMPLES); // Divide by the number of samples (so that there would be no
+		* rcp(nMotionBlurNumSamples); // Divide by the number of samples (so that there would be no
 										// change in perceived intensity if sample count varies)
 
 	// Sample along the velocity vector and average the result
-	UNROLL for (int i = 0; i < MOTION_BLUR_NUM_SAMPLES; i++)
+	for (int i = 0; i < nMotionBlurNumSamples; i++)
 		f4Color.rgb += tex2D(texSource, input.f2TexCoord + f2Velocity * i).rgb;
-	f4Color.rgb *= rcp(MOTION_BLUR_NUM_SAMPLES);
+	f4Color.rgb *= rcp(nMotionBlurNumSamples);
 }
 ////////////////////////////////////////////////////////////////////

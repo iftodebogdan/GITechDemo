@@ -37,10 +37,10 @@ void BloomPass::Update(const float fDeltaTime)
 		return;
 
 	ResourceMgr->GetTexture(
-		HDRBloomBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+		BloomBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetAddressingMode(SAM_CLAMP);
 	ResourceMgr->GetTexture(
-		HDRBloomBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+		BloomBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetAddressingMode(SAM_CLAMP);
 
 	nDownsampleFactor = 1;
@@ -60,27 +60,31 @@ void BloomPass::BloomBrightnessFilter()
 
 	PUSH_PROFILE_MARKER("Brightness filter");
 
-	HDRBloomBuffer[0]->Enable();
+	BloomBuffer[0]->Enable();
 
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
+	const SamplerFilter samplerFilter = ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->GetFilter();
+	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+
 	f2HalfTexelOffset = Vec2f(
-		0.5f / HDRBloomBuffer[0]->GetRenderTarget()->GetWidth(),
-		0.5f / HDRBloomBuffer[0]->GetRenderTarget()->GetHeight()
+		0.5f / BloomBuffer[0]->GetRenderTarget()->GetWidth(),
+		0.5f / BloomBuffer[0]->GetRenderTarget()->GetHeight()
 		);
 	f2TexelSize = Vec2f(
 		1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
 		1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
 		);
-	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 	texSource = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
 
 	DownsampleShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	DownsampleShader.Disable();
 
-	HDRBloomBuffer[0]->Disable();
+	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(samplerFilter);
+
+	BloomBuffer[0]->Disable();
 
 	POP_PROFILE_MARKER();
 }
@@ -106,22 +110,22 @@ void BloomPass::BloomBlur()
 #endif
 		PUSH_PROFILE_MARKER(label);
 
-		HDRBloomBuffer[(i + 1) % 2]->Enable();
+		BloomBuffer[(i + 1) % 2]->Enable();
 
 		// Not necesarry
 		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
 		f2HalfTexelOffset = Vec2f(
-			0.5f / HDRBloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			0.5f / HDRBloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
+			0.5f / BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			0.5f / BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		ResourceMgr->GetTexture(
-			HDRBloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
+			BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
 			)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-		texSource = HDRBloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
+		texSource = BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
 		f2TexelSize = Vec2f(
-			1.f / HDRBloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			1.f / HDRBloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
+			1.f / BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			1.f / BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		nKernel = BLOOM_BLUR_KERNEL[i];
 		if (i == BLOOM_BLUR_KERNEL_COUNT - 1)
@@ -133,7 +137,7 @@ void BloomPass::BloomBlur()
 		RenderContext->DrawVertexBuffer(FullScreenTri);
 		BloomShader.Disable();
 
-		HDRBloomBuffer[(i + 1) % 2]->Disable();
+		BloomBuffer[(i + 1) % 2]->Disable();
 
 		POP_PROFILE_MARKER();
 	}
@@ -168,11 +172,11 @@ void BloomPass::BloomApply()
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-	f2HalfTexelOffset = Vec2f(0.5f / HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetWidth(), 0.5f / HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetHeight());
+	f2HalfTexelOffset = Vec2f(0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetHeight());
 	ResourceMgr->GetTexture(
-		HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0)
+		BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-	texSource = HDRBloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0);
+	texSource = BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0);
 
 	ColorCopyShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);

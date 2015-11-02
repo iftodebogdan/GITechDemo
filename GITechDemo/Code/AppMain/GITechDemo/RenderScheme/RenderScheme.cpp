@@ -71,6 +71,10 @@ CREATE_ROOT_PASS()
 		#include "BloomPass.h"
 		ADD_RENDER_PASS(BLOOM_PASS, BloomPass, "Bloom Pass", POST_PROCESSING_PASS)
 
+		// Lens flare effect
+		#include "LensFlarePass.h"
+		ADD_RENDER_PASS(LENS_FLARE_PASS, LensFlarePass, "Lens Flare Pass", POST_PROCESSING_PASS)
+
 		// Tone mapping (HDR linear space to LDR gamma space conversion)
 		#include "HDRToneMappingPass.h"
 		ADD_RENDER_PASS(HDR_TONE_MAPPING_PASS, HDRToneMappingPass, "HDR Tone Mapping Pass", POST_PROCESSING_PASS)

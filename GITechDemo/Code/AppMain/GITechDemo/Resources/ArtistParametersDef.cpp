@@ -66,6 +66,10 @@ namespace GITechDemoApp
 	// Bloom
 	extern bool BLOOM_ENABLED;
 
+	// Lens flare
+	extern bool LENS_FLARE_ENABLED;
+	extern float LENS_FLARE_BRIGHTNESS_THRESHOLD;
+
 	// Tone mapping
 	extern bool HDR_TONE_MAPPING_ENABLED;
 
@@ -175,12 +179,26 @@ namespace GITechDemoApp
 	// Motion blur
 	IMPLEMENT_ARTIST_PARAMETER("Motion blur enable",		"Toggle the rendering of the motion blur effect",						"Motion blur",				MOTION_BLUR_ENABLED,						1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Motion blur intensity",		"The intensity of the motion blur effect",								"Motion blur",				fMotionBlurIntensity.GetCurrentValue(),		0.01f);
+	IMPLEMENT_ARTIST_PARAMETER("Motion blur sample count",	"The number of samples along the velocity vector",						"Motion blur",				nMotionBlurNumSamples.GetCurrentValue(),	1.f);
 
 	// Bloom
 	IMPLEMENT_ARTIST_PARAMETER("Bloom enable",				"Toggle the rendering of the bloom effect",								"Bloom",					BLOOM_ENABLED,								1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Brightness threshold",		"Threshold for the low-pass brightness filter",							"Bloom",					fBrightnessThreshold.GetCurrentValue(),		0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Power",						"Exponent of bloom intensity value",									"Bloom",					fBloomPower.GetCurrentValue(),				0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Strength",					"Strength of bloom intensity value",									"Bloom",					fBloomStrength.GetCurrentValue(),			0.1f);
+
+	// Lens flare
+	IMPLEMENT_ARTIST_PARAMETER("Lens flare enable",			"Toggle the rendering of the lens flare effect",						"Lens flare",				LENS_FLARE_ENABLED,							1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Brigthness threshold",		"Brightness threshold for lens flare feature generation",				"Lens flare",				LENS_FLARE_BRIGHTNESS_THRESHOLD,			0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Ghost sample count",		"Number of samples for \"ghost\" features",								"Lens flare",				nGhostSamples.GetCurrentValue(),			1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Ghost dispersion factor",	"Dispersion factor (distance) for \"ghost\" features",					"Lens flare",				fGhostDispersal.GetCurrentValue(),			0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Ghost radial weight",		"Falloff factor for bright spots that are near screen edges",			"Lens flare",				fGhostRadialWeightExp.GetCurrentValue(),	0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Halo size",					"Halo size scale factor",												"Lens flare",				fHaloSize.GetCurrentValue(),				0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Halo radial weight",		"Determines halo thickness",											"Lens flare",				fHaloRadialWeightExp.GetCurrentValue(),		0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift enable",		"Toggle the application of a chromatic abberation effect",				"Lens flare",				bChromaShift.GetCurrentValue(),				1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift factor",		"Intensity of chromatic abberation effect",								"Lens flare",				fShiftFactor.GetCurrentValue(),				0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Lens dirt intensity",		"Scale factor for lens dirt texture samples",							"Lens flare",				fLensDirtIntensity.GetCurrentValue(),		0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Lens star burst intensity",	"Scale factor for lens star burst texture samples",						"Lens flare",				fLensStarBurstIntensity.GetCurrentValue(),	0.1f);
 
 	// Tone mapping
 	IMPLEMENT_ARTIST_PARAMETER("Tone mapping enable",		"Toggle tone mapping",													"HDR tone mapping",			HDR_TONE_MAPPING_ENABLED,					1.f);

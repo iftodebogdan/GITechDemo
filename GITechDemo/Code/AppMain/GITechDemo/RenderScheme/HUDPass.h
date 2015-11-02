@@ -13,7 +13,7 @@ namespace GITechDemoApp
 {
 	class HUDPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(HUDPass);
+		IMPLEMENT_RENDER_PASS(HUDPass)
 
 	private:
 		struct GlyphCache

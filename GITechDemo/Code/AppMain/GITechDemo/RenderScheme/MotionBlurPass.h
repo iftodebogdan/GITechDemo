@@ -7,7 +7,7 @@ namespace GITechDemoApp
 {
 	class MotionBlurPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(MotionBlurPass);
+		IMPLEMENT_RENDER_PASS(MotionBlurPass)
 
 	private:
 		void CalculateMotionBlur();

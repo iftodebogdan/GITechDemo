@@ -47,6 +47,8 @@ namespace GITechDemoApp
 	DECLARE_SHADER(SsaoShader);
 	DECLARE_SHADER(HUDTextShader);
 	DECLARE_SHADER(MotionBlurShader);
+	DECLARE_SHADER(LensFlareFeaturesShader);
+	DECLARE_SHADER(LensFlareApplyShader);
 	//------------------------------------------------------
 
 	// Models (manage their own textures, no need to declare them)
@@ -57,6 +59,9 @@ namespace GITechDemoApp
 	DECLARE_TEXTURE(SkyTexture);
 	DECLARE_TEXTURE(IrradianceTexture);
 	DECLARE_TEXTURE(EnvironmentTexture);
+	DECLARE_TEXTURE(LensFlareGhostColorLUT);
+	DECLARE_TEXTURE(LensFlareDirt);
+	DECLARE_TEXTURE(LensFlareStarBurst);
 	//------------------------------------------------------
 
 	// Render targets
@@ -73,8 +78,8 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(AverageLuminanceBuffer3);
 	DECLARE_RENDER_TARGET(AdaptedLuminance0);
 	DECLARE_RENDER_TARGET(AdaptedLuminance1);
-	DECLARE_RENDER_TARGET(HDRBloomBuffer0);
-	DECLARE_RENDER_TARGET(HDRBloomBuffer1);
+	DECLARE_RENDER_TARGET(BloomBuffer0);
+	DECLARE_RENDER_TARGET(BloomBuffer1);
 	DECLARE_RENDER_TARGET(LDRToneMappedImageBuffer);
 	DECLARE_RENDER_TARGET(LDRFxaaImageBuffer);
 	DECLARE_RENDER_TARGET(AmbientOcclusionFullBuffer0);
@@ -86,6 +91,8 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(AutofocusBuffer0);
 	DECLARE_RENDER_TARGET(AutofocusBuffer1);
 	DECLARE_RENDER_TARGET(MotionBlurBuffer);
+	DECLARE_RENDER_TARGET(LensFlareBuffer0);
+	DECLARE_RENDER_TARGET(LensFlareBuffer1);
 
 	enum HDRDownsampleBufferIndex {
 		QUARTER = 0,
@@ -94,11 +101,12 @@ namespace GITechDemoApp
 
 	extern RenderTarget* HDRDownsampleBuffer[2];
 	extern RenderTarget* AverageLuminanceBuffer[4];
-	extern RenderTarget* HDRBloomBuffer[2];
+	extern RenderTarget* BloomBuffer[2];
 	extern RenderTarget* AmbientOcclusionFullBuffer[2];
 	extern RenderTarget* AmbientOcclusionQuarterBuffer[2];
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
+	extern RenderTarget* LensFlareBuffer[2];
 	//------------------------------------------------------
 
 	// Shader constants
@@ -232,6 +240,21 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f3TextColor, Vec3f);
 	DECLARE_SHADER_CONSTANT(f44PrevViewProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(fMotionBlurIntensity, float);
+	DECLARE_SHADER_CONSTANT(nMotionBlurNumSamples, int);
+	DECLARE_SHADER_CONSTANT(texGhostColorLUT, LibRendererDll::Sampler1D);
+	DECLARE_SHADER_CONSTANT(nGhostSamples, int);
+	DECLARE_SHADER_CONSTANT(fGhostDispersal, float);
+	DECLARE_SHADER_CONSTANT(fGhostRadialWeightExp, float);
+	DECLARE_SHADER_CONSTANT(fHaloSize, float);
+	DECLARE_SHADER_CONSTANT(fHaloRadialWeightExp, float);
+	DECLARE_SHADER_CONSTANT(bChromaShift, bool);
+	DECLARE_SHADER_CONSTANT(fShiftFactor, float);
+	DECLARE_SHADER_CONSTANT(texLensFlareFeatures, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLensFlareDirt, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLensFlareStarBurst, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(fLensDirtIntensity, float);
+	DECLARE_SHADER_CONSTANT(fLensStarBurstIntensity, float);
+	DECLARE_SHADER_CONSTANT(f33LensFlareStarBurstMat, Matrix33f);
 	//-------------------------------------------------------
 }
 

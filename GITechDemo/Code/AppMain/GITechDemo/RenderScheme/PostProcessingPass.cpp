@@ -24,6 +24,8 @@ namespace GITechDemoApp
 	extern bool DOF_ENABLED;
 	// Motion blur
 	extern bool MOTION_BLUR_ENABLED;
+	// Lens flare
+	extern bool LENS_FLARE_ENABLED;
 }
 
 PostProcessingPass::PostProcessingPass(const char* const passName, RenderPass* const parentPass)
@@ -47,6 +49,9 @@ void PostProcessingPass::Update(const float fDeltaTime)
 			m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
 		if (BLOOM_ENABLED)
+			m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
+
+		if (LENS_FLARE_ENABLED)
 			m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
 		if (HDR_TONE_MAPPING_ENABLED)

@@ -7,7 +7,7 @@ namespace GITechDemoApp
 {
 	class GBufferPass : public RenderPass
 	{
-		IMPLEMENT_RENDER_PASS(GBufferPass);
+		IMPLEMENT_RENDER_PASS(GBufferPass)
 	};
 }
 
