@@ -124,7 +124,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +145,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +168,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,7 +191,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -214,7 +214,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -238,7 +238,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
