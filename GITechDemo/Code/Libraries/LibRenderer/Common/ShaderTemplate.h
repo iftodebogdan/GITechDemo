@@ -19,14 +19,6 @@
 #ifndef SHADERTEMPLATE_H
 #define SHADERTEMPLATE_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
 #include "ResourceData.h"
 
 namespace LibRendererDll

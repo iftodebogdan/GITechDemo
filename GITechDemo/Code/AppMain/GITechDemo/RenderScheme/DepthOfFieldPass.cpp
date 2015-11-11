@@ -69,6 +69,8 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 	AutofocusBuffer[1] = rtBkp;
 
 	texTargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
+
+	bSingleChannelCopy = false;
 }
 
 void DepthOfFieldPass::AutofocusPass()
@@ -85,20 +87,17 @@ void DepthOfFieldPass::AutofocusPass()
 	AutofocusBuffer[0]->Enable();
 
 	f2HalfTexelOffset = Vec2f(0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetHeight());
-	texLumaCalcInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+	texLumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
 	texLumaTarget = GBuffer.GetRenderTarget()->GetDepthBuffer();
-	bInitialLumaPass = false;
-	bFinalLumaPass = false;
-	bLumaAdaptationPass = true;
 
 	const float bkp = fLumaAdaptSpeed;
 	fLumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
 	fFrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / fLumaAdaptSpeed);
 
 	// Reuse the luminance animation shader
-	LumaCalcShader.Enable();
+	LumaAdaptShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
-	LumaCalcShader.Disable();
+	LumaAdaptShader.Disable();
 
 	fLumaAdaptSpeed = bkp;
 

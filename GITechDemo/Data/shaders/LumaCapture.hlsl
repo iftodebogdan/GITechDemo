@@ -20,21 +20,14 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 // Pixel shader ///////////////////////////////////////////////////
 
 // One of the two 1x1 textures with the current average luma value
-const sampler2D	texLumaCalcInput;
+const sampler2D	texLumaInput;
 
 // Flags for deciding code path
 const bool bInitialLumaPass;
 const bool bFinalLumaPass;
-const bool bLumaAdaptationPass;
 
 // The 1x1 texture with the target average luma value
 const sampler2D texLumaTarget;
-
-// The speed of the animation
-const float fLumaAdaptSpeed;
-
-// Last frame's duration in seconds
-const float fFrameTime;
 
 // Minimum and maximum values for average luma
 const float2 f2AvgLumaClamp;
@@ -59,7 +52,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 				// The average luma can be calculated from part of the source image,
 				// hence the scale of the texture coordinates
 				const float2 f2ScaledTexCoord = input.f2TexCoord;// *float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
-				const float3 f3Sample = tex2D(texLumaCalcInput, f2ScaledTexCoord + f2Kernel * float2(i, j)).rgb;
+				const float3 f3Sample = tex2D(texLumaInput, f2ScaledTexCoord + f2Kernel * float2(i, j)).rgb;
 				fLogLumSum += log(dot(f3Sample, LUMINANCE_VECTOR) + 0.0001f);
 			}
 
@@ -67,12 +60,12 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		f4Color = float4(fLogLumSum, fLogLumSum, fLogLumSum, 1.f);
 	}
 	// The rest of the passes further downscale the average luma texture
-	else if(!bLumaAdaptationPass)
+	else
 	{
 		float fAvgLuma = 0.f;
 		UNROLL for (float i = -1.5f; i <= 1.5f; i += 1.f)
 			UNROLL for (float j = -1.5f; j <= 1.5f; j += 1.f)
-				fAvgLuma += tex2D(texLumaCalcInput, input.f2TexCoord + f2TexelSize * float2(i, j)).r;
+				fAvgLuma += tex2D(texLumaInput, input.f2TexCoord + f2TexelSize * float2(i, j)).r;
 
 		// On the final pass, we do an exp() and store the value into
 		// the final 1x1 average luma texture
@@ -85,22 +78,6 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 			fAvgLuma *= 0.0625f;
 
 		f4Color = float4(fAvgLuma, fAvgLuma, fAvgLuma, 1.f);
-	}
-	// Two 1x1 textures containing last and current frames' average lumas are used to slowly
-	// adjust the exposure of the HDR image when tone mapping. The target luma is the one
-	// calculated just above.
-	else if (bLumaAdaptationPass)
-	{
-		const float fCurrLuma = tex2D(texLumaCalcInput, float2(0.5f, 0.5f)).r;
-		const float fTargetLuma = tex2D(texLumaTarget, float2(0.5f, 0.5f)).r;
-		float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (rcp(clamp(fLumaAdaptSpeed, 0.01f, 3.402823466e+38f)) * fFrameTime);
-
-		if (fCurrLuma < fTargetLuma)
-			fNewLuma = clamp(fNewLuma, fCurrLuma, fTargetLuma);
-		else
-			fNewLuma = clamp(fNewLuma, fTargetLuma, fCurrLuma);
-
-		f4Color = float4(fNewLuma, fNewLuma, fNewLuma, 1.f);
 	}
 }
 ////////////////////////////////////////////////////////////////////

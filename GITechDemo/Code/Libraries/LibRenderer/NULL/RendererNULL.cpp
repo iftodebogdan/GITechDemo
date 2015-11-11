@@ -27,21 +27,16 @@ using namespace LibRendererDll;
 void RendererNULL::Initialize(void* /*hWnd*/)
 {
 	m_pResourceManager = new ResourceManagerNULL();
-	m_pRenderState = new RenderStateNULL();
-	m_pSamplerState = new SamplerStateNULL();
+	m_pRenderStateManager = new RenderStateNULL();
+	m_pSamplerStateManager = new SamplerStateNULL();
 }
 
-void RendererNULL::SetBackBufferSize(const Vec2i size, const Vec2i offset)
-{
-	Renderer::SetBackBufferSize(size, offset);
-}
-
-void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
 {
 	gmtl::setPerspective(matProj, gmtl::Math::rad2Deg(fovYRad), aspectRatio, zNear, zFar);
 }
 
-void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
+void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
 {
 	gmtl::setOrtho(matProj, left, top, right, bottom, zNear, zFar);
 }

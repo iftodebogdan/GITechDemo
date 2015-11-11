@@ -31,11 +31,17 @@ namespace LibRendererDll
 	extern const BYTE VertexAttributeTypeDX9[VAT_MAX];
 	extern const BYTE VertexAttributeUsageDX9[VAU_MAX];
 	extern const D3DFORMAT IndexBufferFormatDX9[IBF_MAX];
-	extern const D3DFORMAT TextureFormatDX9[PF_MAX];
+	extern const D3DFORMAT PixelFormatDX9[PF_MAX];
 	extern const DWORD RenderStateMappingDX9[RS_MAX];
 	extern const DWORD TextureAddressingModeDX9[SAM_MAX];
 	extern const DWORD MinMagFilterDX9[SF_MAX];
 	extern const DWORD MipFilterDX9[SF_MAX];
+	extern const D3DRESOURCETYPE TextureTypeDX9[TT_MAX];
+	extern const unsigned int CubeFaceIndexDX9[FACE_MAX];
+
+	const SamplerFilter			MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip);
+	const SamplerAddressingMode	MatchAddressingMode(const DWORD sam);
+	const PixelFormat			MatchPixelFormat(const D3DFORMAT fmt);
 }
 
 #endif //MAPPINGDX9_H

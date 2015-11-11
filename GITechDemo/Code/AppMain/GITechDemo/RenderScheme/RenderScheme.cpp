@@ -52,8 +52,8 @@ CREATE_ROOT_PASS()
 	ADD_RENDER_PASS(POST_PROCESSING_PASS, PostProcessingPass, "Post-Processing Pass", ROOT_PASS)
 
 		// Screen space ambient occlusion
-		#include "AmbientOcclusionPass.h"
-		ADD_RENDER_PASS(AMBIENT_OCCLUSION_PASS, AmbientOcclusionPass, "Ambient Occlusion Pass", POST_PROCESSING_PASS)
+		#include "SSAOPass.h"
+		ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO Pass", POST_PROCESSING_PASS)
 
 		// HDR framebuffer downsampling (1/4 and 1/16) for bloom, tone mapping, etc.
 		#include "HDRDownsamplePass.h"

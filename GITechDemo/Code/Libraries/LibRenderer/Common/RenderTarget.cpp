@@ -45,7 +45,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 	assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
-	assert(pixelFormat != PF_NONE);
+	//assert(pixelFormat != PF_NONE);
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -86,7 +86,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 	assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
-	assert(pixelFormat != PF_NONE);
+	//assert(pixelFormat != PF_NONE);
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -154,7 +154,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 			pf = PixelFormatRT3;
 		}
 
-		assert(pf != PF_NONE);
+		//assert(pf != PF_NONE);
 
 		m_nColorBufferTexIdx[i] = Renderer::GetInstance()->GetResourceManager()->CreateTexture(
 			pf, TT_2D, width, height, 1, hasMipmaps ? 0 : 1, BU_RENDERTAGET);
@@ -281,10 +281,10 @@ const unsigned int RenderTarget::GetTargetCount() const
 	return m_nTargetCount;
 }
 
-const PixelFormat RenderTarget::GetFormat(const unsigned int colorBufferIdx) const
+const PixelFormat RenderTarget::GetPixelFormat(const unsigned int colorBufferIdx) const
 {
 	assert(colorBufferIdx < m_nTargetCount);
-	return m_pColorBuffer[colorBufferIdx]->GetTextureFormat();
+	return m_pColorBuffer[colorBufferIdx]->GetPixelFormat();
 }
 
 const unsigned int RenderTarget::GetWidth() const

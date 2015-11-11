@@ -19,14 +19,6 @@
 #ifndef RENDERTARGET_H
 #define RENDERTARGET_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
 #include "ResourceData.h"
 
 namespace LibRendererDll
@@ -43,7 +35,7 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL void					Disable();
 		// Copy the contents of the specified color buffer to a texture (only mip 0 is copied)
 		// NB: Texture must be 2D and have same width, height and format
-		virtual LIBRENDERER_DLL void					CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) = 0;
+		virtual LIBRENDERER_DLL void					CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) PURE_VIRTUAL
 
 		// Create platform specific resource
 		virtual LIBRENDERER_DLL void					Bind();
@@ -51,21 +43,21 @@ namespace LibRendererDll
 		virtual LIBRENDERER_DLL void					Unbind();
 
 				/* Get the number of render targets (MRT) */
-		LIBRENDERER_DLL const unsigned int		GetTargetCount() const;
+				LIBRENDERER_DLL const unsigned int		GetTargetCount() const;
 				/* Get the pixel format of the color buffer */
-		LIBRENDERER_DLL const PixelFormat		GetFormat(const unsigned int colorBufferIdx = 0) const;
+				LIBRENDERER_DLL const PixelFormat		GetPixelFormat(const unsigned int colorBufferIdx = 0) const;
 				/* Get the width of the color buffer */
-		LIBRENDERER_DLL const unsigned int		GetWidth() const;
+				LIBRENDERER_DLL const unsigned int		GetWidth() const;
 				/* Get the height of the color buffer */
-		LIBRENDERER_DLL const unsigned int		GetHeight() const;
+				LIBRENDERER_DLL const unsigned int		GetHeight() const;
 				/* Get the texture corresponding to the specified color buffer */
-		LIBRENDERER_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const;
+				LIBRENDERER_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const;
 				/* Get the texture corresponding to the specified depth buffer */
-		LIBRENDERER_DLL const unsigned int		GetDepthBuffer() const;
+				LIBRENDERER_DLL const unsigned int		GetDepthBuffer() const;
 				/* Determines if the color buffer has mipmaps */
-		LIBRENDERER_DLL const bool				HasMipmaps() const;
+				LIBRENDERER_DLL const bool				HasMipmaps() const;
 				/* Determines if the render target has a depth buffer */
-		LIBRENDERER_DLL const bool				HasDepthBuffer() const;
+				LIBRENDERER_DLL const bool				HasDepthBuffer() const;
 
 		static	LIBRENDERER_DLL	RenderTarget*	GetActiveRenderTarget();
 

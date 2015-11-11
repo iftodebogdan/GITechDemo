@@ -46,7 +46,7 @@ namespace LibRendererDll
 		const unsigned int CreateShaderTemplate(ShaderProgram* const shaderProgram);
 
 		const unsigned int CreateTexture(
-			const PixelFormat texFormat, const TexType texType,
+			const PixelFormat pixelFormat, const TextureType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
 			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 

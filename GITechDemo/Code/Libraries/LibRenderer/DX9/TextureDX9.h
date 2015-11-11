@@ -21,6 +21,7 @@
 
 #include <d3d9.h>
 #include "Texture.h"
+#include "MappingsDX9.h"
 
 namespace LibRendererDll
 {
@@ -30,18 +31,20 @@ namespace LibRendererDll
 		void		Enable(const unsigned int texUnit) const;
 		void		Disable(const unsigned int texUnit) const;
 		const bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode);
-		const bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode);
+		const bool	Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode);
 		void		Unlock();
 		void		Update();
 
 		void		Bind();
 		void		Unbind();
 
+		const unsigned int	GetCubeFaceIndex(const CubeFace cubeFace) const { return CubeFaceIndexDX9[cubeFace]; }
+
 		IDirect3DBaseTexture9* const	GetTextureDX9() const { return m_pTexture; }
 
 	private:
 		TextureDX9(
-			const PixelFormat texFormat, const TexType texType,
+			const PixelFormat pixelFormat, const TextureType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
 			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 		~TextureDX9();

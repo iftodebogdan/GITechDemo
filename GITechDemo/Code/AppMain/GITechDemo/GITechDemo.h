@@ -38,6 +38,7 @@ namespace GITechDemoApp
 		void* m_pHWND;
 		float m_fDeltaTime;
 		gainput::InputMap* m_pInputMap;
+		int m_fLastFrameResX, m_fLastFrameResY;
 
 		MUTEX mResInitMutex;
 

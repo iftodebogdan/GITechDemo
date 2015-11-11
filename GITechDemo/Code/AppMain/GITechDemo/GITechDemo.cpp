@@ -32,6 +32,10 @@ namespace GITechDemoApp
 	extern SkyPass SKY_PASS;
 	extern HUDPass HUD_PASS;
 	extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
+
+	bool FULLSCREEN_ENABLED = false;
+	int FULLSCREEN_RESOLUTION_X = 0;
+	int FULLSCREEN_RESOLUTION_Y = 0;
 }
 
 namespace GITechDemoApp
@@ -127,6 +131,20 @@ bool GITechDemo::Init(void* hWnd)
 	}
 
 	RenderResource::SetResourceManager(ResourceMgr);
+
+	// Set the highest available fullscreen resolution
+	for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
+	{
+		if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+		{
+			if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > FULLSCREEN_RESOLUTION_X ||
+				(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > FULLSCREEN_RESOLUTION_Y)
+			{
+				m_fLastFrameResX = FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+				m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+			}
+		}
+	}
 
 	return true;
 }
@@ -229,6 +247,111 @@ void GITechDemo::Update(const float fDeltaTime)
 	Framework* const pFW = Framework::GetInstance();
 	pFW->GetClientArea(cLeft, cTop, cRight, cBottom);
 	const Vec2i viewportSize = Vec2i(cRight - cLeft, cBottom - cTop);
+
+	// Update fullscreen resolution setting
+	if (FULLSCREEN_RESOLUTION_X > m_fLastFrameResX)
+	{
+		// X resolution increased
+		int maxResX = 0;
+		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
+		{
+			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			{
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > maxResX)
+					maxResX = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+
+				if (maxResX > m_fLastFrameResX)
+				{
+					FULLSCREEN_RESOLUTION_X = maxResX;
+					FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
+					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+					break;
+				}
+			}
+		}
+	}
+	else if (FULLSCREEN_RESOLUTION_X < m_fLastFrameResX)
+	{
+		// X resolution decreased
+		int minResX = INT_MAX;
+		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		for (int i = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size() - 1; i >= 0; i--)
+		{
+			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			{
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth < minResX)
+					minResX = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+
+				if (minResX < m_fLastFrameResX)
+				{
+					FULLSCREEN_RESOLUTION_X = minResX;
+					FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
+					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+					break;
+				}
+			}
+		}
+	}
+	else if (FULLSCREEN_RESOLUTION_Y > m_fLastFrameResY)
+	{
+		// Y resolution increased
+		int maxResY = 0;
+		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
+		{
+			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			{
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > maxResY)
+					maxResY = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+
+				if (maxResY > m_fLastFrameResY)
+				{
+					FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = maxResY;
+					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
+					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+					break;
+				}
+			}
+		}
+	}
+	else if (FULLSCREEN_RESOLUTION_Y < m_fLastFrameResY)
+	{
+		// Y resolution decreased
+		int minResY = INT_MAX;
+		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		for (int i = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size() - 1; i >= 0; i--)
+		{
+			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			{
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight < minResY)
+					minResY = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+
+				if (minResY < m_fLastFrameResY)
+				{
+					FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = minResY;
+					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
+					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+					break;
+				}
+			}
+		}
+	}
+
+	// Set the size of the backbuffer accordingly
+	if (!pFW->IsRenderingPaused())
+		RenderContext->SetScreenResolution(
+			FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
+			Vec2i(0, 0),
+			FULLSCREEN_ENABLED);
 
 	// Handle user input
 	unsigned int cmd = APP_CMD_NONE;
@@ -429,9 +552,6 @@ void GITechDemo::Update(const float fDeltaTime)
 	// to the current frame's view-projection matrix
 	if (f44PrevViewProjMat.GetCurrentValue() == MAT_IDENTITY44F)
 		f44PrevViewProjMat = f44ViewProjMat;
-
-	// Set the size of the backbuffer accordingly 
-	RenderContext->SetBackBufferSize(viewportSize);
 
 	// Update the artist parameter manager
 	ArtistParameterManager* const pAPM = ArtistParameterManager::GetArtistParameterManager();

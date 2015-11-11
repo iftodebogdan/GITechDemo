@@ -50,8 +50,7 @@ ColorUtility::ConvertFromFunc ColorUtility::ConvertFrom[PF_MAX] =
 	&ConvertFromDXT3,			// PF_DXT3
 	&ConvertFromDXT5,			// PF_DXT5
 	0,							// PF_D24S8
-	0,							// PF_INTZ
-	0							// PF_RAWZ
+	0							// PF_INTZ
 };
 
 ColorUtility::ConvertToFunc ColorUtility::ConvertTo[PF_MAX] =
@@ -80,8 +79,7 @@ ColorUtility::ConvertToFunc ColorUtility::ConvertTo[PF_MAX] =
 	&ConvertToDXT3,				// PF_DXT3
 	&ConvertToDXT5,				// PF_DXT5
 	0,							// PF_D24S8
-	0,							// PF_INTZ
-	0							// PF_RAWZ
+	0							// PF_INTZ
 };
 
 dword ColorUtility::MakeR8G8B8(const byte red, const byte green, const byte blue)

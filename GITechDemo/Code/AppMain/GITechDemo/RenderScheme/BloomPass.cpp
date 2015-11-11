@@ -45,6 +45,7 @@ void BloomPass::Update(const float fDeltaTime)
 
 	nDownsampleFactor = 1;
 	bApplyBrightnessFilter = true;
+	bSingleChannelCopy = false;
 }
 
 // Apply a brightness filter to the downsampled HDR scene color buffer

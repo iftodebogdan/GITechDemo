@@ -29,26 +29,27 @@ namespace GITechDemoApp
 	//////////////
 	// Shaders	//
 	//////////////
-	IMPLEMENT_SHADER(BokehDofShader, "shaders/BokehDoF.hlsl");
-	IMPLEMENT_SHADER(RSMUpscaleShader, "shaders/RSMUpscale.hlsl");
-	IMPLEMENT_SHADER(RSMApplyShader, "shaders/RSMApply.hlsl");
-	IMPLEMENT_SHADER(DeferredLightDirShader, "shaders/DeferredLightDir.hlsl");
-	IMPLEMENT_SHADER(SkyBoxShader, "shaders/SkyBox.hlsl");
-	IMPLEMENT_SHADER(GBufferGenerationShader, "shaders/GBufferGeneration.hlsl");
-	IMPLEMENT_SHADER(DepthPassShader, "shaders/DepthPass.hlsl");
-	IMPLEMENT_SHADER(DepthCopyShader, "shaders/DepthCopy.hlsl");
-	IMPLEMENT_SHADER(ColorCopyShader, "shaders/ColorCopy.hlsl");
-	IMPLEMENT_SHADER(RSMCaptureShader, "shaders/RSMCapture.hlsl");
-	IMPLEMENT_SHADER(DownsampleShader, "shaders/Downsample.hlsl");
-	IMPLEMENT_SHADER(LumaCalcShader, "shaders/LumaCalc.hlsl");
-	IMPLEMENT_SHADER(HDRToneMappingShader, "shaders/HDRToneMapping.hlsl");
-	IMPLEMENT_SHADER(BloomShader, "shaders/Bloom.hlsl");
-	IMPLEMENT_SHADER(FxaaShader, "shaders/FXAA.hlsl");
-	IMPLEMENT_SHADER(SsaoShader, "shaders/SSAO.hlsl");
-	IMPLEMENT_SHADER(HUDTextShader, "shaders/HUDText.hlsl");
-	IMPLEMENT_SHADER(MotionBlurShader, "shaders/MotionBlur.hlsl");
-	IMPLEMENT_SHADER(LensFlareFeaturesShader, "shaders/LensFlareFeatures.hlsl");
-	IMPLEMENT_SHADER(LensFlareApplyShader, "shaders/LensFlareApply.hlsl");
+	IMPLEMENT_SHADER(BokehDofShader,			"shaders/BokehDoF.hlsl");
+	IMPLEMENT_SHADER(RSMUpscaleShader,			"shaders/RSMUpscale.hlsl");
+	IMPLEMENT_SHADER(RSMApplyShader,			"shaders/RSMApply.hlsl");
+	IMPLEMENT_SHADER(DirectionalLightShader,	"shaders/DirectionalLight.hlsl");
+	IMPLEMENT_SHADER(SkyBoxShader,				"shaders/SkyBox.hlsl");
+	IMPLEMENT_SHADER(GBufferGenerationShader,	"shaders/GBufferGeneration.hlsl");
+	IMPLEMENT_SHADER(DepthPassShader,			"shaders/DepthPass.hlsl");
+	IMPLEMENT_SHADER(DepthCopyShader,			"shaders/DepthCopy.hlsl");
+	IMPLEMENT_SHADER(ColorCopyShader,			"shaders/ColorCopy.hlsl");
+	IMPLEMENT_SHADER(RSMCaptureShader,			"shaders/RSMCapture.hlsl");
+	IMPLEMENT_SHADER(DownsampleShader,			"shaders/Downsample.hlsl");
+	IMPLEMENT_SHADER(LumaCaptureShader,			"shaders/LumaCapture.hlsl");
+	IMPLEMENT_SHADER(LumaAdaptShader,			"shaders/LumaAdapt.hlsl");
+	IMPLEMENT_SHADER(HDRToneMappingShader,		"shaders/HDRToneMapping.hlsl");
+	IMPLEMENT_SHADER(BloomShader,				"shaders/Bloom.hlsl");
+	IMPLEMENT_SHADER(FxaaShader,				"shaders/FXAA.hlsl");
+	IMPLEMENT_SHADER(SsaoShader,				"shaders/SSAO.hlsl");
+	IMPLEMENT_SHADER(HUDTextShader,				"shaders/HUDText.hlsl");
+	IMPLEMENT_SHADER(MotionBlurShader,			"shaders/MotionBlur.hlsl");
+	IMPLEMENT_SHADER(LensFlareFeaturesShader,	"shaders/LensFlareFeatures.hlsl");
+	IMPLEMENT_SHADER(LensFlareApplyShader,		"shaders/LensFlareApply.hlsl");
 	//------------------------------------------------------
 
 	//////////////
@@ -79,7 +80,7 @@ namespace GITechDemoApp
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(GBuffer, 3, PF_A8R8G8B8, PF_G16R16F, PF_G16R16, PF_NONE, 1.f, 1.f, PF_INTZ);
 
 	// Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
-	IMPLEMENT_RENDER_TARGET(ShadowMapDir, 1, PF_A8, PF_NONE, PF_NONE, PF_NONE, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], PF_INTZ);
+	IMPLEMENT_RENDER_TARGET(ShadowMapDir, 1, PF_NONE, PF_NONE, PF_NONE, PF_NONE, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], PF_INTZ);
 
 	// Render target in which we accumulate the light contribution from all light sources (also known as the scene color buffer)
 	// It contains a regular depth-stencil surface in which we will copy-resolve our INTZ depth texture from the G-Buffer
@@ -117,10 +118,10 @@ namespace GITechDemoApp
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(LDRFxaaImageBuffer, 1, PF_A8R8G8B8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 
 	// Ambient occlusion render targets
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AmbientOcclusionFullBuffer0, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AmbientOcclusionFullBuffer1, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AmbientOcclusionQuarterBuffer0, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AmbientOcclusionQuarterBuffer1, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SSAOFullBuffer0, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SSAOFullBuffer1, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SSAOQuarterBuffer0, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SSAOQuarterBuffer1, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 
 	// Depth of field render targets
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldFullBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
@@ -150,13 +151,13 @@ namespace GITechDemoApp
 		&BloomBuffer0,
 		&BloomBuffer1
 	};
-	RenderTarget* AmbientOcclusionFullBuffer[2] = {
-		&AmbientOcclusionFullBuffer0,
-		&AmbientOcclusionFullBuffer1
+	RenderTarget* SSAOFullBuffer[2] = {
+		&SSAOFullBuffer0,
+		&SSAOFullBuffer1
 	};
-	RenderTarget* AmbientOcclusionQuarterBuffer[2] = {
-		&AmbientOcclusionQuarterBuffer0,
-		&AmbientOcclusionQuarterBuffer1
+	RenderTarget* SSAOQuarterBuffer[2] = {
+		&SSAOQuarterBuffer0,
+		&SSAOQuarterBuffer1
 	};
 	RenderTarget* AdaptedLuminance[2] = {
 		&AdaptedLuminance0,
@@ -269,7 +270,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensStarBurstIntensity,	float,			0.5f					);
 
 	/* HUD parameters */
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,			Vec3f,			Vec3f(1.f, 1.f, 1.f)	);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,				Vec3f,			Vec3f(1.f, 1.f, 1.f)	);
 	//------------------------------------------------------
 
 	//////////////////////////////////////
@@ -325,13 +326,12 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f44RSMInvProjMat,						Matrix44f		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f44ViewToRSMViewMat,					Matrix44f		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texIndirectLightAccumulationBuffer,	Sampler2D		);
-	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLumaCalcInput,						Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLumaInput,							Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bInitialLumaPass,						bool			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bFinalLumaPass,						bool			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texAvgLuma,							Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texSource,							Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2TexelSize,							Vec2f			);
-	IMPLEMENT_UTILITY_SHADER_CONSTANT(bLumaAdaptationPass,					bool			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(fFrameTime,							float			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLumaTarget,						Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bApplyBrightnessFilter,				bool			);
@@ -348,5 +348,6 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareDirt,						Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareStarBurst,				Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f33LensFlareStarBurstMat,				Matrix33f		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(bSingleChannelCopy,					bool			);
 	//--------------------------------------------------------------------------
 }

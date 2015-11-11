@@ -30,11 +30,27 @@
 #include "ResourceManagerNULL.h"
 using namespace LibRendererDll;
 
+#include <Utility/Mutex.h>
+
+// Mutexes for each resource pool
+extern MUTEX	VFMutex;
+extern MUTEX	IBMutex;
+extern MUTEX	VBMutex;
+extern MUTEX	ShdInMutex;
+extern MUTEX	ShdProgMutex;
+extern MUTEX	ShdTmplMutex;
+extern MUTEX	TexMutex;
+extern MUTEX	RTMutex;
+extern MUTEX	ModelMutex;
 
 const unsigned int ResourceManagerNULL::CreateVertexFormat(const unsigned int attributeCount)
 {
-	m_arrVertexFormat.push_back(new VertexFormatNULL(attributeCount));
-	return (unsigned int)m_arrVertexFormat.size() - 1;
+	VertexFormat* const vf = new VertexFormatNULL(attributeCount);
+	MUTEX_LOCK(VFMutex);
+	m_arrVertexFormat.push_back(vf);
+	const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
+	MUTEX_UNLOCK(VFMutex);
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateVertexFormat(
@@ -60,68 +76,116 @@ const unsigned int ResourceManagerNULL::CreateVertexFormat(
 	va_end(args);
 
 	vf->SetStride(offset);
+	vf->Update();
 
+	MUTEX_LOCK(VFMutex);
 	m_arrVertexFormat.push_back(vf);
-	return (unsigned int)m_arrVertexFormat.size() - 1;
+	const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
+	MUTEX_UNLOCK(VFMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateIndexBuffer(
 	const unsigned int indexCount, const IndexBufferFormat indexFormat,
 	const BufferUsage usage)
 {
-	m_arrIndexBuffer.push_back(new IndexBufferNULL(indexCount, indexFormat, usage));
-	return (unsigned int)m_arrIndexBuffer.size() - 1;
+	IndexBuffer* ib = new IndexBufferNULL(indexCount, indexFormat, usage);
+	MUTEX_LOCK(IBMutex);
+	m_arrIndexBuffer.push_back(ib);
+	const unsigned int ret = (unsigned int)m_arrIndexBuffer.size() - 1;
+	MUTEX_UNLOCK(IBMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateVertexBuffer(
 	VertexFormat* const vertexFormat, const unsigned int vertexCount,
 	IndexBuffer* const indexBuffer, const BufferUsage usage)
 {
-	m_arrVertexBuffer.push_back(new VertexBufferNULL((VertexFormatNULL*)vertexFormat, vertexCount, (IndexBufferNULL*)indexBuffer, usage));
-	return (unsigned int)m_arrVertexBuffer.size() - 1;
+	VertexBuffer* vb = new VertexBufferNULL((VertexFormatNULL*)vertexFormat, vertexCount, (IndexBufferNULL*)indexBuffer, usage);
+	MUTEX_LOCK(VBMutex);
+	m_arrVertexBuffer.push_back(vb);
+	const unsigned int ret = (unsigned int)m_arrVertexBuffer.size() - 1;
+	MUTEX_UNLOCK(VBMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateShaderProgram(const ShaderProgramType programType)
 {
-	m_arrShaderProgram.push_back(new ShaderProgramNULL(programType, "", "", ""));
-	return (unsigned int)m_arrShaderProgram.size() - 1;
+	ShaderProgram* sp = new ShaderProgramNULL(programType, "", "", "");
+	MUTEX_LOCK(ShdProgMutex);
+	m_arrShaderProgram.push_back(sp);
+	const unsigned int ret = (unsigned int)m_arrShaderProgram.size() - 1;
+	MUTEX_UNLOCK(ShdProgMutex);
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateTexture(
-	const PixelFormat texFormat, const TexType texType,
+	const PixelFormat pixelFormat, const TextureType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
 	const unsigned int mipCount, const BufferUsage usage)
 {
-	m_arrTexture.push_back(new TextureNULL(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage));
-	return (unsigned int)m_arrTexture.size() - 1;
+	Texture* tex = new TextureNULL(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
+	MUTEX_LOCK(TexMutex);
+	m_arrTexture.push_back(tex);
+	const unsigned int ret = (unsigned int)m_arrTexture.size() - 1;
+	MUTEX_UNLOCK(TexMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat));
-	return (unsigned int)m_arrRenderTarget.size() - 1;
+	RenderTarget* rt = new RenderTargetNULL(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
+	MUTEX_LOCK(RTMutex);
+	m_arrRenderTarget.push_back(rt);
+	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
+	MUTEX_UNLOCK(RTMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
-	return (unsigned int)m_arrRenderTarget.size() - 1;
+	RenderTarget* rt = new RenderTargetNULL(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
+	MUTEX_LOCK(RTMutex);
+	m_arrRenderTarget.push_back(rt);
+	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
+	MUTEX_UNLOCK(RTMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount,
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat));
-	return (unsigned int)m_arrRenderTarget.size() - 1;
+	RenderTarget* rt = new RenderTargetNULL(targetCount,
+		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
+		width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
+	MUTEX_LOCK(RTMutex);
+	m_arrRenderTarget.push_back(rt);
+	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
+	MUTEX_UNLOCK(RTMutex);
+
+	return ret;
 }
 
 const unsigned int ResourceManagerNULL::CreateRenderTarget(const unsigned int targetCount,
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	m_arrRenderTarget.push_back(new RenderTargetNULL(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat));
-	return (unsigned int)m_arrRenderTarget.size() - 1;
+	RenderTarget* rt = new RenderTargetNULL(targetCount,
+		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
+		widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
+	MUTEX_LOCK(RTMutex);
+	m_arrRenderTarget.push_back(rt);
+	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
+	MUTEX_UNLOCK(RTMutex);
+
+	return ret;
 }

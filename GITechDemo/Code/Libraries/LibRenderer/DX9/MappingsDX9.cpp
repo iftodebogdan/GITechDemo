@@ -78,16 +78,16 @@ namespace LibRendererDll
 		D3DFMT_INDEX32				// IBF_INDEX32
 	};
 
-	const D3DFORMAT TextureFormatDX9[PF_MAX] =
+	const D3DFORMAT PixelFormatDX9[PF_MAX] =
 	{
-		D3DFMT_UNKNOWN,							// PF_NONE
+		(D3DFORMAT)MAKEFOURCC('N','U','L','L'),	// PF_NONE
 		D3DFMT_R5G6B5,							// PF_R5G6B5
 		D3DFMT_A1R5G5B5,						// PF_A1R5G5B5
 		D3DFMT_A4R4G4B4,						// PF_A4R4G4B4
 		D3DFMT_A8,								// PF_A8
 		D3DFMT_L8,								// PF_L8
 		D3DFMT_A8L8,							// PF_A8L8
-		D3DFMT_R8G8B8,							// PF_R8G8B8
+		D3DFMT_X8R8G8B8,						// PF_R8G8B8
 		D3DFMT_A8R8G8B8,						// PF_A8R8G8B8
 		D3DFMT_A8B8G8R8,						// PF_A8B8G8R8
 		D3DFMT_L16,								// PF_L16
@@ -104,7 +104,6 @@ namespace LibRendererDll
 		D3DFMT_DXT5,							// PF_DXT5
 		D3DFMT_D24S8,							// PF_D24S8
 		(D3DFORMAT)MAKEFOURCC('I','N','T','Z'),	// PF_INTZ
-		(D3DFORMAT)MAKEFOURCC('R','A','W','Z')	// PF_RAWZ
 	};
 
 	const DWORD RenderStateMappingDX9[RS_MAX] =
@@ -170,32 +169,89 @@ namespace LibRendererDll
 
 	const DWORD TextureAddressingModeDX9[SAM_MAX] =
 	{
-		0,                          // SAM_NONE
-		D3DTADDRESS_CLAMP,          // SAM_CLAMP
-		D3DTADDRESS_WRAP,           // SAM_WRAP
-		D3DTADDRESS_MIRROR,         // SAM_MIRROR
-		D3DTADDRESS_BORDER,         // SAM_BORDER
+		0,							// SAM_NONE
+		D3DTADDRESS_CLAMP,			// SAM_CLAMP
+		D3DTADDRESS_WRAP,			// SAM_WRAP
+		D3DTADDRESS_MIRROR,			// SAM_MIRROR
+		D3DTADDRESS_BORDER,			// SAM_BORDER
 	};
 	
 	const DWORD MinMagFilterDX9[SF_MAX] =
 	{
-		D3DTEXF_NONE,               // SF_NONE
-		D3DTEXF_POINT,              // SF_MIN_MAG_POINT_MIP_NONE
-		D3DTEXF_LINEAR,             // SF_MIN_MAG_LINEAR_MIP_NONE
-		D3DTEXF_POINT,              // SF_MIN_MAG_POINT_MIP_POINT
-		D3DTEXF_POINT,              // SF_MIN_MAG_POINT_MIP_LINEAR
-		D3DTEXF_LINEAR,             // SF_MIN_MAG_LINEAR_MIP_POINT
-		D3DTEXF_LINEAR              // SF_MIN_MAG_LINEAR_MIP_LINEAR
+		D3DTEXF_NONE,				// SF_NONE
+		D3DTEXF_POINT,				// SF_MIN_MAG_POINT_MIP_NONE
+		D3DTEXF_LINEAR,				// SF_MIN_MAG_LINEAR_MIP_NONE
+		D3DTEXF_POINT,				// SF_MIN_MAG_POINT_MIP_POINT
+		D3DTEXF_POINT,				// SF_MIN_MAG_POINT_MIP_LINEAR
+		D3DTEXF_LINEAR,				// SF_MIN_MAG_LINEAR_MIP_POINT
+		D3DTEXF_LINEAR				// SF_MIN_MAG_LINEAR_MIP_LINEAR
 	};
 	
 	const DWORD MipFilterDX9[SF_MAX] =
 	{
-		D3DTEXF_NONE,               // SF_NONE
-		D3DTEXF_NONE,               // SF_MIN_MAG_POINT_MIP_NONE
-		D3DTEXF_NONE,               // SF_MIN_MAG_LINEAR_MIP_NONE
-		D3DTEXF_POINT,              // SF_MIN_MAG_POINT_MIP_POINT
-		D3DTEXF_LINEAR,             // SF_MIN_MAG_POINT_MIP_LINEAR
-		D3DTEXF_POINT,              // SF_MIN_MAG_LINEAR_MIP_POINT
-		D3DTEXF_LINEAR              // SF_MIN_MAG_LINEAR_MIP_LINEAR
+		D3DTEXF_NONE,				// SF_NONE
+		D3DTEXF_NONE,				// SF_MIN_MAG_POINT_MIP_NONE
+		D3DTEXF_NONE,				// SF_MIN_MAG_LINEAR_MIP_NONE
+		D3DTEXF_POINT,				// SF_MIN_MAG_POINT_MIP_POINT
+		D3DTEXF_LINEAR,				// SF_MIN_MAG_POINT_MIP_LINEAR
+		D3DTEXF_POINT,				// SF_MIN_MAG_LINEAR_MIP_POINT
+		D3DTEXF_LINEAR				// SF_MIN_MAG_LINEAR_MIP_LINEAR
 	};
+
+	const D3DRESOURCETYPE TextureTypeDX9[TT_MAX] =
+	{
+		D3DRTYPE_TEXTURE,			// TT_1D
+		D3DRTYPE_TEXTURE,			// TT_2D
+		D3DRTYPE_VOLUMETEXTURE,		// TT_3D
+		D3DRTYPE_CUBETEXTURE		// TT_CUBE
+	};
+
+	const unsigned int CubeFaceIndexDX9[FACE_MAX] =
+	{
+		0,	// FACE_XNEG
+		1,	// FACE_YPOS
+		2,	// FACE_YNEG
+		3,	// FACE_ZPOS
+		4,	// FACE_XPOS
+		5	// FACE_ZNEG
+	};
+
+	const SamplerFilter MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip)
+	{
+		for (unsigned int i = 0; i < SF_MAX; i++)
+		{
+			if (min == MinMagFilterDX9[i] && mag == MinMagFilterDX9[i])
+			{
+				for (unsigned int j = 0; j < SF_MAX; j++)
+				{
+					if (mip == MipFilterDX9[i])
+						return (SamplerFilter)i;
+				}
+			}
+		}
+
+		return SF_NONE;
+	}
+
+	const SamplerAddressingMode MatchAddressingMode(const DWORD sam)
+	{
+		for (unsigned int i = 0; i < SAM_MAX; i++)
+		{
+			if (TextureAddressingModeDX9[i] == sam)
+				return (SamplerAddressingMode)i;
+		}
+
+		return SAM_NONE;
+	}
+
+	const PixelFormat MatchPixelFormat(const D3DFORMAT fmt)
+	{
+		for (unsigned int i = 0; i < PF_MAX; i++)
+		{
+			if (PixelFormatDX9[i] == fmt)
+				return (PixelFormat)i;
+		}
+
+		return PF_NONE;
+	}
 }

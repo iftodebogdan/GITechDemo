@@ -31,8 +31,9 @@
 
 #ifdef _WIN32
 #include "RendererDX9.h"
-#include "RendererNULL.h"
 #endif
+
+#include "RendererNULL.h"
 
 using namespace LibRendererDll;
 
@@ -43,11 +44,10 @@ static bool bCounterMutexInit = false;
 static MUTEX mCounterMutex; // A mutex to guarantee thread-safety for ms_nProfileMarkerCounter
 
 Renderer::Renderer()
-	: m_vBackBufferSize(800, 600)
-	, m_vBackBufferOffset(0, 0)
+	: m_vBackBufferOffset(0, 0)
 	, m_pResourceManager(nullptr)
-	, m_pRenderState(nullptr)
-	, m_pSamplerState(nullptr)
+	, m_pRenderStateManager(nullptr)
+	, m_pSamplerStateManager(nullptr)
 {
 	if (!bCounterMutexInit)
 	{
@@ -61,11 +61,11 @@ Renderer::~Renderer()
 	if (m_pResourceManager)
 		delete m_pResourceManager;
 
-	if (m_pRenderState)
-		delete m_pRenderState;
+	if (m_pRenderStateManager)
+		delete m_pRenderStateManager;
 
-	if (m_pSamplerState)
-		delete m_pSamplerState;
+	if (m_pSamplerStateManager)
+		delete m_pSamplerStateManager;
 
 	if (bCounterMutexInit)
 	{
@@ -109,30 +109,43 @@ void Renderer::DestroyInstance()
 	}
 }
 
-Renderer* Renderer::GetInstance()
+Renderer* const Renderer::GetInstance()
 {
 	return ms_pInstance;
 }
 
-API Renderer::GetAPI()
+const API Renderer::GetAPI()
 {
 	return ms_eAPI;
 }
 
-void Renderer::SetBackBufferSize(const Vec2i size, const Vec2i offset)
-{
-	m_vBackBufferSize = size;
-	m_vBackBufferOffset = offset;
-}
-
-Vec2i Renderer::GetBackBufferSize()
-{
-	return m_vBackBufferSize;
-}
-
-Vec2i Renderer::GetBackBufferOffset()
+const Vec2i Renderer::GetScreenOffset() const
 {
 	return m_vBackBufferOffset;
+}
+
+void Renderer::ValidateScreenResolution(Vec2i& size) const
+{
+	if (GetAPI() == API_NULL)
+		return;
+
+	Vec2i bestMatch(0, 0);
+	for (unsigned int i = 0; i < m_tDeviceCaps.arrSupportedScreenFormats.size(); i++)
+	{
+		if (GetBackBufferFormat() == m_tDeviceCaps.arrSupportedScreenFormats[i].ePixelFormat)
+		{
+			if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth > bestMatch[0] &&
+				(int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth <= size[0]) ||
+				((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight > bestMatch[1] &&
+					(int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight <= size[1]))
+			{
+				bestMatch[0] = m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth;
+				bestMatch[1] = m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight;
+			}
+		}
+	}
+
+	size = bestMatch;
 }
 
 void Renderer::ConvertOGLProjMatToD3D(Matrix44f& matProj)
@@ -148,22 +161,22 @@ void Renderer::ConvertOGLProjMatToD3D(Matrix44f* const matProj)
 }
 
 
-ResourceManager* Renderer::GetResourceManager()
+ResourceManager* const Renderer::GetResourceManager() const
 {
 	return m_pResourceManager;
 }
 
-RenderState* Renderer::GetRenderStateManager()
+RenderState* const Renderer::GetRenderStateManager() const
 {
-	return m_pRenderState;
+	return m_pRenderStateManager;
 }
 
-SamplerState* Renderer::GetSamplerStateManager()
+SamplerState* const Renderer::GetSamplerStateManager() const
 {
-	return m_pSamplerState;
+	return m_pSamplerStateManager;
 }
 
-DeviceCaps Renderer::GetDeviceCaps()
+const DeviceCaps Renderer::GetDeviceCaps() const
 {
 	return m_tDeviceCaps;
 }

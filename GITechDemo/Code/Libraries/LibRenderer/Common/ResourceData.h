@@ -36,7 +36,11 @@ using namespace gmtl;
 // structures used by the rendering library
 
 #ifndef assert
-#define assert(_Expression)     ((void)0)
+	#define assert(_Expression)     ((void)0)
+#endif
+
+#ifndef PURE_VIRTUAL
+	#define PURE_VIRTUAL = 0;
 #endif
 
 #ifndef ENABLE_PROFILE_MARKERS
@@ -406,13 +410,12 @@ namespace LibRendererDll
 		// Depth-stencil format
 		PF_D24S8,
 		PF_INTZ,
-		PF_RAWZ,
 
 		PF_MAX	// DO NOT USE! INTERNAL USAGE ONLY!
 	};
 
 	// Specifies the type of the texture
-	enum TexType
+	enum TextureType
 	{
 		TT_1D,		// One-dimensional texture
 		TT_2D,		// Two-dimensional texture
@@ -422,11 +425,26 @@ namespace LibRendererDll
 		TT_MAX		// DO NOT USE! INTERNAL USAGE ONLY!
 	};
 
+	// Specifies the face of a cubemap
+	enum CubeFace
+	{
+		FACE_NONE = ~0u,
+
+		FACE_XNEG = 0,
+		FACE_YPOS,
+		FACE_YNEG,
+		FACE_ZPOS,
+		FACE_XPOS,
+		FACE_ZNEG,
+
+		FACE_MAX
+	};
+
 	enum
 	{
 		// This is the maximum number of mipmap levels for a texture.
-		// A 32768x32768 texture has a maximum of 16 levels.
-		TEX_MAX_MIPMAP_LEVELS = 16
+		// A 16384x16384 texture has a maximum of 15 levels.
+		TEX_MAX_MIPMAP_LEVELS = 15
 	};
 
 	/////////////////////////////////////////////////////////////////////
@@ -712,13 +730,22 @@ namespace LibRendererDll
 		unsigned int nPixelShaderVersionMinor;
 		unsigned int nNumSimultaneousRTs;
 
-		struct ScreenFormat
+		struct SupportedScreenFormat
 		{
-			unsigned int nWidth;
-			unsigned int nHeight;
-			unsigned int nRefreshRate;
+			PixelFormat		ePixelFormat;
+			unsigned int	nWidth;
+			unsigned int	nHeight;
+			unsigned int	nRefreshRate;
 		};
-		std::vector<ScreenFormat> arrSupportedScreenFormats;
+		std::vector<const SupportedScreenFormat> arrSupportedScreenFormats;
+
+		struct SupportedPixelFormat
+		{
+			TextureType	eTextureType;
+			PixelFormat	ePixelFormat;
+			BufferUsage	eResourceUsage;
+		};
+		std::vector<const SupportedPixelFormat> arrSupportedPixelFormats;
 	};
 
 	//////////////////////////////////////////////////////////////////

@@ -75,6 +75,9 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
 	ResourceMgr->GetTexture(
 		IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0)
 		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+	ResourceMgr->GetTexture(
+		IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0)
+		)->SetAddressingMode(SAM_CLAMP);
 
 	texRSMFluxBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(0);
 	texRSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);

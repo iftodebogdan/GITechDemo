@@ -83,9 +83,9 @@ void DirectionalLightPass::Draw()
 	if (!RenderContext)
 		return;
 
-	DeferredLightDirShader.Enable();
+	DirectionalLightShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
-	DeferredLightDirShader.Disable();
+	DirectionalLightShader.Disable();
 
 	DrawChildren();
 }

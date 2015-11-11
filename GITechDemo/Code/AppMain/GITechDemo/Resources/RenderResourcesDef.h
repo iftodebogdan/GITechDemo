@@ -32,7 +32,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER(BokehDofShader);
 	DECLARE_SHADER(RSMUpscaleShader);
 	DECLARE_SHADER(RSMApplyShader);
-	DECLARE_SHADER(DeferredLightDirShader);
+	DECLARE_SHADER(DirectionalLightShader);
 	DECLARE_SHADER(SkyBoxShader);
 	DECLARE_SHADER(GBufferGenerationShader);
 	DECLARE_SHADER(DepthPassShader);
@@ -40,7 +40,8 @@ namespace GITechDemoApp
 	DECLARE_SHADER(ColorCopyShader);
 	DECLARE_SHADER(RSMCaptureShader);
 	DECLARE_SHADER(DownsampleShader);
-	DECLARE_SHADER(LumaCalcShader);
+	DECLARE_SHADER(LumaCaptureShader);
+	DECLARE_SHADER(LumaAdaptShader);
 	DECLARE_SHADER(HDRToneMappingShader);
 	DECLARE_SHADER(BloomShader);
 	DECLARE_SHADER(FxaaShader);
@@ -82,10 +83,10 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(BloomBuffer1);
 	DECLARE_RENDER_TARGET(LDRToneMappedImageBuffer);
 	DECLARE_RENDER_TARGET(LDRFxaaImageBuffer);
-	DECLARE_RENDER_TARGET(AmbientOcclusionFullBuffer0);
-	DECLARE_RENDER_TARGET(AmbientOcclusionFullBuffer1);
-	DECLARE_RENDER_TARGET(AmbientOcclusionQuarterBuffer0);
-	DECLARE_RENDER_TARGET(AmbientOcclusionQuarterBuffer1);
+	DECLARE_RENDER_TARGET(SSAOFullBuffer0);
+	DECLARE_RENDER_TARGET(SSAOFullBuffer1);
+	DECLARE_RENDER_TARGET(SSAOQuarterBuffer0);
+	DECLARE_RENDER_TARGET(SSAOQuarterBuffer1);
 	DECLARE_RENDER_TARGET(DepthOfFieldFullBuffer);
 	DECLARE_RENDER_TARGET(DepthOfFieldQuarterBuffer);
 	DECLARE_RENDER_TARGET(AutofocusBuffer0);
@@ -102,8 +103,8 @@ namespace GITechDemoApp
 	extern RenderTarget* HDRDownsampleBuffer[2];
 	extern RenderTarget* AverageLuminanceBuffer[4];
 	extern RenderTarget* BloomBuffer[2];
-	extern RenderTarget* AmbientOcclusionFullBuffer[2];
-	extern RenderTarget* AmbientOcclusionQuarterBuffer[2];
+	extern RenderTarget* SSAOFullBuffer[2];
+	extern RenderTarget* SSAOQuarterBuffer[2];
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
 	extern RenderTarget* LensFlareBuffer[2];
@@ -172,7 +173,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(bDebugUpscalePass, bool);
 	DECLARE_SHADER_CONSTANT(fSunRadius, float);
 	DECLARE_SHADER_CONSTANT(fSunBrightness, float);
-	DECLARE_SHADER_CONSTANT(texLumaCalcInput, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLumaInput, LibRendererDll::Sampler2D);
 	DECLARE_SHADER_CONSTANT(bInitialLumaPass, bool);
 	DECLARE_SHADER_CONSTANT(bFinalLumaPass, bool);
 	DECLARE_SHADER_CONSTANT(texAvgLuma, LibRendererDll::Sampler2D);
@@ -187,7 +188,6 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fToeNumerator, float);
 	DECLARE_SHADER_CONSTANT(fToeDenominator, float);
 	DECLARE_SHADER_CONSTANT(fLinearWhite, float);
-	DECLARE_SHADER_CONSTANT(bLumaAdaptationPass, bool);
 	DECLARE_SHADER_CONSTANT(fLumaAdaptSpeed, float);
 	DECLARE_SHADER_CONSTANT(fFrameTime, float);
 	DECLARE_SHADER_CONSTANT(texLumaTarget, LibRendererDll::Sampler2D);
@@ -255,6 +255,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fLensDirtIntensity, float);
 	DECLARE_SHADER_CONSTANT(fLensStarBurstIntensity, float);
 	DECLARE_SHADER_CONSTANT(f33LensFlareStarBurstMat, Matrix33f);
+	DECLARE_SHADER_CONSTANT(bSingleChannelCopy, bool);
 	//-------------------------------------------------------
 }
 

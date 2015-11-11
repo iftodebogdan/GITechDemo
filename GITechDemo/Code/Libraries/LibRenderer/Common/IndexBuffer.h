@@ -19,14 +19,6 @@
 #ifndef INDEXBUFFER_H
 #define INDEXBUFFER_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
 #include "Buffer.h"
 
 namespace LibRendererDll
@@ -36,20 +28,20 @@ namespace LibRendererDll
 	{
 	public:
 		// Enable the index buffer
-		virtual LIBRENDERER_DLL void	Enable() = 0;
+		virtual LIBRENDERER_DLL void	Enable() PURE_VIRTUAL
 		// Disable the index buffer
-		virtual LIBRENDERER_DLL void	Disable() = 0;
+		virtual LIBRENDERER_DLL void	Disable() PURE_VIRTUAL
 		// Lock the index buffer for reading/writing
-		virtual LIBRENDERER_DLL void	Lock(const BufferLocking lockMode) = 0;
+		virtual LIBRENDERER_DLL void	Lock(const BufferLocking lockMode) PURE_VIRTUAL
 		// Unlock the index buffer
-		virtual LIBRENDERER_DLL void	Unlock() = 0;
+		virtual LIBRENDERER_DLL void	Unlock() PURE_VIRTUAL
 		// Update the index buffer with the changes made
-		virtual LIBRENDERER_DLL void	Update() = 0;
+		virtual LIBRENDERER_DLL void	Update() PURE_VIRTUAL
 
 		// Create a corresponding platform specific resource
-		virtual	LIBRENDERER_DLL void	Bind() = 0;
+		virtual	LIBRENDERER_DLL void	Bind() PURE_VIRTUAL
 		// Destroy the platform specific resource
-		virtual	LIBRENDERER_DLL void	Unbind() = 0;
+		virtual	LIBRENDERER_DLL void	Unbind() PURE_VIRTUAL
 
 				// Set an index
 				LIBRENDERER_DLL void	SetIndex(const unsigned int indexIdx, const unsigned int indexVal);

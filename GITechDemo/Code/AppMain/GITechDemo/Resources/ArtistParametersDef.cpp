@@ -52,7 +52,7 @@ namespace GITechDemoApp
 	extern bool POST_PROCESSING_ENABLED;
 
 	// SSAO
-	extern bool AMBIENT_OCCLUSION_ENABLED;
+	extern bool SSAO_ENABLED;
 	extern bool SSAO_USE_QUARTER_RESOLUTION_BUFFER;
 
 	// Bokeh DoF
@@ -75,6 +75,11 @@ namespace GITechDemoApp
 
 	// FXAA
 	extern bool FXAA_ENABLED;
+
+	// Fullscreen resolution
+	extern bool FULLSCREEN_ENABLED;
+	extern int FULLSCREEN_RESOLUTION_X;
+	extern int FULLSCREEN_RESOLUTION_Y;
 	//------------------------------------------------------
 
 	//////////////////////////////////////////////
@@ -138,7 +143,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Post-processing enable",	"Toggle post-processing effects",										"Post-processing effects",	POST_PROCESSING_ENABLED,					1.f);
 
 	// SSAO
-	IMPLEMENT_ARTIST_PARAMETER("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						AMBIENT_OCCLUSION_ENABLED,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						SSAO_ENABLED,					1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Sample radius",				"Radius in which occluders are searched for",							"SSAO",						fSSAOSampleRadius.GetCurrentValue(),		1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Intensity",					"Intensity of SSAO effect",												"SSAO",						fSSAOIntensity.GetCurrentValue(),			1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Scale",						"Scale for the occlusion attenuation with distance",					"SSAO",						fSSAOScale.GetCurrentValue(),				0.1f);
@@ -224,5 +229,10 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Text color R",				"HUD text color - red component",										"HUD",						f3TextColor.GetCurrentValue()[0],			0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Text color G",				"HUD text color - green component",										"HUD",						f3TextColor.GetCurrentValue()[1],			0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Text color B",				"HUD text color - blue component",										"HUD",						f3TextColor.GetCurrentValue()[2],			0.1f);
+
+	// Fullscreen resolution
+	IMPLEMENT_ARTIST_PARAMETER("Fullscreen enabled",		"Toggle between window mode and fulscreen mode",						"Window",					FULLSCREEN_ENABLED,							1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Resolution X (width)",		"Set the resolution on the X axis (only affects fullscreen mode)",		"Window",					FULLSCREEN_RESOLUTION_X,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Resolution Y (height)",		"Set the resolution on the Y axis (only affects fullscreen mode)",		"Window",					FULLSCREEN_RESOLUTION_Y,					1.f);
 	//------------------------------------------------------
 }

@@ -19,14 +19,6 @@
 #ifndef VERTEXFORMAT_H
 #define VERTEXFORMAT_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
 #include "ResourceData.h"
 
 namespace LibRendererDll
@@ -62,16 +54,16 @@ namespace LibRendererDll
 				static	LIBRENDERER_DLL const unsigned int	GetAttributeTypeSize(const VertexAttributeType type);
 
 		// Enable the vertex format (also called by the associated vertex buffer)
-		virtual	LIBRENDERER_DLL void	Enable() = 0;
+		virtual	LIBRENDERER_DLL void	Enable() PURE_VIRTUAL
 		// Disable the vertex format (also called by the associated vertex buffer)
-		virtual	LIBRENDERER_DLL void	Disable() = 0;
+		virtual	LIBRENDERER_DLL void	Disable() PURE_VIRTUAL
 		// Update the vertex format with the changes made
-		virtual	LIBRENDERER_DLL void	Update() = 0;
+		virtual	LIBRENDERER_DLL void	Update() PURE_VIRTUAL
 
 		// Create a corresponding platform specific resource
-		virtual	LIBRENDERER_DLL void	Bind() = 0;
+		virtual	LIBRENDERER_DLL void	Bind() PURE_VIRTUAL
 		// Destroy the platform specific resource
-		virtual	LIBRENDERER_DLL void	Unbind() = 0;
+		virtual	LIBRENDERER_DLL void	Unbind() PURE_VIRTUAL
 
 	protected:
 		//When creating a vertex format, you must first set the number of attributes (this can't be changed later).

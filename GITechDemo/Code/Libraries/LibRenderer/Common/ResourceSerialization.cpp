@@ -537,8 +537,8 @@ std::ostream& LibRendererDll::operator<<(std::ostream& output_out, Texture& tex_
 {
 	output_out << *(Buffer*)&tex_in;
 
-	output_out.write((char*)&tex_in.m_eTexFormat, sizeof(PixelFormat));
-	output_out.write((char*)&tex_in.m_eTexType, sizeof(TexType));
+	output_out.write((char*)&tex_in.m_ePixelFormat, sizeof(PixelFormat));
+	output_out.write((char*)&tex_in.m_eTexType, sizeof(TextureType));
 	output_out.write((char*)&tex_in.m_nMipCount, sizeof(unsigned int));
 
 	output_out.write((char*)&tex_in.m_nDimensionCount, sizeof(unsigned int));
@@ -556,8 +556,8 @@ std::istream& LibRendererDll::operator>>(std::istream& s_in, Texture& tex_out)
 {
 	s_in >> *(Buffer*)&tex_out;
 
-	s_in.read((char*)&tex_out.m_eTexFormat, sizeof(PixelFormat));
-	s_in.read((char*)&tex_out.m_eTexType, sizeof(TexType));
+	s_in.read((char*)&tex_out.m_ePixelFormat, sizeof(PixelFormat));
+	s_in.read((char*)&tex_out.m_eTexType, sizeof(TextureType));
 	s_in.read((char*)&tex_out.m_nMipCount, sizeof(unsigned int));
 
 	s_in.read((char*)&tex_out.m_nDimensionCount, sizeof(unsigned int));

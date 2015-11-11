@@ -21,6 +21,7 @@
 
 #include <d3d9.h>
 #include "Renderer.h"
+#include "MappingsDX9.h"
 
 namespace LibRendererDll
 {
@@ -28,6 +29,9 @@ namespace LibRendererDll
 	{
 		RendererDX9();
 		~RendererDX9();
+
+		void	CheckDeviceCaps();
+		void	ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp);
 
 		// Used to create the D3DDevice
 		IDirect3D9*				m_pD3D;
@@ -37,13 +41,19 @@ namespace LibRendererDll
 		bool					m_bDeviceLost;
 		
 	public:
-		static	RendererDX9*	GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
+		static	RendererDX9* const	GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
 
-		void	Initialize(void* hWnd);
-		void	SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
-		void	SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
-		void	CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar);
-		void	CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar);
+		void		Initialize(void* hWnd);
+
+		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false);
+		const Vec2i			GetScreenResolution() const { return Vec2i(m_ePresentParameters.BackBufferWidth, m_ePresentParameters.BackBufferHeight); }
+		const PixelFormat	GetBackBufferFormat() const { return MatchPixelFormat(m_ePresentParameters.BackBufferFormat); }
+
+		void		SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
+		const bool	IsFullscreen() const { return !m_ePresentParameters.Windowed; }
+
+		void		CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
+		void		CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
 
 		const bool	BeginFrame();
 		void		EndFrame();
@@ -54,9 +64,9 @@ namespace LibRendererDll
 		void		PushProfileMarker(const char* const label);
 		void		PopProfileMarker();
 
-		IDirect3DDevice9*	GetDevice() const { return m_pd3dDevice; };
-		IDirect3D9*		 	GetDriver() const { return m_pD3D; }
-		const bool		 	IsDeviceLost() const { return m_bDeviceLost; }
+		IDirect3DDevice9* const	GetDevice() const { return m_pd3dDevice; };
+		IDirect3D9* const		GetDriver() const { return m_pD3D; }
+		const bool		 		IsDeviceLost() const { return m_bDeviceLost; }
 
 		friend class Renderer;
 	};

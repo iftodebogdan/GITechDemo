@@ -93,17 +93,15 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
 		if (i == 0)
 		{
 			f2TexelSize = Vec2f(1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(), 1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight());
-			texLumaCalcInput = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
+			texLumaInput = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
 			bInitialLumaPass = true;
 			bFinalLumaPass = false;
-			bLumaAdaptationPass = false;
 		}
 		else
 		{
 			f2TexelSize = Vec2f(1.f / AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(), 1.f / AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight());
-			texLumaCalcInput = AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetColorBuffer(0);
+			texLumaInput = AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetColorBuffer(0);
 			bInitialLumaPass = false;
-			bLumaAdaptationPass = false;
 
 			if (i == 3)
 				bFinalLumaPass = true;
@@ -111,9 +109,9 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
 				bFinalLumaPass = false;
 		}
 
-		LumaCalcShader.Enable();
+		LumaCaptureShader.Enable();
 		RenderContext->DrawVertexBuffer(FullScreenTri);
-		LumaCalcShader.Disable();
+		LumaCaptureShader.Disable();
 
 		AverageLuminanceBuffer[i]->Disable();
 
@@ -134,14 +132,11 @@ void HDRToneMappingPass::LuminanceAdaptationPass()
 	AdaptedLuminance[0]->Enable();
 
 	f2HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
-	texLumaCalcInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
-	bInitialLumaPass = false;
-	bFinalLumaPass = false;
-	bLumaAdaptationPass = true;
+	texLumaInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
 
-	LumaCalcShader.Enable();
+	LumaAdaptShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
-	LumaCalcShader.Disable();
+	LumaAdaptShader.Disable();
 
 	AdaptedLuminance[0]->Disable();
 

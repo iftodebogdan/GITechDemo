@@ -19,17 +19,6 @@
 #ifndef RENDERSTATE_H
 #define RENDERSTATE_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
-#include <gmtl/gmtl.h>
-using namespace gmtl;
-
 #include "ResourceData.h"
 
 namespace LibRendererDll
@@ -72,7 +61,7 @@ namespace LibRendererDll
 		virtual	LIBRENDERER_DLL	const bool	SetFillMode(const Fill fillMode);
 
 		virtual	LIBRENDERER_DLL	const bool	SetScissorEnabled(const bool enabled);
-		virtual	LIBRENDERER_DLL	const bool	SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) = 0;
+		virtual	LIBRENDERER_DLL	const bool	SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) PURE_VIRTUAL
 
 		virtual	LIBRENDERER_DLL	const bool	SetSRGBWriteEnabled(const bool enabled);
 

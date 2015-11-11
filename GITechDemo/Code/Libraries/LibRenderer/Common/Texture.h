@@ -19,17 +19,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
-#include <gmtl\gmtl.h>
-using namespace gmtl;
-
 #include "Buffer.h"
 
 namespace LibRendererDll
@@ -46,9 +35,9 @@ namespace LibRendererDll
 				byte* GetData() const { assert(false); return nullptr; }
 
 				// Get the format of the texture
-				LIBRENDERER_DLL const	PixelFormat		GetTextureFormat() const;
+				LIBRENDERER_DLL const	PixelFormat		GetPixelFormat() const;
 				// Get the type of texture
-				LIBRENDERER_DLL const	TexType			GetTextureType() const;
+				LIBRENDERER_DLL const	TextureType		GetTextureType() const;
 				// Get the number of mip levels
 				LIBRENDERER_DLL const	unsigned int	GetMipCount() const;
 
@@ -67,6 +56,8 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const	unsigned int	GetMipOffset(const unsigned int mipmapLevel = 0) const;
 				/* Get the offset in bytes of a cube face from the beginning of the memory buffer in which the texture is stored*/
 				LIBRENDERER_DLL const	unsigned int	GetCubeFaceOffset() const;
+		/* Get the index in the texture array of the specified cubemap face */
+		virtual	LIBRENDERER_DLL const	unsigned int	GetCubeFaceIndex(const CubeFace cubeFace) const PURE_VIRTUAL
 				/* Returns true if the format of the texture is a compressed format */
 				LIBRENDERER_DLL const	bool			IsCompressed() const;
 				/* Returns true if the format of the texture is a floating point format */
@@ -78,34 +69,34 @@ namespace LibRendererDll
 				/* Returns true if the format of the texture allows it to be mipmapable */
 				LIBRENDERER_DLL const	bool			IsMipmapable() const;
 				/* Get a pointer to the start of the specified mip level in the memory buffer in which the texture is stored */
-				LIBRENDERER_DLL 		byte*	const	GetMipData(const unsigned int mipmapLevel = 0) const;
+				LIBRENDERER_DLL 		byte*	const	GetMipData(const unsigned int mipmapLevel = 0);
 				/* Get a pointer to the start of the specified face and mip level in the memory buffer in which a cube texture is stored */
-				LIBRENDERER_DLL 		byte*	const	GetMipData(const unsigned int cubeFace, const unsigned int mipmapLevel) const;
+				LIBRENDERER_DLL 		byte*	const	GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel = 0) const;
 
 		// Enable the texture on the specified slot
-		virtual LIBRENDERER_DLL void			Enable(const unsigned int texUnit) const = 0;
+		virtual LIBRENDERER_DLL void			Enable(const unsigned int texUnit) const PURE_VIRTUAL
 		// Disable the texture from the specified slot
-		virtual LIBRENDERER_DLL void			Disable(const unsigned int texUnit) const = 0;
+		virtual LIBRENDERER_DLL void			Disable(const unsigned int texUnit) const PURE_VIRTUAL
 		// Lock the specified mipmap level for reading/writing
 		virtual LIBRENDERER_DLL const	bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode);
 		// Lock the specified mipmap level of the specified cube face for reading/writing (cubemaps only!)
-		virtual LIBRENDERER_DLL const	bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode);
+		virtual LIBRENDERER_DLL const	bool	Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode);
 		// Unlock the texture
 		virtual LIBRENDERER_DLL void			Unlock();
 		// Update the locked mipmap level (of the locked face, if cube texture) with the changes made
-		virtual LIBRENDERER_DLL void			Update() = 0;
+		virtual LIBRENDERER_DLL void			Update() PURE_VIRTUAL
 
 		// Create a corresponding platform specific resource
 		virtual LIBRENDERER_DLL void			Bind();
 		// Destroy the platform specific resource
-		virtual LIBRENDERER_DLL void			Unbind() = 0;
+		virtual LIBRENDERER_DLL void			Unbind() PURE_VIRTUAL
 
 				// Get lock status
 				LIBRENDERER_DLL const	bool			IsLocked() const;
 				// Get the mipmap level which has been locked
 				LIBRENDERER_DLL const	unsigned int	GetLockedMip() const;
 				// Get the cube face level which has been locked
-				LIBRENDERER_DLL const	unsigned int	GetLockedCubeFace() const;
+				LIBRENDERER_DLL const	CubeFace		GetLockedCubeFace() const;
 
 				// Generate mipmaps (SLOW!)
 				LIBRENDERER_DLL const	bool	GenerateMips();
@@ -136,15 +127,17 @@ namespace LibRendererDll
 				LIBRENDERER_DLL	const	char*	GetSourceFileName() const;
 
 		/* Get the number of dimensions a texture of the specified type has */
-		static	LIBRENDERER_DLL const	unsigned int	GetDimensionCount(const TexType texType);
+		static	LIBRENDERER_DLL const	unsigned int	GetDimensionCount(const TextureType texType);
 		/* Returns true if the specified texture format is mipmapable */
-		static	LIBRENDERER_DLL const	bool			IsMipmapable(const PixelFormat texFormat);
+		static	LIBRENDERER_DLL const	bool			IsMipmapable(const PixelFormat pixelFormat);
 		/* Get the size in bytes of a pixel (or block, for compressed formats) from a texture of the specified format */
-		static	LIBRENDERER_DLL const	unsigned int	GetPixelSize(const PixelFormat texFormat);
+		static	LIBRENDERER_DLL const	unsigned int	GetBytesPerPixel(const PixelFormat pixelFormat);
+		/* Validates the supplied pixel format against the device's capabilities and attempts to find the closest match if not compatible */
+		static	LIBRENDERER_DLL void					ValidatePixelFormat(PixelFormat& pixelFormat, const TextureType texType, const BufferUsage usage);
 
 	protected:
 		Texture(
-			const PixelFormat texFormat, const TexType texType,
+			const PixelFormat pixelFormat, const TextureType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
 			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
 		virtual	~Texture();
@@ -155,8 +148,8 @@ namespace LibRendererDll
 		// Sets the width/height ratio relative to the backbuffer (for dynamic render targets)
 		void			SetDynamicSizeRatios(const float widthRatio, const float heightRatio);
 
-		PixelFormat		m_eTexFormat;	// Holds the format of the texture
-		TexType			m_eTexType;		// Holds the type of texture
+		PixelFormat		m_ePixelFormat;	// Holds the format of the texture
+		TextureType			m_eTexType;		// Holds the type of texture
 		unsigned int	m_nMipCount;	// Holds the number of mips
 
 		/* Holds the number of valid dimensions based on the type */
@@ -171,7 +164,7 @@ namespace LibRendererDll
 		/* Lock status */
 		bool			m_bIsLocked;
 		unsigned int	m_nLockedMip;
-		unsigned int	m_nLockedCubeFace;
+		CubeFace		m_eLockedCubeFace;
 
 		/* Sampler states */
 		SamplerStateDesc	m_tSamplerStates;
@@ -183,13 +176,6 @@ namespace LibRendererDll
 		bool	m_bIsDynamicRT;
 		float	m_fWidthRatio;
 		float	m_fHeightRatio;
-
-		/* Holds the number of valid dimensions for the specified texture type */
-		static	const unsigned int	ms_nDimensionCount[TT_MAX];
-		/* Holds the size in bytes of a pixel (or block, for compressed formats) for the specified texture format */
-		static	const unsigned int	ms_nPixelSize[PF_MAX];
-		/* Holds whether the specified texture format is mipmapable */
-		static	const bool			ms_bIsMipmapable[PF_MAX];
 
 		friend class ResourceManager;
 		friend class RenderTarget;

@@ -23,7 +23,9 @@
 #include "../Utility/ColorUtility.h"
 using namespace LibRendererDll;
 
-const unsigned int Texture::ms_nDimensionCount[TT_MAX] =
+#define DXT_PSEUDO_BPP (4u)
+
+const unsigned int g_nDimensionCount[TT_MAX] =
 {
 	1,	// TT_1D
 	2,	// TT_2D
@@ -31,36 +33,7 @@ const unsigned int Texture::ms_nDimensionCount[TT_MAX] =
 	2	// TT_CUBE
 };
 
-const unsigned int Texture::ms_nPixelSize[PF_MAX] =
-{
-	0,	// PF_NONE
-	2,	// PF_R5G6B5
-	2,	// PF_A1R5G5B5
-	2,	// PF_A4R4G4B4
-	1,	// PF_A8
-	1,	// PF_L8
-	2,	// PF_A8L8
-	3,	// PF_R8G8B8
-	4,	// PF_A8R8G8B8
-	4,	// PF_A8B8G8R8
-	2,	// PF_L16
-	4,	// PF_G16R16
-	8,	// PF_A16B16G16R16
-	2,	// PF_R16F
-	4,	// PF_G16R16F
-	8,	// PF_A16B16G16R16F
-	4,	// PF_R32F
-	8,	// PF_G32R32F
-	16,	// PF_A32B32G32R32F,
-	8,	// PF_DXT1	// block size, instead of pixel
-	16,	// PF_DXT3	// block size, instead of pixel
-	16,	// PF_DXT5	// block size, instead of pixel
-	4,	// PF_D24S8
-	4,	// PF_INTZ
-	4	// PF_RAWZ
-};
-
-const bool Texture::ms_bIsMipmapable[PF_MAX] =
+const bool g_bMipmapable[PF_MAX] =
 {
 	false,	// PF_NONE
 	true,	// PF_R5G6B5
@@ -85,21 +58,223 @@ const bool Texture::ms_bIsMipmapable[PF_MAX] =
 	true,	// PF_DXT3
 	true,	// PF_DXT5
 	false,	// PF_D24S8
-	false,	// PF_INTZ
-	false	// PF_RAWZ
+	false	// PF_INTZ
+};
+
+const unsigned int g_nBytesPerPixel[PF_MAX] =
+{
+	0,	// PF_NONE
+	2,	// PF_R5G6B5
+	2,	// PF_A1R5G5B5
+	2,	// PF_A4R4G4B4
+	1,	// PF_A8
+	1,	// PF_L8
+	2,	// PF_A8L8
+	3,	// PF_R8G8B8
+	4,	// PF_A8R8G8B8
+	4,	// PF_A8B8G8R8
+	2,	// PF_L16
+	4,	// PF_G16R16
+	8,	// PF_A16B16G16R16
+	2,	// PF_R16F
+	4,	// PF_G16R16F
+	8,	// PF_A16B16G16R16F
+	4,	// PF_R32F
+	8,	// PF_G32R32F
+	16,	// PF_A32B32G32R32F,
+	8,	// PF_DXT1	// block size, instead of pixel
+	16,	// PF_DXT3	// block size, instead of pixel
+	16,	// PF_DXT5	// block size, instead of pixel
+	4,	// PF_D24S8
+	4	// PF_INTZ
+};
+
+enum ComponentOrder
+{
+	CO_NONE,	// N/A
+	CO_ARGB,	// Most common
+	CO_ABGR		// Relatively obscure
+};
+
+const ComponentOrder g_eComponentOrder[PF_MAX] =
+{
+	CO_NONE,	// PF_NONE
+	CO_ARGB,	// PF_R5G6B5
+	CO_ARGB,	// PF_A1R5G5B5
+	CO_ARGB,	// PF_A4R4G4B4
+	CO_NONE,	// PF_A8
+	CO_NONE,	// PF_L8
+	CO_ARGB,	// PF_A8L8
+	CO_ARGB,	// PF_R8G8B8
+	CO_ARGB,	// PF_A8R8G8B8
+	CO_ABGR,	// PF_A8B8G8R8
+	CO_NONE,	// PF_L16
+	CO_ABGR,	// PF_G16R16
+	CO_ABGR,	// PF_A16B16G16R16
+	CO_NONE,	// PF_R16F
+	CO_ABGR,	// PF_G16R16F
+	CO_ABGR,	// PF_A16B16G16R16F
+	CO_NONE,	// PF_R32F
+	CO_ABGR,	// PF_G32R32F
+	CO_ABGR,	// PF_A32B32G32R32F,
+	CO_NONE,	// PF_DXT1
+	CO_NONE,	// PF_DXT3
+	CO_NONE,	// PF_DXT5
+	CO_NONE,	// PF_D24S8
+	CO_NONE		// PF_INTZ
+};
+
+const unsigned int g_nComponentCount[PF_MAX] =
+{
+	0,	// PF_NONE
+	3,	// PF_R5G6B5
+	4,	// PF_A1R5G5B5
+	4,	// PF_A4R4G4B4
+	1,	// PF_A8
+	1,	// PF_L8
+	2,	// PF_A8L8
+	3,	// PF_R8G8B8
+	4,	// PF_A8R8G8B8
+	4,	// PF_A8B8G8R8
+	1,	// PF_L16
+	2,	// PF_G16R16
+	4,	// PF_A16B16G16R16
+	1,	// PF_R16F
+	2,	// PF_G16R16F
+	4,	// PF_A16B16G16R16F
+	1,	// PF_R32F
+	2,	// PF_G32R32F
+	4,	// PF_A32B32G32R32F,
+	4,	// PF_DXT1	// block size, instead of pixel
+	4,	// PF_DXT3	// block size, instead of pixel
+	4,	// PF_DXT5	// block size, instead of pixel
+	2,	// PF_D24S8
+	2	// PF_INTZ
+};
+
+const bool g_bFloatingPoint[PF_MAX] =
+{
+	false,	// PF_NONE
+	false,	// PF_R5G6B5
+	false,	// PF_A1R5G5B5
+	false,	// PF_A4R4G4B4
+	false,	// PF_A8
+	false,	// PF_L8
+	false,	// PF_A8L8
+	false,	// PF_R8G8B8
+	false,	// PF_A8R8G8B8
+	false,	// PF_A8B8G8R8
+	false,	// PF_L16
+	false,	// PF_G16R16
+	false,	// PF_A16B16G16R16
+	true,	// PF_R16F
+	true,	// PF_G16R16F
+	true,	// PF_A16B16G16R16F
+	true,	// PF_R32F
+	true,	// PF_G32R32F
+	true,	// PF_A32B32G32R32F,
+	false,	// PF_DXT1
+	false,	// PF_DXT3
+	false,	// PF_DXT5
+	false,	// PF_D24S8
+	false	// PF_INTZ
+};
+
+const bool g_bDepthFormat[PF_MAX] =
+{
+	false,	// PF_NONE
+	false,	// PF_R5G6B5
+	false,	// PF_A1R5G5B5
+	false,	// PF_A4R4G4B4
+	false,	// PF_A8
+	false,	// PF_L8
+	false,	// PF_A8L8
+	false,	// PF_R8G8B8
+	false,	// PF_A8R8G8B8
+	false,	// PF_A8B8G8R8
+	false,	// PF_L16
+	false,	// PF_G16R16
+	false,	// PF_A16B16G16R16
+	false,	// PF_R16F
+	false,	// PF_G16R16F
+	false,	// PF_A16B16G16R16F
+	false,	// PF_R32F
+	false,	// PF_G32R32F
+	false,	// PF_A32B32G32R32F,
+	false,	// PF_DXT1
+	false,	// PF_DXT3
+	false,	// PF_DXT5
+	true,	// PF_D24S8
+	true	// PF_INTZ
+};
+
+const bool g_bHasStencil[PF_MAX] =
+{
+	false,	// PF_NONE
+	false,	// PF_R5G6B5
+	false,	// PF_A1R5G5B5
+	false,	// PF_A4R4G4B4
+	false,	// PF_A8
+	false,	// PF_L8
+	false,	// PF_A8L8
+	false,	// PF_R8G8B8
+	false,	// PF_A8R8G8B8
+	false,	// PF_A8B8G8R8
+	false,	// PF_L16
+	false,	// PF_G16R16
+	false,	// PF_A16B16G16R16
+	false,	// PF_R16F
+	false,	// PF_G16R16F
+	false,	// PF_A16B16G16R16F
+	false,	// PF_R32F
+	false,	// PF_G32R32F
+	false,	// PF_A32B32G32R32F,
+	false,	// PF_DXT1
+	false,	// PF_DXT3
+	false,	// PF_DXT5
+	true,	// PF_D24S8
+	true	// PF_INTZ
+};
+
+const bool g_bCompressed[PF_MAX] =
+{
+	false,	// PF_NONE
+	false,	// PF_R5G6B5
+	false,	// PF_A1R5G5B5
+	false,	// PF_A4R4G4B4
+	false,	// PF_A8
+	false,	// PF_L8
+	false,	// PF_A8L8
+	false,	// PF_R8G8B8
+	false,	// PF_A8R8G8B8
+	false,	// PF_A8B8G8R8
+	false,	// PF_L16
+	false,	// PF_G16R16
+	false,	// PF_A16B16G16R16
+	false,	// PF_R16F
+	false,	// PF_G16R16F
+	false,	// PF_A16B16G16R16F
+	false,	// PF_R32F
+	false,	// PF_G32R32F
+	false,	// PF_A32B32G32R32F,
+	true,	// PF_DXT1
+	true,	// PF_DXT3
+	true,	// PF_DXT5
+	false,	// PF_D24S8
+	false	// PF_INTZ
 };
 
 Texture::Texture(
-	const PixelFormat texFormat, const TexType texType,
+	const PixelFormat pixelFormat, const TextureType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
 	const unsigned int mipCount, const BufferUsage usage)
 	: Buffer(0, 0, usage)	// We don't know at this stage how much memory we need
-	, m_eTexFormat(texFormat)
+	, m_ePixelFormat(pixelFormat)
 	, m_eTexType(texType)
 	, m_nMipCount(mipCount)
 	, m_bIsLocked(false)
 	, m_nLockedMip(~0u)
-	, m_nLockedCubeFace(~0u)
+	, m_eLockedCubeFace(FACE_NONE)
 	, m_bIsDynamicRT(false)
 	, m_fWidthRatio(1.f)
 	, m_fHeightRatio(1.f)
@@ -116,8 +291,8 @@ Texture::Texture(
 	if (usage == BU_NONE)
 		return;
 
-	assert(sizeX > 0 || (usage == BU_RENDERTAGET || (texFormat >= PF_D24S8 && texFormat <= PF_RAWZ)));	// Render targets may have dynamic resolution
-	assert(sizeY > 0 || (usage == BU_RENDERTAGET || (texFormat >= PF_D24S8 && texFormat <= PF_RAWZ)));	// (i.e. sync'ed with the resolution of the backbuffer)
+	assert(sizeX > 0 || usage == BU_RENDERTAGET || usage == BU_DEPTHSTENCIL);	// Render targets may have dynamic resolution
+	assert(sizeY > 0 || usage == BU_RENDERTAGET || usage == BU_DEPTHSTENCIL);	// (i.e. sync'ed with the resolution of the backbuffer)
 	assert(sizeZ > 0);
 
 	// Only 2D and cube textures can be compressed
@@ -131,6 +306,9 @@ Texture::Texture(
 
 	// No mipmaps for 32bit formats or depth-stencil formats
 	assert(IsMipmapable() || GetMipCount() == 1);
+
+	// Validate and correct (if necessary and possible) the pixel format
+	ValidatePixelFormat(m_ePixelFormat, texType, usage);
 
 	// Calculate mipmap properties (dimensions, memory used, etc.)
 	ComputeTextureProperties(Vec3i(sizeX, sizeY, sizeZ));
@@ -147,8 +325,8 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	if ((dimensions[0] <= 0 || dimensions[1] <= 0) && (IsRenderTarget() || IsDepthStencil()))
 		m_bIsDynamicRT = true;
 
-	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : (unsigned int)((float)Renderer::GetInstance()->GetBackBufferSize()[0] * m_fWidthRatio);
-	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : (unsigned int)((float)Renderer::GetInstance()->GetBackBufferSize()[1] * m_fHeightRatio);
+	unsigned int width	= !m_bIsDynamicRT ? dimensions[0] : (unsigned int)((float)Renderer::GetInstance()->GetScreenResolution()[0] * m_fWidthRatio);
+	unsigned int height	= !m_bIsDynamicRT ? dimensions[1] : (unsigned int)((float)Renderer::GetInstance()->GetScreenResolution()[1] * m_fHeightRatio);
 	unsigned int depth	= !m_bIsDynamicRT ? dimensions[2] : 1u;
 	if (IsCompressed())
 	{
@@ -159,7 +337,7 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 	}
 
 	m_nDimensionCount = GetDimensionCount(m_eTexType);
-	m_nElementSize = GetPixelSize(m_eTexFormat);
+	m_nElementSize = GetBytesPerPixel(m_ePixelFormat);
 
 	m_nDimension[0][0] = width;
 
@@ -227,7 +405,7 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 			if (blocksY < 1)
 				blocksY = 1;
 
-			// For compressed formats, GetPixelSize() actually returns the size
+			// For compressed formats, GetBytesPerPixel() actually returns the size
 			// in bytes for a compressed block (8 for DXT1 and 16 for DXT3/5)
 			m_nMipSizeBytes[level] = GetElementSize() * blocksX * blocksY;
 			m_nElementCount += blocksX * blocksY;
@@ -270,8 +448,8 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
 		}
 	}
 
-	m_nElementCount *= (m_eTexType == TT_CUBE ? 6u : 1u);
-	m_nSize *= (m_eTexType == TT_CUBE ? 6u : 1u);
+	m_nElementCount *= (m_eTexType == TT_CUBE ? FACE_MAX : 1u);
+	m_nSize *= (m_eTexType == TT_CUBE ? FACE_MAX : 1u);
 }
 
 void Texture::SetDynamicSizeRatios(const float widthRatio, const float heightRatio)
@@ -293,7 +471,7 @@ void Texture::SetDynamicSizeRatios(const float widthRatio, const float heightRat
 	}
 }
 
-byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
+byte* const Texture::GetMipData(const unsigned int mipmapLevel)
 {
 	if (m_eTexType == TT_CUBE)
 	{
@@ -301,10 +479,19 @@ byte* const Texture::GetMipData(const unsigned int mipmapLevel) const
 		return nullptr;
 	}
 	
+	// Allocate the memory if required, since we don't allocate memory
+	// when we create render targets so as to reduce their memory footprint.
+	if (m_eBufferUsage == BU_RENDERTAGET && m_pData == nullptr)
+	{
+		m_pData = new byte[m_nSize];
+		assert(m_pData != nullptr);
+		memset(m_pData, 0, m_nSize);
+	}
+
 	return m_pData + GetMipOffset(mipmapLevel);
 }
 
-byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int mipmapLevel) const
+byte* const Texture::GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel) const
 {
 	if (m_eTexType != TT_CUBE)
 	{
@@ -312,9 +499,9 @@ byte* const Texture::GetMipData(const unsigned int cubeFace, const unsigned int 
 		return nullptr;
 	}
 	
-	assert(cubeFace >= 0 && cubeFace < 6);
+	assert(cubeFace >= FACE_XNEG && cubeFace < FACE_MAX);
 	
-	return m_pData + cubeFace * GetCubeFaceOffset() + GetMipOffset(mipmapLevel);
+	return m_pData + GetCubeFaceIndex(cubeFace) * GetCubeFaceOffset() + GetMipOffset(mipmapLevel);
 }
 
 const bool Texture::GenerateMips()
@@ -333,9 +520,9 @@ const bool Texture::GenerateMips()
 	if (!numTexels)
 		return false;
 
-	unsigned int faceCount = GetTextureType() == TT_CUBE ? 6 : 1;
+	unsigned int faceCount = GetTextureType() == TT_CUBE ? FACE_MAX : 1;
 
-	for (unsigned int face = 0; face < faceCount; face++)
+	for (CubeFace face = FACE_XNEG; face < FACE_MAX; face = (CubeFace)(face + 1))
 	{
 		for (unsigned int mip = 1; mip < GetMipCount(); mip++)
 		{
@@ -356,9 +543,9 @@ const bool Texture::GenerateMips()
 			assert(widthDst < widthSrc || heightDst < heightSrc || depthDst < depthSrc);
 
 			if(IsCompressed())
-				ColorUtility::ConvertFrom[GetTextureFormat()](texelsSrc, rgba, Math::Max(widthSrc, 4u), Math::Max(heightSrc, 4u), 1);
+				ColorUtility::ConvertFrom[GetPixelFormat()](texelsSrc, rgba, Math::Max(widthSrc, 4u), Math::Max(heightSrc, 4u), 1);
 			else
-				ColorUtility::ConvertFrom[GetTextureFormat()](texelsSrc, rgba, widthSrc, heightSrc, depthSrc);
+				ColorUtility::ConvertFrom[GetPixelFormat()](texelsSrc, rgba, widthSrc, heightSrc, depthSrc);
 
 			for (unsigned int z = 0; z < depthDst; z++)
 			{
@@ -411,9 +598,9 @@ const bool Texture::GenerateMips()
 			}
 
 			if(IsCompressed())
-				ColorUtility::ConvertTo[GetTextureFormat()](rgba, texelsDst, Math::Max(widthDst, 4u), Math::Max(heightDst, 4u), 1);
+				ColorUtility::ConvertTo[GetPixelFormat()](rgba, texelsDst, Math::Max(widthDst, 4u), Math::Max(heightDst, 4u), 1);
 			else
-				ColorUtility::ConvertTo[GetTextureFormat()](rgba, texelsDst, widthDst, heightDst, depthDst);
+				ColorUtility::ConvertTo[GetPixelFormat()](rgba, texelsDst, widthDst, heightDst, depthDst);
 		}
 	}
 
@@ -436,12 +623,12 @@ void Texture::Bind()
 	}
 }
 
-const PixelFormat Texture::GetTextureFormat() const
+const PixelFormat Texture::GetPixelFormat() const
 {
-	return m_eTexFormat;
+	return m_ePixelFormat;
 }
 
-const TexType Texture::GetTextureType() const
+const TextureType Texture::GetTextureType() const
 {
 	return m_eTexType;
 }
@@ -486,28 +673,22 @@ const unsigned int Texture::GetMipOffset(const unsigned int mipmapLevel) const
 const unsigned int Texture::GetCubeFaceOffset() const
 {
 	assert(m_eTexType == TT_CUBE);
-	return m_nSize / 6;
+	return m_nSize / FACE_MAX;
 }
 
 const bool Texture::IsCompressed() const
 {
-	return
-		m_eTexFormat == PF_DXT1 ||
-		m_eTexFormat == PF_DXT3 ||
-		m_eTexFormat == PF_DXT5;
+	return g_bCompressed[m_ePixelFormat];
 }
 
 const bool Texture::IsFloatingPoint() const
 {
-	return
-		m_eTexFormat == PF_R32F ||
-		m_eTexFormat == PF_G32R32F ||
-		m_eTexFormat == PF_A32B32G32R32F;
+	return g_bFloatingPoint[m_ePixelFormat];
 }
 
 const bool Texture::IsDepthStencil() const
 {
-	return (m_eTexFormat >= PF_D24S8 && m_eTexFormat <= PF_RAWZ);
+	return m_eBufferUsage == BU_DEPTHSTENCIL;
 }
 
 const bool Texture::IsRenderTarget() const
@@ -517,7 +698,7 @@ const bool Texture::IsRenderTarget() const
 
 const bool Texture::IsMipmapable() const
 {
-	return ms_bIsMipmapable[m_eTexFormat];
+	return g_bMipmapable[m_ePixelFormat];
 }
 
 const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking /*lockMode*/)
@@ -525,16 +706,16 @@ const bool Texture::Lock(const unsigned int mipmapLevel, const BufferLocking /*l
 	assert(!m_bIsLocked);
 	m_bIsLocked = true;
 	m_nLockedMip = mipmapLevel;
-	m_nLockedCubeFace = 0;
+	m_eLockedCubeFace = FACE_XNEG;
 	return true;
 }
 
-const bool Texture::Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking /*lockMode*/)
+const bool Texture::Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking /*lockMode*/)
 {
 	assert(!m_bIsLocked);
 	m_bIsLocked = true;
 	m_nLockedMip = mipmapLevel;
-	m_nLockedCubeFace = cubeFace;
+	m_eLockedCubeFace = cubeFace;
 	return true;
 }
 
@@ -543,7 +724,7 @@ void Texture::Unlock()
 	assert(m_bIsLocked);
 	m_bIsLocked = false;
 	m_nLockedMip = ~0u;
-	m_nLockedCubeFace = ~0u;
+	m_eLockedCubeFace = FACE_NONE;
 }
 
 const bool Texture::IsLocked() const
@@ -557,10 +738,10 @@ const unsigned int Texture::GetLockedMip() const
 	return m_nLockedMip;
 }
 
-const unsigned int Texture::GetLockedCubeFace() const
+const CubeFace Texture::GetLockedCubeFace() const
 {
 	assert(m_bIsLocked);
-	return m_nLockedCubeFace;
+	return m_eLockedCubeFace;
 }
 
 void Texture::SetAnisotropy(const float anisotropy)
@@ -663,17 +844,121 @@ const char* Texture::GetSourceFileName() const
 	return m_szSourceFile.c_str();
 }
 
-const unsigned int Texture::GetDimensionCount(const TexType texType)
+const unsigned int Texture::GetDimensionCount(const TextureType texType)
 {
-	return ms_nDimensionCount[texType];
+	return g_nDimensionCount[texType];
 }
 
-const bool Texture::IsMipmapable(const PixelFormat texFormat)
+const bool Texture::IsMipmapable(const PixelFormat pixelFormat)
 {
-	return ms_bIsMipmapable[texFormat];
+	return g_bMipmapable[pixelFormat];
 }
 
-const unsigned int Texture::GetPixelSize(const PixelFormat texFormat)
+const unsigned int Texture::GetBytesPerPixel(const PixelFormat pixelFormat)
 {
-	return ms_nPixelSize[texFormat];
+	return g_nBytesPerPixel[pixelFormat];
+}
+
+void Texture::ValidatePixelFormat(PixelFormat& pixelFormat, const TextureType texType, const BufferUsage usage)
+{
+	if (Renderer::GetAPI() == API_NULL)
+		return;
+
+	const std::vector<const DeviceCaps::SupportedPixelFormat>& arrValidPF = Renderer::GetInstance()->GetDeviceCaps().arrSupportedPixelFormats;
+
+	// Check if we have a valid pixel format
+	for (unsigned int idx = 0; idx < arrValidPF.size(); idx++)
+	{
+		if (arrValidPF[idx].ePixelFormat == pixelFormat &&
+			arrValidPF[idx].eResourceUsage == usage &&
+			arrValidPF[idx].eTextureType == texType)
+		{
+			return;	// Pixel format is valid
+		}
+	}
+
+	// Temporarily store intermediate results here
+	PixelFormat suggestedPixelFormat = PF_NONE;
+
+	// Do we have a color or depth format?
+	if (g_bDepthFormat[pixelFormat])
+	{
+		// Depth format
+
+		// Try to (not) keep stencil if original has(n't) one (do two loops if we can't satisfy this condition)
+		for (int stencilPref = 1; stencilPref >= 0 && suggestedPixelFormat == PF_NONE; stencilPref--)
+		{
+			const bool bMaintainStencil = (stencilPref != 0);
+
+			// Search for other formats with at least the original bpp (bits per pixel).
+			// Then, if still not found, search for other formats with as high of a bpp as possible.
+			for (int bppPref = 1; bppPref >= 0 && suggestedPixelFormat == PF_NONE; bppPref--)
+			{
+				const bool bMaintainBpp = (bppPref != 0);
+
+				for (unsigned int pf = 0; pf < arrValidPF.size(); pf++)
+				{
+					if (arrValidPF[pf].eResourceUsage == usage &&	// Must be same BufferUsage
+						arrValidPF[pf].eTextureType == texType &&	// Must be same TextureType
+						g_bDepthFormat[arrValidPF[pf].ePixelFormat] &&	// Must be a depth/stencil format
+						(bMaintainStencil ? (g_bHasStencil[arrValidPF[pf].ePixelFormat] == g_bHasStencil[pixelFormat]) : true) &&	// Try to keep stencil if original had it
+						(g_nBytesPerPixel[arrValidPF[pf].ePixelFormat] >= g_nBytesPerPixel[pixelFormat]) == bMaintainBpp &&	// At least/most same bpp
+						((g_nBytesPerPixel[arrValidPF[pf].ePixelFormat] < g_nBytesPerPixel[suggestedPixelFormat]) == bMaintainBpp || suggestedPixelFormat == PF_NONE))	// Lowest/highest bpp possible
+					{
+						suggestedPixelFormat = arrValidPF[pf].ePixelFormat;	// Found one!
+					}
+				}
+			}
+		}
+	}
+	else // if (g_bDepthFormat[pixelFormat])
+	{
+		// Color format
+
+		// Try to keep original component count
+		for (int compCountPref = 1; compCountPref >= 0 && suggestedPixelFormat == PF_NONE; compCountPref--)
+		{
+			const bool bMustMaintainComponentCount = (compCountPref != 0);
+
+			// Try to keep the original ordering/swizzling (e.g. ARGB vs ABGR)
+			for (int swizzlePref = 1; swizzlePref >= 0 && suggestedPixelFormat == PF_NONE; swizzlePref--)
+			{
+				const bool bMustMaintatinSwizzle = (swizzlePref != 0);
+
+				// Try to keep the original data type (float/integer)
+				for (int dataPref = 1; dataPref >= 0 && suggestedPixelFormat == PF_NONE; dataPref--)
+				{
+					const bool bMustMaintainDataType = (dataPref != 0);
+
+					// Search for other formats with at least the original bpp
+					// Then, if not found, search for other formats with as high of a bpp as possible
+					for (int bppPref = 1; bppPref >= 0 && suggestedPixelFormat == PF_NONE; bppPref--)
+					{
+						const bool bMaintainBpp = (bppPref != 0);
+
+						for (unsigned int pf = 0; pf < arrValidPF.size(); pf++)
+						{
+							const unsigned int testBpp = g_bCompressed[arrValidPF[pf].ePixelFormat] ? DXT_PSEUDO_BPP : g_nBytesPerPixel[arrValidPF[pf].ePixelFormat];
+							const unsigned int originalBpp = g_bCompressed[pixelFormat] ? DXT_PSEUDO_BPP : g_nBytesPerPixel[pixelFormat];
+							const unsigned int suggestedBpp = g_bCompressed[suggestedPixelFormat] ? DXT_PSEUDO_BPP : g_nBytesPerPixel[suggestedPixelFormat];
+
+							if (arrValidPF[pf].eResourceUsage == usage &&	// Must be same BufferUsage
+								arrValidPF[pf].eTextureType == texType &&	// Must be same TextureType
+								!g_bDepthFormat[arrValidPF[pf].ePixelFormat] &&	// Must be a color format
+								(bMustMaintainComponentCount ? (g_nComponentCount[arrValidPF[pf].ePixelFormat] == g_nComponentCount[pixelFormat]) : true) &&	// Try to keep component count
+								(bMustMaintatinSwizzle ? (g_eComponentOrder[arrValidPF[pf].ePixelFormat] == g_eComponentOrder[pixelFormat]) : true) &&	// Try to keep swizzling
+								(bMustMaintainDataType ? (g_bFloatingPoint[arrValidPF[pf].ePixelFormat] == g_bFloatingPoint[pixelFormat]) : true) &&	// Try to keep data type
+								(testBpp >= originalBpp) == bMaintainBpp &&	// At least/most same bpp
+								((testBpp < suggestedBpp) == bMaintainBpp || suggestedPixelFormat == PF_NONE))	// Lowest/highest bpp possible
+							{
+								suggestedPixelFormat = arrValidPF[pf].ePixelFormat;	// Found one!
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	pixelFormat = suggestedPixelFormat;
 }

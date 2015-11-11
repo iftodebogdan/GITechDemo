@@ -12,6 +12,8 @@ namespace AppFramework
 		virtual int Run() = 0;
 		static Framework* const GetInstance() { return m_pInstance; }
 
+		const bool	IsRenderingPaused() { return m_bPauseRendering; }
+
 		// Low level, platform specific functionality required by the application
 		virtual void ShowCursor(const bool bShow) = 0;
 		virtual bool IsCursorHidden() = 0;
@@ -23,8 +25,11 @@ namespace AppFramework
 		virtual void			Sleep(const unsigned int miliseconds) = 0;
 
 	protected:
-		virtual float			CalculateDeltaTime() = 0; // in miliseconds
-
+		// Rendering pause
+		void	PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
+		virtual float	CalculateDeltaTime() = 0; // in miliseconds
+		// Pause rendering when not in focus
+		bool	m_bPauseRendering;
 		static Framework*	m_pInstance;
 	};
 }

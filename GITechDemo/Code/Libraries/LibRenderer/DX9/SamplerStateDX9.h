@@ -30,9 +30,6 @@ namespace LibRendererDll
 	class SamplerStateDX9 : public SamplerState
 	{
 	public:
-		const SamplerFilter			MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip);
-		const SamplerAddressingMode	MatchAddressingMode(const DWORD sam);
-
 		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
 		const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
 		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);

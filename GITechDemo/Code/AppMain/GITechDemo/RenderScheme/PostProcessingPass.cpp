@@ -86,6 +86,7 @@ void PostProcessingPass::CopyResultToBackBuffer(LibRendererDll::RenderTarget* co
 	
 	f2HalfTexelOffset = Vec2f(0.5f / rt->GetWidth(), 0.5f / rt->GetHeight());
 	texSource = rt->GetColorBuffer(0);
+	bSingleChannelCopy = false;
 
 	ColorCopyShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);

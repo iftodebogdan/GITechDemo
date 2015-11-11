@@ -19,9 +19,15 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texSource; // The texture to be copied
 
+const bool bSingleChannelCopy;
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	// Simple color texture copy onto a color render target
-	f4Color = float4(tex2D(texSource, input.f2TexCoord).rgb, 1.f);
+	if(bSingleChannelCopy)
+		// For use with single channel textures (e.g. SSAO buffer)
+		f4Color = float4(tex2D(texSource, input.f2TexCoord).rrr, 1.f);
+	else
+		f4Color = float4(tex2D(texSource, input.f2TexCoord).rgb, 1.f);
 }
 ////////////////////////////////////////////////////////////////////

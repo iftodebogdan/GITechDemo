@@ -44,10 +44,6 @@ namespace AppFramework
 
 		float		CalculateDeltaTime(); // in miliseconds
 
-		// Rendering pause
-		void		PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
-		const bool	IsRenderingPaused() { return m_bPauseRendering; }
-
 		// Error handling
 		void ErrorExit(LPTSTR lpszFunction);
 
@@ -62,9 +58,6 @@ namespace AppFramework
 		// The number of ticks per second of the high-resolution performance counter
 		LARGE_INTEGER	m_bHiresTicksPerSecond;
 		unsigned int	m_nTicksPrev;
-
-		// Pause rendering when not in focus
-		bool			m_bPauseRendering;
 
 		friend LRESULT CALLBACK	WndProc_wrapper(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 		friend INT_PTR CALLBACK	About_wrapper(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);

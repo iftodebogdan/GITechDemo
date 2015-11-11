@@ -26,17 +26,24 @@ namespace LibRendererDll
 	class RendererNULL : public Renderer
 	{
 		RendererNULL()
-			: Renderer() {}
+			: Renderer()
+			, m_vScreenSize(640, 480) {}
 		~RendererNULL() {}
 
+		Vec2i	m_vScreenSize;
+
 	public:
-		static	RendererNULL*	GetInstance() { assert(ms_eAPI == API_NULL); return (RendererNULL*)ms_pInstance; };
+		static	RendererNULL* const	GetInstance() { assert(ms_eAPI == API_NULL); return (RendererNULL*)ms_pInstance; };
 
 		void	Initialize(void* hWnd);
-		void	SetBackBufferSize(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
 		void	SetViewport(const Vec2i /*size*/, const Vec2i /*offset = Vec2i(0, 0)*/) {}
-		void	CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar);
-		void	CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar);
+		void	CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
+		void	CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
+		
+		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false) { m_vScreenSize = size; return true; }
+		const Vec2i			GetScreenResolution() const { return m_vScreenSize; }
+		const bool			IsFullscreen() const { return true; }
+		const PixelFormat	GetBackBufferFormat() const { return PF_NONE; }
 
 		const bool	BeginFrame() { return true; }
 		void		EndFrame() {}

@@ -19,19 +19,7 @@
 #ifndef SHADERINPUT_H
 #define SHADERINPUT_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
-#include <gmtl\gmtl.h>
-using namespace gmtl;
-
 #include "Buffer.h"
-#include "ResourceData.h"
 
 namespace LibRendererDll
 {

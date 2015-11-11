@@ -247,7 +247,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	// Validate texture
 	if (texture->GetWidth() != GetWidth() ||
 		texture->GetHeight() != GetHeight() ||
-		texture->GetTextureFormat() != GetFormat() ||
+		texture->GetPixelFormat() != GetPixelFormat() ||
 		texture->GetTextureType() != TT_2D)
 	{
 		assert(false);
@@ -268,7 +268,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 
 	// Create a temporary texture in system memory
 	IDirect3DTexture9* tempTex = nullptr;
-	hr = device->CreateTexture(GetWidth(), GetHeight(), 0, 0, TextureFormatDX9[GetFormat()], D3DPOOL_SYSTEMMEM, &tempTex, NULL);
+	hr = device->CreateTexture(GetWidth(), GetHeight(), 0, 0, PixelFormatDX9[GetPixelFormat()], D3DPOOL_SYSTEMMEM, &tempTex, NULL);
 	assert(SUCCEEDED(hr));
 
 	// Get the surface

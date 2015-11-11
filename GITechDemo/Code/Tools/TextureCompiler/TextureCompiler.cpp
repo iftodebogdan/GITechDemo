@@ -78,7 +78,7 @@ const char * LibRendererTools::TextureCompiler::GetEnumString(PixelFormat val)
 	}
 }
 
-const char * LibRendererTools::TextureCompiler::GetEnumString(TexType val)
+const char * LibRendererTools::TextureCompiler::GetEnumString(TextureType val)
 {
 	switch (val)
 	{
@@ -510,7 +510,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 	Texture* texDst = nullptr;
 	bool swizzle = false;
 
-	TexType texType = TT_2D;
+	TextureType texType = TT_2D;
 	if (ilGetInteger(IL_IMAGE_CUBEFLAGS) == IL_CUBEMAP_POSITIVEX) // info.CubeFlags is broken
 		texType = TT_CUBE;
 	else if (info.Height == 1)
@@ -570,7 +570,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 
 		if (texDst->GetTextureType() == TT_CUBE)
 		{
-			for (unsigned int face = 0; face < 6; face++)
+			for (CubeFace face = FACE_XNEG; face < FACE_MAX; face = (CubeFace)(face + 1))
 			{
 				ilBindImage(imgSrc);
 				ilActiveFace(face);
@@ -625,7 +625,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 		const unsigned long long convertStart = GetTickCount64();
 		if (texDst->GetTextureType() == TT_CUBE)
 		{
-			for (unsigned int face = 0; face < 6; face++)
+			for (CubeFace face = FACE_XNEG; face < FACE_MAX; face = (CubeFace)(face + 1))
 			{
 				ilBindImage(imgSrc);
 				ilActiveFace(face);
@@ -636,13 +636,13 @@ void TextureCompiler::Run(int argc, char* argv[])
 				assert(ilGetInteger(IL_IMAGE_CUBEFLAGS) == IL_CUBEMAP_POSITIVEX * powf(2.f, (float)face));
 
 				ColorUtility::ConvertFrom[srcFormat](faceInfo.Data, tmpData, faceInfo.Width, faceInfo.Height, faceInfo.Depth);
-				ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipData(face, 0), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
+				ColorUtility::ConvertTo[texDst->GetPixelFormat()](tmpData, texDst->GetMipData(face, 0), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
 			}
 		}
 		else
 		{
 			ColorUtility::ConvertFrom[srcFormat](info.Data, tmpData, info.Width, info.Height, info.Depth);
-			ColorUtility::ConvertTo[texDst->GetTextureFormat()](tmpData, texDst->GetMipData(), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
+			ColorUtility::ConvertTo[texDst->GetPixelFormat()](tmpData, texDst->GetMipData(), texDst->GetWidth(), texDst->GetHeight(), texDst->GetDepth());
 		}
 
 		Log << "\t[INFO] Conversion finished in " << (float)(GetTickCount64() - convertStart) << " ms\n";
@@ -699,7 +699,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 	texIdx = resMan->CreateTexture(outFilePath.c_str());
 	Texture* texIn = resMan->GetTexture(texIdx);
 
-	assert(texIn->GetTextureFormat() == texDst->GetTextureFormat());
+	assert(texIn->GetPixelFormat() == texDst->GetPixelFormat());
 	assert(texIn->GetTextureType() == texDst->GetTextureType());
 	assert(texIn->GetMipCount() == texDst->GetMipCount());
 	assert(texIn->GetDimensionCount() == texDst->GetDimensionCount());

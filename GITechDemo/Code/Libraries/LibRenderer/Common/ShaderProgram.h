@@ -40,30 +40,30 @@ namespace LibRendererDll
 		ShaderProgram(const ShaderProgramType programType);
 		virtual ~ShaderProgram();
 
-		virtual void Enable() = 0;
-		virtual void Disable() = 0;
-		virtual const bool Compile(const char* srcData, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "") = 0;
+		virtual void Enable() PURE_VIRTUAL
+		virtual void Disable() PURE_VIRTUAL
+		virtual const bool Compile(const char* srcData, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "") PURE_VIRTUAL
 
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
+		virtual void Bind() PURE_VIRTUAL
+		virtual void Unbind() PURE_VIRTUAL
 
-		virtual const unsigned int GetConstantCount() const = 0;
-		virtual const char* GetConstantName(const unsigned int handle) const = 0;
-		virtual const InputType GetConstantType(const unsigned int handle) const = 0;
-		virtual const RegisterType GetConstantRegisterType(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantRegisterIndex(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantRegisterCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantRowCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantColumnCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantArrayElementCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantStructMemberCount(const unsigned int handle) const = 0;
-		virtual const unsigned int GetConstantSizeBytes(const unsigned int handle) const = 0;
+		virtual const unsigned int GetConstantCount() const PURE_VIRTUAL
+		virtual const char* GetConstantName(const unsigned int handle) const PURE_VIRTUAL
+		virtual const InputType GetConstantType(const unsigned int handle) const PURE_VIRTUAL
+		virtual const RegisterType GetConstantRegisterType(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantRegisterIndex(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantRegisterCount(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantRowCount(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantColumnCount(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantArrayElementCount(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantStructMemberCount(const unsigned int handle) const PURE_VIRTUAL
+		virtual const unsigned int GetConstantSizeBytes(const unsigned int handle) const PURE_VIRTUAL
 
 		void SetValue(const RegisterType registerType, const unsigned int registerIndex, const void* const data, const unsigned int registerCount);
-		virtual void SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount) = 0;
-		virtual void SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount) = 0;
-		virtual void SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount) = 0;
-		virtual void SetTexture(const unsigned int registerIndex, const Texture* const tex) = 0;
+		virtual void SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount) PURE_VIRTUAL
+		virtual void SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount) PURE_VIRTUAL
+		virtual void SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount) PURE_VIRTUAL
+		virtual void SetTexture(const unsigned int registerIndex, const Texture* const tex) PURE_VIRTUAL
 
 		ShaderProgramType m_eProgramType;
 		std::string m_szSrcFile;

@@ -19,14 +19,6 @@
 #ifndef VERTEXBUFFER_H
 #define VERTEXBUFFER_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
 #include "Buffer.h"
 
 namespace LibRendererDll
@@ -40,20 +32,20 @@ namespace LibRendererDll
 	public:
 		//Enable the vertex buffer. You can specify offset N to start from the (N+1)th vertex.
 		//This also enables the proper vertex format and index buffer (if it exists) for the vertex buffer so you don't have to.
-		virtual	LIBRENDERER_DLL		void		Enable(const unsigned int offset = 0) = 0;
+		virtual	LIBRENDERER_DLL		void		Enable(const unsigned int offset = 0) PURE_VIRTUAL
 		//This also disabled the vertex format and index buffer (if it exists) for the vertex buffer so you don't have to.
-		virtual	LIBRENDERER_DLL		void		Disable() = 0;
+		virtual	LIBRENDERER_DLL		void		Disable() PURE_VIRTUAL
 		//Locking the buffer allows for modifications to be made to its' contents. The flow is Lock -> Update -> Unlock.
-		virtual	LIBRENDERER_DLL		void		Lock(const BufferLocking lockMode) = 0;
+		virtual	LIBRENDERER_DLL		void		Lock(const BufferLocking lockMode) PURE_VIRTUAL
 		//Unlock our buffer
-		virtual	LIBRENDERER_DLL		void		Unlock() = 0;
+		virtual	LIBRENDERER_DLL		void		Unlock() PURE_VIRTUAL
 		//Sync our local modifications to the buffer's content.
-		virtual	LIBRENDERER_DLL		void		Update() = 0;
+		virtual	LIBRENDERER_DLL		void		Update() PURE_VIRTUAL
 
 		// Create a corresponding platform specific resource
-		virtual	LIBRENDERER_DLL		void		Bind() = 0;
+		virtual	LIBRENDERER_DLL		void		Bind() PURE_VIRTUAL
 		// Destroy the platform specific resource
-		virtual	LIBRENDERER_DLL		void		Unbind() = 0;
+		virtual	LIBRENDERER_DLL		void		Unbind() PURE_VIRTUAL
 
 		LIBRENDERER_DLL VertexFormat*	GetVertexFormat() const;
 		LIBRENDERER_DLL void			SetIndexBuffer(IndexBuffer* const indexBuffer);

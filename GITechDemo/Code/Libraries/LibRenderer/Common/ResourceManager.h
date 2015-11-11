@@ -19,13 +19,7 @@
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
+#include "ResourceData.h"
 
 namespace LibRendererDll
 {
@@ -50,21 +44,21 @@ namespace LibRendererDll
 				LIBRENDERER_DLL	void UnbindAll();
 
 		// Support for deferred creation of a vertex format
-		virtual	LIBRENDERER_DLL	const unsigned int CreateVertexFormat(const unsigned int attributeCount) = 0;
+		virtual	LIBRENDERER_DLL	const unsigned int CreateVertexFormat(const unsigned int attributeCount) PURE_VIRTUAL
 		// Create a vertex format
-		virtual	LIBRENDERER_DLL	const unsigned int CreateVertexFormat(const unsigned int attributeCount, const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx, ...) = 0;
+		virtual	LIBRENDERER_DLL	const unsigned int CreateVertexFormat(const unsigned int attributeCount, const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx, ...) PURE_VIRTUAL
 
 		// Create an index buffer
-		virtual	LIBRENDERER_DLL const unsigned int CreateIndexBuffer(const unsigned int indexCount, const IndexBufferFormat indexFormat = IBF_INDEX16, const BufferUsage usage = BU_STATIC) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int CreateIndexBuffer(const unsigned int indexCount, const IndexBufferFormat indexFormat = IBF_INDEX16, const BufferUsage usage = BU_STATIC) PURE_VIRTUAL
 
 		// Create a vertex buffer
-		virtual	LIBRENDERER_DLL const unsigned int CreateVertexBuffer(VertexFormat* const vertexFormat, const unsigned int vertexCount, IndexBuffer* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int CreateVertexBuffer(VertexFormat* const vertexFormat, const unsigned int vertexCount, IndexBuffer* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC) PURE_VIRTUAL
 
 				// Create a shader input helper
 				LIBRENDERER_DLL const unsigned int CreateShaderInput(ShaderTemplate* const shaderTemplate);
 
 		// Support for deferred creation of shader programs
-		virtual	LIBRENDERER_DLL const unsigned int CreateShaderProgram(const ShaderProgramType programType) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int CreateShaderProgram(const ShaderProgramType programType) PURE_VIRTUAL
 				// Create a shader program
 				LIBRENDERER_DLL const unsigned int CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "");
 
@@ -73,16 +67,16 @@ namespace LibRendererDll
 				LIBRENDERER_DLL const unsigned int CreateShaderTemplate(ShaderProgram* const shaderProgram);
 
 		// Create a texture
-		virtual	LIBRENDERER_DLL const unsigned int		CreateTexture(const PixelFormat texFormat, const TexType texType, const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1, const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateTexture(const PixelFormat pixelFormat, const TextureType texType, const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1, const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE) PURE_VIRTUAL
 				// Create a texture and load data from an image file
 				LIBRENDERER_DLL const unsigned int		CreateTexture(const char* pathToFile);
 
 		// Create a render target
 		// NB: The widthRatio and heightRatio parameters are relative to the backbuffer's resolution, for dynamic render target sizes
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
-		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) = 0;
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) PURE_VIRTUAL
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) PURE_VIRTUAL
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) PURE_VIRTUAL
+		virtual	LIBRENDERER_DLL const unsigned int		CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3, const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat) PURE_VIRTUAL
 
 				LIBRENDERER_DLL	const unsigned int		CreateModel(const char* pathToFile);
 

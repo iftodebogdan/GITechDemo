@@ -37,36 +37,6 @@ SamplerStateDX9::SamplerStateDX9()
 SamplerStateDX9::~SamplerStateDX9()
 {}
 
-const SamplerFilter SamplerStateDX9::MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip)
-{
-	for (unsigned int i = 0; i < SF_MAX; i++)
-	{
-		if (min == MinMagFilterDX9[i] && mag == MinMagFilterDX9[i])
-		{
-			for (unsigned int j = 0; j < SF_MAX; j++)
-			{
-				if (mip == MipFilterDX9[i])
-					return (SamplerFilter)i;
-			}
-		}
-	}
-
-	assert(false);
-	return SF_NONE;
-}
-
-const SamplerAddressingMode SamplerStateDX9::MatchAddressingMode(const DWORD sam)
-{
-	for (unsigned int i = 0; i < SAM_MAX; i++)
-	{
-		if (TextureAddressingModeDX9[i] == sam)
-			return (SamplerAddressingMode)i;
-	}
-
-	assert(false);
-	return SAM_NONE;
-}
-
 const bool SamplerStateDX9::SetAnisotropy(const unsigned int slot, const float anisotropy)
 {
 	float aniso = Math::clamp(anisotropy, 1.f, (float)MAX_ANISOTROPY);

@@ -33,7 +33,9 @@ Buffer::Buffer(const unsigned int elementCount, const unsigned int elementSize, 
 	assert(elementSize >= 0);
 	assert(usage >= 0 && usage < BU_MAX);
 
-	if (elementCount > 0 && elementSize > 0)
+	// In order to save some memory, do not allocate render target data in main
+	// memory, unless it is actually required (e.g. RenderTarget::CopyColorBuffer() )
+	if (elementCount > 0 && elementSize > 0 && usage != BU_RENDERTAGET)
 	{
 		m_pData = new byte[m_nSize];
 		assert(m_pData != nullptr);

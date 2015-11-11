@@ -29,19 +29,21 @@ namespace LibRendererDll
 		void		Enable(const unsigned int /*texUnit*/) const {}
 		void		Disable(const unsigned int /*texUnit*/) const {}
 		const bool	Lock(const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(mipmapLevel, lockMode); }
-		const bool	Lock(const unsigned int cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(cubeFace, mipmapLevel, lockMode); }
+		const bool	Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode) { return Texture::Lock(cubeFace, mipmapLevel, lockMode); }
 		void		Unlock() { Texture::Unlock(); }
 		void		Update() {}
 
 		void		Bind() {}
 		void		Unbind() {}
-		
+
+		const unsigned int	GetCubeFaceIndex(const CubeFace cubeFace) const { return cubeFace; }
+
 	private:
 		TextureNULL(
-			const PixelFormat texFormat, const TexType texType,
+			const PixelFormat pixelFormat, const TextureType texType,
 			const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
 			const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE)
-			: Texture(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage) {}
+			: Texture(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage) {}
 		~TextureNULL() {}
 
 		friend class ResourceManagerNULL;

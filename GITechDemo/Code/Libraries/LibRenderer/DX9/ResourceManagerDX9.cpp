@@ -133,13 +133,13 @@ const unsigned int ResourceManagerDX9::CreateShaderProgram(const ShaderProgramTy
 }
 
 const unsigned int ResourceManagerDX9::CreateTexture(
-	const PixelFormat texFormat, const TexType texType,
+	const PixelFormat pixelFormat, const TextureType texType,
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
 	const unsigned int mipCount, const BufferUsage usage)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	Texture* tex = new TextureDX9(texFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
+	Texture* tex = new TextureDX9(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
 	MUTEX_LOCK(TexMutex);
 	m_arrTexture.push_back(tex);
 	const unsigned int ret = (unsigned int)m_arrTexture.size() - 1;

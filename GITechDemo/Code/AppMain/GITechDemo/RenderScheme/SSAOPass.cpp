@@ -7,30 +7,30 @@
 #include <RenderTarget.h>
 using namespace LibRendererDll;
 
-#include "AmbientOcclusionPass.h"
+#include "SSAOPass.h"
 using namespace GITechDemoApp;
 
 #include "RenderResourcesDef.h"
 
 namespace GITechDemoApp
 {
-	bool AMBIENT_OCCLUSION_ENABLED = true;
+	bool SSAO_ENABLED = true;
 	bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
 
 	const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
 	const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
 }
 
-AmbientOcclusionPass::AmbientOcclusionPass(const char* const passName, RenderPass* const parentPass)
+SSAOPass::SSAOPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
-	, AmbientOcclusionBuffer(AmbientOcclusionFullBuffer)
+	, SSAOBuffer(SSAOFullBuffer)
 	, BlurKernelCount(SSAO_BLUR_KERNEL_COUNT)
 {}
 
-AmbientOcclusionPass::~AmbientOcclusionPass()
+SSAOPass::~SSAOPass()
 {}
 
-void AmbientOcclusionPass::Update(const float fDeltaTime)
+void SSAOPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -41,18 +41,20 @@ void AmbientOcclusionPass::Update(const float fDeltaTime)
 
 	if (SSAO_USE_QUARTER_RESOLUTION_BUFFER)
 	{
-		AmbientOcclusionBuffer = AmbientOcclusionQuarterBuffer;
+		SSAOBuffer = SSAOQuarterBuffer;
 		BlurKernelCount = SSAO_BLUR_KERNEL_COUNT - 1;
 	}
 	else
 	{
-		AmbientOcclusionBuffer = AmbientOcclusionFullBuffer;
+		SSAOBuffer = SSAOFullBuffer;
 		BlurKernelCount = SSAO_BLUR_KERNEL_COUNT;
 	}
+
+	bSingleChannelCopy = true;
 }
 
 // Generate ambient occlusion buffer
-void AmbientOcclusionPass::CalculateAmbientOcclusion()
+void SSAOPass::CalculateSSAO()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -60,7 +62,7 @@ void AmbientOcclusionPass::CalculateAmbientOcclusion()
 
 	PUSH_PROFILE_MARKER("Calculate");
 
-	AmbientOcclusionBuffer[0]->Enable();
+	SSAOBuffer[0]->Enable();
 
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
@@ -75,13 +77,13 @@ void AmbientOcclusionPass::CalculateAmbientOcclusion()
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	SsaoShader.Disable();
 
-	AmbientOcclusionBuffer[0]->Disable();
+	SSAOBuffer[0]->Disable();
 
 	POP_PROFILE_MARKER();
 }
 
 // Blur ambient occlusion buffer
-void AmbientOcclusionPass::BlurAmbientOcclusion()
+void SSAOPass::BlurSSAO()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -101,22 +103,22 @@ void AmbientOcclusionPass::BlurAmbientOcclusion()
 #endif
 		PUSH_PROFILE_MARKER(label);
 
-		AmbientOcclusionBuffer[(i + 1) % 2]->Enable();
+		SSAOBuffer[(i + 1) % 2]->Enable();
 
 		// Not necesarry
 		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
 		f2HalfTexelOffset = Vec2f(
-			0.5f / AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			0.5f / AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetHeight()
+			0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		ResourceMgr->GetTexture(
-			AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
+			SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
 			)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-		texSource = AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
+		texSource = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
 		f2TexelSize = Vec2f(
-			1.f / AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			1.f / AmbientOcclusionBuffer[i % 2]->GetRenderTarget()->GetHeight()
+			1.f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			1.f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		nKernel = SSAO_BLUR_KERNEL[i];
 		bAdjustIntensity = false;
@@ -126,7 +128,7 @@ void AmbientOcclusionPass::BlurAmbientOcclusion()
 		RenderContext->DrawVertexBuffer(FullScreenTri);
 		BloomShader.Disable();
 
-		AmbientOcclusionBuffer[(i + 1) % 2]->Disable();
+		SSAOBuffer[(i + 1) % 2]->Disable();
 
 		POP_PROFILE_MARKER();
 	}
@@ -135,7 +137,7 @@ void AmbientOcclusionPass::BlurAmbientOcclusion()
 }
 
 // Apply ambient occlusion to the light accumulation buffer
-void AmbientOcclusionPass::ApplyAmbientOcclusion()
+void SSAOPass::ApplySSAO()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -160,13 +162,13 @@ void AmbientOcclusionPass::ApplyAmbientOcclusion()
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_GREATER);
 
 	f2HalfTexelOffset = Vec2f(
-		0.5f / AmbientOcclusionBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
-		0.5f / AmbientOcclusionBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
+		0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
+		0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
 		);
 	ResourceMgr->GetTexture(
-		AmbientOcclusionBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
+		SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-	texSource = AmbientOcclusionBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
+	texSource = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
 
 	ColorCopyShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -182,12 +184,12 @@ void AmbientOcclusionPass::ApplyAmbientOcclusion()
 	POP_PROFILE_MARKER();
 }
 
-void AmbientOcclusionPass::Draw()
+void SSAOPass::Draw()
 {
-	if (!AMBIENT_OCCLUSION_ENABLED)
+	if (!SSAO_ENABLED)
 		return;
 
-	CalculateAmbientOcclusion();
-	BlurAmbientOcclusion();
-	ApplyAmbientOcclusion();
+	CalculateSSAO();
+	BlurSSAO();
+	ApplySSAO();
 }

@@ -31,6 +31,9 @@ using namespace LibRendererDll;
 
 #include <d3dx9.h>
 
+D3DFORMAT BBFormats[] = { D3DFMT_A2R10G10B10, D3DFMT_A8R8G8B8, D3DFMT_X8R8G8B8, D3DFMT_A1R5G5B5, D3DFMT_X1R5G5B5, D3DFMT_R5G6B5 };
+D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32, D3DFMT_D24X8, D3DFMT_D16 }; // Prefer with stencil
+
 RendererDX9::RendererDX9()
 	: m_pD3D(nullptr)
 	, m_pd3dDevice(nullptr)
@@ -50,57 +53,89 @@ RendererDX9::~RendererDX9()
 	assert(refCount == 0);
 }
 
-void RendererDX9::Initialize(void* hWnd)
+void RendererDX9::CheckDeviceCaps()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
+	std::vector<D3DFORMAT> arrValidBBFormats;
 
-	// Create the D3D object, which is needed to create the D3DDevice.
-	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
-	assert(m_pD3D);
-
-	// Verify supported adapter modes
-	int nMode = 0;
-	D3DDISPLAYMODE d3ddm;
-	int nMaxAdaptorModes = m_pD3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8);
-	for (nMode = 0; nMode < nMaxAdaptorModes; ++nMode)
+	for (unsigned int bbf = 0; bbf < ARRAYSIZE(BBFormats); bbf++)
 	{
-		if (FAILED(m_pD3D->EnumAdapterModes(D3DADAPTER_DEFAULT, D3DFMT_X8R8G8B8, nMode, &d3ddm)))
+		const PixelFormat fmt = MatchPixelFormat(BBFormats[bbf]);
+		if (fmt == PF_NONE)
+			continue;
+
+		// Verify supported backbuffer formats
+		unsigned int nMaxAdaptorModes = m_pD3D->GetAdapterModeCount(D3DADAPTER_DEFAULT, BBFormats[bbf]);
+		for (unsigned int nMode = 0; nMode < nMaxAdaptorModes; ++nMode)
 		{
-			// TODO: Respond to failure of EnumAdapterModes
-			assert(false);
-			return;
+			for (unsigned int bbf2 = 0; bbf2 < ARRAYSIZE(BBFormats); bbf2++)
+			{
+				const PixelFormat fmt2 = MatchPixelFormat(BBFormats[bbf2]);
+				if (fmt2 == PF_NONE)
+					continue;
+
+				D3DDISPLAYMODE d3ddm;
+				if (FAILED(m_pD3D->EnumAdapterModes(D3DADAPTER_DEFAULT, BBFormats[bbf2], nMode, &d3ddm)))
+					continue;
+
+				DeviceCaps::SupportedScreenFormat sf;
+				sf.nWidth = d3ddm.Width;
+				sf.nHeight = d3ddm.Height;
+				sf.nRefreshRate = d3ddm.RefreshRate;
+				sf.ePixelFormat = MatchPixelFormat(d3ddm.Format);
+
+				if (sf.ePixelFormat != PF_NONE)
+					m_tDeviceCaps.arrSupportedScreenFormats.push_back(sf);
+
+				// Populate the temporary list of valid backbuffer formats
+				bool bNotFound = true;
+				for (unsigned int vbbf = 0; vbbf < arrValidBBFormats.size(); vbbf++)
+				{
+					if (d3ddm.Format == arrValidBBFormats[vbbf])
+					{
+						bNotFound = false;
+						break;
+					}
+				}
+				if (bNotFound)
+					arrValidBBFormats.push_back(d3ddm.Format);
+			}
 		}
-
-		DeviceCaps::ScreenFormat sf;
-		sf.nWidth = d3ddm.Width;
-		sf.nHeight = d3ddm.Height;
-		sf.nRefreshRate = d3ddm.RefreshRate;
-		m_tDeviceCaps.arrSupportedScreenFormats.push_back(sf);
 	}
 
-	// Can we get a 32-bit back buffer?
-	if (FAILED(m_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT,
-		D3DDEVTYPE_HAL,
-		D3DFMT_X8R8G8B8,
-		D3DFMT_X8R8G8B8,
-		FALSE)))
+	// Verify supported texture formats
+	for (unsigned int tt = TT_1D; tt < TT_MAX; tt++)
 	{
-		// TODO: Handle lack of support for a 32-bit back buffer...
-		assert(false);
-		return;
-	}
+		for (unsigned int bu = BU_STATIC; bu < BU_MAX; bu++)
+		{
+			for (unsigned int pf = PF_NONE; pf < PF_MAX; pf++)
+			{
+				bool bValidPixelFormat = true;
+				for (unsigned int vbbf = 0; vbbf < arrValidBBFormats.size(); vbbf++)
+				{
+					if (FAILED(m_pD3D->CheckDeviceFormat(
+						D3DADAPTER_DEFAULT,
+						D3DDEVTYPE_HAL,
+						arrValidBBFormats[vbbf],
+						BufferUsageDX9[bu],
+						TextureTypeDX9[tt],
+						PixelFormatDX9[pf])))
+					{
+						bValidPixelFormat = false;
+						break;
+					}
+				}
 
-	// Can we get a z-buffer that's at least 16 bits?
-	if (FAILED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT,
-		D3DDEVTYPE_HAL,
-		D3DFMT_X8R8G8B8,
-		D3DUSAGE_DEPTHSTENCIL,
-		D3DRTYPE_SURFACE,
-		D3DFMT_D16)))
-	{
-		// TODO: Handle lack of support for a 16-bit z-buffer...
-		assert(false);
-		return;
+				if (bValidPixelFormat)
+				{
+					DeviceCaps::SupportedPixelFormat tf;
+					tf.ePixelFormat = (PixelFormat)pf;
+					tf.eResourceUsage = (BufferUsage)bu;
+					tf.eTextureType = (TextureType)tt;
+
+					m_tDeviceCaps.arrSupportedPixelFormats.push_back(tf);
+				}
+			}
+		}
 	}
 
 	// Query the device for its capabilities.
@@ -134,6 +169,165 @@ void RendererDX9::Initialize(void* hWnd)
 	m_tDeviceCaps.nPixelShaderVersionMajor = D3DSHADER_VERSION_MAJOR(deviceCaps.PixelShaderVersion);
 	m_tDeviceCaps.nPixelShaderVersionMinor = D3DSHADER_VERSION_MINOR(deviceCaps.PixelShaderVersion);
 	m_tDeviceCaps.nNumSimultaneousRTs = deviceCaps.NumSimultaneousRTs;
+}
+
+void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
+{
+	// Validate backbuffer format
+	D3DFORMAT validBBFmt = pp.BackBufferFormat;
+	int i = 0;
+	for (; i < ARRAYSIZE(BBFormats), BBFormats[i] != validBBFmt; i++); // END FOR
+
+	// Can we get the desired back buffer format?
+	while (FAILED(m_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT,
+		D3DDEVTYPE_HAL,
+		validBBFmt,
+		validBBFmt,
+		pp.Windowed)))
+	{
+		if (++i > ARRAYSIZE(BBFormats) - 1)
+			break;
+		validBBFmt = BBFormats[i];
+	}
+	pp.BackBufferFormat = validBBFmt;
+
+	// Validate backbuffer size
+	if (!pp.Windowed)
+	{
+		Vec2i screenSize(pp.BackBufferWidth, pp.BackBufferHeight);
+		ValidateScreenResolution(screenSize);
+		pp.BackBufferWidth = screenSize[0];
+		pp.BackBufferHeight = screenSize[1];
+	}
+
+	// Validate backbuffer count
+	pp.BackBufferCount = Math::clamp(pp.BackBufferCount, 0u, (unsigned int)D3DPRESENT_BACK_BUFFERS_MAX);
+
+	// Validate depth-stencil format
+	if (pp.EnableAutoDepthStencil)
+	{
+		// Can we get the desired depth buffer format?
+		D3DFORMAT validDSFmt = pp.AutoDepthStencilFormat;
+		int i = 0;
+		for (; i < ARRAYSIZE(DSFormats), DSFormats[i] != validDSFmt; i++); // END FOR
+
+		while (FAILED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT,
+			D3DDEVTYPE_HAL,
+			pp.BackBufferFormat,
+			D3DUSAGE_DEPTHSTENCIL,
+			D3DRTYPE_SURFACE,
+			validDSFmt)))
+		{
+			if (++i > ARRAYSIZE(DSFormats) - 1)
+				break;
+			validDSFmt = DSFormats[i];
+		}
+		pp.AutoDepthStencilFormat = validDSFmt;
+	}
+
+	// Validate refresh rate
+	if (!pp.Windowed)
+	{
+		UINT validRefresh = 0;
+		for (unsigned int i = 0; i < m_tDeviceCaps.arrSupportedScreenFormats.size(); i++)
+		{
+			if (GetBackBufferFormat() == m_tDeviceCaps.arrSupportedScreenFormats[i].ePixelFormat &&
+				pp.BackBufferWidth == m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth &&
+				pp.BackBufferHeight == m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight &&
+				validRefresh < m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate &&
+				pp.FullScreen_RefreshRateInHz >= m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate)
+			{
+				validRefresh = m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate;
+			}
+		}
+
+		pp.FullScreen_RefreshRateInHz = validRefresh;
+	}
+	else
+		pp.FullScreen_RefreshRateInHz = 0;
+
+	// Validate MSAA
+	if (pp.MultiSampleType != D3DMULTISAMPLE_NONE)
+	{
+		DWORD validQuality = 0;
+		D3DMULTISAMPLE_TYPE validType = pp.MultiSampleType;
+		while (FAILED(m_pD3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+			D3DDEVTYPE_HAL,
+			pp.BackBufferFormat,
+			pp.Windowed,
+			validType,
+			&validQuality)) ||
+			FAILED(m_pD3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+				D3DDEVTYPE_HAL,
+				pp.AutoDepthStencilFormat,
+				pp.Windowed,
+				validType,
+				&validQuality)))
+		{
+			validType = (D3DMULTISAMPLE_TYPE)(validType - 1);
+		}
+
+		pp.MultiSampleType = validType;
+		pp.MultiSampleQuality = Math::clamp(pp.MultiSampleQuality, 0ul, validQuality - 1);
+
+		if(pp.MultiSampleType != D3DMULTISAMPLE_NONE)
+			pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	}
+
+	// Validate presentation interval
+	UINT validPI = pp.PresentationInterval;
+	switch (pp.PresentationInterval)
+	{
+	case D3DPRESENT_INTERVAL_FOUR:
+		if (m_tDeviceCaps.bPresentIntervalFour)
+		{
+			validPI = D3DPRESENT_INTERVAL_FOUR;
+			break;
+		}
+	case D3DPRESENT_INTERVAL_THREE:
+		if (m_tDeviceCaps.bPresentIntervalThree)
+		{
+			validPI = D3DPRESENT_INTERVAL_THREE;
+			break;
+		}
+	case D3DPRESENT_INTERVAL_TWO:
+		if (m_tDeviceCaps.bPresentIntervalTwo)
+		{
+			validPI = D3DPRESENT_INTERVAL_TWO;
+			break;
+		}
+	case D3DPRESENT_INTERVAL_ONE:
+		if (m_tDeviceCaps.bPresentIntervalOne)
+		{
+			validPI = D3DPRESENT_INTERVAL_ONE;
+			break;
+		}
+	case D3DPRESENT_INTERVAL_IMMEDIATE:
+		if (m_tDeviceCaps.bPresentIntervalImmediate)
+		{
+			validPI = D3DPRESENT_INTERVAL_IMMEDIATE;
+			break;
+		}
+	case D3DPRESENT_INTERVAL_DEFAULT:
+		validPI = D3DPRESENT_INTERVAL_DEFAULT;
+		break;
+	default:
+		break;
+	}
+	pp.PresentationInterval = validPI;
+
+	// Validate swap effect
+	if (pp.SwapEffect == D3DSWAPEFFECT_COPY)
+		pp.BackBufferCount = 1;
+}
+
+void RendererDX9::Initialize(void* hWnd)
+{
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	// Create the D3D object, which is needed to create the D3DDevice.
+	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+	assert(m_pD3D);
 
 	// Set up the structure used to create the D3DDevice. Most parameters are
 	// zeroed out. We set Windowed to TRUE, since we want to do D3D in a
@@ -144,14 +338,34 @@ void RendererDX9::Initialize(void* hWnd)
 	ZeroMemory(&m_ePresentParameters, sizeof(m_ePresentParameters));
 	m_ePresentParameters.Windowed = TRUE;
 	m_ePresentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	m_ePresentParameters.BackBufferFormat = D3DFMT_UNKNOWN;
-	m_ePresentParameters.BackBufferWidth = m_vBackBufferSize[0];
-	m_ePresentParameters.BackBufferHeight = m_vBackBufferSize[1];
+	m_ePresentParameters.BackBufferFormat = BBFormats[0];
+	//m_ePresentParameters.BackBufferWidth = 1920;
+	//m_ePresentParameters.BackBufferHeight = 1080;
 	m_ePresentParameters.BackBufferCount = 1;
 	m_ePresentParameters.EnableAutoDepthStencil = TRUE;
 	m_ePresentParameters.AutoDepthStencilFormat = D3DFMT_D24S8;
 	m_ePresentParameters.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-	
+	m_ePresentParameters.hDeviceWindow = (HWND)hWnd;
+
+	// Populate device caps structure
+	CheckDeviceCaps();
+
+	// Validate the present parameters before sending them off to the device
+	ValidatePresentParameters(m_ePresentParameters);
+
+	// Set lowest resolution at first, for safety
+	m_ePresentParameters.BackBufferWidth = INT_MAX;
+	m_ePresentParameters.BackBufferHeight = INT_MAX;
+	for (unsigned int i = 0; i < m_tDeviceCaps.arrSupportedScreenFormats.size(); i++)
+	{
+		DeviceCaps::SupportedScreenFormat& sf = m_tDeviceCaps.arrSupportedScreenFormats[i];
+		if (sf.ePixelFormat == GetBackBufferFormat() && (sf.nWidth < m_ePresentParameters.BackBufferWidth || sf.nHeight < m_ePresentParameters.BackBufferHeight))
+		{
+			m_ePresentParameters.BackBufferWidth = sf.nWidth;
+			m_ePresentParameters.BackBufferHeight = sf.nHeight;
+		}
+	}
+
 	// Create the Direct3D device. Here we are using the default adapter (most
 	// systems only have one, unless they have multiple graphics hardware cards
 	// installed) and requesting the HAL (which is saying we want the hardware
@@ -186,6 +400,8 @@ void RendererDX9::Initialize(void* hWnd)
 		BehaviorFlags,
 		&m_ePresentParameters, &m_pd3dDevice)))
 	{
+		BehaviorFlags &= ~D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		BehaviorFlags |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 		m_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, (HWND)hWnd,
 			BehaviorFlags,
 			&m_ePresentParameters, &m_pd3dDevice);
@@ -194,30 +410,31 @@ void RendererDX9::Initialize(void* hWnd)
 	assert(m_pd3dDevice);
 
 	m_pResourceManager = new ResourceManagerDX9();
-	m_pRenderState = new RenderStateDX9();
-	m_pSamplerState = new SamplerStateDX9();
+	m_pRenderStateManager = new RenderStateDX9();
+	m_pSamplerStateManager = new SamplerStateDX9();
 
 	POP_PROFILE_MARKER();
 }
 
-void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
+const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset, const bool fullscreen)
 {
-	m_bDeviceLost = false;
+	Vec2i validOffset(offset);
+	if (fullscreen)
+		validOffset[0] = validOffset[1] = 0;
 
-	// minimized?
-	if (!size[0] || !size[1])
-	{
-		// not technically lost, but shouldn't render
-		m_bDeviceLost = true;
-		return;
-	}
+	// If already set, skip
+	if (size[0] == m_ePresentParameters.BackBufferWidth &&
+		size[1] == m_ePresentParameters.BackBufferHeight &&
+		validOffset == m_vBackBufferOffset &&
+		fullscreen == !m_ePresentParameters.Windowed)
+		return false;
 
-	if (size == m_vBackBufferSize && offset == m_vBackBufferOffset)
-		return;
+	// Some sanity checks
+	if (!m_pd3dDevice ||
+		FAILED(m_pd3dDevice->TestCooperativeLevel()) ||
+		!size[0] || !size[1])
+		return false;
 
-	if (!m_pd3dDevice)
-		return;
-	
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	HRESULT hr;
@@ -240,19 +457,23 @@ void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
 	pp.BackBufferHeight = size[1];
 
 	// Windowed or fullscreen?
-	//pp.Windowed = false;
+	pp.Windowed = (BOOL)(!fullscreen);
+	pp.FullScreen_RefreshRateInHz = fullscreen ? 60 : 0;
 
 	// Unbind resources
 	GetResourceManager()->UnbindAll();
 
+	// Validate and correct the present parameters
+	ValidatePresentParameters(pp);
+
 	// Reset the device
 	hr = m_pd3dDevice->Reset(&pp);
-	m_ePresentParameters = pp;
 	assert(SUCCEEDED(hr));
 
 	if (SUCCEEDED(hr))
 	{
-		Renderer::SetBackBufferSize(size, offset);
+		m_ePresentParameters = pp;
+		m_vBackBufferOffset = validOffset;
 
 		// Rebind resources
 		GetResourceManager()->BindAll();
@@ -265,6 +486,8 @@ void RendererDX9::SetBackBufferSize(const Vec2i size, const Vec2i offset)
 	}
 
 	POP_PROFILE_MARKER();
+
+	return SUCCEEDED(hr);
 }
 
 void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
@@ -358,10 +581,10 @@ void RendererDX9::SwapBuffers()
 	RECT dstRect;
 	dstRect.left = m_vBackBufferOffset[0];
 	dstRect.top = m_vBackBufferOffset[1];
-	dstRect.right = m_vBackBufferSize[0] + m_vBackBufferOffset[0];
-	dstRect.bottom = m_vBackBufferSize[1] + m_vBackBufferOffset[1];
+	dstRect.right = m_ePresentParameters.BackBufferWidth + m_vBackBufferOffset[0];
+	dstRect.bottom = m_ePresentParameters.BackBufferHeight + m_vBackBufferOffset[1];
 
-	HRESULT hr = m_pd3dDevice->Present(NULL, &dstRect, NULL, NULL);
+	HRESULT hr = m_pd3dDevice->Present(NULL, IsFullscreen() ? NULL : &dstRect, NULL, NULL);
 	assert(SUCCEEDED(hr) || hr == D3DERR_DEVICELOST);
 
 	POP_PROFILE_MARKER();
@@ -410,7 +633,7 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 	POP_PROFILE_MARKER();
 }
 
-void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, float aspectRatio, float zNear, float zFar)
+void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
 {
 	D3DXMATRIXA16 mat;
 	D3DXMatrixPerspectiveFovLH(&mat, fovYRad, aspectRatio, zNear, zFar);
@@ -418,7 +641,7 @@ void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, float fovYRad, flo
 	matProj.set(mat);
 }
 
-void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, float left, float top, float right, float bottom, float zNear, float zFar)
+void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
 {
 	D3DXMATRIXA16 mat;
 	D3DXMatrixOrthoOffCenterLH(&mat, left, right, bottom, top, zNear, zFar);

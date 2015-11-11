@@ -369,12 +369,9 @@ LRESULT CALLBACK FrameworkWin::WndProc(HWND hWnd, UINT message, WPARAM wParam, L
 		PostQuitMessage(0);
 		break;
 	case WM_KILLFOCUS:
-		PauseRendering(true);
-		goto SKIP_LABEL;
 	case WM_SETFOCUS:
-		PauseRendering(false);
-		SKIP_LABEL:
 	case WM_ACTIVATE:
+		PauseRendering(message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
 	//case WM_NCACTIVATE:	// Causes a focus issue with the assert dialog
 	case WM_MOUSEACTIVATE:
 	case WM_ACTIVATEAPP:

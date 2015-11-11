@@ -84,9 +84,6 @@
     <ClInclude Include="GITechDemo\RenderScheme\SkyPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GITechDemo\RenderScheme\AmbientOcclusionPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -115,6 +112,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\LensFlarePass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\SSAOPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -176,9 +176,6 @@
     <ClCompile Include="GITechDemo\RenderScheme\SkyPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GITechDemo\RenderScheme\AmbientOcclusionPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -207,6 +204,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\LensFlarePass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\SSAOPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -258,6 +258,7 @@
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
     </None>
+    <None Include="..\..\Data\shaders\LumaAdapt.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">
@@ -275,9 +276,6 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\ColorCopy.hlsl">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Data\shaders\DeferredLightDir.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\DepthCopy.hlsl">
@@ -299,9 +297,6 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\HUDText.hlsl">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\Data\shaders\LumaCalc.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\RSMApply.hlsl">
@@ -326,6 +321,12 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\MotionBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DirectionalLight.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LumaCapture.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

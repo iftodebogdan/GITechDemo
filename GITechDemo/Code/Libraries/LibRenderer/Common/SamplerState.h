@@ -19,17 +19,6 @@
 #ifndef SAMPLERSTATE_H
 #define SAMPLERSTATE_H
 
-#ifndef LIBRENDERER_DLL
-#ifdef LIBRENDERER_EXPORTS
-#define LIBRENDERER_DLL __declspec(dllexport) 
-#else
-#define LIBRENDERER_DLL __declspec(dllimport) 
-#endif
-#endif // LIBRENDERER_DLL
-
-#include <gmtl/gmtl.h>
-using namespace gmtl;
-
 #include "ResourceData.h"
 
 namespace LibRendererDll
@@ -60,7 +49,7 @@ namespace LibRendererDll
 		LIBRENDERER_DLL const SamplerAddressingMode	GetAddressingMode(const unsigned int slot) const;
 		LIBRENDERER_DLL	const bool					GetSRGBEnabled(const unsigned int slot) const;
 
-		virtual	LIBRENDERER_DLL		void	Reset() = 0;
+		virtual	LIBRENDERER_DLL		void	Reset() PURE_VIRTUAL
 
 	protected:
 		SamplerState();

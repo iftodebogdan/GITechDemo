@@ -25,7 +25,9 @@ MotionBlurPass::~MotionBlurPass()
 {}
 
 void MotionBlurPass::Update(const float fDeltaTime)
-{}
+{
+	bSingleChannelCopy = false;
+}
 
 void MotionBlurPass::Draw()
 {
