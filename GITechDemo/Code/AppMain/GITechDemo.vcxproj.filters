@@ -258,7 +258,6 @@
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="..\..\Data\shaders\LumaAdapt.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">
@@ -327,6 +326,9 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\LumaCapture.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LumaAdapt.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

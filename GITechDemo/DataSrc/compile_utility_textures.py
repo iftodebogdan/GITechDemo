@@ -2,15 +2,18 @@
 import subprocess
 import time
 import sys
+from collections import defaultdict
 
 #############################################################################
 #		Arguments:															#
 #---------------------------------------------------------------------------#
 #	'win32' to use the 32 bit version of the tools							#
 #	'x64' to use the 64 bit version of the tools (default)					#
+#	'rebuild' to force rebuilding all data assets							#
 #############################################################################
 
 defaultArchitecture = "x64"
+defaultForceRebuild = False
 
 # Process command arguments
 for opt in sys.argv:
@@ -18,22 +21,39 @@ for opt in sys.argv:
 		defaultArchitecture = "x64"
 	if(opt.lower() == "win32"):
 		defaultArchitecture = "Win32"
+	if(opt.lower() == "rebuild"):
+		defaultForceRebuild = True
 
+# Set paths
 pathToTextureFiles = "textures/"
 outputPath = "../Data/textures/"
 textureCompilerExe = "../Bin/" + defaultArchitecture + "/Release/LibRendererTools/TextureCompiler.exe"
 
+# Set custom arguments for individual files
+customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
+{
+	"sky.dds"					: "-q -f A16B16G16R16F",
+	"LensFlareDirt.png"			: "-q -f A8R8G8B8 -mip 1",
+	"LensFlareStarBurst.png"	: "-q -f A8R8G8B8 -mip 1"
+})
+
+# Detect modification of texture compiler executable
+if os.path.getmtime(textureCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
+	print "Texture compiler (\"" + textureCompilerExe + "\") modification detected. Forcing rebuilding of all texture assets"
+	defaultForceRebuild = True
+
 start = time.clock()
 
+# Compile textures
 for root, dir, files in os.walk(pathToTextureFiles):
 	for name in files:
 		if name != 'Thumbs.db':
-			print "Compiling texture \"" + os.path.join(root, name) + "\""
-			if name == 'sky.dds':
-				subprocess.call([textureCompilerExe, "-q", "-f", "A16B16G16R16F", "-d", outputPath, os.path.join(root, name)])
-			elif name == 'LensFlareDirt.png' or name == 'LensFlareGhostColorLUT.png' or name == 'LensFlareStarBurst.png':
-				subprocess.call([textureCompilerExe, "-q", "-f", "A8R8G8B8", "-mip",  "1", "-d", outputPath, os.path.join(root, name)])
+			if os.path.getmtime(os.path.join(root, name)) > os.path.getmtime(os.path.realpath(__file__)) or defaultForceRebuild:
+				print "Compiling texture \"" + os.path.join(root, name) + "\""
+				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + outputPath + " " + os.path.join(root, name))
 			else:
-				subprocess.call([textureCompilerExe, "-q", "-f", "A8R8G8B8", "-d", outputPath, os.path.join(root, name)])
+				print "Texture \"" + os.path.join(root, name) + "\" is up to date"
 
 print "Done in " + str(time.clock() - start) + " seconds.";
+
+os.utime(os.path.realpath(__file__), None)
