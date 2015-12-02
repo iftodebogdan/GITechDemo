@@ -50,6 +50,9 @@ namespace GITechDemoApp
 	DECLARE_SHADER(MotionBlurShader);
 	DECLARE_SHADER(LensFlareFeaturesShader);
 	DECLARE_SHADER(LensFlareApplyShader);
+	DECLARE_SHADER(DirectionalLightVolumeShader);
+	DECLARE_SHADER(BilateralBlurShader);
+	DECLARE_SHADER(NearestDepthUpscaleShader);
 	//------------------------------------------------------
 
 	// Models (manage their own textures, no need to declare them)
@@ -63,6 +66,8 @@ namespace GITechDemoApp
 	DECLARE_TEXTURE(LensFlareGhostColorLUT);
 	DECLARE_TEXTURE(LensFlareDirt);
 	DECLARE_TEXTURE(LensFlareStarBurst);
+	DECLARE_TEXTURE(BayerMatrix);
+	DECLARE_TEXTURE(NoiseTexture);
 	//------------------------------------------------------
 
 	// Render targets
@@ -71,6 +76,10 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(LightAccumulationBuffer);
 	DECLARE_RENDER_TARGET(RSMBuffer);
 	DECLARE_RENDER_TARGET(IndirectLightAccumulationBuffer);
+	DECLARE_RENDER_TARGET(VolumetricLightFullBuffer0);
+	DECLARE_RENDER_TARGET(VolumetricLightFullBuffer1);
+	DECLARE_RENDER_TARGET(VolumetricLightQuarterBuffer0);
+	DECLARE_RENDER_TARGET(VolumetricLightQuarterBuffer1);
 	DECLARE_RENDER_TARGET(HDRDownsampleQuarterBuffer);
 	DECLARE_RENDER_TARGET(HDRDownsampleSixteenthBuffer);
 	DECLARE_RENDER_TARGET(AverageLuminanceBuffer0);
@@ -100,6 +109,8 @@ namespace GITechDemoApp
 		SIXTEENTH = 1
 	};
 
+	extern RenderTarget* VolumetricLightFullBuffer[2];
+	extern RenderTarget* VolumetricLightQuarterBuffer[2];
 	extern RenderTarget* HDRDownsampleBuffer[2];
 	extern RenderTarget* AverageLuminanceBuffer[4];
 	extern RenderTarget* BloomBuffer[2];
@@ -206,7 +217,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fSSAOScale, float);
 	DECLARE_SHADER_CONSTANT(fSSAOBias, float);
 	DECLARE_SHADER_CONSTANT(bBlurPass, bool);
-	DECLARE_SHADER_CONSTANT(f2TexSourceSize, Vec2f);
+	DECLARE_SHADER_CONSTANT(f2TexSize, Vec2f);
 	DECLARE_SHADER_CONSTANT(fFocalDepth, float);
 	DECLARE_SHADER_CONSTANT(fFocalLength, float);
 	DECLARE_SHADER_CONSTANT(fFStop, float);
@@ -256,6 +267,21 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fLensStarBurstIntensity, float);
 	DECLARE_SHADER_CONSTANT(f33LensFlareStarBurstMat, Matrix33f);
 	DECLARE_SHADER_CONSTANT(bSingleChannelCopy, bool);
+	DECLARE_SHADER_CONSTANT(f3CameraPositionLightVS, Vec3f);
+	DECLARE_SHADER_CONSTANT(fRaymarchDistanceLimit, float);
+	DECLARE_SHADER_CONSTANT(fLightIntensity, float);
+	DECLARE_SHADER_CONSTANT(fMultScatterIntensity, float);
+	DECLARE_SHADER_CONSTANT(texDitherMap, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(f2BlurDir, Vec2f);
+	DECLARE_SHADER_CONSTANT(fUpsampleDepthThreshold, float);
+	DECLARE_SHADER_CONSTANT(f2DepthHalfTexelOffset, Vec2f);
+	DECLARE_SHADER_CONSTANT(fBlurDepthFalloff, float);
+	DECLARE_SHADER_CONSTANT(nSampleCount, int);
+	DECLARE_SHADER_CONSTANT(texNoise, LibRendererDll::Sampler3D);
+	DECLARE_SHADER_CONSTANT(fElapsedTime, float);
+	DECLARE_SHADER_CONSTANT(f3FogBox, Vec3f);
+	DECLARE_SHADER_CONSTANT(f3FogSpeed, Vec3f);
+	DECLARE_SHADER_CONSTANT(fFogVerticalFalloff, float);
 	//-------------------------------------------------------
 }
 

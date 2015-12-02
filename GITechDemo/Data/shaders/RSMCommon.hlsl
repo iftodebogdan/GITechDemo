@@ -25,15 +25,13 @@ const float4x4 f44RSMInvProjMat;
 const float4x4 f44ViewToRSMViewMat;
 
 // This kernel is based on a Poisson Disk kernel.
-// The samples' coordinates are "pushed" towards the exterior of the disk
-// by calculating the square root of the sample coordinates.
-// The sample weights are in the z component. Their value are actually
-// the distance of each sample (before pushing them outward) from the
-// center of the kernel. In other words, the sample density is higher
-// towards the margin of the kernel, but the weights do not vary linearly
-// with that density but instead have a much smoother slope.
-// It is this combination of (former) linear weights combined with non-linear
-// sample density that has led to good quality with less noise.
+// The samples' coordinates are "pushed" towards the exterior of
+// the disk by calculating the square root of the sample coordinates.
+// The sample weights are in the z component. Their value are
+// actually the distance of each sample before being pushed outward
+// from the center of the kernel. In other words, the sample density
+// is higher towards the edges of the kernel, but the weights do not
+// vary linearly with the samples' offsets.
 #define RSM_NUM_PASSES (1)			// The number of passes
 #define RSM_SAMPLES_PER_PASS (64)	// The number of samples from the RSM in each pass
 
@@ -86,6 +84,8 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 	const unsigned int nEndIdx = RSM_SAMPLES_PER_PASS;
 #elif RSM_UPSCALE_PASS
 	const unsigned int nEndIdx = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
+#else
+	#error Either RSM_APPLY_PASS or RSM_UPSCALE_PASS must be defined!
 #endif
 
 	UNROLL for (unsigned int i = 0; i < nEndIdx; i++)

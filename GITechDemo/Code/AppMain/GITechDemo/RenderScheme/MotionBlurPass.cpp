@@ -44,6 +44,10 @@ void MotionBlurPass::CalculateMotionBlur()
 	if (!RenderContext)
 		return;
 
+	ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+	if (!ResourceMgr)
+		return;
+
 	PUSH_PROFILE_MARKER("Calculate");
 
 	MotionBlurBuffer.Enable();
@@ -55,6 +59,7 @@ void MotionBlurPass::CalculateMotionBlur()
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
+	ResourceMgr->GetTexture(LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_MIRROR);
 	texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer();
 	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 

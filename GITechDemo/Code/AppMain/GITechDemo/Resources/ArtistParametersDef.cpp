@@ -48,6 +48,13 @@ namespace GITechDemoApp
 	extern bool RSM_USE_QUARTER_RESOLUTION_BUFFER;
 	extern bool DEBUG_RSM_CAMERA;
 
+	// Directional light volumetric effect
+	extern bool DIR_LIGHT_VOLUME_ENABLE;
+	extern bool DIR_LIGHT_VOLUME_QUARTER_RES;
+	extern bool DIR_LIGHT_VOLUME_BLUR_SAMPLES;
+	extern bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE;
+	extern bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE;
+
 	// Post-processing
 	extern bool POST_PROCESSING_ENABLED;
 
@@ -126,10 +133,6 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Slope scaled depth bias 4",	"Slope scaled depth bias for cascade 4",								"Cascaded shadow map",		SLOPE_SCALED_DEPTH_BIAS[3],					0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Debug CSM camera",			"Draw the cascaded shadow map on-screen",								"Cascaded shadow map",		DEBUG_CSM_CAMERA,							1.f);
 	
-	// Sky
-	IMPLEMENT_ARTIST_PARAMETER("Sun radius",				"Affects the radius of the sun",										"Sky",						fSunRadius.GetCurrentValue(),				10.f);
-	IMPLEMENT_ARTIST_PARAMETER("Sun brightness",			"Affects the brightness of the sun",									"Sky",						fSunBrightness.GetCurrentValue(),			10.f);
-	
 	// RSM
 	IMPLEMENT_ARTIST_PARAMETER("Indirect lights enable",	"Toggle the rendering of indirect lights",								"Reflective shadow map",	INDIRECT_LIGHT_ENABLED,						1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Intensity",					"The intensity of the indirect light",									"Reflective shadow map",	fRSMIntensity.GetCurrentValue(),			1.f);
@@ -139,11 +142,31 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"Reflective shadow map",	RSM_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Debug RSM camera",			"Draw the reflective shadow map on-screen",								"Reflective shadow map",	DEBUG_RSM_CAMERA,							1.f);
 
+	// Volumetric lights
+	IMPLEMENT_ARTIST_PARAMETER("Volumetric lights enable",	"Toggle the rendering of the volumetric lighting effect (directional)",	"Volumetric lights",		DIR_LIGHT_VOLUME_ENABLE,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Sample count",				"The number of samples taken across the ray's length",					"Volumetric lights",		nSampleCount.GetCurrentValue(),				10.f);
+	IMPLEMENT_ARTIST_PARAMETER("Intensity",					"Intensity of the volumetric effect",									"Volumetric lights",		fLightIntensity.GetCurrentValue(),			0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Mult. scatter intensity",	"Intensity of the faked multiple scattering effect",					"Volumetric lights",		fMultScatterIntensity.GetCurrentValue(),	0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Fog vertical falloff",		"Factor for the exponential vertical falloff of the fog effect",		"Volumetric lights",		fFogVerticalFalloff.GetCurrentValue(),		1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Fog speed X axis",			"Speed of fog effect on the X axis (world space units / sec)",			"Volumetric lights",		f3FogSpeed.GetCurrentValue()[0],			1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Fog speed Y axis",			"Speed of fog effect on the Y axis (world space units / sec)",			"Volumetric lights",		f3FogSpeed.GetCurrentValue()[1],			1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Fog speed Z axis",			"Speed of fog effect on the Z axis (world space units / sec)",			"Volumetric lights",		f3FogSpeed.GetCurrentValue()[2],			1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Blur samples",				"Toggle the use of an additional blur pass",							"Volumetric lights",		DIR_LIGHT_VOLUME_BLUR_SAMPLES,				1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Depth-aware blur",			"Make the blur pass depth-aware so as not to cause light bleeding",		"Volumetric lights",		DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE,			1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Blur depth falloff",		"A scaling factor for the blur weights around edges",					"Volumetric lights",		fBlurDepthFalloff.GetCurrentValue(),		0.0001f);
+	IMPLEMENT_ARTIST_PARAMETER("Depth-aware upscaling",		"Make the upscale pass depth-aware so as not to cause artifacts",		"Volumetric lights",		DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE,		1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Upsample depth threshold",	"A threshold for edge detection used to reduce upscaling artifacts",	"Volumetric lights",		fUpsampleDepthThreshold.GetCurrentValue(),	0.0001f);
+	IMPLEMENT_ARTIST_PARAMETER("Quarter resolution",		"Toggle the use of an intermediary quarter resolution target",			"Volumetric lights",		DIR_LIGHT_VOLUME_QUARTER_RES,				1.f);
+	
+	// Sky
+	IMPLEMENT_ARTIST_PARAMETER("Sun radius",				"Affects the radius of the sun",										"Sky",						fSunRadius.GetCurrentValue(),				10.f);
+	IMPLEMENT_ARTIST_PARAMETER("Sun brightness",			"Affects the brightness of the sun",									"Sky",						fSunBrightness.GetCurrentValue(),			10.f);
+	
 	// Post-processing
 	IMPLEMENT_ARTIST_PARAMETER("Post-processing enable",	"Toggle post-processing effects",										"Post-processing effects",	POST_PROCESSING_ENABLED,					1.f);
 
 	// SSAO
-	IMPLEMENT_ARTIST_PARAMETER("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						SSAO_ENABLED,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						SSAO_ENABLED,								1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Sample radius",				"Radius in which occluders are searched for",							"SSAO",						fSSAOSampleRadius.GetCurrentValue(),		1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Intensity",					"Intensity of SSAO effect",												"SSAO",						fSSAOIntensity.GetCurrentValue(),			1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Scale",						"Scale for the occlusion attenuation with distance",					"SSAO",						fSSAOScale.GetCurrentValue(),				0.1f);

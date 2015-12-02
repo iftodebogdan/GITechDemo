@@ -27,18 +27,13 @@ const float3 f3LightDir;	// Direction of sunlight
 const float fSunRadius;		// Determines sun radius
 const float fSunBrightness;	// Determines sun brightness
 
-struct PSOut
-{
-	float4 f4SkyColor	:	SV_TARGET0;
-};
-
-void psmain(VSOut input, out PSOut output)
+void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	// Do a dot product of the view direciton and the sunlight direction
 	const float3 f3SunDir	=	normalize(-f3LightDir);
 	const float	fSunDot		=	dot(normalize(input.f3TexCoord), f3SunDir);
 
-	output.f4SkyColor		=	texCUBE(texSkyCube, input.f3TexCoord);
-	output.f4SkyColor		+=	pow(max(0.f, fSunDot), fSunRadius) * fSunBrightness;
+	f4Color  =	texCUBE(texSkyCube, input.f3TexCoord);
+	f4Color +=	pow(max(0.f, fSunDot), fSunRadius) * fSunBrightness;
 }
 ////////////////////////////////////////////////////////////////////

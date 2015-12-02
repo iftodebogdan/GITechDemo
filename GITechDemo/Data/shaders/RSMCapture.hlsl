@@ -31,17 +31,17 @@ const sampler2D texDiffuse;	// Diffuse color
 
 struct PSOut
 {
-	float4 flux		:	SV_TARGET0;
-	float4 normal	:	SV_TARGET1;
+	float4 f4Flux	:	SV_TARGET0;
+	float4 f4Normal	:	SV_TARGET1;
 };
 
 void psmain(VSOut input, out PSOut output)
 {
 	// Sample the diffuse texture
 	const float4 f4DiffuseColor = tex2D(texDiffuse, input.f2TexCoord);
-	output.flux = f4DiffuseColor;
+	output.f4Flux = f4DiffuseColor;
 
 	// Vertex normal will suffice
-	output.normal = EncodeNormal(input.f3Normal);
+	output.f4Normal = EncodeNormal(input.f3Normal);
 }
 ////////////////////////////////////////////////////////////////////

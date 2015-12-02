@@ -236,10 +236,10 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 	texFile.open(pathToFile, std::ios::binary);
 	if (texFile.is_open())
 	{
-		MUTEX_LOCK(TexMutex);
+		//MUTEX_LOCK(TexMutex);
 		texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
 		GetTexture(texIdx)->m_szSourceFile = pathToFile;
-		MUTEX_UNLOCK(TexMutex);
+		//MUTEX_UNLOCK(TexMutex);
 		texFile >> *GetTexture(texIdx);
 		texFile.close();
 	}
@@ -275,11 +275,11 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 
 const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
 {
-	MUTEX_LOCK(TexMutex);
+	//MUTEX_LOCK(TexMutex);
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 		if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile == pathToFile)
 		{
-			MUTEX_UNLOCK(TexMutex);
+			//MUTEX_UNLOCK(TexMutex);
 			return i;
 		}
 
@@ -287,11 +287,11 @@ const unsigned int ResourceManager::FindTexture(const char * pathToFile, const b
 		for (unsigned int i = 0; i < m_arrTexture.size(); i++)
 			if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
 			{
-				MUTEX_UNLOCK(TexMutex);
+				//MUTEX_UNLOCK(TexMutex);
 				return i;
 			}
 
-	MUTEX_UNLOCK(TexMutex);
+	//MUTEX_UNLOCK(TexMutex);
 	return ~0u;
 }
 

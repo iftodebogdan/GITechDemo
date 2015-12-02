@@ -1,7 +1,8 @@
 //////////////////////////////////////////////////////////////
 // The ratio of a circle's circumference to its diameter	//
 //////////////////////////////////////////////////////////////
-#define PI		3.14159265f
+#define PI		(3.14159265f)
+#define PI_RCP	(0.31830988618379067153776752674503f)
 
 
 
@@ -10,7 +11,7 @@
 // off compile speed and shader size for runtime speed.		//
 //////////////////////////////////////////////////////////////
 #define ENABLE_UNROLLING (1)
-#define ENABLE_FORCE_LOOP (1)
+#define ENABLE_LOOP (1)
 
 #if ENABLE_UNROLLING
 #define UNROLL [unroll]
@@ -18,10 +19,10 @@
 #define UNROLL
 #endif
 
-#if ENABLE_FORCE_LOOP
-#define FORCE_LOOP [loop]
+#if ENABLE_LOOP
+#define LOOP [loop]
 #else
-#define FORCE_LOOP
+#define LOOP
 #endif
 
 

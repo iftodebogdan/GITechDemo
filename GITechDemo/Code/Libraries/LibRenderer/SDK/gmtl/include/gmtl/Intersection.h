@@ -187,7 +187,7 @@ namespace gmtl
       tIn  = -(std::numeric_limits<DATA_TYPE>::max)();
       tOut = (std::numeric_limits<DATA_TYPE>::max)();
       DATA_TYPE t0, t1;
-      const DATA_TYPE epsilon(0.0000001);
+      const DATA_TYPE epsilon((DATA_TYPE)0.0000001);
 
       // YZ plane.
       if ( gmtl::Math::abs(ray.mDir[0]) < epsilon )

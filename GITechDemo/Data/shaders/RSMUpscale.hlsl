@@ -1,5 +1,6 @@
 // This define will modify the behaviour of the RSMApply() function so that it will
-// perform all RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS texture fetches in a single pass.
+// perform all RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS texture fetches in a single pass
+// (As opposed to the apply pass which is a multi-pass approach).
 #define RSM_UPSCALE_PASS (1)
 #include "RSMCommon.hlsl"
 
@@ -22,16 +23,11 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texDepthBuffer;	// G-Buffer depth values
 
-struct PSOut
-{
-	float4 colorOut	:	SV_TARGET;
-};
+bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut);
 
-bool DoUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut);
-
-void psmain(VSOut input, out PSOut output)
+void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-	output.colorOut = float4(0.f, 0.f, 0.f, 1.f);
+	f4Color = float4(0.f, 0.f, 0.f, 1.f);
 
 	// Early depth test so that we don't shade
 	// at the far plane (where the sky is drawn)
@@ -39,23 +35,23 @@ void psmain(VSOut input, out PSOut output)
 	DEPTH_KILL(fDepth, 1.f);
 
 	// If we have successfully interpolated this pixel there is no need to reshade it.
-	if (!DoUpscale(input.f2TexCoord, fDepth, output.colorOut))
+	if (!PerformUpscale(input.f2TexCoord, fDepth, f4Color))
 	{
-		ApplyRSM(input.f2TexCoord, fDepth, output.colorOut);
+		ApplyRSM(input.f2TexCoord, fDepth, f4Color);
 
 		if (bDebugUpscalePass)
-			output.colorOut = float4(2.f * length(output.colorOut), 0.f, 0.f, 0.f);
+			f4Color = float4(2.f * length(f4Color), 0.f, 0.f, 0.f);
 	}
 }
 
-bool DoUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
+bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 {
 	// Sample the color from the quarter-resolution render target
 	const float4 f4Color = tex2D(texSource, f2TexCoord);
 
-	// If the sample is black we can safely clip this pixel
-	// so that the GPU doesn't do color blending anymore
-	clip(-!any(f4Color.xyz));
+	// If the sample is black we can safely clip this
+	// pixel in an attempt to save some bandwidth
+	clip(-!any(f4Color.rgb));
 
 	// Easier to write f3TexelOffset.xz or f3TexelOffset.zy than
 	// float2(0.5f * f2HalfTexelOffset.x, 0.f) or float2(0.f, 0.5f * f2HalfTexelOffset.y);

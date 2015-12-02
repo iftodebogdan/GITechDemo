@@ -27,12 +27,12 @@ for opt in sys.argv:
 # Set paths for model compilation
 rootModelDir = "models/sponza/"
 modelFiles = ["sponza.obj"]
-outputPath = "../Data/models/sponza/"
+modelOutputPath = "../Data/models/sponza/"
 modelCompilerExe = "../Bin/" + defaultArchitecture + "/Release/LibRendererTools/ModelCompiler.exe"
 
 # Set paths for texture compilation
 pathToTextureFiles = "models/sponza/textures/"
-outputPath = "../Data/models/sponza/textures/"
+textureOutputPath = "../Data/models/sponza/textures/"
 textureCompilerExe = "../Bin/" + defaultArchitecture + "/Release/LibRendererTools/TextureCompiler.exe"
 
 # Set custom arguments for individual texture files
@@ -44,13 +44,13 @@ customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
 # Detect modification of model compiler executable
 forceRebuildModels = defaultForceRebuild
 if os.path.getmtime(modelCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
-	print "Model compiler (\"" + modelCompilerExe + "\") modification detected. Forcing rebuilding of all model assets"
+	print "Model compiler (\"" + modelCompilerExe + "\") modification detected. Forcing rebuild of all model assets"
 	forceRebuildModels = True
 
 # Detect modification of texture compiler executable
 forceRebuildTextures = defaultForceRebuild
 if os.path.getmtime(textureCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
-	print "Texture compiler (\"" + textureCompilerExe + "\") modification detected. Forcing rebuilding of all texture assets"
+	print "Texture compiler (\"" + textureCompilerExe + "\") modification detected. Forcing rebuild of all texture assets"
 	forceRebuildTextures = True
 
 start = time.clock()
@@ -61,11 +61,13 @@ start = time.clock()
 
 # Compile models
 for file in modelFiles:
-	if os.path.getmtime(rootModelDir + file) > os.path.getmtime(os.path.realpath(__file__)) or forceRebuildModels:
+	sourceFileIsNewer = os.path.getmtime(rootModelDir + file) > os.path.getmtime(os.path.realpath(__file__))
+	compiledFileExists = os.path.isfile(modelOutputPath + os.path.splitext(file)[0] + ".lrm")
+	if sourceFileIsNewer or not compiledFileExists or forceRebuildModels:
 		print "Compiling model \"" + rootModelDir + file + "\""
-		subprocess.call([modelCompilerExe, "-q", "-d", outputPath, rootModelDir + file])
+		subprocess.call([modelCompilerExe, "-q", "-d", modelOutputPath, rootModelDir + file])
 	else:
-		print "Model \"" + rootModelDir + file + "\" is up to date"
+		print "Model \"" + rootModelDir + file + "\" is up-to-date"
 
 ##########################################
 
@@ -77,11 +79,13 @@ for file in modelFiles:
 for root, dir, files in os.walk(pathToTextureFiles):
 	for name in files:
 		if name != 'Thumbs.db':
-			if os.path.getmtime(os.path.join(root, name)) > os.path.getmtime(os.path.realpath(__file__)) or forceRebuildTextures:
+			sourceFileIsNewer = os.path.getmtime(os.path.join(root, name)) > os.path.getmtime(os.path.realpath(__file__))
+			compiledFileExists = os.path.isfile(textureOutputPath + os.path.splitext(name)[0] + ".lrt")
+			if sourceFileIsNewer or not compiledFileExists or forceRebuildTextures:
 				print "Compiling texture \"" + os.path.join(root, name) + "\""
-				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + outputPath + " " + os.path.join(root, name))
+				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + textureOutputPath + " " + os.path.join(root, name))
 			else:
-				print "Texture \"" + os.path.join(root, name) + "\" is up to date"
+				print "Texture \"" + os.path.join(root, name) + "\" is up-to-date"
 
 ##########################################
 

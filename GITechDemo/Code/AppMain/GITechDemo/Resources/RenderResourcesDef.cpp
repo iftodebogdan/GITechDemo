@@ -29,27 +29,30 @@ namespace GITechDemoApp
 	//////////////
 	// Shaders	//
 	//////////////
-	IMPLEMENT_SHADER(BokehDofShader,			"shaders/BokehDoF.hlsl");
-	IMPLEMENT_SHADER(RSMUpscaleShader,			"shaders/RSMUpscale.hlsl");
-	IMPLEMENT_SHADER(RSMApplyShader,			"shaders/RSMApply.hlsl");
-	IMPLEMENT_SHADER(DirectionalLightShader,	"shaders/DirectionalLight.hlsl");
-	IMPLEMENT_SHADER(SkyBoxShader,				"shaders/SkyBox.hlsl");
-	IMPLEMENT_SHADER(GBufferGenerationShader,	"shaders/GBufferGeneration.hlsl");
-	IMPLEMENT_SHADER(DepthPassShader,			"shaders/DepthPass.hlsl");
-	IMPLEMENT_SHADER(DepthCopyShader,			"shaders/DepthCopy.hlsl");
-	IMPLEMENT_SHADER(ColorCopyShader,			"shaders/ColorCopy.hlsl");
-	IMPLEMENT_SHADER(RSMCaptureShader,			"shaders/RSMCapture.hlsl");
-	IMPLEMENT_SHADER(DownsampleShader,			"shaders/Downsample.hlsl");
-	IMPLEMENT_SHADER(LumaCaptureShader,			"shaders/LumaCapture.hlsl");
-	IMPLEMENT_SHADER(LumaAdaptShader,			"shaders/LumaAdapt.hlsl");
-	IMPLEMENT_SHADER(HDRToneMappingShader,		"shaders/HDRToneMapping.hlsl");
-	IMPLEMENT_SHADER(BloomShader,				"shaders/Bloom.hlsl");
-	IMPLEMENT_SHADER(FxaaShader,				"shaders/FXAA.hlsl");
-	IMPLEMENT_SHADER(SsaoShader,				"shaders/SSAO.hlsl");
-	IMPLEMENT_SHADER(HUDTextShader,				"shaders/HUDText.hlsl");
-	IMPLEMENT_SHADER(MotionBlurShader,			"shaders/MotionBlur.hlsl");
-	IMPLEMENT_SHADER(LensFlareFeaturesShader,	"shaders/LensFlareFeatures.hlsl");
-	IMPLEMENT_SHADER(LensFlareApplyShader,		"shaders/LensFlareApply.hlsl");
+	IMPLEMENT_SHADER(BokehDofShader,				"shaders/BokehDoF.hlsl");
+	IMPLEMENT_SHADER(RSMUpscaleShader,				"shaders/RSMUpscale.hlsl");
+	IMPLEMENT_SHADER(RSMApplyShader,				"shaders/RSMApply.hlsl");
+	IMPLEMENT_SHADER(DirectionalLightShader,		"shaders/DirectionalLight.hlsl");
+	IMPLEMENT_SHADER(SkyBoxShader,					"shaders/SkyBox.hlsl");
+	IMPLEMENT_SHADER(GBufferGenerationShader,		"shaders/GBufferGeneration.hlsl");
+	IMPLEMENT_SHADER(DepthPassShader,				"shaders/DepthPass.hlsl");
+	IMPLEMENT_SHADER(DepthCopyShader,				"shaders/DepthCopy.hlsl");
+	IMPLEMENT_SHADER(ColorCopyShader,				"shaders/ColorCopy.hlsl");
+	IMPLEMENT_SHADER(RSMCaptureShader,				"shaders/RSMCapture.hlsl");
+	IMPLEMENT_SHADER(DownsampleShader,				"shaders/Downsample.hlsl");
+	IMPLEMENT_SHADER(LumaCaptureShader,				"shaders/LumaCapture.hlsl");
+	IMPLEMENT_SHADER(LumaAdaptShader,				"shaders/LumaAdapt.hlsl");
+	IMPLEMENT_SHADER(HDRToneMappingShader,			"shaders/HDRToneMapping.hlsl");
+	IMPLEMENT_SHADER(BloomShader,					"shaders/Bloom.hlsl");
+	IMPLEMENT_SHADER(FxaaShader,					"shaders/FXAA.hlsl");
+	IMPLEMENT_SHADER(SsaoShader,					"shaders/SSAO.hlsl");
+	IMPLEMENT_SHADER(HUDTextShader,					"shaders/HUDText.hlsl");
+	IMPLEMENT_SHADER(MotionBlurShader,				"shaders/MotionBlur.hlsl");
+	IMPLEMENT_SHADER(LensFlareFeaturesShader,		"shaders/LensFlareFeatures.hlsl");
+	IMPLEMENT_SHADER(LensFlareApplyShader,			"shaders/LensFlareApply.hlsl");
+	IMPLEMENT_SHADER(DirectionalLightVolumeShader,	"shaders/DirectionalLightVolume.hlsl");
+	IMPLEMENT_SHADER(BilateralBlurShader,			"shaders/BilateralBlur.hlsl");
+	IMPLEMENT_SHADER(NearestDepthUpscaleShader,		"shaders/NearestDepthUpscale.hlsl");
 	//------------------------------------------------------
 
 	//////////////
@@ -67,6 +70,8 @@ namespace GITechDemoApp
 	IMPLEMENT_TEXTURE(LensFlareGhostColorLUT,	"textures/LensFlareGhostColorLUT.lrt");
 	IMPLEMENT_TEXTURE(LensFlareDirt,			"textures/LensFlareDirt.lrt");
 	IMPLEMENT_TEXTURE(LensFlareStarBurst,		"textures/LensFlareStarBurst.lrt");
+	IMPLEMENT_TEXTURE(BayerMatrix,				"textures/bayer_matrix.lrt");
+	IMPLEMENT_TEXTURE(NoiseTexture,				"textures/noise.lrt");
 	//------------------------------------------------------
 
 	//////////////////////
@@ -75,7 +80,7 @@ namespace GITechDemoApp
 	// Geometry buffer (G-Buffer)
 	//	RT0:	A8R8G8B8 with diffuse albedo in RGB and specular power in A
 	//	RT1:	G16R16F with compressed normals (stereographic projection)
-	//	RT2:	G16R16 with material type (dielectric/metallic) in R and roughness in G
+	//	RT2:	G16R16 with material type (dielectric/metallic) in R and roughness in G (Cook-Torrance only)
 	//	DS:		INTZ (for sampling as a regular texture later)
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(GBuffer, 3, PF_A8R8G8B8, PF_G16R16F, PF_G16R16, PF_NONE, 1.f, 1.f, PF_INTZ);
 
@@ -92,6 +97,12 @@ namespace GITechDemoApp
 
 	// Indirect lighting accumulation buffer (quarter resolution)
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(IndirectLightAccumulationBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+
+	// Volumetric light accumulation buffer
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(VolumetricLightFullBuffer0, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(VolumetricLightFullBuffer1, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(VolumetricLightQuarterBuffer0, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(VolumetricLightQuarterBuffer1, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 
 	// HDR downsampled buffer (1/4 and 1/16 resolution)
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(HDRDownsampleQuarterBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
@@ -137,6 +148,16 @@ namespace GITechDemoApp
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(LensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 	
 	// Arrays of render targets for easier handling
+	RenderTarget* VolumetricLightFullBuffer[2] = {
+		&VolumetricLightFullBuffer0,
+		&VolumetricLightFullBuffer1
+	};
+
+	RenderTarget* VolumetricLightQuarterBuffer[2] = {
+		&VolumetricLightQuarterBuffer0,
+		&VolumetricLightQuarterBuffer1
+	};
+
 	RenderTarget* HDRDownsampleBuffer[2] = {
 		&HDRDownsampleQuarterBuffer,
 		&HDRDownsampleSixteenthBuffer
@@ -187,6 +208,15 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fIrradianceFactor,			float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fReflectionFactor,			float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(nBRDFModel,				unsigned int,	COOK_TORRANCE_BECKMANN	);
+
+	/* Volumetric directional light parameters */
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(nSampleCount,				int,			32						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLightIntensity,			float,			5.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMultScatterIntensity,		float,			0.75f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3FogSpeed,				Vec3f,			Vec3f(10.f, -10.f, 10.f));
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFogVerticalFalloff,		float,			75.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBlurDepthFalloff,			float,			0.0025f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fUpsampleDepthThreshold,	float,			0.0015f					);
 
 	/* Sun parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fSunRadius,				float,			1000.f					);
@@ -338,7 +368,7 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(nKernel,								int				);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(nDownsampleFactor,					int				);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bBlurPass,							bool			);
-	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2TexSourceSize,						Vec2f			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2TexSize,							Vec2f			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bAdjustIntensity,						bool			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2LinearDepthEquation,				Vec2f			);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texTargetFocus,						Sampler2D		);
@@ -349,5 +379,13 @@ namespace GITechDemoApp
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(texLensFlareStarBurst,				Sampler2D		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(f33LensFlareStarBurstMat,				Matrix33f		);
 	IMPLEMENT_UTILITY_SHADER_CONSTANT(bSingleChannelCopy,					bool			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f3CameraPositionLightVS,				Vec3f			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(fRaymarchDistanceLimit,				float			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texDitherMap,							Sampler2D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2BlurDir,							Vec2f			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f2DepthHalfTexelOffset,				Vec2f			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(texNoise,								Sampler3D		);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(fElapsedTime,							float			);
+	IMPLEMENT_UTILITY_SHADER_CONSTANT(f3FogBox,								Vec3f			);
 	//--------------------------------------------------------------------------
 }

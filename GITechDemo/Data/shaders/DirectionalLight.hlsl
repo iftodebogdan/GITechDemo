@@ -1,5 +1,6 @@
 #include "PostProcessingUtils.hlsl"
 #include "Utils.hlsl"
+#include "CSMUtils.hlsl"
 
 // Vertex shader /////////////////////////////////////////////////
 const float4x4 f44InvProjMat;
@@ -42,25 +43,10 @@ const float fIrradianceFactor;	// Scale value for irradiance (Cook-Torrance BRDF
 const float fReflectionFactor;	// Scale value for reflected light (Cook-Torrance BRDF only)
 
 const float4x4	f44ViewMat;		// View matrix
-const float4x4 f44InvViewMat;	// The inverse view matrix
+const float4x4	f44InvViewMat;	// The inverse view matrix
 
 const float3	f3LightDir;					// The direction of the light
 const float4x4	f44ScreenToLightViewMat;	// Composite matrix for transforming screen-space coordinates to light-view space
-
-#define	NUM_CASCADES (4)		// Number of supported cascades
-const bool		bDebugCascades;	// Visual cascade debug option
-const float2	f2CascadeBoundsMin[NUM_CASCADES];	// Light-view space AABBs corresponding
-const float2	f2CascadeBoundsMax[NUM_CASCADES];	// to each shadow cascade
-const float4x4	f44CascadeProjMat[NUM_CASCADES];	// light space projection matrix
-const float		fCascadeBlendSize;	// Size of the blend band for blurring between cascade boundaries
-
-// For performance reasons, we set these variables
-// directly in the shader, instead of from the
-// application (so that they are known at compile time)
-// NB: Also, we don't want to waste ALU calculating them
-static const unsigned int nCascadeCount = NUM_CASCADES;					// Number of cascades
-static const unsigned int nCascadesPerRow = ceil(sqrt(nCascadeCount));	// Number of cascades per row
-static const float fCascadeNormSize = rcp(nCascadesPerRow);				// Normalized size of a cascade, i.e. 1.f / nCascadesPerRow
 
 // Conditional PCF shadow sampling for different sampling methods for each cascade
 // NB: PCF_SAMPLE0 corresponds to most detailed cascade (highest resolution),
@@ -81,16 +67,11 @@ static const float fCascadeNormSize = rcp(nCascadesPerRow);				// Normalized siz
 #define COOK_TORRANCE_BECKMANN (2)
 const unsigned int nBRDFModel;
 
-struct PSOut
-{
-	float4 colorOut	:	SV_TARGET;
-};
-
 float3 BlinnPhong(const float3 f3DiffuseColor, const float fSpecularPower, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 
-void psmain(VSOut input, out PSOut output)
+void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	// Sample the depth buffer
 	const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
@@ -119,38 +100,10 @@ void psmain(VSOut input, out PSOut output)
 	f4LightViewPos *= rcp(f4LightViewPos.w);
 
 	// Step 2: Find the best valid cascade
-	unsigned int nValidCascade = 0;
-	UNROLL for(int nCascade = nCascadeCount - 1; nCascade >= 0; nCascade--)
-	{
-		// If f4LightViewPos.xy > f2CascadeBoundsMin[nCascade] then step() returns 1, else 0 (per component evaluation).
-		// After evaluating the second step(), we perform a per component scalar multiply which will result in either
-		// 0 or 1 on either components. If both components are 1, then all() will return true, meaning that this cascade is valid.
-		// On a higher level, the first step() determines whether the current's pixel light-view space position is above and
-		// to the right of the lower left corner of the cascade, whereas the second step() determines whether it is below and
-		// to the left of the upper right corner of the cascade. If all the conditions are met, then the cascade is valid.
-		const bool bValid =
-			all(
-				step(
-					f2CascadeBoundsMin[nCascade],
-					f4LightViewPos.xy
-				) *
-				step(
-					f4LightViewPos.xy,
-					f2CascadeBoundsMax[nCascade]
-				)
-			);
-		nValidCascade = lerp(nValidCascade, nCascade, bValid);
-	}
+	unsigned int nValidCascade = GetCascadeIdx(f4LightViewPos.xy);
 
 	// Step 3: Calculate texture coordinates, then sample from the cascade we found above
-	float3 f3CascadeTexCoord = mul(f44CascadeProjMat[nValidCascade], f4LightViewPos).xyz;
-	float2 origsign = sign(f3CascadeTexCoord.xy);
-	// After bringing our point in normalized light-view space, calculate
-	// proper texture coordinates for shadow map sampling
-	f3CascadeTexCoord.xy =
-		(f3CascadeTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
-		fCascadeNormSize +
-		float2(fCascadeNormSize * fmod(nValidCascade, nCascadesPerRow), fCascadeNormSize * floor(nValidCascade * rcp(nCascadesPerRow)));
+	const float3 f3CascadeTexCoord = GetCascadeSpacePos(f4LightViewPos.xyz, nValidCascade);
 
 	// Conditional PCF shadow sampling
 #if USE_CONDITIONAL_PCF
@@ -281,31 +234,29 @@ void psmain(VSOut input, out PSOut output)
 	switch (nBRDFModel)
 	{
 	case BLINN_PHONG:
-		output.colorOut = float4(BlinnPhong(f4DiffuseColor.rgb, f4DiffuseColor.a, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
+		f4Color = float4(BlinnPhong(f4DiffuseColor.rgb, f4DiffuseColor.a, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
 		break;
 	case COOK_TORRANCE_GGX:
-		output.colorOut = float4(CookTorranceGGX(f4DiffuseColor.rgb, f2Material.r, f2Material.g, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
+		f4Color = float4(CookTorranceGGX(f4DiffuseColor.rgb, f2Material.r, f2Material.g, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
 		break;
 	case COOK_TORRANCE_BECKMANN:
-		output.colorOut = float4(CookTorranceBeckmann(f4DiffuseColor.rgb, f2Material.r, f2Material.g, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
+		f4Color = float4(CookTorranceBeckmann(f4DiffuseColor.rgb, f2Material.r, f2Material.g, f3Normal, input.f3ViewVec, fPercentLit), 1.f);
 		break;
-		/*
 	default:
-		output.colorOut = f4DiffuseColor * fPercentLit + f4DiffuseColor * fAmbientFactor;
+		f4Color = f4DiffuseColor * fPercentLit + f4DiffuseColor * fAmbientFactor;
 		break;
-		*/
 	}
 	
 	// CSM debug
 	if (bDebugCascades)
 	{
-		const float fBrightness = dot(output.colorOut.rgb, LUMINANCE_VECTOR);
-		output.colorOut += float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f) * fBrightness * 0.5f;
+		const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
+		f4Color += float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f) * fBrightness * 0.5f;
 		if (fBlendAmount > 0.f)
 		{
-			output.colorOut = float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f);
-			output.colorOut += float4((nValidCascade + 1) % 3 == 0, (nValidCascade + 1) % 3 == 1, (nValidCascade + 1) % 3 == 2, 0.f);
-			output.colorOut *= fBrightness * fBlendAmount;
+			f4Color  = float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f);
+			f4Color += float4((nValidCascade + 1) % 3 == 0, (nValidCascade + 1) % 3 == 1, (nValidCascade + 1) % 3 == 2, 0.f);
+			f4Color *= fBrightness * fBlendAmount;
 		}
 	}
 }

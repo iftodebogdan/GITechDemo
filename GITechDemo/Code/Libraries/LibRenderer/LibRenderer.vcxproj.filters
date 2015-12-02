@@ -393,7 +393,9 @@
     <ClInclude Include="Common\Texture.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Mutex.h" />
+    <ClInclude Include="Utility\Mutex.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

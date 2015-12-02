@@ -56,7 +56,7 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
-	f2TexSourceSize = Vec2f(
+	f2TexSize = Vec2f(
 		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);

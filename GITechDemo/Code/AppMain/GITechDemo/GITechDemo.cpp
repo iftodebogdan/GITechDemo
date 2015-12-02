@@ -56,6 +56,12 @@ namespace GITechDemoApp
 
 }
 
+template <typename T> string tostr(const T& t) {
+	ostringstream os;
+	os << t;
+	return os.str();
+}
+
 GITechDemo::GITechDemo()
 	: App()
 	, m_fDeltaTime(0.f)
@@ -177,6 +183,10 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 	if (!ResourceMgr)
 		return;
 
+	Framework* const pFW = Framework::GetInstance();
+	if (!pFW)
+		return;
+
 	bool bAllInitialized = false;
 	do
 	{
@@ -192,9 +202,10 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 					std::stringstream msg;
 					msg << "Thread " << thId << " - ";
 					msg << ResourceTypeMap[resList[i]->GetResourceType()] << ": \"" << resList[i]->GetDesc() << "\"";
-					cout << msg.str() + " (start)\n";
+					cout << msg.str() + " start\n";
+					const unsigned startTicks = pFW->GetTicks();
 					resList[i]->Init();
-					cout << msg.str() + " (finish)\n";
+					cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
 					resList[i]->UnlockRes();
 				}
 			}

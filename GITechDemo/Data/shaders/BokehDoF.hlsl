@@ -25,8 +25,8 @@ const sampler2D texSource;		// Source texture to be blurred
 const sampler2D texDepthBuffer;	// Source depth buffer
 const sampler2D texTargetFocus;	// Used for autofocus
 
-const float2 f2TexSourceSize;	// Size in texels of source image
-const float2 f2TexelSize;		// Size of a single texel of source image
+const float2 f2TexSize;		// Size, in texels, of source image
+const float2 f2TexelSize;	// Size of a single texel of source image
 //------------------------------------------
 
 //------------------------------------------
@@ -157,9 +157,9 @@ const float	fVignFade;		//	F-stops until vignette fades
 #define DEPTH_BLUR_SAMPLE_COUNT (9)
 static const float fKernelWeight[DEPTH_BLUR_SAMPLE_COUNT] =
 {
-	1/16, 2/16, 1/16,
-	2/16, 4/16, 2/16,
-	1/16, 2/16, 1/16
+	1.f/16.f, 2.f/16.f, 1.f/16.f,
+	2.f/16.f, 4.f/16.f, 2.f/16.f,
+	1.f/16.f, 2.f/16.f, 1.f/16.f
 };
 static const float2 f2KernelOffset[DEPTH_BLUR_SAMPLE_COUNT] =
 {
@@ -392,8 +392,8 @@ float2 GenerateNoise(float2 f2Coords)
 	}
 	else
 	{
-		f2Noise.x = ((frac(1.f - f2Coords.x * (f2TexSourceSize.x * 0.5f)) * 0.25f) + (frac(f2Coords.y * (f2TexSourceSize.y * 0.5f)) * 0.75f)) * 2.f - 1.f;
-		f2Noise.y = ((frac(1.f - f2Coords.x * (f2TexSourceSize.x * 0.5f)) * 0.75f) + (frac(f2Coords.y * (f2TexSourceSize.y * 0.5f)) * 0.25f)) * 2.f - 1.f;
+		f2Noise.x = ((frac(1.f - f2Coords.x * (f2TexSize.x * 0.5f)) * 0.25f) + (frac(f2Coords.y * (f2TexSize.y * 0.5f)) * 0.75f)) * 2.f - 1.f;
+		f2Noise.y = ((frac(1.f - f2Coords.x * (f2TexSize.x * 0.5f)) * 0.75f) + (frac(f2Coords.y * (f2TexSize.y * 0.5f)) * 0.25f)) * 2.f - 1.f;
 	}
 
 	return f2Noise;

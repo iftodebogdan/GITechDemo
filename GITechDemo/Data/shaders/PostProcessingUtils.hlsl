@@ -25,7 +25,35 @@ float ReconstructDepth(float fHyperbolicDepth)
 	return f2LinearDepthEquation.x * rcp(fHyperbolicDepth - f2LinearDepthEquation.y);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Downsample depth to a quarter of the original resolution				//
+// NB: f2TexCoord must be at the center of the quarter resolution texel	//
+// (i.e. right at the middle of the 4 full resolution samples)			//
+//////////////////////////////////////////////////////////////////////////
+const float f2DepthHalfTexelOffset;	// Half texel offset of depth buffer
+const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2TexCoord)
+{
+	const float2 f2SampleOffset[] =
+	{
+		float2(-1.f, -1.f),
+		float2(-1.f,  1.f),
+		float2( 1.f, -1.f),
+		float2( 1.f,  1.f)
+	};
 
+	// TODO: Shouldn't it be min()? Why do I get better results visually with max()?
+	return
+		max(
+			max(
+				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[0]).r,
+				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[1]).r
+				),
+			max(
+				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[2]).r,
+				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[3]).r
+				)
+			);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Kawase blur, approximating a 35x35 Gaussian kernel																	//

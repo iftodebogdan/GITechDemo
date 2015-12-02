@@ -64,6 +64,9 @@ void SSAOPass::CalculateSSAO()
 
 	SSAOBuffer[0]->Enable();
 
+	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
@@ -76,6 +79,8 @@ void SSAOPass::CalculateSSAO()
 	SsaoShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	SsaoShader.Disable();
+
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 
 	SSAOBuffer[0]->Disable();
 
@@ -105,6 +110,9 @@ void SSAOPass::BlurSSAO()
 
 		SSAOBuffer[(i + 1) % 2]->Enable();
 
+		const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+
 		// Not necesarry
 		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
@@ -127,6 +135,8 @@ void SSAOPass::BlurSSAO()
 		BloomShader.Enable();
 		RenderContext->DrawVertexBuffer(FullScreenTri);
 		BloomShader.Disable();
+
+		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 
 		SSAOBuffer[(i + 1) % 2]->Disable();
 
@@ -159,7 +169,7 @@ void SSAOPass::ApplySSAO()
 	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
 	RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_INVSRCCOLOR);
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ZERO);
-	RenderContext->GetRenderStateManager()->SetZFunc(CMP_GREATER);
+	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
 	f2HalfTexelOffset = Vec2f(
 		0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
@@ -189,7 +199,13 @@ void SSAOPass::Draw()
 	if (!SSAO_ENABLED)
 		return;
 
+	LibRendererDll::RenderTarget* pCurrRT = LibRendererDll::RenderTarget::GetActiveRenderTarget();
+	if (pCurrRT)
+		pCurrRT->Disable();
+
 	CalculateSSAO();
 	BlurSSAO();
 	ApplySSAO();
+
+	pCurrRT->Enable();
 }

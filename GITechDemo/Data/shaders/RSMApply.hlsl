@@ -1,5 +1,5 @@
-// This define will modify the behaviour of the RSMApply()
-// function so that it is aware of the multi-pass approach.
+// This define will modify the behaviour of the RSMApply() function so that 
+// it is aware that we are in the apply pass (instead of the upscale pass).
 #define RSM_APPLY_PASS (1)
 #include "RSMCommon.hlsl"
 
@@ -22,20 +22,15 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texDepthBuffer;	// G-Buffer depth values
 
-struct PSOut
+void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-	float4 colorOut	:	SV_TARGET;
-};
-
-void psmain(VSOut input, out PSOut output)
-{
-	output.colorOut = float4(0.f, 0.f, 0.f, 1.f);
+	f4Color = float4(0.f, 0.f, 0.f, 1.f);
 
 	// Early depth test so that we don't shade
 	// at the far plane (where the sky is drawn)
 	const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
 	DEPTH_KILL(fDepth, 1.f);
 
-	ApplyRSM(input.f2TexCoord, fDepth, output.colorOut);
+	ApplyRSM(input.f2TexCoord, fDepth, f4Color);
 }
 ////////////////////////////////////////////////////////////////////

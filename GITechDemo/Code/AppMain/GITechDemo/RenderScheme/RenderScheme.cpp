@@ -42,18 +42,22 @@ CREATE_ROOT_PASS()
 		// Compute direct light contribution from the directional light
 		#include "DirectionalLightPass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light Pass", LIGHTING_PASS)
+	
+		// Screen space ambient occlusion (done here so as no to affect indirect and volumetric lights)
+		#include "SSAOPass.h"
+		ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO Pass", LIGHTING_PASS)
 
 		// Compute indirect (1 unoccluded bounce) light contribution from the directional light
 		#include "DirectionalIndirectLightPass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Directional Indirect Light Pass", LIGHTING_PASS)
+	
+		// Volumetric directional light
+		#include "DirectionalLightVolumePass.h"
+		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_VOLUME_PASS, DirectionalLightVolumePass, "Directional Light Volume Pass", LIGHTING_PASS)
 
 	// Apply post-processing effect chain
 	#include "PostProcessingPass.h"
 	ADD_RENDER_PASS(POST_PROCESSING_PASS, PostProcessingPass, "Post-Processing Pass", ROOT_PASS)
-
-		// Screen space ambient occlusion
-		#include "SSAOPass.h"
-		ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO Pass", POST_PROCESSING_PASS)
 
 		// HDR framebuffer downsampling (1/4 and 1/16) for bloom, tone mapping, etc.
 		#include "HDRDownsamplePass.h"
