@@ -47,8 +47,12 @@ int FrameworkWin::Run()
 	MSG msg; memset(&msg, 0, sizeof(msg));
 	HACCEL hAccelTable;
 
+	char szTitleSuffix[128];
+	sprintf_s(szTitleSuffix, " (%s|%s - %s %s)", _CONFIGURATION, _PLATFORM, __DATE__, __TIME__);
+
 	// Initialize global strings
 	LoadString(m_hInstance, IDS_APP_TITLE, m_szTitle, MAX_LOADSTRING);
+	strcat_s(m_szTitle, szTitleSuffix);
 	LoadString(m_hInstance, IDC_FRAMEWORK, m_szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(m_hInstance);
 

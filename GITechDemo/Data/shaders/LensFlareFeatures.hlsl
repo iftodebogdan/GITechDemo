@@ -1,3 +1,5 @@
+#include "PostProcessingUtils.hlsl"
+
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
 
@@ -55,6 +57,9 @@ float4 FetchChromaShiftedTextureSample(sampler2D tex, float2 texCoord)
 }
 
 // Convert tex2D() calls to FetchChromaShiftedTextureSample() calls
+#ifdef tex2D
+#undef tex2D
+#endif
 #define tex2D(tex, texCoord) FetchChromaShiftedTextureSample(tex, texCoord)
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)

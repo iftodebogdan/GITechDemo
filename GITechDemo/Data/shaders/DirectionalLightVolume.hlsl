@@ -83,9 +83,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float3 f3RayPositionLightVS = f4RayPositionLightVS.xyz * rcp(f4RayPositionLightVS.w);
 
 	// Reduce noisiness by truncating the starting position
-	const float3 f3Ray = f3CameraPositionLightVS - f3RayPositionLightVS;
+	const float3 f3Ray = trunc(f3CameraPositionLightVS - f3RayPositionLightVS);
 	const float3 f3RayDir = normalize(f3Ray);
-	const float fRaymarchDistance = trunc(clamp(length(f3Ray), 0.f, fRaymarchDistanceLimit));
+	const float fRaymarchDistance = clamp(length(f3Ray), 0.f, fRaymarchDistanceLimit);
 
 	// Calculate the size of each step
 	const float fStepSize = fRaymarchDistance * rcp((float)nSampleCount);
