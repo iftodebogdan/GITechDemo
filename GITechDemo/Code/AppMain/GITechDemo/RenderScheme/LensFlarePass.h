@@ -5,6 +5,8 @@
 
 namespace GITechDemoApp
 {
+	class RenderTarget;
+
 	class LensFlarePass : public RenderPass
 	{
 		IMPLEMENT_RENDER_PASS(LensFlarePass)
@@ -14,6 +16,8 @@ namespace GITechDemoApp
 		void	GenerateFeatures();
 		void	Blur();
 		void	UpscaleAndBlend();
+
+		RenderTarget** CurrentLensFlareBuffer;
 	};
 }
 

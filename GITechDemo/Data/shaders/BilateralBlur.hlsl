@@ -29,16 +29,16 @@ const float fBlurDepthFalloff;
 // Number of samples on each side of the kernel
 #define NUM_SAMPLES_HALF	(7)
 
-static const float fGaussianFilterWeight[] =
-{
-	0.14446445f, 0.13543542f,
-	0.11153505f, 0.08055309f,
-	0.05087564f, 0.02798160f,
-	0.01332457f, 0.00545096f
-};
-
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
+	const float fGaussianFilterWeight[] =
+	{
+		0.14446445f, 0.13543542f,
+		0.11153505f, 0.08055309f,
+		0.05087564f, 0.02798160f,
+		0.01332457f, 0.00545096f
+	};
+
 	f4Color = float4(0.f, 0.f, 0.f, 1.f);
 	float fTotalWeight = 0.f;
 

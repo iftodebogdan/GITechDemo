@@ -30,14 +30,6 @@ const float fSSAOIntensity;		// Overall intensity of the SSAO effect
 const float fSSAOScale;			// Scale for the occlusion attenuation with distance
 const float fSSAOBias;			// Bias for the occlusion attenuation with normal differences
 
-static const float2 f2Kernel[4] =
-{
-	float2(	 1.f,	 0.f),
-	float2(	-1.f,	 0.f),
-	float2(	 0.f,	 1.f),
-	float2(	 0.f,	-1.f)
-};
-
 /*
 	Simple Screen-Space Ambient Occlusion shader.
 	Based on the work of José María Méndez:
@@ -65,7 +57,17 @@ float AOCalc(const float2 f2TexCoord, const float2 f2Offset, const float3 f3Posi
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
+	const float2 f2Kernel[4] =
+	{
+		float2( 1.f,	 0.f),
+		float2(-1.f,	 0.f),
+		float2( 0.f,	 1.f),
+		float2( 0.f,	-1.f)
+	};
+
 	const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+	DEPTH_KILL(fDepth, 1.f);
+
 	const float4 f4ProjPosition = float4(input.f2ScreenPos, fDepth, 1.f);
 	const float4 f4PositionPreW = mul(f44InvProjMat, f4ProjPosition);
 	const float3 f3Position = f4PositionPreW.xyz * rcp(f4PositionPreW.w);

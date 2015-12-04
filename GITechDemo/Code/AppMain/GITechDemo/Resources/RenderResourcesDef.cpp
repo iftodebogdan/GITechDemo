@@ -137,15 +137,17 @@ namespace GITechDemoApp
 	// Depth of field render targets
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldFullBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldQuarterBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
-	IMPLEMENT_RENDER_TARGET(AutofocusBuffer0, 1, PF_R32F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
-	IMPLEMENT_RENDER_TARGET(AutofocusBuffer1, 1, PF_R32F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
+	IMPLEMENT_RENDER_TARGET(AutofocusBuffer0, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
+	IMPLEMENT_RENDER_TARGET(AutofocusBuffer1, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
 
 	// Motion blur render target
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(MotionBlurBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 
 	// Lens flare render targets
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(LensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(LensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SphericalLensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(SphericalLensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 1.f, PF_NONE);
 	
 	// Arrays of render targets for easier handling
 	RenderTarget* VolumetricLightFullBuffer[2] = {
@@ -188,9 +190,13 @@ namespace GITechDemoApp
 		&AutofocusBuffer0,
 		&AutofocusBuffer1
 	};
-	RenderTarget* LensFlareBuffer[2] = {
-		&LensFlareBuffer0,
-		&LensFlareBuffer1
+	RenderTarget* SphericalLensFlareBuffer[2] = {
+		&SphericalLensFlareBuffer0,
+		&SphericalLensFlareBuffer1
+	};
+	RenderTarget* AnamorphicLensFlareBuffer[2] = {
+		&AnamorphicLensFlareBuffer0,
+		&AnamorphicLensFlareBuffer1
 	};
 	//------------------------------------------------------
 
@@ -298,6 +304,8 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fShiftFactor,				float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensDirtIntensity,		float,			0.3f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensStarBurstIntensity,	float,			0.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAnamorphic,				bool,			true					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fAnamorphicIntensity,		float,			10.f					);
 
 	/* HUD parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,				Vec3f,			Vec3f(1.f, 1.f, 1.f)	);

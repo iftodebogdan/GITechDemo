@@ -15,7 +15,6 @@ static const unsigned int nCascadeCount = NUM_CASCADES;					// Number of cascade
 static const unsigned int nCascadesPerRow = ceil(sqrt(nCascadeCount));	// Number of cascades per row
 static const float fCascadeNormSize = rcp(nCascadesPerRow);				// Normalized size of a cascade, i.e. 1.f / nCascadesPerRow
 
-
 // Calculates the best (i.e. highest detail) valid cascade index from
 // the light view space (not normalized) position of the current sample
 const unsigned int GetCascadeIdx(const float2 f2LightViewPos)

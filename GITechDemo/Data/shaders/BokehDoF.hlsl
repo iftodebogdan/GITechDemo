@@ -151,34 +151,6 @@ const float	fVignFade;		//	F-stops until vignette fades
 
 //------------------------------------------
 /*
-	Hardcoded blur kernel and weights for depth blurring
-*/
-//------------------------------------------
-#define DEPTH_BLUR_SAMPLE_COUNT (9)
-static const float fKernelWeight[DEPTH_BLUR_SAMPLE_COUNT] =
-{
-	1.f/16.f, 2.f/16.f, 1.f/16.f,
-	2.f/16.f, 4.f/16.f, 2.f/16.f,
-	1.f/16.f, 2.f/16.f, 1.f/16.f
-};
-static const float2 f2KernelOffset[DEPTH_BLUR_SAMPLE_COUNT] =
-{
-	float2(-1.f, -1.f),
-	float2( 0.f, -1.f),
-	float2( 1.f, -1.f),
-
-	float2(-1.f,  0.f),
-	float2( 0.f,  0.f),
-	float2( 1.f,  0.f),
-
-	float2(-1.f,  1.f),
-	float2( 0.f,  1.f),
-	float2( 1.f,  1.f)
-};
-//------------------------------------------
-
-//------------------------------------------
-/*
 	Forward function declarations
 */
 //------------------------------------------
@@ -338,6 +310,34 @@ float GeneratePentagon(float2 f2Coords)
 // Blur the depth buffer
 float BlurDepth(float2 f2Coords)
 {
+	//------------------------------------------
+	/*
+	Hardcoded blur kernel and weights for depth blurring
+	*/
+	//------------------------------------------
+	#define DEPTH_BLUR_SAMPLE_COUNT (9)
+	const float fKernelWeight[DEPTH_BLUR_SAMPLE_COUNT] =
+	{
+		1.f / 16.f, 2.f / 16.f, 1.f / 16.f,
+		2.f / 16.f, 4.f / 16.f, 2.f / 16.f,
+		1.f / 16.f, 2.f / 16.f, 1.f / 16.f
+	};
+	const float2 f2KernelOffset[DEPTH_BLUR_SAMPLE_COUNT] =
+	{
+		float2(-1.f, -1.f),
+		float2(0.f, -1.f),
+		float2(1.f, -1.f),
+
+		float2(-1.f,  0.f),
+		float2(0.f,  0.f),
+		float2(1.f,  0.f),
+
+		float2(-1.f,  1.f),
+		float2(0.f,  1.f),
+		float2(1.f,  1.f)
+	};
+	//------------------------------------------
+
 	// We don't want f2KernelSize to be resolution dependant, since the soft halos around
 	// overlapping in and out of focus objects would be bigger as the resolution got lower.
 	// Just maintain a proper aspect ratio so that the kernel is always square.

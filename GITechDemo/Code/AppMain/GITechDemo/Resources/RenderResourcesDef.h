@@ -101,8 +101,10 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(AutofocusBuffer0);
 	DECLARE_RENDER_TARGET(AutofocusBuffer1);
 	DECLARE_RENDER_TARGET(MotionBlurBuffer);
-	DECLARE_RENDER_TARGET(LensFlareBuffer0);
-	DECLARE_RENDER_TARGET(LensFlareBuffer1);
+	DECLARE_RENDER_TARGET(SphericalLensFlareBuffer0);
+	DECLARE_RENDER_TARGET(SphericalLensFlareBuffer1);
+	DECLARE_RENDER_TARGET(AnamorphicLensFlareBuffer0);
+	DECLARE_RENDER_TARGET(AnamorphicLensFlareBuffer1);
 
 	enum HDRDownsampleBufferIndex {
 		QUARTER = 0,
@@ -118,7 +120,8 @@ namespace GITechDemoApp
 	extern RenderTarget* SSAOQuarterBuffer[2];
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
-	extern RenderTarget* LensFlareBuffer[2];
+	extern RenderTarget* SphericalLensFlareBuffer[2];
+	extern RenderTarget* AnamorphicLensFlareBuffer[2];
 	//------------------------------------------------------
 
 	// Shader constants
@@ -282,6 +285,8 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f3FogBox, Vec3f);
 	DECLARE_SHADER_CONSTANT(f3FogSpeed, Vec3f);
 	DECLARE_SHADER_CONSTANT(fFogVerticalFalloff, float);
+	DECLARE_SHADER_CONSTANT(bAnamorphic, bool);
+	DECLARE_SHADER_CONSTANT(fAnamorphicIntensity, float);
 	//-------------------------------------------------------
 }
 

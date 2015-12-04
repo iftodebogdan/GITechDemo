@@ -217,6 +217,8 @@ namespace GITechDemoApp
 
 	// Lens flare
 	IMPLEMENT_ARTIST_PARAMETER("Lens flare enable",			"Toggle the rendering of the lens flare effect",						"Lens flare",				LENS_FLARE_ENABLED,							1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Anamorphic lens flare",		"Choose between anamorphic and spherical lens flare",					"Lens flare",				bAnamorphic.GetCurrentValue(),				1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Anamorphic intensity",		"Adjust the intensity of the anamophic lens flares",					"Lens flare",				fAnamorphicIntensity.GetCurrentValue(),		1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Brigthness threshold",		"Brightness threshold for lens flare feature generation",				"Lens flare",				LENS_FLARE_BRIGHTNESS_THRESHOLD,			0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Ghost sample count",		"Number of samples for \"ghost\" features",								"Lens flare",				nGhostSamples.GetCurrentValue(),			1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Ghost dispersion factor",	"Dispersion factor (distance) for \"ghost\" features",					"Lens flare",				fGhostDispersal.GetCurrentValue(),			0.1f);

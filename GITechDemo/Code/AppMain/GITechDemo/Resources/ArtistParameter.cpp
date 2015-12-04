@@ -59,9 +59,49 @@ void ArtistParameterManager::Update()
 
 	// Handle input
 	if(cmd & APM_CMD_NEXT)
-		m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam  = -1;
-	else if(cmd & APM_CMD_PREV)
-		m_nCurrParam > -1 ? m_nCurrParam-- : m_nCurrParam = (int)ms_arrParams.size() - 1;
+		if (cmd & APM_CMD_MAX_STEP)
+		{
+			string szCategory = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam]->szCategory : "";
+			for (unsigned int i = 0; i < ms_arrParams.size() + 1; i++)
+			{
+				m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam = -1;
+				if (m_nCurrParam == -1 || ms_arrParams[m_nCurrParam]->szCategory != szCategory)
+					break;
+			}
+		}
+		else
+			m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam  = -1;
+	else
+		if(cmd & APM_CMD_PREV)
+			if (cmd & APM_CMD_MAX_STEP)
+			{
+				string szCategory = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam]->szCategory : "";
+				string szCategory2;
+				for (unsigned int i = 0; i < ms_arrParams.size(); i++)
+				{
+					m_nCurrParam > -1 ? m_nCurrParam-- : m_nCurrParam = (int)ms_arrParams.size() - 1;
+					if (m_nCurrParam == -1 && szCategory2.empty())
+						break;
+					else
+						if (m_nCurrParam == -1 || ms_arrParams[m_nCurrParam]->szCategory != szCategory)
+						{
+							if (szCategory2.empty() && m_nCurrParam != -1)
+							{
+								szCategory2 = ms_arrParams[m_nCurrParam]->szCategory;
+								continue;
+							}
+							
+							if (m_nCurrParam == -1 || ms_arrParams[m_nCurrParam]->szCategory != szCategory2)
+							{
+								m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam = -1;
+								break;
+							}
+						}
+
+				}
+			}
+			else
+				m_nCurrParam > -1 ? m_nCurrParam-- : m_nCurrParam = (int)ms_arrParams.size() - 1;
 
 	ArtistParameter* const pCurrAP = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam] : nullptr;
 
@@ -131,7 +171,7 @@ void ArtistParameterManager::Update()
 		if (pCurrAP->nTypeHash != typeid(bool).hash_code())
 		{
 			HUD_PASS.PrintLn("");
-			HUD_PASS.PrintLn("Hold RCtrl or RShift to scale step value.");
+			HUD_PASS.PrintLn("Hold RCtrl (x0.1) or RShift (x10) to scale step value.");
 		}
 	}
 }

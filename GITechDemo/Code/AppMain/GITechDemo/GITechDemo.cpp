@@ -583,6 +583,7 @@ void GITechDemo::Update(const float fDeltaTime)
 		{
 			HUD_PASS.PrintLn("");
 			HUD_PASS.PrintLn("Directional arrows up/down: cycle configurable parameters");
+			HUD_PASS.PrintLn("RShift + Directional arrows up/down: cycle parameter categories");
 			HUD_PASS.PrintLn("Directional arrows left/right: modify currently selected parameter");
 		}
 	}

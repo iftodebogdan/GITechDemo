@@ -35,10 +35,6 @@ CREATE_ROOT_PASS()
 	#include "LightingPass.h"
 	ADD_RENDER_PASS(LIGHTING_PASS, LightingPass, "Lighting Pass", ROOT_PASS)
 
-		// Render the sky box
-		#include "SkyPass.h"
-		ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky Pass", LIGHTING_PASS)
-
 		// Compute direct light contribution from the directional light
 		#include "DirectionalLightPass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light Pass", LIGHTING_PASS)
@@ -46,6 +42,10 @@ CREATE_ROOT_PASS()
 		// Screen space ambient occlusion (done here so as no to affect indirect and volumetric lights)
 		#include "SSAOPass.h"
 		ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO Pass", LIGHTING_PASS)
+	
+		// Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky)
+		#include "SkyPass.h"
+		ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky Pass", LIGHTING_PASS)
 
 		// Compute indirect (1 unoccluded bounce) light contribution from the directional light
 		#include "DirectionalIndirectLightPass.h"
