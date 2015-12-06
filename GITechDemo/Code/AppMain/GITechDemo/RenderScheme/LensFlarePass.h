@@ -15,6 +15,7 @@ namespace GITechDemoApp
 		void	ApplyBrightnessFilter();
 		void	GenerateFeatures();
 		void	Blur();
+		void	AnamorphicBlur();
 		void	UpscaleAndBlend();
 
 		RenderTarget** CurrentLensFlareBuffer;

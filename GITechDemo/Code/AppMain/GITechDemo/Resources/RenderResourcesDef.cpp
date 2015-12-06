@@ -29,30 +29,32 @@ namespace GITechDemoApp
 	//////////////
 	// Shaders	//
 	//////////////
-	IMPLEMENT_SHADER(BokehDofShader,				"shaders/BokehDoF.hlsl");
-	IMPLEMENT_SHADER(RSMUpscaleShader,				"shaders/RSMUpscale.hlsl");
-	IMPLEMENT_SHADER(RSMApplyShader,				"shaders/RSMApply.hlsl");
-	IMPLEMENT_SHADER(DirectionalLightShader,		"shaders/DirectionalLight.hlsl");
-	IMPLEMENT_SHADER(SkyBoxShader,					"shaders/SkyBox.hlsl");
-	IMPLEMENT_SHADER(GBufferGenerationShader,		"shaders/GBufferGeneration.hlsl");
-	IMPLEMENT_SHADER(DepthPassShader,				"shaders/DepthPass.hlsl");
-	IMPLEMENT_SHADER(DepthCopyShader,				"shaders/DepthCopy.hlsl");
-	IMPLEMENT_SHADER(ColorCopyShader,				"shaders/ColorCopy.hlsl");
-	IMPLEMENT_SHADER(RSMCaptureShader,				"shaders/RSMCapture.hlsl");
-	IMPLEMENT_SHADER(DownsampleShader,				"shaders/Downsample.hlsl");
-	IMPLEMENT_SHADER(LumaCaptureShader,				"shaders/LumaCapture.hlsl");
-	IMPLEMENT_SHADER(LumaAdaptShader,				"shaders/LumaAdapt.hlsl");
-	IMPLEMENT_SHADER(HDRToneMappingShader,			"shaders/HDRToneMapping.hlsl");
-	IMPLEMENT_SHADER(BloomShader,					"shaders/Bloom.hlsl");
-	IMPLEMENT_SHADER(FxaaShader,					"shaders/FXAA.hlsl");
-	IMPLEMENT_SHADER(SsaoShader,					"shaders/SSAO.hlsl");
-	IMPLEMENT_SHADER(HUDTextShader,					"shaders/HUDText.hlsl");
-	IMPLEMENT_SHADER(MotionBlurShader,				"shaders/MotionBlur.hlsl");
-	IMPLEMENT_SHADER(LensFlareFeaturesShader,		"shaders/LensFlareFeatures.hlsl");
-	IMPLEMENT_SHADER(LensFlareApplyShader,			"shaders/LensFlareApply.hlsl");
-	IMPLEMENT_SHADER(DirectionalLightVolumeShader,	"shaders/DirectionalLightVolume.hlsl");
-	IMPLEMENT_SHADER(BilateralBlurShader,			"shaders/BilateralBlur.hlsl");
-	IMPLEMENT_SHADER(NearestDepthUpscaleShader,		"shaders/NearestDepthUpscale.hlsl");
+	IMPLEMENT_SHADER(BokehDofShader,					"shaders/BokehDoF.hlsl");
+	IMPLEMENT_SHADER(RSMUpscaleShader,					"shaders/RSMUpscale.hlsl");
+	IMPLEMENT_SHADER(DirectionalLightVolumeShader,		"shaders/DirectionalLightVolume.hlsl");
+	IMPLEMENT_SHADER(RSMApplyShader,					"shaders/RSMApply.hlsl");
+	IMPLEMENT_SHADER(DirectionalLightShader,			"shaders/DirectionalLight.hlsl");
+	IMPLEMENT_SHADER(SphericalLensFlareFeaturesShader,	"shaders/SphericalLensFlareFeatures.hlsl");
+	IMPLEMENT_SHADER(SsaoShader,						"shaders/SSAO.hlsl");
+	IMPLEMENT_SHADER(BilateralBlurShader,				"shaders/BilateralBlur.hlsl");
+	IMPLEMENT_SHADER(FxaaShader,						"shaders/FXAA.hlsl");
+	IMPLEMENT_SHADER(AnamorphicLensFlareBlurShader,		"shaders/AnamorphicLensFlareBlur.hlsl");
+	IMPLEMENT_SHADER(AnamorphicLensFlareFeaturesShader,	"shaders/AnamorphicLensFlareFeatures.hlsl");
+	IMPLEMENT_SHADER(BloomShader,						"shaders/Bloom.hlsl");
+	IMPLEMENT_SHADER(DownsampleShader,					"shaders/Downsample.hlsl");
+	IMPLEMENT_SHADER(LumaCaptureShader,					"shaders/LumaCapture.hlsl");
+	IMPLEMENT_SHADER(NearestDepthUpscaleShader,			"shaders/NearestDepthUpscale.hlsl");
+	IMPLEMENT_SHADER(MotionBlurShader,					"shaders/MotionBlur.hlsl");
+	IMPLEMENT_SHADER(GBufferGenerationShader,			"shaders/GBufferGeneration.hlsl");
+	IMPLEMENT_SHADER(HDRToneMappingShader,				"shaders/HDRToneMapping.hlsl");
+	IMPLEMENT_SHADER(LumaAdaptShader,					"shaders/LumaAdapt.hlsl");
+	IMPLEMENT_SHADER(ColorCopyShader,					"shaders/ColorCopy.hlsl");
+	IMPLEMENT_SHADER(RSMCaptureShader,					"shaders/RSMCapture.hlsl");
+	IMPLEMENT_SHADER(DepthPassShader,					"shaders/DepthPass.hlsl");
+	IMPLEMENT_SHADER(SkyBoxShader,						"shaders/SkyBox.hlsl");
+	IMPLEMENT_SHADER(LensFlareApplyShader,				"shaders/LensFlareApply.hlsl");
+	IMPLEMENT_SHADER(HUDTextShader,						"shaders/HUDText.hlsl");
+	IMPLEMENT_SHADER(DepthCopyShader,					"shaders/DepthCopy.hlsl");
 	//------------------------------------------------------
 
 	//////////////
@@ -146,8 +148,9 @@ namespace GITechDemoApp
 	// Lens flare render targets
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(SphericalLensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(SphericalLensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 1.f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.03125f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(AnamorphicLensFlareBuffer2, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.25f, 0.25f, PF_NONE);
 	
 	// Arrays of render targets for easier handling
 	RenderTarget* VolumetricLightFullBuffer[2] = {
@@ -194,9 +197,10 @@ namespace GITechDemoApp
 		&SphericalLensFlareBuffer0,
 		&SphericalLensFlareBuffer1
 	};
-	RenderTarget* AnamorphicLensFlareBuffer[2] = {
+	RenderTarget* AnamorphicLensFlareBuffer[3] = {
 		&AnamorphicLensFlareBuffer0,
-		&AnamorphicLensFlareBuffer1
+		&AnamorphicLensFlareBuffer1,
+		&AnamorphicLensFlareBuffer2
 	};
 	//------------------------------------------------------
 
@@ -304,8 +308,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fShiftFactor,				float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensDirtIntensity,		float,			0.3f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLensStarBurstIntensity,	float,			0.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAnamorphic,				bool,			true					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fAnamorphicIntensity,		float,			10.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fAnamorphicIntensity,		float,			5.f						);
 
 	/* HUD parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3TextColor,				Vec3f,			Vec3f(1.f, 1.f, 1.f)	);

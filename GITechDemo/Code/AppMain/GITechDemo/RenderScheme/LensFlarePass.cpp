@@ -16,9 +16,12 @@ namespace GITechDemoApp
 {
 	bool LENS_FLARE_ENABLED = true;
 	float LENS_FLARE_BRIGHTNESS_THRESHOLD = 3.5f;
+	bool LENS_FLARE_ANAMORPHIC = true;
 
 	const unsigned int LENS_FLARE_BLUR_KERNEL_COUNT = 3;
 	const unsigned int LENS_FLARE_BLUR_KERNEL[LENS_FLARE_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
+
+	const unsigned int LENS_FLARE_ANAMORPHIC_BLUR_PASSES = 6;
 }
 
 LensFlarePass::LensFlarePass(const char* const passName, RenderPass* const parentPass)
@@ -87,7 +90,7 @@ void LensFlarePass::Update(const float fDeltaTime)
 
 	f33LensFlareStarBurstMat = scaleBias2 * rotMat * scaleBias1;
 
-	if (bAnamorphic)
+	if (LENS_FLARE_ANAMORPHIC)
 		CurrentLensFlareBuffer = AnamorphicLensFlareBuffer;
 	else
 		CurrentLensFlareBuffer = SphericalLensFlareBuffer;
@@ -100,7 +103,10 @@ void LensFlarePass::Draw()
 
 	ApplyBrightnessFilter();
 	GenerateFeatures();
-	Blur();
+	if (LENS_FLARE_ANAMORPHIC)
+		AnamorphicBlur();
+	else
+		Blur();
 	UpscaleAndBlend();
 }
 
@@ -112,20 +118,38 @@ void LensFlarePass::ApplyBrightnessFilter()
 
 	PUSH_PROFILE_MARKER("Brightness filter");
 
-	CurrentLensFlareBuffer[0]->Enable();
+	if (!LENS_FLARE_ANAMORPHIC)
+		CurrentLensFlareBuffer[0]->Enable();
+	else
+		CurrentLensFlareBuffer[2]->Enable();
 
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-	f2HalfTexelOffset = Vec2f(
-		0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
-		0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
-		);
-	f2TexelSize = Vec2f(
-		1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
-		1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
-		);
-	texSource = HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0);
+	if (!LENS_FLARE_ANAMORPHIC)
+	{
+		f2HalfTexelOffset = Vec2f(
+			0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
+			0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
+			);
+		f2TexelSize = Vec2f(
+			1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
+			1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
+			);
+		texSource = HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0);
+	}
+	else
+	{
+		f2HalfTexelOffset = Vec2f(
+			0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+			0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
+			);
+		f2TexelSize = Vec2f(
+			1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+			1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
+			);
+		texSource = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
+	}
 
 	const float bkp = fBrightnessThreshold;
 	fBrightnessThreshold = LENS_FLARE_BRIGHTNESS_THRESHOLD;
@@ -136,7 +160,10 @@ void LensFlarePass::ApplyBrightnessFilter()
 
 	fBrightnessThreshold = bkp;
 
-	CurrentLensFlareBuffer[0]->Disable();
+	if (!LENS_FLARE_ANAMORPHIC)
+		CurrentLensFlareBuffer[0]->Disable();
+	else
+		CurrentLensFlareBuffer[2]->Disable();
 
 	POP_PROFILE_MARKER();
 }
@@ -153,32 +180,64 @@ void LensFlarePass::GenerateFeatures()
 
 	PUSH_PROFILE_MARKER("Feature generation");
 
-	ResourceMgr->GetTexture(
-		CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
-		)->SetAddressingMode(SAM_CLAMP);
+	if (!LENS_FLARE_ANAMORPHIC)
+	{
+		ResourceMgr->GetTexture(
+			CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+			)->SetAddressingMode(SAM_CLAMP);
 
-	ResourceMgr->GetTexture(
-		CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
-		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+		ResourceMgr->GetTexture(
+			CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+			)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+	}
+	else
+	{
+		ResourceMgr->GetTexture(
+			CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer(0)
+			)->SetAddressingMode(SAM_CLAMP);
+
+		ResourceMgr->GetTexture(
+			CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer(0)
+			)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+	}
 
 	CurrentLensFlareBuffer[1]->Enable();
 
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-	f2HalfTexelOffset = Vec2f(
-		0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
-		0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
-		);
-	f2TexelSize = Vec2f(
-		1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
-		1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
-		);
-	texSource = CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer();
+	if (!LENS_FLARE_ANAMORPHIC)
+	{
+		f2HalfTexelOffset = Vec2f(
+			0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
+			0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
+			);
+		f2TexelSize = Vec2f(
+			1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
+			1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
+			);
+		texSource = CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
-	LensFlareFeaturesShader.Enable();
-	RenderContext->DrawVertexBuffer(FullScreenTri);
-	LensFlareFeaturesShader.Disable();
+		SphericalLensFlareFeaturesShader.Enable();
+		RenderContext->DrawVertexBuffer(FullScreenTri);
+		SphericalLensFlareFeaturesShader.Disable();
+	}
+	else
+	{
+		f2HalfTexelOffset = Vec2f(
+			0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
+			0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
+			);
+		f2TexelSize = Vec2f(
+			1.f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
+			1.f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
+			);
+		texSource = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
+
+		AnamorphicLensFlareFeaturesShader.Enable();
+		RenderContext->DrawVertexBuffer(FullScreenTri);
+		AnamorphicLensFlareFeaturesShader.Disable();
+	}
 
 	CurrentLensFlareBuffer[1]->Disable();
 
@@ -239,6 +298,68 @@ void LensFlarePass::Blur()
 		BloomShader.Enable();
 		RenderContext->DrawVertexBuffer(FullScreenTri);
 		BloomShader.Disable();
+
+		CurrentLensFlareBuffer[i % 2]->Disable();
+
+		POP_PROFILE_MARKER();
+	}
+
+	POP_PROFILE_MARKER();
+}
+
+void LensFlarePass::AnamorphicBlur()
+{
+	Renderer* RenderContext = Renderer::GetInstance();
+	if (!RenderContext)
+		return;
+
+	ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+	if (!ResourceMgr)
+		return;
+
+	PUSH_PROFILE_MARKER("Blur");
+
+	ResourceMgr->GetTexture(
+		CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+		)->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(
+		CurrentLensFlareBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+		)->SetAddressingMode(SAM_CLAMP);
+
+	ResourceMgr->GetTexture(
+		CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+		)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(
+		CurrentLensFlareBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+		)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+	for (unsigned int i = 0; i < LENS_FLARE_ANAMORPHIC_BLUR_PASSES; i++)
+	{
+#if ENABLE_PROFILE_MARKERS
+		char label[10];
+		sprintf_s(label, "Kernel %d", i);
+#endif
+		PUSH_PROFILE_MARKER(label);
+
+		CurrentLensFlareBuffer[i % 2]->Enable();
+
+		// Not necesarry
+		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+		f2HalfTexelOffset = Vec2f(
+			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
+			);
+		f2TexelSize = Vec2f(
+			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
+			);
+		texSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
+		nKernel = i;
+
+		AnamorphicLensFlareBlurShader.Enable();
+		RenderContext->DrawVertexBuffer(FullScreenTri);
+		AnamorphicLensFlareBlurShader.Disable();
 
 		CurrentLensFlareBuffer[i % 2]->Disable();
 

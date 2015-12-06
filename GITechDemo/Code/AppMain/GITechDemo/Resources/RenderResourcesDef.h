@@ -48,11 +48,13 @@ namespace GITechDemoApp
 	DECLARE_SHADER(SsaoShader);
 	DECLARE_SHADER(HUDTextShader);
 	DECLARE_SHADER(MotionBlurShader);
-	DECLARE_SHADER(LensFlareFeaturesShader);
+	DECLARE_SHADER(SphericalLensFlareFeaturesShader);
 	DECLARE_SHADER(LensFlareApplyShader);
 	DECLARE_SHADER(DirectionalLightVolumeShader);
 	DECLARE_SHADER(BilateralBlurShader);
 	DECLARE_SHADER(NearestDepthUpscaleShader);
+	DECLARE_SHADER(AnamorphicLensFlareFeaturesShader);
+	DECLARE_SHADER(AnamorphicLensFlareBlurShader);
 	//------------------------------------------------------
 
 	// Models (manage their own textures, no need to declare them)
@@ -105,6 +107,7 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(SphericalLensFlareBuffer1);
 	DECLARE_RENDER_TARGET(AnamorphicLensFlareBuffer0);
 	DECLARE_RENDER_TARGET(AnamorphicLensFlareBuffer1);
+	DECLARE_RENDER_TARGET(AnamorphicLensFlareBuffer2);
 
 	enum HDRDownsampleBufferIndex {
 		QUARTER = 0,
@@ -121,7 +124,7 @@ namespace GITechDemoApp
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
 	extern RenderTarget* SphericalLensFlareBuffer[2];
-	extern RenderTarget* AnamorphicLensFlareBuffer[2];
+	extern RenderTarget* AnamorphicLensFlareBuffer[3];
 	//------------------------------------------------------
 
 	// Shader constants
@@ -285,7 +288,6 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f3FogBox, Vec3f);
 	DECLARE_SHADER_CONSTANT(f3FogSpeed, Vec3f);
 	DECLARE_SHADER_CONSTANT(fFogVerticalFalloff, float);
-	DECLARE_SHADER_CONSTANT(bAnamorphic, bool);
 	DECLARE_SHADER_CONSTANT(fAnamorphicIntensity, float);
 	//-------------------------------------------------------
 }

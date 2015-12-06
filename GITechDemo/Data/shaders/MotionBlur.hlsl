@@ -51,10 +51,11 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float4 f4PrevNDCPos = f4PrevNDCPosPreW * rcp(f4PrevNDCPosPreW.w);
 
 	// Compute pixel velocity
+	const float2 f2NDCSpeed = (f4NDCPos.xy - f4PrevNDCPos.xy) * rcp(fFrameTime);	// Speed (NDC units / s)
 	const float2 f2Velocity =
-		(f4NDCPos.xy - f4PrevNDCPos.xy) * rcp(fFrameTime) // Speed (NDC units / s)
-		* fMotionBlurIntensity // Scale velocity by intensity value
-		* rcp(nMotionBlurNumSamples); // Divide by the number of samples (so that there would be no
+		clamp(f2NDCSpeed, (-10.f).xx, (10.f).xx)	// Clamp it so as not to ruin the effect at high speed
+		* fMotionBlurIntensity	// Scale velocity by intensity value
+		* rcp(nMotionBlurNumSamples);	// Divide by the number of samples (so that there would be no
 										// change in perceived intensity if sample count varies)
 
 	// Sample along the velocity vector and average the result
