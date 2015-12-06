@@ -1,9 +1,30 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	PostProcessingPass.h
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #ifndef POST_PROCESSING_PASS_H_
 #define POST_PROCESSING_PASS_H_
 
 #include "RenderPass.h"
 
-namespace LibRendererDll
+namespace Synesthesia3D
 {
 	class RenderTarget;
 }
@@ -15,9 +36,9 @@ namespace GITechDemoApp
 		IMPLEMENT_RENDER_PASS(PostProcessingPass)
 
 	private:
-		void CopyResultToBackBuffer(LibRendererDll::RenderTarget* const rt);
+		void CopyResultToBackBuffer(Synesthesia3D::RenderTarget* const rt);
 
-		LibRendererDll::RenderTarget*	m_pFinalImageBuffer;
+		Synesthesia3D::RenderTarget*	m_pFinalImageBuffer;
 	};
 }
 

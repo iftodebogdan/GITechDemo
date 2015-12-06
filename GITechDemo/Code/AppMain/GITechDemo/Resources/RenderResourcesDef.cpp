@@ -1,8 +1,29 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	RenderResourcesDef.cpp
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #include "stdafx.h"
 
 #include "RenderResourcesDef.h"
 using namespace GITechDemoApp;
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
 //////////////////////////
 // Some utility defines	//
@@ -60,20 +81,20 @@ namespace GITechDemoApp
 	//////////////
 	// Models	//
 	//////////////
-	IMPLEMENT_MODEL(SponzaScene,	"models/sponza/sponza.lrm");
+	IMPLEMENT_MODEL(SponzaScene,	"models/sponza/sponza.s3dmdl");
 	//------------------------------------------------------
 
 	//////////////
 	// Textures	//
 	//////////////
-	IMPLEMENT_TEXTURE(SkyTexture,				"textures/sky.lrt");
-	IMPLEMENT_TEXTURE(IrradianceTexture,		"textures/irradiance.lrt");
-	IMPLEMENT_TEXTURE(EnvironmentTexture,		"textures/envmap.lrt");
-	IMPLEMENT_TEXTURE(LensFlareGhostColorLUT,	"textures/LensFlareGhostColorLUT.lrt");
-	IMPLEMENT_TEXTURE(LensFlareDirt,			"textures/LensFlareDirt.lrt");
-	IMPLEMENT_TEXTURE(LensFlareStarBurst,		"textures/LensFlareStarBurst.lrt");
-	IMPLEMENT_TEXTURE(BayerMatrix,				"textures/bayer_matrix.lrt");
-	IMPLEMENT_TEXTURE(NoiseTexture,				"textures/noise.lrt");
+	IMPLEMENT_TEXTURE(SkyTexture,				"textures/sky.s3dtex");
+	IMPLEMENT_TEXTURE(IrradianceTexture,		"textures/irradiance.s3dtex");
+	IMPLEMENT_TEXTURE(EnvironmentTexture,		"textures/envmap.s3dtex");
+	IMPLEMENT_TEXTURE(LensFlareGhostColorLUT,	"textures/LensFlareGhostColorLUT.s3dtex");
+	IMPLEMENT_TEXTURE(LensFlareDirt,			"textures/LensFlareDirt.s3dtex");
+	IMPLEMENT_TEXTURE(LensFlareStarBurst,		"textures/LensFlareStarBurst.s3dtex");
+	IMPLEMENT_TEXTURE(BayerMatrix,				"textures/bayer_matrix.s3dtex");
+	IMPLEMENT_TEXTURE(NoiseTexture,				"textures/noise.s3dtex");
 	//------------------------------------------------------
 
 	//////////////////////

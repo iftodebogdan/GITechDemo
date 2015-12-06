@@ -283,9 +283,7 @@
     <None Include="..\..\Data\shaders\Utils.hlsl">
       <Filter>Shaders\Common</Filter>
     </None>
-    <None Include="..\..\Data\shaders\AnamorphicLensFlareBlur.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="GITechDemo.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">
@@ -369,6 +367,9 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\AnamorphicLensFlareFeatures.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\AnamorphicLensFlareBlur.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

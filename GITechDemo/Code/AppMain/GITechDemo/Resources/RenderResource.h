@@ -1,3 +1,24 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	RenderResource.h
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #ifndef RENDER_RESOURCE_H_
 #define RENDER_RESOURCE_H_
 
@@ -7,8 +28,8 @@ using namespace std;
 #include <gmtl\gmtl.h>
 using namespace gmtl;
 
-#include <ResourceData.h>
-namespace LibRendererDll
+//#include <ResourceData.h>
+namespace Synesthesia3D
 {
 	class ShaderProgram;
 	class ShaderTemplate;
@@ -21,6 +42,8 @@ namespace LibRendererDll
 
 namespace GITechDemoApp
 {
+	using namespace Synesthesia3D;
+
 	class RenderResource
 	{
 	public:
@@ -35,7 +58,7 @@ namespace GITechDemoApp
 			RES_MAX
 		};
 
-		static void SetResourceManager(LibRendererDll::ResourceManager* const resMgr);
+		static void SetResourceManager(ResourceManager* const resMgr);
 
 		static const vector<RenderResource*>& GetResourceList() { return arrResources; }
 
@@ -71,7 +94,7 @@ namespace GITechDemoApp
 		MUTEX			mInitMutex;
 
 		static vector<RenderResource*> arrResources;
-		static LibRendererDll::ResourceManager* ResMgr;
+		static ResourceManager* ResMgr;
 	};
 
 	class Texture;
@@ -82,19 +105,19 @@ namespace GITechDemoApp
 		Model(const char* filePath);
 		~Model();
 
-		LibRendererDll::Model* const		GetModel() { return pModel; }
-		const unsigned int	GetTexture(const LibRendererDll::Model::TextureDesc::TextureType texType, const unsigned int nMatIdx) { return TextureLUT[texType][nMatIdx]; }
+		Synesthesia3D::Model* const		GetModel() { return pModel; }
+		const unsigned int	GetTexture(const Synesthesia3D::Model::TextureDesc::TextureType texType, const unsigned int nMatIdx) { return TextureLUT[texType][nMatIdx]; }
 
 	protected:
 		const bool Init();
 		void Free();
 
-		LibRendererDll::Model*	pModel;
+		Synesthesia3D::Model*	pModel;
 		unsigned int			nModelIdx;
 
 		// A lookup table for textures (faster than searching everytime by its file name when setting materials)
 		// Usage: TextureIndex = TextureLUT[TextureType][MaterialIndex]
-		vector<unsigned int>	TextureLUT[LibRendererDll::Model::TextureDesc::TT_UNKNOWN];
+		vector<unsigned int>	TextureLUT[Synesthesia3D::Model::TextureDesc::TT_UNKNOWN];
 		vector<Texture*>		TextureList;
 	};
 
@@ -103,7 +126,7 @@ namespace GITechDemoApp
 	public:
 		Texture(const char* filePath);
 
-		LibRendererDll::Texture* const		GetTexture() { return pTexture; }
+		Synesthesia3D::Texture* const		GetTexture() { return pTexture; }
 		const unsigned int	GetTextureIndex() { return nTexIdx; }
 
 		const char* GetFilePath() { return szDesc.c_str(); }
@@ -112,7 +135,7 @@ namespace GITechDemoApp
 		const bool Init();
 		void Free();
 
-		LibRendererDll::Texture* pTexture;
+		Synesthesia3D::Texture* pTexture;
 		unsigned int nTexIdx;
 
 		friend class Model;
@@ -190,8 +213,8 @@ namespace GITechDemoApp
 		{
 			RenderResource*		pShaderConstantTemplate;
 			unsigned int		nShaderConstantHandle;
-			LibRendererDll::ShaderProgramType	eShaderType;
-			LibRendererDll::InputType			eConstantType;
+			ShaderProgramType	eShaderType;
+			InputType			eConstantType;
 			unsigned int		nNumRows;
 			unsigned int		nNumColumns;
 			unsigned int		nNumArrayElem;
@@ -200,20 +223,20 @@ namespace GITechDemoApp
 		const bool Init();
 		void Free();
 
-		LibRendererDll::ShaderProgram*	pVertexShaderProg;
-		unsigned int					nVertexShaderProgIdx;
-		LibRendererDll::ShaderProgram*	pPixelShaderProg;
-		unsigned int					nPixelShaderProgIdx;
+		ShaderProgram*	pVertexShaderProg;
+		unsigned int	nVertexShaderProgIdx;
+		ShaderProgram*	pPixelShaderProg;
+		unsigned int	nPixelShaderProgIdx;
 
-		LibRendererDll::ShaderTemplate* pVertexShaderTemplate;
-		unsigned int					nVertexShaderTemplateIdx;
-		LibRendererDll::ShaderTemplate* pPixelShaderTemplate;
-		unsigned int					nPixelShaderTemplateIdx;
+		ShaderTemplate* pVertexShaderTemplate;
+		unsigned int	nVertexShaderTemplateIdx;
+		ShaderTemplate* pPixelShaderTemplate;
+		unsigned int	nPixelShaderTemplateIdx;
 
-		LibRendererDll::ShaderInput*	pVertexShaderInput;
-		unsigned int					nVertexShaderInputIdx;
-		LibRendererDll::ShaderInput*	pPixelShaderInput;
-		unsigned int					nPixelShaderInputIdx;
+		ShaderInput*	pVertexShaderInput;
+		unsigned int	nVertexShaderInputIdx;
+		ShaderInput*	pPixelShaderInput;
+		unsigned int	nPixelShaderInputIdx;
 
 		vector<ShaderConstantInstance>	arrConstantList;
 	};
@@ -222,37 +245,37 @@ namespace GITechDemoApp
 	{
 	public:
 		RenderTarget(const char* name, const unsigned int targetCount,
-			LibRendererDll::PixelFormat pixelFormatRT0, LibRendererDll::PixelFormat pixelFormatRT1,
-			LibRendererDll::PixelFormat pixelFormatRT2, LibRendererDll::PixelFormat pixelFormatRT3,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1,
+			PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 			const float widthRatio, const float heightRatio,
-			LibRendererDll::PixelFormat depthStencilFormat);
+			PixelFormat depthStencilFormat);
 		RenderTarget(const char* name, const unsigned int targetCount,
-			LibRendererDll::PixelFormat pixelFormatRT0, LibRendererDll::PixelFormat pixelFormatRT1,
-			LibRendererDll::PixelFormat pixelFormatRT2, LibRendererDll::PixelFormat pixelFormatRT3,
+			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1,
+			PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 			const unsigned int width, const unsigned int height,
-			LibRendererDll::PixelFormat depthStencilFormat);
+			PixelFormat depthStencilFormat);
 
 		void Enable();
 		void Disable();
 
-		LibRendererDll::RenderTarget* const GetRenderTarget() { return pRenderTarget; }
+		Synesthesia3D::RenderTarget* const GetRenderTarget() { return pRenderTarget; }
 
 	protected:
 		const bool Init();
 		void Free();
 
-		LibRendererDll::RenderTarget*	pRenderTarget;
+		Synesthesia3D::RenderTarget*	pRenderTarget;
 		unsigned int nRenderTargetIdx;
 		unsigned int nTargetCount;
-		LibRendererDll::PixelFormat ePixelFormatRT0;
-		LibRendererDll::PixelFormat ePixelFormatRT1;
-		LibRendererDll::PixelFormat ePixelFormatRT2;
-		LibRendererDll::PixelFormat ePixelFormatRT3;
+		PixelFormat ePixelFormatRT0;
+		PixelFormat ePixelFormatRT1;
+		PixelFormat ePixelFormatRT2;
+		PixelFormat ePixelFormatRT3;
 		unsigned int nWidth;
 		unsigned int nHeight;
 		float widthRatio;
 		float heightRatio;
-		LibRendererDll::PixelFormat eDepthStencilFormat;
+		PixelFormat eDepthStencilFormat;
 		bool bIsDynamic;
 	};
 }

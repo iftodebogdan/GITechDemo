@@ -92,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +121,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +152,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -185,7 +185,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(ProjectDir)SDK\DevIL\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -229,7 +229,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
     <ClCompile Include="TextureCompiler\TextureCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libraries\LibRenderer\LibRenderer.vcxproj">
+    <ProjectReference Include="..\Libraries\Synesthesia3D\Synesthesia3D.vcxproj">
       <Project>{42b90f7f-e5d8-4b7f-be74-cac4da86c76f}</Project>
     </ProjectReference>
   </ItemGroup>

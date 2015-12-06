@@ -6,11 +6,11 @@
 #include <VertexFormat.h>
 #include <IndexBuffer.h>
 #include <ResourceData.h>
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
 #include "../Common/Logging.h"
 #include "ModelCompiler.h"
-using namespace LibRendererTools;
+using namespace Synesthesia3DTools;
 
 std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
 	size_t start_pos = 0;
@@ -538,7 +538,7 @@ void ModelCompiler::Run(int argc, char* argv[])
 	}
 	outFilePath += "\\";
 	outFilePath += fileName;
-	outFilePath += ".lrm";
+	outFilePath += ".s3dmdl";
 	
 	ofstream outModel;
 	outModel.open(outFilePath.c_str(), ofstream::trunc | ofstream::binary);

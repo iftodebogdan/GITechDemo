@@ -1,10 +1,31 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	RSMDirectionalLightPass.cpp
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #include "stdafx.h"
 
 #include <Renderer.h>
 #include <ResourceManager.h>
 #include <Texture.h>
 #include <RenderTarget.h>
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
 #include "RSMDirectionalLightPass.h"
 using namespace GITechDemoApp;
@@ -84,7 +105,7 @@ void RSMDirectionalLightPass::Draw()
 
 	for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
 	{
-		texDiffuse = SponzaScene.GetTexture(LibRendererDll::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+		texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
 		RSMCaptureShader.Enable();
 		RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);

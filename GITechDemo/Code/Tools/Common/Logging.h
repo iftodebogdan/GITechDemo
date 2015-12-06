@@ -7,7 +7,7 @@
 #include <ctime>
 using namespace std;
 
-namespace LibRendererTools
+namespace Synesthesia3DTools
 {
 	class mstream
 	{

@@ -3,7 +3,7 @@
 #include <Renderer.h>
 #include <Texture.h>
 #include <ResourceManager.h>
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -12,7 +12,7 @@ using namespace LibRendererDll;
 #include "../Common/Logging.h"
 #include "TextureCompiler.h"
 #include "../Utility/ColorUtility.h"
-using namespace LibRendererTools;
+using namespace Synesthesia3DTools;
 
 #define ERROR_OK 0
 #define ERROR_FATAL 1
@@ -26,7 +26,7 @@ std::string ReplaceAll(std::string str, const std::string& from, const std::stri
 	return str;
 }
 
-const char * LibRendererTools::TextureCompiler::GetEnumString(PixelFormat val)
+const char * Synesthesia3DTools::TextureCompiler::GetEnumString(PixelFormat val)
 {
 	switch (val)
 	{
@@ -78,7 +78,7 @@ const char * LibRendererTools::TextureCompiler::GetEnumString(PixelFormat val)
 	}
 }
 
-const char * LibRendererTools::TextureCompiler::GetEnumString(TextureType val)
+const char * Synesthesia3DTools::TextureCompiler::GetEnumString(TextureType val)
 {
 	switch (val)
 	{
@@ -685,7 +685,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 	}
 	outFilePath += "\\";
 	outFilePath += fileName;
-	outFilePath += ".lrt";
+	outFilePath += ".s3dtex";
 
 	ofstream outTexture;
 	outTexture.open(outFilePath.c_str(), ofstream::trunc | ofstream::binary);

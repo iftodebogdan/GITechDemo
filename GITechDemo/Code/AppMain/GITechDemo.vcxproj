@@ -124,7 +124,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +154,7 @@ echo.</Command>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,7 +186,7 @@ echo.</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,7 +220,7 @@ echo.</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -254,7 +254,7 @@ echo.</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -289,7 +289,7 @@ echo.</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\LibRenderer\SDK\gmtl\include;$(SolutionDir)..\Libraries\LibRenderer\Common;$(SolutionDir)..\Libraries\LibRenderer;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Libraries\Synesthesia3D\SDK\gmtl\include;$(SolutionDir)..\Libraries\Synesthesia3D\Common;$(SolutionDir)..\Libraries\Synesthesia3D;$(SolutionDir)..\Libraries\freetype-2.6\include;$(SolutionDir)..\Libraries\gainput-0.10.0-beta\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1294,6 +1294,7 @@ call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(
     <None Include="..\..\Data\shaders\Utils.hlsl">
       <FileType>Document</FileType>
     </None>
+    <None Include="GITechDemo.licenseheader" />
     <None Include="GITechDemo\Framework.ico" />
     <None Include="GITechDemo\small.ico" />
     <None Include="GITechDemo\UtahTeapot.ico" />
@@ -1938,7 +1939,7 @@ call fxc.exe /T ps_3_0 /E psmain /O3 /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(
     <ProjectReference Include="..\Libraries\gainput-0.10.0-beta\gainput.vcxproj">
       <Project>{84a40273-6042-41ce-8da8-cd1d538e1fc1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\LibRenderer\LibRenderer.vcxproj">
+    <ProjectReference Include="..\Libraries\Synesthesia3D\Synesthesia3D.vcxproj">
       <Project>{42b90f7f-e5d8-4b7f-be74-cac4da86c76f}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -1,0 +1,101 @@
+/*=============================================================================
+ *	This file is part of the "Synesthesia3D" graphics engine
+ *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	RenderTarget.h
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
+#ifndef RENDERTARGET_H
+#define RENDERTARGET_H
+
+#include "ResourceData.h"
+
+namespace Synesthesia3D
+{
+	class Texture;
+
+	// This platform independent class manages render targets
+	class RenderTarget
+	{
+	public:
+		// Enable rendering in this RT
+		virtual SYNESTHESIA3D_DLL void					Enable();
+		// Disable from rendering in this RT
+		virtual SYNESTHESIA3D_DLL void					Disable();
+		// Copy the contents of the specified color buffer to a texture (only mip 0 is copied)
+		// NB: Texture must be 2D and have same width, height and format
+		virtual SYNESTHESIA3D_DLL void					CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture) PURE_VIRTUAL
+
+		// Create platform specific resource
+		virtual SYNESTHESIA3D_DLL void					Bind();
+		// Destroy platform specific resource
+		virtual SYNESTHESIA3D_DLL void					Unbind();
+
+				/* Get the number of render targets (MRT) */
+				SYNESTHESIA3D_DLL const unsigned int		GetTargetCount() const;
+				/* Get the pixel format of the color buffer */
+				SYNESTHESIA3D_DLL const PixelFormat		GetPixelFormat(const unsigned int colorBufferIdx = 0) const;
+				/* Get the width of the color buffer */
+				SYNESTHESIA3D_DLL const unsigned int		GetWidth() const;
+				/* Get the height of the color buffer */
+				SYNESTHESIA3D_DLL const unsigned int		GetHeight() const;
+				/* Get the texture corresponding to the specified color buffer */
+				SYNESTHESIA3D_DLL const unsigned int		GetColorBuffer(const unsigned int colorBufferIdx = 0) const;
+				/* Get the texture corresponding to the specified depth buffer */
+				SYNESTHESIA3D_DLL const unsigned int		GetDepthBuffer() const;
+				/* Determines if the color buffer has mipmaps */
+				SYNESTHESIA3D_DLL const bool				HasMipmaps() const;
+				/* Determines if the render target has a depth buffer */
+				SYNESTHESIA3D_DLL const bool				HasDepthBuffer() const;
+
+		static	SYNESTHESIA3D_DLL	RenderTarget*	GetActiveRenderTarget();
+
+	protected:
+		RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount,
+			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+			const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		RenderTarget(const unsigned int targetCount,
+			PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+		virtual ~RenderTarget();
+
+		static	void	SetActiveRenderTarget(RenderTarget* const activeRenderTarget);
+
+		unsigned int	m_nTargetCount;
+		unsigned int	m_nWidth;
+		unsigned int	m_nHeight;
+		float			m_fWidthRatio;
+		float			m_fHeightRatio;
+		bool			m_bHasMipmaps;
+		bool			m_bHasDepthStencil;
+
+		unsigned int*	m_nColorBufferTexIdx;
+		unsigned int	m_nDepthBufferTexIdx;
+		Texture**		m_pColorBuffer;
+		Texture*		m_pDepthBuffer;
+
+		static RenderTarget*	ms_pActiveRenderTarget;
+
+		friend class ResourceManager;
+	};
+}
+
+#endif // RENDERTARGET_H

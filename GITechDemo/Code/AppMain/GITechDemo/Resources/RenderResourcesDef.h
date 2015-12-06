@@ -1,3 +1,24 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	RenderResourcesDef.h
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #ifndef RENDER_RESOURCES_DEF_H_
 #define RENDER_RESOURCES_DEF_H_
 
@@ -17,8 +38,10 @@
 
 namespace GITechDemoApp
 {
+	using namespace Synesthesia3D;
+
 	// Used for fullscreen effects, post-processing, etc.
-	extern LibRendererDll::VertexBuffer*	FullScreenTri;
+	extern VertexBuffer*	FullScreenTri;
 
 	// Used to set the nBRDFModel shader constant
 	enum BRDFModel
@@ -133,29 +156,29 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f44ViewProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44WorldViewProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44WorldViewMat, Matrix44f);
-	DECLARE_SHADER_CONSTANT(texDiffuse, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texNormal, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texDiffuse, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texNormal, Sampler2D);
 	DECLARE_SHADER_CONSTANT(bHasNormalMap, bool);
-	DECLARE_SHADER_CONSTANT(texSpec, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texSpec, Sampler2D);
 	DECLARE_SHADER_CONSTANT(bHasSpecMap, bool);
-	DECLARE_SHADER_CONSTANT(texMatType, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texRoughness, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texMatType, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texRoughness, Sampler2D);
 	DECLARE_SHADER_CONSTANT(fSpecIntensity, float);
 	DECLARE_SHADER_CONSTANT(f2HalfTexelOffset, Vec2f);
-	DECLARE_SHADER_CONSTANT(texDepthBuffer, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texMaterialBuffer, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texIrradianceMap, LibRendererDll::SamplerCUBE);
-	DECLARE_SHADER_CONSTANT(texEnvMap, LibRendererDll::SamplerCUBE);
+	DECLARE_SHADER_CONSTANT(texDepthBuffer, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texMaterialBuffer, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texIrradianceMap, SamplerCUBE);
+	DECLARE_SHADER_CONSTANT(texEnvMap, SamplerCUBE);
 	DECLARE_SHADER_CONSTANT(nBRDFModel, unsigned int);
 	DECLARE_SHADER_CONSTANT(f44SkyViewProjMat, Matrix44f);
-	DECLARE_SHADER_CONSTANT(texSkyCube, LibRendererDll::SamplerCUBE);
-	DECLARE_SHADER_CONSTANT(texDiffuseBuffer, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texSkyCube, SamplerCUBE);
+	DECLARE_SHADER_CONSTANT(texDiffuseBuffer, Sampler2D);
 	DECLARE_SHADER_CONSTANT(fAmbientFactor, float);
 	DECLARE_SHADER_CONSTANT(fIrradianceFactor, float);
 	DECLARE_SHADER_CONSTANT(fReflectionFactor, float);
 	DECLARE_SHADER_CONSTANT(f44InvProjMat, Matrix44f);
-	DECLARE_SHADER_CONSTANT(texNormalBuffer, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texShadowMap, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texNormalBuffer, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texShadowMap, Sampler2D);
 	DECLARE_SHADER_CONSTANT(f2OneOverShadowMapSize, Vec2f);
 	DECLARE_SHADER_CONSTANT(f44ViewMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44InvViewMat, Matrix44f);
@@ -177,9 +200,9 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(f44RSMWorldViewProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44LightRotMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44LightViewProjMat, Matrix44f*);
-	DECLARE_SHADER_CONSTANT(texRSMFluxBuffer, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texRSMNormalBuffer, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texRSMDepthBuffer, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texRSMFluxBuffer, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texRSMNormalBuffer, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texRSMDepthBuffer, Sampler2D);
 	DECLARE_SHADER_CONSTANT(f3RSMKernel, Vec3f*);
 	DECLARE_SHADER_CONSTANT(f44RSMProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(f44RSMInvProjMat, Matrix44f);
@@ -190,13 +213,13 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(bDebugUpscalePass, bool);
 	DECLARE_SHADER_CONSTANT(fSunRadius, float);
 	DECLARE_SHADER_CONSTANT(fSunBrightness, float);
-	DECLARE_SHADER_CONSTANT(texLumaInput, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLumaInput, Sampler2D);
 	DECLARE_SHADER_CONSTANT(bInitialLumaPass, bool);
 	DECLARE_SHADER_CONSTANT(bFinalLumaPass, bool);
-	DECLARE_SHADER_CONSTANT(texAvgLuma, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texAvgLuma, Sampler2D);
 	DECLARE_SHADER_CONSTANT(fExposureBias, float);
 	DECLARE_SHADER_CONSTANT(f2AvgLumaClamp, Vec2f);
-	DECLARE_SHADER_CONSTANT(texSource, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texSource, Sampler2D);
 	DECLARE_SHADER_CONSTANT(f2TexelSize, Vec2f);
 	DECLARE_SHADER_CONSTANT(fShoulderStrength, float);
 	DECLARE_SHADER_CONSTANT(fLinearStrength, float);
@@ -207,7 +230,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fLinearWhite, float);
 	DECLARE_SHADER_CONSTANT(fLumaAdaptSpeed, float);
 	DECLARE_SHADER_CONSTANT(fFrameTime, float);
-	DECLARE_SHADER_CONSTANT(texLumaTarget, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLumaTarget, Sampler2D);
 	DECLARE_SHADER_CONSTANT(fBrightnessThreshold, float);
 	DECLARE_SHADER_CONSTANT(bApplyBrightnessFilter, bool);
 	DECLARE_SHADER_CONSTANT(fBloomPower, float);
@@ -253,12 +276,12 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fZNear, float);
 	DECLARE_SHADER_CONSTANT(fZFar, float);
 	DECLARE_SHADER_CONSTANT(f2LinearDepthEquation, Vec2f);
-	DECLARE_SHADER_CONSTANT(texTargetFocus, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texTargetFocus, Sampler2D);
 	DECLARE_SHADER_CONSTANT(f3TextColor, Vec3f);
 	DECLARE_SHADER_CONSTANT(f44PrevViewProjMat, Matrix44f);
 	DECLARE_SHADER_CONSTANT(fMotionBlurIntensity, float);
 	DECLARE_SHADER_CONSTANT(nMotionBlurNumSamples, int);
-	DECLARE_SHADER_CONSTANT(texGhostColorLUT, LibRendererDll::Sampler1D);
+	DECLARE_SHADER_CONSTANT(texGhostColorLUT, Sampler1D);
 	DECLARE_SHADER_CONSTANT(nGhostSamples, int);
 	DECLARE_SHADER_CONSTANT(fGhostDispersal, float);
 	DECLARE_SHADER_CONSTANT(fGhostRadialWeightExp, float);
@@ -266,9 +289,9 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fHaloRadialWeightExp, float);
 	DECLARE_SHADER_CONSTANT(bChromaShift, bool);
 	DECLARE_SHADER_CONSTANT(fShiftFactor, float);
-	DECLARE_SHADER_CONSTANT(texLensFlareFeatures, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texLensFlareDirt, LibRendererDll::Sampler2D);
-	DECLARE_SHADER_CONSTANT(texLensFlareStarBurst, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLensFlareFeatures, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLensFlareDirt, Sampler2D);
+	DECLARE_SHADER_CONSTANT(texLensFlareStarBurst, Sampler2D);
 	DECLARE_SHADER_CONSTANT(fLensDirtIntensity, float);
 	DECLARE_SHADER_CONSTANT(fLensStarBurstIntensity, float);
 	DECLARE_SHADER_CONSTANT(f33LensFlareStarBurstMat, Matrix33f);
@@ -277,13 +300,13 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fRaymarchDistanceLimit, float);
 	DECLARE_SHADER_CONSTANT(fLightIntensity, float);
 	DECLARE_SHADER_CONSTANT(fMultScatterIntensity, float);
-	DECLARE_SHADER_CONSTANT(texDitherMap, LibRendererDll::Sampler2D);
+	DECLARE_SHADER_CONSTANT(texDitherMap, Sampler2D);
 	DECLARE_SHADER_CONSTANT(f2BlurDir, Vec2f);
 	DECLARE_SHADER_CONSTANT(fUpsampleDepthThreshold, float);
 	DECLARE_SHADER_CONSTANT(f2DepthHalfTexelOffset, Vec2f);
 	DECLARE_SHADER_CONSTANT(fBlurDepthFalloff, float);
 	DECLARE_SHADER_CONSTANT(nSampleCount, int);
-	DECLARE_SHADER_CONSTANT(texNoise, LibRendererDll::Sampler3D);
+	DECLARE_SHADER_CONSTANT(texNoise, Sampler3D);
 	DECLARE_SHADER_CONSTANT(fElapsedTime, float);
 	DECLARE_SHADER_CONSTANT(f3FogBox, Vec3f);
 	DECLARE_SHADER_CONSTANT(f3FogSpeed, Vec3f);

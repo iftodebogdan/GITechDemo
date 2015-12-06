@@ -1,9 +1,30 @@
+/*=============================================================================
+ *	This file is part of the "GITechDemo" application
+ *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *		File:	PostProcessingPass.cpp
+ *		Author:	Bogdan Iftode
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+=============================================================================*/
+
 #include "stdafx.h"
 
 #include <Renderer.h>
 #include <RenderState.h>
 #include <RenderTarget.h>
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
 #include "PostProcessingPass.h"
 using namespace GITechDemoApp;
@@ -65,7 +86,7 @@ void PostProcessingPass::Update(const float fDeltaTime)
 }
 
 // Copy texture to the back buffer
-void PostProcessingPass::CopyResultToBackBuffer(LibRendererDll::RenderTarget* const rt)
+void PostProcessingPass::CopyResultToBackBuffer(Synesthesia3D::RenderTarget* const rt)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)

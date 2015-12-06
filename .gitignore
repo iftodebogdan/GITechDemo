@@ -20,8 +20,8 @@ bld/
 [Oo]bj/
 [Bb]in[Tt]emp/
 
-*.lrm
-*.lrt
+*.s3dmdl
+*.s3dtex
 
 *.vsasm
 *.psasm

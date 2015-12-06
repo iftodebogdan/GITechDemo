@@ -2,9 +2,9 @@
 #define MODELCOMPILER_H
 
 #include <ResourceData.h>
-using namespace LibRendererDll;
+using namespace Synesthesia3D;
 
-namespace LibRendererTools
+namespace Synesthesia3DTools
 {
 	class ModelCompiler
 	{
