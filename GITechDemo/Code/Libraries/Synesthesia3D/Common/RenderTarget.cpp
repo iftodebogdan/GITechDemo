@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		RenderTarget.cpp
  *
- *		File:	RenderTarget.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -27,7 +28,7 @@
 #include "ResourceManager.h"
 using namespace Synesthesia3D;
 
-RenderTarget* RenderTarget::ms_pActiveRenderTarget = nullptr;
+std::vector<RenderTarget*> RenderTarget::ms_pActiveRenderTarget;
 
 RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
@@ -45,10 +46,18 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(targetCount > 0);
+	//assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
 	//assert(pixelFormat != PF_NONE);
+
+	// DX9 restrictions prevent us from binding only a depth buffer
+	// so create a single color target with the FourCC NULL format.
+	if (m_nTargetCount <= 0)
+	{
+		m_nTargetCount = 1;
+		pixelFormat = PF_NONE;
+	}
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -86,10 +95,18 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(targetCount > 0);
+	//assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
 	//assert(pixelFormat != PF_NONE);
+
+	// DX9 restrictions prevent us from binding only a depth buffer
+	// so create a single color target with the FourCC NULL format.
+	if (m_nTargetCount <= 0)
+	{
+		m_nTargetCount = 1;
+		pixelFormat = PF_NONE;
+	}
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -114,7 +131,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 }
 
 RenderTarget::RenderTarget(const unsigned int targetCount,
-	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 	: m_nTargetCount(targetCount)
 	, m_nWidth(width)
@@ -130,10 +147,18 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(targetCount > 0);
+	//assert(targetCount > 0);
 	assert(targetCount <= 4);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
+
+	// DX9 restrictions prevent us from binding only a depth buffer
+	// so create a single color target with the FourCC NULL format.
+	if (m_nTargetCount <= 0)
+	{
+		m_nTargetCount = 1;
+		pixelFormatRT0 = PF_NONE;
+	}
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -145,16 +170,16 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 		switch (i)
 		{
 		case 0:
-			pf = PixelFormatRT0;
+			pf = pixelFormatRT0;
 			break;
 		case 1:
-			pf = PixelFormatRT1;
+			pf = pixelFormatRT1;
 			break;
 		case 2:
-			pf = PixelFormatRT2;
+			pf = pixelFormatRT2;
 			break;
 		case 3:
-			pf = PixelFormatRT3;
+			pf = pixelFormatRT3;
 		}
 
 		//assert(pf != PF_NONE);
@@ -175,7 +200,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 }
 
 RenderTarget::RenderTarget(const unsigned int targetCount,
-	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 	: m_nTargetCount(targetCount)
 	, m_nWidth(0)
@@ -191,10 +216,18 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(targetCount > 0);
+	//assert(targetCount > 0);
 	assert(targetCount <= 4);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
+
+	// DX9 restrictions prevent us from binding only a depth buffer
+	// so create a single color target with the FourCC NULL format.
+	if (m_nTargetCount <= 0)
+	{
+		m_nTargetCount = 1;
+		pixelFormatRT0 = PF_NONE;
+	}
 
 	m_nColorBufferTexIdx = new unsigned int[m_nTargetCount];
 	m_pColorBuffer = new Texture*[m_nTargetCount];
@@ -206,16 +239,16 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 		switch (i)
 		{
 		case 0:
-			pf = PixelFormatRT0;
+			pf = pixelFormatRT0;
 			break;
 		case 1:
-			pf = PixelFormatRT1;
+			pf = pixelFormatRT1;
 			break;
 		case 2:
-			pf = PixelFormatRT2;
+			pf = pixelFormatRT2;
 			break;
 		case 3:
-			pf = PixelFormatRT3;
+			pf = pixelFormatRT3;
 		}
 
 		assert(pf != PF_NONE);
@@ -323,20 +356,30 @@ const bool RenderTarget::HasDepthBuffer() const
 
 RenderTarget* RenderTarget::GetActiveRenderTarget()
 {
-	return ms_pActiveRenderTarget;
-}
-
-void RenderTarget::SetActiveRenderTarget(RenderTarget* const activeRenderTarget)
-{
-	ms_pActiveRenderTarget = activeRenderTarget;
+	if (ms_pActiveRenderTarget.size())
+		return ms_pActiveRenderTarget.back();
+	else
+		return nullptr;
 }
 
 void RenderTarget::Enable()
 {
-	SetActiveRenderTarget(this);
+	if(ms_pActiveRenderTarget.size() == 0 || ms_pActiveRenderTarget.back() != this)
+		ms_pActiveRenderTarget.push_back(this);
 }
 
 void RenderTarget::Disable()
 {
-	SetActiveRenderTarget(nullptr);
+	assert(GetActiveRenderTarget() == this);
+	if (GetActiveRenderTarget())
+		ms_pActiveRenderTarget.pop_back();
+	
+	// Set the last active render target
+	if(GetActiveRenderTarget())
+		GetActiveRenderTarget()->Enable();
+}
+
+const Vec2i RenderTarget::GetSize() const
+{
+	return Vec2i(GetWidth(), GetHeight());
 }

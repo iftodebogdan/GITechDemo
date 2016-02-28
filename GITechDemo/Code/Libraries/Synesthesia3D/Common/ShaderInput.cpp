@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		ShaderInput.cpp
  *
- *		File:	ShaderInput.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -492,6 +493,14 @@ const Matrix33f ShaderInput::GetMatrix3x3(const unsigned int handle, const unsig
 const Matrix44f ShaderInput::GetMatrix4x4(const unsigned int handle, const unsigned int idx) const
 {
 	return GetMatrix<float, 4, 4>(handle, idx);
+}
+
+Texture* const ShaderInput::GetTexture(const unsigned int handle) const
+{
+	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	const unsigned int texIdx = *(unsigned int*)(m_pData + desc.nOffsetInBytes);
+	return Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx);
 }
 
 void ShaderInput::SetTexture(const unsigned int handle, const unsigned int texIdx)

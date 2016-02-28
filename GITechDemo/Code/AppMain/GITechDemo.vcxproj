@@ -137,16 +137,20 @@
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Message>Update build timestamp</Message>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -167,16 +171,22 @@ echo.</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Update build timestamp</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -201,16 +211,20 @@ echo.</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Message>Update build timestamp</Message>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -235,16 +249,20 @@ echo.</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+      <Message>Update build timestamp</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <ClCompile>
@@ -270,16 +288,20 @@ echo.</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Message>Update build timestamp</Message>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
@@ -305,16 +327,20 @@ echo.</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd $(SolutionDir)..\..\Build\
+      <Command>cd "$(SolutionDir)..\..\Build\"
 echo.
-call python $(SolutionDir)..\..\Build\build_tools_win.py
+call python "$(SolutionDir)..\..\Build\build_tools_win.py"
 echo.
-call python $(SolutionDir)..\..\Build\build_data_win.py
+call python "$(SolutionDir)..\..\Build\build_data_win.py"
 echo.</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>del "$(IntDir)Timestamp.obj"</Command>
+      <Message>Update build timestamp</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.h" />
@@ -350,6 +376,7 @@ echo.</Command>
     <ClInclude Include="GITechDemo\Resources\RenderResourcesDef.h" />
     <ClInclude Include="Framework\Windows\stdafx.h" />
     <ClInclude Include="Framework\Windows\targetver.h" />
+    <ClInclude Include="Framework\Timestamp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\Windows\FrameworkWin.cpp" />
@@ -390,6 +417,7 @@ echo.</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Framework\Timestamp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Framework\Windows\Framework.rc">

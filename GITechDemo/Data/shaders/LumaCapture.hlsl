@@ -47,9 +47,6 @@ const sampler2D	texLumaInput;
 const bool bInitialLumaPass;
 const bool bFinalLumaPass;
 
-// The 1x1 texture with the target average luma value
-const sampler2D texLumaTarget;
-
 // Minimum and maximum values for average luma
 const float2 f2AvgLumaClamp;
 

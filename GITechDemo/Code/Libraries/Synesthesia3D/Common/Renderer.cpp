@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		Renderer.cpp
  *
- *		File:	Renderer.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -28,7 +29,7 @@
 
 #include "Utility/Mutex.h"
 
-#ifdef _WIN32
+#ifdef _WINDOWS
 #include "RendererDX9.h"
 #endif
 
@@ -40,7 +41,9 @@ Renderer* Renderer::ms_pInstance = nullptr;
 API Renderer::ms_eAPI = API_NONE;
 int Renderer::ms_nProfileMarkerCounter = 0;
 static bool bCounterMutexInit = false;
-static MUTEX mCounterMutex; // A mutex to guarantee thread-safety for ms_nProfileMarkerCounter
+
+// A mutex to guarantee thread-safety for ms_nProfileMarkerCounter
+static MUTEX gCounterMutex;
 
 Renderer::Renderer()
 	: m_vBackBufferOffset(0, 0)
@@ -51,7 +54,7 @@ Renderer::Renderer()
 	if (!bCounterMutexInit)
 	{
 		bCounterMutexInit = true;
-		MUTEX_INIT(mCounterMutex);
+		MUTEX_INIT(gCounterMutex);
 	}
 }
 
@@ -69,17 +72,17 @@ Renderer::~Renderer()
 	if (bCounterMutexInit)
 	{
 		bCounterMutexInit = false;
-		MUTEX_DESTROY(mCounterMutex);
+		MUTEX_DESTROY(gCounterMutex);
 	}
 }
 
-void Renderer::CreateInstance(API eApi)
+void Renderer::CreateInstance(API api)
 {
 	assert(ms_pInstance == nullptr);
 	if (ms_pInstance != nullptr)
 		return;
 
-	switch (eApi)
+	switch (api)
 	{
 		case API_DX9:
 			ms_pInstance = new RendererDX9;
@@ -182,15 +185,15 @@ const DeviceCaps Renderer::GetDeviceCaps() const
 
 void Renderer::PushProfileMarker(const char* const /*label*/)
 {
-	MUTEX_LOCK(mCounterMutex);
+	MUTEX_LOCK(gCounterMutex);
 	ms_nProfileMarkerCounter++;
-	MUTEX_UNLOCK(mCounterMutex);
+	MUTEX_UNLOCK(gCounterMutex);
 }
 
 void Renderer::PopProfileMarker()
 {
-	MUTEX_LOCK(mCounterMutex);
+	MUTEX_LOCK(gCounterMutex);
 	ms_nProfileMarkerCounter--;
 	assert(ms_nProfileMarkerCounter >= 0);
-	MUTEX_UNLOCK(mCounterMutex);
+	MUTEX_UNLOCK(gCounterMutex);
 }

@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		RendererDX9.cpp
  *
- *		File:	RendererDX9.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -163,7 +164,11 @@ void RendererDX9::CheckDeviceCaps()
 	m_tDeviceCaps.bSlopeScaledDepthBias = (deviceCaps.RasterCaps & D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS) != 0;
 	m_tDeviceCaps.bMipmapLodBias = (deviceCaps.RasterCaps & D3DPRASTERCAPS_MIPMAPLODBIAS) != 0;
 	m_tDeviceCaps.bWBuffer = (deviceCaps.RasterCaps & D3DPRASTERCAPS_WBUFFER) != 0;
-	m_tDeviceCaps.bTexturePow2 = (deviceCaps.TextureCaps & D3DPTEXTURECAPS_POW2) != 0;
+	m_tDeviceCaps.bTextureNPOT =
+		(deviceCaps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0 &&
+		(deviceCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL) == 0 &&
+		(deviceCaps.TextureCaps & D3DPTEXTURECAPS_VOLUMEMAP_POW2) == 0 &&
+		(deviceCaps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP_POW2) == 0;
 	m_tDeviceCaps.nMaxTextureWidth = deviceCaps.MaxTextureWidth;
 	m_tDeviceCaps.nMaxTextureHeight = deviceCaps.MaxTextureHeight;
 	m_tDeviceCaps.nMaxTextureDepth = deviceCaps.MaxVolumeExtent;
@@ -179,7 +184,7 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 	// Validate backbuffer format
 	D3DFORMAT validBBFmt = pp.BackBufferFormat;
 	int i = 0;
-	for (; i < ARRAYSIZE(BBFormats), BBFormats[i] != validBBFmt; i++); // END FOR
+	for (; i < ARRAYSIZE(BBFormats) && BBFormats[i] != validBBFmt; i++); // END FOR
 
 	// Can we get the desired back buffer format?
 	while (FAILED(m_pD3D->CheckDeviceType(D3DADAPTER_DEFAULT,
@@ -212,7 +217,7 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 		// Can we get the desired depth buffer format?
 		D3DFORMAT validDSFmt = pp.AutoDepthStencilFormat;
 		int i = 0;
-		for (; i < ARRAYSIZE(DSFormats), DSFormats[i] != validDSFmt; i++); // END FOR
+		for (; i < ARRAYSIZE(DSFormats) && DSFormats[i] != validDSFmt; i++); // END FOR
 
 		while (FAILED(m_pD3D->CheckDeviceFormat(D3DADAPTER_DEFAULT,
 			D3DDEVTYPE_HAL,
@@ -593,7 +598,7 @@ void RendererDX9::SwapBuffers()
 	POP_PROFILE_MARKER();
 }
 
-void RendererDX9::DrawVertexBuffer(VertexBuffer* vb)
+void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -630,7 +635,7 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
 		depthStencil->Release();
 	}
 
-	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_RGBA((DWORD)rgba[0], (DWORD)rgba[1], (DWORD)rgba[2], (DWORD)rgba[3]), z, stencil);
+	hr = m_pd3dDevice->Clear(0, NULL, flags, D3DCOLOR_COLORVALUE(rgba[0], rgba[1], rgba[2], rgba[3]), z, stencil);
 	assert(SUCCEEDED(hr));
 
 	POP_PROFILE_MARKER();

@@ -5,6 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
+*.VC.opendb
 
 # Build results
 [Dd]ebug/
@@ -14,15 +15,19 @@
 #build/
 bld/
 
+# Project-specific
 !/*/[Bb]uild/**
 /*/[Bb]uild/**/
 /*/[Bb]in/
 [Oo]bj/
 [Bb]in[Tt]emp/
+**/Doc/html/
 
+# Synesthesia3D files
 *.s3dmdl
 *.s3dtex
 
+# Shader microcode
 *.vsasm
 *.psasm
 

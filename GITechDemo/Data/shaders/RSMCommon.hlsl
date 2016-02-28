@@ -72,10 +72,6 @@ const float fRSMKernelScale;
 
 // For upsampling
 const sampler2D	texSource;		// The texture to be upsampled
-const bool bDebugUpscalePass;	// Shows pixels that could not be interpolated and need reshading
-
-// Set a threshold which controls the level of sensitivity of the edge detection.
-const float fWeightThreshold;
 
 void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 {

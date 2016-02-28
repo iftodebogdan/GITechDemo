@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		VertexFormat.cpp
  *
- *		File:	VertexFormat.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -29,16 +30,16 @@ using namespace Synesthesia3D;
 //This holds the size in bytes for each vertex attribute type
 const unsigned int VertexFormat::VertexAttributeTypeSize[VAT_MAX] =
 {
-	0,  // AT_NONE
-	4,  // AT_FLOAT1
-	8,  // AT_FLOAT2
-	12, // AT_FLOAT3
-	16, // AT_FLOAT4
-	4,  // AT_HALF2
-	8,  // AT_HALF4
-	4,  // AT_UBYTE4
-	4,  // AT_SHORT2
-	8   // AT_SHORT4
+	0,		// AT_NONE
+	4,		// AT_FLOAT1
+	8,		// AT_FLOAT2
+	12,		// AT_FLOAT3
+	16,		// AT_FLOAT4
+	4,		// AT_HALF2
+	8,		// AT_HALF4
+	4,		// AT_UBYTE4
+	4,		// AT_SHORT2
+	8		// AT_SHORT4
 };
 
 VertexFormat::VertexFormat(const unsigned int attributeCount)

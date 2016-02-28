@@ -51,8 +51,8 @@ const sampler2D	texDepthBuffer;		// Depth values
 const sampler2D	texMaterialBuffer;	// Roughness and material type (metallic/dielectric)
 
 #define ENVIRONMENT_MAP_MIP_COUNT	(9)
-const samplerCUBE texIrradianceMap;	// Irradiance map for Cook-Torrance BRDF
-const samplerCUBE texEnvMap;		// Environment map for Cook-Torrance BRDF
+const samplerCUBE	texIrradianceMap;	// Irradiance map for Cook-Torrance BRDF
+const samplerCUBE	texEnvMap;		// Environment map for Cook-Torrance BRDF
 
 const sampler2D	texShadowMap;			// Cascaded shadow maps
 const float2	f2OneOverShadowMapSize;	// 1 / shadow map width/height
@@ -60,8 +60,8 @@ const float2	f2OneOverShadowMapSize;	// 1 / shadow map width/height
 const float	fDiffuseFactor;		// Scale value for diffuse light
 const float	fSpecFactor;		// Scale value for specular light
 const float	fAmbientFactor;		// Scale value for ambient light
-const float fIrradianceFactor;	// Scale value for irradiance (Cook-Torrance BRDF only)
-const float fReflectionFactor;	// Scale value for reflected light (Cook-Torrance BRDF only)
+const float	fIrradianceFactor;	// Scale value for irradiance (Cook-Torrance BRDF only)
+const float	fReflectionFactor;	// Scale value for reflected light (Cook-Torrance BRDF only)
 
 const float4x4	f44ViewMat;		// View matrix
 const float4x4	f44InvViewMat;	// The inverse view matrix
@@ -87,6 +87,8 @@ const float4x4	f44ScreenToLightViewMat;	// Composite matrix for transforming scr
 #define COOK_TORRANCE_GGX (1)
 #define COOK_TORRANCE_BECKMANN (2)
 const unsigned int nBRDFModel;
+
+const bool	bDebugCascades;	// Visual cascade debug option
 
 float3 BlinnPhong(const float3 f3DiffuseColor, const float fSpecularPower, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);

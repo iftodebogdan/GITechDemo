@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		Buffer.cpp
  *
- *		File:	Buffer.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -38,6 +39,8 @@ Buffer::Buffer(const unsigned int elementCount, const unsigned int elementSize, 
 
 	// In order to save some memory, do not allocate render target data in main
 	// memory, unless it is actually required (e.g. RenderTarget::CopyColorBuffer() )
+	// The render target's shadow copy will be initialized when calling
+	// Texture::GetMipData() for the first time.
 	if (elementCount > 0 && elementSize > 0 && usage != BU_RENDERTAGET)
 	{
 		m_pData = new byte[m_nSize];

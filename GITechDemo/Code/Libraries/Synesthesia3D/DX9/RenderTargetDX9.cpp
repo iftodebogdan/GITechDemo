@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		RenderTargetDX9.cpp
  *
- *		File:	RenderTargetDX9.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -27,13 +28,14 @@
 #include "MappingsDX9.h"
 using namespace Synesthesia3D;
 
+IDirect3DSurface9* RenderTargetDX9::ms_pBBColorSurfBkp = nullptr;
+IDirect3DSurface9* RenderTargetDX9::ms_pBBDepthSurfBkp = nullptr;
+
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 	: RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
-	, m_pColorSurfaceBackup(nullptr)
-	, m_pDepthSurfaceBackup(nullptr)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -63,8 +65,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 	: RenderTarget(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat)
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
-	, m_pColorSurfaceBackup(nullptr)
-	, m_pDepthSurfaceBackup(nullptr)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -90,13 +90,11 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
-	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
-	: RenderTarget(targetCount, PixelFormatRT0, PixelFormatRT1, PixelFormatRT2, PixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
-	, m_pColorSurfaceBackup(nullptr)
-	, m_pDepthSurfaceBackup(nullptr)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -122,13 +120,11 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
-	PixelFormat PixelFormatRT0, PixelFormat PixelFormatRT1, PixelFormat PixelFormatRT2, PixelFormat PixelFormatRT3,
+	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
-	: RenderTarget(targetCount, PixelFormatRT0, PixelFormatRT1, PixelFormatRT2, PixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat)
+	: RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat)
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
-	, m_pColorSurfaceBackup(nullptr)
-	, m_pDepthSurfaceBackup(nullptr)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -172,20 +168,26 @@ void RenderTargetDX9::Enable()
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(m_pColorSurfaceBackup == nullptr);
-	assert(m_pDepthSurfaceBackup == nullptr);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
-	hr = device->GetDepthStencilSurface(&m_pDepthSurfaceBackup);
-	assert(SUCCEEDED(hr));
 
-	hr = device->GetRenderTarget(0, &m_pColorSurfaceBackup);
-	assert(SUCCEEDED(hr));
-
-	for (unsigned int i = 0; i < m_nTargetCount; i++)
+	// Make a backup copy of the pointers to the
+	// backbuffer's color and depth surfaces.
+	if (!GetActiveRenderTarget())
 	{
-		hr = device->SetRenderTarget((DWORD)i, m_pColorSurface[i]);
+		hr = device->GetRenderTarget(0, &ms_pBBColorSurfBkp);
+		assert(SUCCEEDED(hr));
+
+		hr = device->GetDepthStencilSurface(&ms_pBBDepthSurfBkp);
+		assert(SUCCEEDED(hr));
+	}
+
+	for (unsigned int i = 0; i < Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs; i++)
+	{
+		if (i < m_nTargetCount)
+			hr = device->SetRenderTarget((DWORD)i, m_pColorSurface[i]);
+		else
+			hr = device->SetRenderTarget((DWORD)i, 0);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -202,44 +204,45 @@ void RenderTargetDX9::Disable()
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	assert(m_pColorSurfaceBackup);
-	assert(m_pDepthSurfaceBackup);
-
-	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr;
-
-	// This call restores the viewport automatically
-	hr = device->SetRenderTarget(0, m_pColorSurfaceBackup);
-	assert(SUCCEEDED(hr));
-
-	unsigned int refCount = 0;
-	if(m_pColorSurfaceBackup)
-		refCount = m_pColorSurfaceBackup->Release();
-	assert(refCount == 0);
-	m_pColorSurfaceBackup = nullptr;
-
-	for (unsigned int i = 1; i < m_nTargetCount; i++)
-	{
-		hr = device->SetRenderTarget((DWORD)i, 0);
-		assert(SUCCEEDED(hr));
-	}
-
-	hr = device->SetDepthStencilSurface(m_pDepthSurfaceBackup);
-	assert(SUCCEEDED(hr));
-
-	if(m_pDepthSurfaceBackup)
-		refCount = m_pDepthSurfaceBackup->Release();
-	assert(refCount == 0);
-	m_pDepthSurfaceBackup = nullptr;
-
 	RenderTarget::Disable();
+
+	if (!GetActiveRenderTarget())
+	{
+		// No more render targets on the stack, set the back buffer
+		IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+		HRESULT hr;
+
+		// This call restores the viewport automatically
+		hr = device->SetRenderTarget(0, ms_pBBColorSurfBkp);
+		assert(SUCCEEDED(hr));
+
+		unsigned int refCount = 0;
+		if (ms_pBBColorSurfBkp)
+			refCount = ms_pBBColorSurfBkp->Release();
+		assert(refCount == 0);
+		ms_pBBColorSurfBkp = nullptr;
+
+		for (unsigned int i = 1; i < Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs; i++)
+		{
+			hr = device->SetRenderTarget((DWORD)i, 0);
+			assert(SUCCEEDED(hr));
+		}
+
+		hr = device->SetDepthStencilSurface(ms_pBBDepthSurfBkp);
+		assert(SUCCEEDED(hr));
+
+		if (ms_pBBDepthSurfBkp)
+			refCount = ms_pBBDepthSurfBkp->Release();
+		assert(refCount == 0);
+		ms_pBBDepthSurfBkp = nullptr;
+	}
 
 	POP_PROFILE_MARKER();
 }
 
 void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture)
 {
-	assert(m_pColorSurfaceBackup == nullptr);
+	assert(ms_pBBColorSurfBkp == nullptr);
 	assert(colorBufferIdx >= 0 && colorBufferIdx < m_nTargetCount);
 	if (colorBufferIdx < 0 && colorBufferIdx >= m_nTargetCount)
 		return;
@@ -262,7 +265,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	// Back up our current render target, if required
 	if (colorBufferIdx == 0)
 	{
-		hr = device->GetRenderTarget(0, &m_pColorSurfaceBackup);
+		hr = device->GetRenderTarget(0, &ms_pBBColorSurfBkp);
 		assert(SUCCEEDED(hr));
 	}
 	
@@ -308,11 +311,11 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	// Restore previous RT, if necesary
 	if (colorBufferIdx == 0)
 	{
-		hr = device->SetRenderTarget(0, m_pColorSurfaceBackup);
+		hr = device->SetRenderTarget(0, ms_pBBColorSurfBkp);
 		assert(SUCCEEDED(hr));
-		if(m_pColorSurfaceBackup)
-			m_pColorSurfaceBackup->Release();
-		m_pColorSurfaceBackup = nullptr;
+		if(ms_pBBColorSurfBkp)
+			ms_pBBColorSurfBkp->Release();
+		ms_pBBColorSurfBkp = nullptr;
 	}
 
 	//for (unsigned int i = 0, n = texture->GetMipCount(); i < n; i++)
@@ -361,16 +364,16 @@ void RenderTargetDX9::Unbind()
 
 	unsigned int refCount = 0;
 
-	if (m_pColorSurfaceBackup)
+	if (ms_pBBColorSurfBkp)
 	{
-		m_pColorSurfaceBackup->Release();
-		m_pColorSurfaceBackup = nullptr;
+		ms_pBBColorSurfBkp->Release();
+		ms_pBBColorSurfBkp = nullptr;
 	}
 
-	if (m_pDepthSurfaceBackup)
+	if (ms_pBBDepthSurfBkp)
 	{
-		m_pDepthSurfaceBackup->Release();
-		m_pDepthSurfaceBackup = nullptr;
+		ms_pBBDepthSurfBkp->Release();
+		ms_pBBDepthSurfBkp = nullptr;
 	}
 
 	for (unsigned int i = 0; i < m_nTargetCount; i++)

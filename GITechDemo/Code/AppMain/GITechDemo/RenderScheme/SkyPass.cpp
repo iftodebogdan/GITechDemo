@@ -69,7 +69,7 @@ void SkyPass::CreateSkyBoxVB()
 
 	const unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(36);
 	IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
-	const unsigned int sbIndices[] = {
+	const unsigned short sbIndices[] = {
 		0, 1, 2, 2, 1, 3,	// front
 		5, 4, 7, 7, 4, 6,	// back
 		4, 0, 6, 6, 0, 2,	// left

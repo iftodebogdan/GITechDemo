@@ -136,6 +136,9 @@
     <ClInclude Include="Framework\Windows\stdafx.h">
       <Filter>Framework\Windows\Precompiled Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Framework\Timestamp.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -230,6 +233,9 @@
     </ClCompile>
     <ClCompile Include="Framework\Windows\stdafx.cpp">
       <Filter>Framework\Windows\Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Timestamp.cpp">
+      <Filter>Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

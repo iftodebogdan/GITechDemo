@@ -95,7 +95,6 @@ void SSAOPass::CalculateSSAO()
 		0.5f / GBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / GBuffer.GetRenderTarget()->GetHeight()
 		);
-	bBlurPass = false;
 
 	SsaoShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -180,7 +179,7 @@ void SSAOPass::ApplySSAO()
 
 	PUSH_PROFILE_MARKER("Apply");
 
-	LightAccumulationBuffer.Enable();
+	//LightAccumulationBuffer.Enable();
 
 	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
 	const Blend dstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
@@ -210,7 +209,7 @@ void SSAOPass::ApplySSAO()
 	RenderContext->GetRenderStateManager()->SetColorSrcBlend(srcBlend);
 	RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
 
-	LightAccumulationBuffer.Disable();
+	//LightAccumulationBuffer.Disable();
 
 	POP_PROFILE_MARKER();
 }
@@ -220,13 +219,13 @@ void SSAOPass::Draw()
 	if (!SSAO_ENABLED)
 		return;
 
-	Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
-	if (pCurrRT)
-		pCurrRT->Disable();
+	//Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
+	//if (pCurrRT)
+	//	pCurrRT->Disable();
 
 	CalculateSSAO();
 	BlurSSAO();
 	ApplySSAO();
 
-	pCurrRT->Enable();
+	//pCurrRT->Enable();
 }

@@ -44,6 +44,11 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texDepthBuffer;	// G-Buffer depth values
 
+// Set a threshold which controls the level of sensitivity of the edge detection.
+const float fWeightThreshold;
+
+const bool bDebugUpscalePass;	// Shows pixels that could not be interpolated and need reshading
+
 bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut);
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)

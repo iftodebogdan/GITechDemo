@@ -22,7 +22,6 @@
 #include "Common.hlsl"
 
 #define	NUM_CASCADES (4)		// Number of supported cascades
-const bool		bDebugCascades;	// Visual cascade debug option
 const float2	f2CascadeBoundsMin[NUM_CASCADES];	// Light-view space AABBs corresponding
 const float2	f2CascadeBoundsMax[NUM_CASCADES];	// to each shadow cascade
 const float4x4	f44CascadeProjMat[NUM_CASCADES];	// light space projection matrix

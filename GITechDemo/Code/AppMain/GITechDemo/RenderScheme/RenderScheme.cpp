@@ -60,7 +60,7 @@ CREATE_ROOT_PASS()
 		#include "DirectionalLightPass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light Pass", LIGHTING_PASS)
 	
-		// Screen space ambient occlusion (done here so as no to affect indirect and volumetric lights)
+		// Screen space ambient occlusion (done here so as not to affect indirect and volumetric lights)
 		#include "SSAOPass.h"
 		ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO Pass", LIGHTING_PASS)
 	

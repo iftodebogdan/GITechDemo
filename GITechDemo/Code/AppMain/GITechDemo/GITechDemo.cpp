@@ -66,7 +66,7 @@ namespace GITechDemoApp
 
 	bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
 
-	Perlin PerlinNoise(1, USHRT_MAX, 1, (int)time(NULL));
+	Perlin PerlinNoise(1, 0.01f, 1.f, (int)time(NULL));
 
 	extern AABoxf SceneAABB;
 
@@ -244,7 +244,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 
 			unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
 			IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
-			const unsigned int fsqIndices[] = { 0, 1, 2 };
+			const unsigned short fsqIndices[] = { 0, 1, 2 };
 			ib->SetIndices(fsqIndices, 3);
 
 			unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
@@ -284,97 +284,93 @@ void GITechDemo::Update(const float fDeltaTime)
 	if (FULLSCREEN_RESOLUTION_X > m_fLastFrameResX)
 	{
 		// X resolution increased
-		int maxResX = 0;
-		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		FULLSCREEN_RESOLUTION_X = INT_MAX;
+		FULLSCREEN_RESOLUTION_Y = INT_MAX;
 		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
 		{
 			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > maxResX)
-					maxResX = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-
-				if (maxResX > m_fLastFrameResX)
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > m_fLastFrameResX &&
+					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth <= FULLSCREEN_RESOLUTION_X)
 				{
-					FULLSCREEN_RESOLUTION_X = maxResX;
-					FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
-					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
-					break;
+					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
 				}
 			}
+		}
+		if(FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
+		{
+			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
 		}
 	}
 	else if (FULLSCREEN_RESOLUTION_X < m_fLastFrameResX)
 	{
 		// X resolution decreased
-		int minResX = INT_MAX;
-		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
-		for (int i = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size() - 1; i >= 0; i--)
+		FULLSCREEN_RESOLUTION_X = 0;
+		FULLSCREEN_RESOLUTION_Y = 0;
+		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
 		{
 			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth < minResX)
-					minResX = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-
-				if (minResX < m_fLastFrameResX)
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth < m_fLastFrameResX &&
+					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth >= FULLSCREEN_RESOLUTION_X)
 				{
-					FULLSCREEN_RESOLUTION_X = minResX;
-					FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
-					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
-					break;
+					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
 				}
 			}
+		}
+		if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+		{
+			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
 		}
 	}
 	else if (FULLSCREEN_RESOLUTION_Y > m_fLastFrameResY)
 	{
 		// Y resolution increased
-		int maxResY = 0;
-		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
+		FULLSCREEN_RESOLUTION_X = INT_MAX;
+		FULLSCREEN_RESOLUTION_Y = INT_MAX;
 		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
 		{
 			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > maxResY)
-					maxResY = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-
-				if (maxResY > m_fLastFrameResY)
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > m_fLastFrameResY &&
+					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight <= FULLSCREEN_RESOLUTION_Y)
 				{
-					FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = maxResY;
-					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
-					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
-					break;
+					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
 				}
 			}
+		}
+		if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
+		{
+			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
 		}
 	}
 	else if (FULLSCREEN_RESOLUTION_Y < m_fLastFrameResY)
 	{
 		// Y resolution decreased
-		int minResY = INT_MAX;
-		FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-		FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we don't find another suitable one
-		for (int i = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size() - 1; i >= 0; i--)
+		FULLSCREEN_RESOLUTION_X = 0;
+		FULLSCREEN_RESOLUTION_Y = 0;
+		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
 		{
 			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight < minResY)
-					minResY = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-
-				if (minResY < m_fLastFrameResY)
+				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight < m_fLastFrameResY &&
+					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight >= FULLSCREEN_RESOLUTION_Y)
 				{
-					FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = minResY;
-					m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
-					m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
-					break;
+					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
+					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
 				}
 			}
+		}
+		if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+		{
+			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
+			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
 		}
 	}
 
@@ -384,6 +380,9 @@ void GITechDemo::Update(const float fDeltaTime)
 			FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
 			Vec2i(0, 0),
 			FULLSCREEN_ENABLED);
+
+	m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
+	m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
 
 	// Handle user input
 	unsigned int cmd = APP_CMD_NONE;
@@ -506,12 +505,11 @@ void GITechDemo::Update(const float fDeltaTime)
 			if (lastInput > CAMERA_ANIMATION_TIMEOUT_SECONDS)
 			{
 				static float time = 0.f;
-				const float periodPos = 5000000.f;
 				time += fDeltaTime;
 				Vec3f perlinPos(
-					PerlinNoise.Get(time / periodPos, 0.f),
-					PerlinNoise.Get(0.f, time / periodPos),
-					PerlinNoise.Get(time / periodPos, time / periodPos));
+					PerlinNoise.Get(time, 0.f),
+					PerlinNoise.Get(0.f, time),
+					PerlinNoise.Get(time, time));
 				perlinPos[0] = perlinPos[0] + 1.f / 2.f;
 				perlinPos[1] = perlinPos[1] + 1.f / 2.f;
 				perlinPos[2] = perlinPos[2] + 1.f / 2.f;
@@ -552,8 +550,8 @@ void GITechDemo::Update(const float fDeltaTime)
 	{
 		static float time = 0.f;
 		time += fDeltaTime;
-		float noiseX = PerlinNoise.Get(time * 1000.f / (float)INT_MAX, 0);
-		float noiseZ = PerlinNoise.Get(0, time * 1000.f / (float)INT_MAX);
+		float noiseX = PerlinNoise.Get(time, 0);
+		float noiseZ = PerlinNoise.Get(0, time);
 		((Vec3f&)f3LightDir)[0] = noiseX;
 		((Vec3f&)f3LightDir)[2] = noiseZ;
 		((Vec3f&)f3LightDir)[1] = -1.f;

@@ -51,7 +51,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////
 #define			OFFSET_RAY_SAMPLES		// If defined, scatter multiple ray samples across grid of INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE pixels
 #define			USE_BAYER_MATRIX		// If defined, sample grid offsets from texture, else use procedurally generated values
-#define			FOG_DENSITY_MAP			// If defined, use 3D noise texture as a fog density map
+//#define			FOG_DENSITY_MAP			// If defined, use 3D noise texture as a fog density map
 
 const int		nSampleCount;			// Number of samples along ray
 const float		fLightIntensity;		// Intensity of the effect when in direct light
@@ -104,9 +104,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float3 f3RayPositionLightVS = f4RayPositionLightVS.xyz * rcp(f4RayPositionLightVS.w);
 
 	// Reduce noisiness by truncating the starting position
-	const float3 f3Ray = trunc(f3CameraPositionLightVS - f3RayPositionLightVS);
+	const float3 f3Ray = f3CameraPositionLightVS - f3RayPositionLightVS;
 	const float3 f3RayDir = normalize(f3Ray);
-	const float fRaymarchDistance = clamp(length(f3Ray), 0.f, fRaymarchDistanceLimit);
+	const float fRaymarchDistance = trunc(clamp(length(f3Ray), 0.f, fRaymarchDistanceLimit));
 
 	// Calculate the size of each step
 	const float fStepSize = fRaymarchDistance * rcp((float)nSampleCount);
@@ -124,7 +124,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float fRayStartOffset = 0.f;
 #endif // OFFSET_RAY_SAMPLES
 
-	f3RayPositionLightVS += fRayStartOffset * f3RayDir;
+	// They ray starting position has changed if the raymarch distance was clamped and must be updated.
+	//f3RayPositionLightVS += fRayStartOffset * f3RayDir;
+	f3RayPositionLightVS = f3CameraPositionLightVS + f3RayDir * (fRayStartOffset - fRaymarchDistance);
 
 	// Calculate ray position in fog texture space for fog effect.
 	// NB: Avoid doing matrix multiplication inside 'for' loop. Rather, march along ray in world space in parallel.

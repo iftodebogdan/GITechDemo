@@ -180,7 +180,7 @@ void ArtistParameterManager::Update()
 		{
 			sprintf_s(szTempBuffer, "Current: %s", *(bool*)pCurrAP->pParam ? "True" : "False");
 			HUD_PASS.PrintLn(szTempBuffer);
-			sprintf_s(szTempBuffer, "Step:     Negate", fStep);
+			sprintf_s(szTempBuffer, "Step:     Negate");
 			HUD_PASS.PrintLn(szTempBuffer);
 
 			if (cmd & (APM_CMD_STEP_UP | APM_CMD_STEP_DOWN))

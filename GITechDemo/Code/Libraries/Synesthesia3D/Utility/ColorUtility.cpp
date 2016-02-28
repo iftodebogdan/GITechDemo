@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		ColorUtility.cpp
  *
- *		File:	ColorUtility.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -157,10 +158,10 @@ void ColorUtility::ConvertFromR5G6B5(const byte * const inData, Vec4f * const ou
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
-		(*texel)[2] = (float)(((*src & 0x001F) << 3) | ((*src & 0x001F) >> 2));
-		(*texel)[1] = (float)(((*src & 0x07E0) >> 3) | ((*src & 0x07E0) >> 9));
-		(*texel)[0] = (float)(((*src & 0xF800) >> 8) | ((*src & 0xF800) >> 11 >> 2));
-		(*texel)[3] = 255.f;
+		(*texel)[2] = (float)(((*src & 0x001F) << 3) | ((*src & 0x001F) >> 2)) / 31.f;
+		(*texel)[1] = (float)(((*src & 0x07E0) >> 3) | ((*src & 0x07E0) >> 9)) / 63.f;
+		(*texel)[0] = (float)(((*src & 0xF800) >> 8) | ((*src & 0xF800) >> 11 >> 2)) / 31.f;
+		(*texel)[3] = 1.f;
 	}
 }
 
@@ -171,9 +172,9 @@ void ColorUtility::ConvertFromA1R5G5B5(const byte * const inData, Vec4f * const 
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
-		(*texel)[2] = (float)(((*src & 0x001F) << 3) | ((*src & 0x001F) >> 2));
-		(*texel)[1] = (float)(((*src & 0x03E0) >> 2) | ((*src & 0x07E0) >> 7));
-		(*texel)[0] = (float)(((*src & 0x7C00) >> 7) | ((*src & 0xF800) >> 12));
+		(*texel)[2] = (float)(((*src & 0x001F) << 3) | ((*src & 0x001F) >> 2)) / 31.f;
+		(*texel)[1] = (float)(((*src & 0x03E0) >> 2) | ((*src & 0x07E0) >> 7)) / 31.f;
+		(*texel)[0] = (float)(((*src & 0x7C00) >> 7) | ((*src & 0xF800) >> 12)) / 31.f;
 		(*texel)[3] = (float)((*src & 0x8000) >> 15);
 	}
 }
@@ -185,10 +186,10 @@ void ColorUtility::ConvertFromA4R4G4B4(const byte * const inData, Vec4f * const 
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
-		(*texel)[2] = (float)(((*src & 0x000F) << 4) | (*src & 0x000F));
-		(*texel)[1] = (float)((*src & 0x00F0) | ((*src & 0x00F0) >> 4));
-		(*texel)[0] = (float)(((*src & 0x0F00) >> 4) | ((*src & 0x0F00) >> 8));
-		(*texel)[3] = (float)(((*src & 0xF000) >> 8) | ((*src & 0xF000) >> 12));
+		(*texel)[2] = (float)(((*src & 0x000F) << 4) | (*src & 0x000F)) / 15.f;
+		(*texel)[1] = (float)((*src & 0x00F0) | ((*src & 0x00F0) >> 4)) / 15.f;
+		(*texel)[0] = (float)(((*src & 0x0F00) >> 4) | ((*src & 0x0F00) >> 8)) / 15.f;
+		(*texel)[3] = (float)(((*src & 0xF000) >> 8) | ((*src & 0xF000) >> 12)) / 15.f;
 	}
 }
 
@@ -199,10 +200,10 @@ void ColorUtility::ConvertFromA8(const byte * const inData, Vec4f * const outRGB
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[0] = 0.0f;
-		(*texel)[1] = 0.0f;
-		(*texel)[2] = 0.0f;
-		(*texel)[3] = (float)(*src++);
+		(*texel)[0] = 1.0f;
+		(*texel)[1] = 1.0f;
+		(*texel)[2] = 1.0f;
+		(*texel)[3] = (float)(*src++) / 255.f;
 	}
 }
 
@@ -214,10 +215,10 @@ void ColorUtility::ConvertFromL8(const byte * const inData, Vec4f * const outRGB
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
 		float luminance = (float)(*src++);
-		(*texel)[0] = luminance;
-		(*texel)[1] = luminance;
-		(*texel)[2] = luminance;
-		(*texel)[3] = 255.0f;
+		(*texel)[0] = luminance / 255.f;
+		(*texel)[1] = luminance / 255.f;
+		(*texel)[2] = luminance / 255.f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -230,10 +231,10 @@ void ColorUtility::ConvertFromA8L8(const byte * const inData, Vec4f * const outR
 	{
 		float luminance = (float)(*src++);
 		float alpha = (float)(*src++);
-		(*texel)[0] = luminance;
-		(*texel)[1] = luminance;
-		(*texel)[2] = luminance;
-		(*texel)[3] = alpha;
+		(*texel)[0] = luminance / 255.f;
+		(*texel)[1] = luminance / 255.f;
+		(*texel)[2] = luminance / 255.f;
+		(*texel)[3] = alpha / 255.f;
 	}
 }
 
@@ -244,10 +245,10 @@ void ColorUtility::ConvertFromR8G8B8(const byte * const inData, Vec4f * const ou
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[2] = (float)(*src++);
-		(*texel)[1] = (float)(*src++);
-		(*texel)[0] = (float)(*src++);
-		(*texel)[3] = 255.0f;
+		(*texel)[2] = (float)(*src++) / 255.f;
+		(*texel)[1] = (float)(*src++) / 255.f;
+		(*texel)[0] = (float)(*src++) / 255.f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -258,10 +259,10 @@ void ColorUtility::ConvertFromA8R8G8B8(const byte * const inData, Vec4f * const 
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[2] = (float)(*src++);
-		(*texel)[1] = (float)(*src++);
-		(*texel)[0] = (float)(*src++);
-		(*texel)[3] = (float)(*src++);
+		(*texel)[2] = (float)(*src++) / 255.f;
+		(*texel)[1] = (float)(*src++) / 255.f;
+		(*texel)[0] = (float)(*src++) / 255.f;
+		(*texel)[3] = (float)(*src++) / 255.f;
 	}
 }
 
@@ -272,10 +273,10 @@ void ColorUtility::ConvertFromA8B8G8R8(const byte * const inData, Vec4f * const 
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[0] = (float)(*src++);
-		(*texel)[1] = (float)(*src++);
-		(*texel)[2] = (float)(*src++);
-		(*texel)[3] = (float)(*src++);
+		(*texel)[0] = (float)(*src++) / 255.f;
+		(*texel)[1] = (float)(*src++) / 255.f;
+		(*texel)[2] = (float)(*src++) / 255.f;
+		(*texel)[3] = (float)(*src++) / 255.f;
 	}
 }
 
@@ -287,10 +288,10 @@ void ColorUtility::ConvertFromL16(const byte * const inData, Vec4f * const outRG
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
 		float luminance = (float)(*src++);
-		(*texel)[0] = luminance;
-		(*texel)[1] = luminance;
-		(*texel)[2] = luminance;
-		(*texel)[3] = 65535.0f;
+		(*texel)[0] = luminance / 65535.0f;
+		(*texel)[1] = luminance / 65535.0f;
+		(*texel)[2] = luminance / 65535.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -301,10 +302,10 @@ void ColorUtility::ConvertFromG16R16(const byte * const inData, Vec4f * const ou
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[0] = (float)(*src++);
-		(*texel)[1] = (float)(*src++);
+		(*texel)[0] = (float)(*src++) / 65535.0f;
+		(*texel)[1] = (float)(*src++) / 65535.0f;
 		(*texel)[2] = 0.0f;
-		(*texel)[3] = 0.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -315,10 +316,10 @@ void ColorUtility::ConvertFromA16B16G16R16(const byte * const inData, Vec4f * co
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
-		(*texel)[0] = (float)(*src++);
-		(*texel)[1] = (float)(*src++);
-		(*texel)[2] = (float)(*src++);
-		(*texel)[3] = (float)(*src++);
+		(*texel)[0] = (float)(*src++) / 65535.0f;
+		(*texel)[1] = (float)(*src++) / 65535.0f;
+		(*texel)[2] = (float)(*src++) / 65535.0f;
+		(*texel)[3] = (float)(*src++) / 65535.0f;
 	}
 }
 
@@ -332,7 +333,7 @@ void ColorUtility::ConvertFromR16F(const byte * const inData, Vec4f * const outR
 		(*texel)[0] = *src++;
 		(*texel)[1] = 0.0f;
 		(*texel)[2] = 0.0f;
-		(*texel)[3] = 0.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -346,7 +347,7 @@ void ColorUtility::ConvertFromG16R16F(const byte * const inData, Vec4f * const o
 		(*texel)[0] = *src++;
 		(*texel)[1] = *src++;
 		(*texel)[2] = 0.0f;
-		(*texel)[3] = 0.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -374,7 +375,7 @@ void ColorUtility::ConvertFromR32F(const byte * const inData, Vec4f * const outR
 		(*texel)[0] = *src++;
 		(*texel)[1] = 0.0f;
 		(*texel)[2] = 0.0f;
-		(*texel)[3] = 0.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -388,7 +389,7 @@ void ColorUtility::ConvertFromG32R32F(const byte * const inData, Vec4f * const o
 		(*texel)[0] = *src++;
 		(*texel)[1] = *src++;
 		(*texel)[2] = 0.0f;
-		(*texel)[3] = 0.0f;
+		(*texel)[3] = 1.0f;
 	}
 }
 
@@ -462,28 +463,28 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 						switch (encodedColor)
 						{
 						case 0:
-							outRGBA[idx][0] = r0;
-							outRGBA[idx][1] = g0;
-							outRGBA[idx][2] = b0;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r0 / 255.f;
+							outRGBA[idx][1] = g0 / 255.f;
+							outRGBA[idx][2] = b0 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 1:
-							outRGBA[idx][0] = r1;
-							outRGBA[idx][1] = g1;
-							outRGBA[idx][2] = b1;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r1 / 255.f;
+							outRGBA[idx][1] = g1 / 255.f;
+							outRGBA[idx][2] = b1 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 2:
-							outRGBA[idx][0] = r2;
-							outRGBA[idx][1] = g2;
-							outRGBA[idx][2] = b2;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r2 / 255.f;
+							outRGBA[idx][1] = g2 / 255.f;
+							outRGBA[idx][2] = b2 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 3:
-							outRGBA[idx][0] = r3;
-							outRGBA[idx][1] = g3;
-							outRGBA[idx][2] = b3;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r3 / 255.f;
+							outRGBA[idx][1] = g3 / 255.f;
+							outRGBA[idx][2] = b3 / 255.f;
+							outRGBA[idx][3] = 1.f;
 						}
 					}
 			}
@@ -523,22 +524,22 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 						switch (encodedColor)
 						{
 						case 0:
-							outRGBA[idx][0] = r0;
-							outRGBA[idx][1] = g0;
-							outRGBA[idx][2] = b0;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r0 / 255.f;
+							outRGBA[idx][1] = g0 / 255.f;
+							outRGBA[idx][2] = b0 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 1:
-							outRGBA[idx][0] = r1;
-							outRGBA[idx][1] = g1;
-							outRGBA[idx][2] = b1;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r1 / 255.f;
+							outRGBA[idx][1] = g1 / 255.f;
+							outRGBA[idx][2] = b1 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 2:
-							outRGBA[idx][0] = r2;
-							outRGBA[idx][1] = g2;
-							outRGBA[idx][2] = b2;
-							outRGBA[idx][3] = 255.f;
+							outRGBA[idx][0] = r2 / 255.f;
+							outRGBA[idx][1] = g2 / 255.f;
+							outRGBA[idx][2] = b2 / 255.f;
+							outRGBA[idx][3] = 1.f;
 							break;
 						case 3:
 							outRGBA[idx][0] = 0.f;
@@ -568,9 +569,9 @@ void ColorUtility::ConvertToR5G6B5(const Vec4f * const inRGBA, byte * const outD
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)(*src)[0] >> 3;
-		word g = (word)(*src)[1] >> 2;
-		word b = (word)(*src)[2] >> 3;
+		word r = (word)((*src)[0] * 31.f) >> 3;
+		word g = (word)((*src)[1] * 63.f) >> 2;
+		word b = (word)((*src)[2] * 31.f) >> 3;
 		*texel++ = b | (g << 5) | (r << 11);
 	}
 }
@@ -582,9 +583,9 @@ void ColorUtility::ConvertToA1R5G5B5(const Vec4f * const inRGBA, byte * const ou
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)(*src)[0];
-		word g = (word)(*src)[1];
-		word b = (word)(*src)[2];
+		word r = (word)((*src)[0] * 31.f);
+		word g = (word)((*src)[1] * 31.f);
+		word b = (word)((*src)[2] * 31.f);
 		word a = (word)(*src)[3];
 		*texel++ = b | (g << 5) | (r << 10) | (a << 15);
 	}
@@ -597,10 +598,10 @@ void ColorUtility::ConvertToA4R4G4B4(const Vec4f * const inRGBA, byte * const ou
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)(*src)[0];
-		word g = (word)(*src)[1];
-		word b = (word)(*src)[2];
-		word a = (word)(*src)[3];
+		word r = (word)((*src)[0] * 15.f);
+		word g = (word)((*src)[1] * 15.f);
+		word b = (word)((*src)[2] * 15.f);
+		word a = (word)((*src)[3] * 15.f);
 		*texel++ = b | (g << 4) | (r << 8) | (a << 12);
 	}
 }
@@ -612,7 +613,7 @@ void ColorUtility::ConvertToA8(const Vec4f * const inRGBA, byte * const outData,
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[3];
+		*texel++ = (byte)((*src)[3] * 255.f);
 	}
 }
 
@@ -623,7 +624,7 @@ void ColorUtility::ConvertToL8(const Vec4f * const inRGBA, byte * const outData,
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[0];
+		*texel++ = (byte)((*src)[0] * 255.f);
 	}
 }
 
@@ -634,8 +635,8 @@ void ColorUtility::ConvertToA8L8(const Vec4f * const inRGBA, byte * const outDat
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[0];
-		*texel++ = (byte)(*src)[3];
+		*texel++ = (byte)((*src)[0] * 255.f);
+		*texel++ = (byte)((*src)[3] * 255.f);
 	}
 }
 
@@ -646,9 +647,9 @@ void ColorUtility::ConvertToR8G8B8(const Vec4f * const inRGBA, byte * const outD
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[2];
-		*texel++ = (byte)(*src)[1];
-		*texel++ = (byte)(*src)[0];
+		*texel++ = (byte)((*src)[2] * 255.f);
+		*texel++ = (byte)((*src)[1] * 255.f);
+		*texel++ = (byte)((*src)[0] * 255.f);
 	}
 }
 
@@ -659,10 +660,10 @@ void ColorUtility::ConvertToA8R8G8B8(const Vec4f * const inRGBA, byte * const ou
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[2];
-		*texel++ = (byte)(*src)[1];
-		*texel++ = (byte)(*src)[0];
-		*texel++ = (byte)(*src)[3];
+		*texel++ = (byte)((*src)[2] * 255.f);
+		*texel++ = (byte)((*src)[1] * 255.f);
+		*texel++ = (byte)((*src)[0] * 255.f);
+		*texel++ = (byte)((*src)[3] * 255.f);
 	}
 }
 
@@ -673,10 +674,10 @@ void ColorUtility::ConvertToA8B8G8R8(const Vec4f * const inRGBA, byte * const ou
 	byte* texel = (byte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)(*src)[0];
-		*texel++ = (byte)(*src)[1];
-		*texel++ = (byte)(*src)[2];
-		*texel++ = (byte)(*src)[3];
+		*texel++ = (byte)((*src)[0] * 255.f);
+		*texel++ = (byte)((*src)[1] * 255.f);
+		*texel++ = (byte)((*src)[2] * 255.f);
+		*texel++ = (byte)((*src)[3] * 255.f);
 	}
 }
 
@@ -687,7 +688,7 @@ void ColorUtility::ConvertToL16(const Vec4f * const inRGBA, byte * const outData
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)(*src)[0];
+		*texel++ = (word)((*src)[0] * 65535.f);
 	}
 }
 
@@ -698,8 +699,8 @@ void ColorUtility::ConvertToG16R16(const Vec4f * const inRGBA, byte * const outD
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)(*src)[0];
-		*texel++ = (word)(*src)[1];
+		*texel++ = (word)((*src)[0] * 65535.f);
+		*texel++ = (word)((*src)[1] * 65535.f);
 	}
 }
 
@@ -710,10 +711,10 @@ void ColorUtility::ConvertToA16B16G16R16(const Vec4f * const inRGBA, byte * cons
 	word* texel = (word*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)(*src)[0];
-		*texel++ = (word)(*src)[1];
-		*texel++ = (word)(*src)[2];
-		*texel++ = (word)(*src)[3];
+		*texel++ = (word)((*src)[0] * 65535.f);
+		*texel++ = (word)((*src)[1] * 65535.f);
+		*texel++ = (word)((*src)[2] * 65535.f);
+		*texel++ = (word)((*src)[3] * 65535.f);
 	}
 }
 
@@ -863,23 +864,23 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 			Vec3f rgb0 = eigenVec * maxColorProj;
 			Vec3f rgb1 = eigenVec * minColorProj;
 
-			// saturate (we might overflow slightly, i.e. >255.f)
-			rgb0[0] = Math::clamp(abs(rgb0[0]), 0.f, 255.f);
-			rgb0[1] = Math::clamp(abs(rgb0[1]), 0.f, 255.f);
-			rgb0[2] = Math::clamp(abs(rgb0[2]), 0.f, 255.f);
-			rgb1[0] = Math::clamp(abs(rgb1[0]), 0.f, 255.f);
-			rgb1[1] = Math::clamp(abs(rgb1[1]), 0.f, 255.f);
-			rgb1[2] = Math::clamp(abs(rgb1[2]), 0.f, 255.f);
+			// saturate (we might overflow slightly, i.e. >1.0f)
+			rgb0[0] = Math::clamp(abs(rgb0[0]), 0.f, 1.f);
+			rgb0[1] = Math::clamp(abs(rgb0[1]), 0.f, 1.f);
+			rgb0[2] = Math::clamp(abs(rgb0[2]), 0.f, 1.f);
+			rgb1[0] = Math::clamp(abs(rgb1[0]), 0.f, 1.f);
+			rgb1[1] = Math::clamp(abs(rgb1[1]), 0.f, 1.f);
+			rgb1[2] = Math::clamp(abs(rgb1[2]), 0.f, 1.f);
 
 			// R8G8B8A8 -> R5G6B6
 			word color0 =
-				((((byte)rgb0[0]) >> 3) << 11) |
-				((((byte)rgb0[1]) >> 2) << 5) |
-				((((byte)rgb0[2]) >> 3));
+				((((byte)(rgb0[0] * 255.f)) >> 3) << 11) |
+				((((byte)(rgb0[1] * 255.f)) >> 2) << 5) |
+				((((byte)(rgb0[2] * 255.f)) >> 3));
 			word color1 =
-				((((byte)rgb1[0]) >> 3) << 11) |
-				((((byte)rgb1[1]) >> 2) << 5) |
-				((((byte)rgb1[2]) >> 3));
+				((((byte)(rgb1[0] * 255.f)) >> 3) << 11) |
+				((((byte)(rgb1[1] * 255.f)) >> 2) << 5) |
+				((((byte)(rgb1[2] * 255.f)) >> 3));
 
 			// 4 pixels / byte (one row of the block), 4 columns => 4 bytes
 			byte bitmap[4];

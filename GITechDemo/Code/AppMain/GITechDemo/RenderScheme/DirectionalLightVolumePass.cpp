@@ -211,7 +211,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 	if (!DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
 		fUpsampleDepthThreshold = 1.f;
 
-	LightAccumulationBuffer.Enable();
+	//LightAccumulationBuffer.Enable();
 
 	f2HalfTexelOffset = Vec2f(
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
@@ -251,7 +251,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 		ColorCopyShader.Disable();
 	}
 
-	LightAccumulationBuffer.Disable();
+	//LightAccumulationBuffer.Disable();
 
 	if (!DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
 		fUpsampleDepthThreshold = fUpsampleDepthThresholdBkp;
@@ -263,9 +263,9 @@ void DirectionalLightVolumePass::Draw()
 {
 	if (DIR_LIGHT_VOLUME_ENABLE)
 	{
-		Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
-		if (pCurrRT)
-			pCurrRT->Disable();
+		//Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
+		//if (pCurrRT)
+		//	pCurrRT->Disable();
 		
 		CalculateLightVolume();
 
@@ -274,6 +274,6 @@ void DirectionalLightVolumePass::Draw()
 
 		ApplyLightVolume();
 
-		pCurrRT->Enable();
+		//pCurrRT->Enable();
 	}
 }

@@ -23,10 +23,10 @@
 
 #include "Resource.h"
 
-#include "FrameworkWin.h"
-using namespace AppFramework;
-
 #include "App.h"
+#include "FrameworkWin.h"
+#include "Timestamp.h"
+using namespace AppFramework;
 
 #include <stdio.h>
 #include <io.h>
@@ -69,7 +69,7 @@ int FrameworkWin::Run()
 	HACCEL hAccelTable;
 
 	char szTitleSuffix[128];
-	sprintf_s(szTitleSuffix, " (%s|%s - %s %s)", _CONFIGURATION, _PLATFORM, __DATE__, __TIME__);
+	sprintf_s(szTitleSuffix, " (%s|%s - %s %s)", _CONFIGURATION, _PLATFORM, GetBuildDate(), GetBuildTime());
 
 	// Initialize global strings
 	LoadString(m_hInstance, IDS_APP_TITLE, m_szTitle, MAX_LOADSTRING);
@@ -528,8 +528,8 @@ void FrameworkWin::Sleep(const unsigned int miliseconds)
 void FrameworkWin::ErrorExit(LPTSTR lpszFunction)
 {
 	// Retrieve the system error message for the last-error code
-	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
+	LPVOID lpMsgBuf = NULL;
+	LPVOID lpDisplayBuf = NULL;
 	DWORD dw = GetLastError();
 
 	FormatMessage(
@@ -545,13 +545,20 @@ void FrameworkWin::ErrorExit(LPTSTR lpszFunction)
 	// Display the error message and exit the process
 	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT,
 		(lstrlen((LPCTSTR)lpMsgBuf) + lstrlen((LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR));
-	StringCchPrintf((LPTSTR)lpDisplayBuf,
-		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error %d: %s"),
-		lpszFunction, dw, lpMsgBuf);
-	MessageBox(m_hWnd, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL | MB_SETFOREGROUND);
 
-	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
+	if (lpMsgBuf && lpDisplayBuf)
+	{
+		StringCchPrintf((LPTSTR)lpDisplayBuf,
+			LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+			TEXT("%s failed with error %d: %s"),
+			lpszFunction, dw, lpMsgBuf);
+		MessageBox(m_hWnd, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL | MB_SETFOREGROUND);
+	}
+
+	if(lpMsgBuf)
+		LocalFree(lpMsgBuf);
+	if(lpDisplayBuf)
+		LocalFree(lpDisplayBuf);
+
 	ExitProcess(dw);
 }

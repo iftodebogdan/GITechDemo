@@ -62,7 +62,6 @@ const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2T
 		float2( 1.f,  1.f)
 	};
 
-	// TODO: Shouldn't it be min()? Why do I get better results visually with max()?
 	return
 		max(
 			max(

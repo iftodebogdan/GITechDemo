@@ -1,23 +1,24 @@
-/*=============================================================================
- *	This file is part of the "Synesthesia3D" graphics engine
- *	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+/**
+ *	@file		ShaderProgramDX9.cpp
  *
- *		File:	ShaderProgramDX9.cpp
- *		Author:	Bogdan Iftode
+ *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
+ *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ *	@copyright
  *	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation, either version 3 of the License, or
  *	(at your option) any later version.
- *
+ *	@copyright
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *	GNU General Public License for more details.
- *
+ *	@copyright
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
-=============================================================================*/
+ */
 
 #include "stdafx.h"
 
@@ -266,20 +267,12 @@ const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) con
 		assert(false); // no strings
 		return IT_NONE;
 	case D3DXPT_TEXTURE:
-		assert(false); // DX9 documentation isn't very clear, but apparently this is only for the Effects framework
-		return IT_TEXTURE;
 	case D3DXPT_TEXTURE1D:
-		assert(false); // DX9 documentation isn't very clear, but apparently this is only for the Effects framework
-		return IT_TEXTURE1D;
 	case D3DXPT_TEXTURE2D:
-		assert(false); // DX9 documentation isn't very clear, but apparently this is only for the Effects framework
-		return IT_TEXTURE2D;
 	case D3DXPT_TEXTURE3D:
-		assert(false); // DX9 documentation isn't very clear, but apparently this is only for the Effects framework
-		return IT_TEXTURE3D;
 	case D3DXPT_TEXTURECUBE:
-		assert(false); // DX9 documentation isn't very clear, but apparently this is only for the Effects framework
-		return IT_TEXTURECUBE;
+		assert(false); // Only for the Effects framework
+		return IT_NONE;
 	case D3DXPT_SAMPLER:
 		return IT_SAMPLER;
 	case D3DXPT_SAMPLER1D:
