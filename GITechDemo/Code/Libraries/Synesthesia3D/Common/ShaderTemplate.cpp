@@ -31,6 +31,8 @@
 #include "ResourceManager.h"
 using namespace Synesthesia3D;
 
+#include "Utility/Hash.h"
+
 ShaderTemplate::ShaderTemplate(ShaderProgram* const shaderProgram)
 	: m_pProgram(shaderProgram)
 	, m_pShaderInput(nullptr)
@@ -50,6 +52,7 @@ void ShaderTemplate::DescribeShaderInputs()
 	{
 		ShaderInputDesc inputDesc;
 		inputDesc.szName = m_pProgram->GetConstantName(i);
+		inputDesc.nNameHash = S3DHASH(inputDesc.szName.c_str());
 		inputDesc.eInputType = m_pProgram->GetConstantType(i);
 		inputDesc.eRegisterType = m_pProgram->GetConstantRegisterType(i);
 		inputDesc.nRegisterIndex = m_pProgram->GetConstantRegisterIndex(i);

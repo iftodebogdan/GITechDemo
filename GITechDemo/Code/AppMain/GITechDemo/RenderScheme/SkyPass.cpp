@@ -64,7 +64,7 @@ void SkyPass::CreateSkyBoxVB()
 	// NB: in the pixel shader responsible for drawing the sky, the visible face(s)
 	// are pushed back to the maximum depth (far plane) so as not to be drawn
 	// over objects that are not inside the cube (bigger depth).
-	const unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAU_POSITION, VAT_FLOAT4, 0);
+	const unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAS_POSITION, VAT_FLOAT4, 0);
 	VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
 
 	const unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(36);

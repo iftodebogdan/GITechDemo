@@ -78,9 +78,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="DX9\RendererDX9.h">
       <Filter>DX9</Filter>
     </ClInclude>
@@ -394,6 +391,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Utility\Mutex.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Hash.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

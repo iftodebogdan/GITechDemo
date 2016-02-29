@@ -52,26 +52,26 @@ VertexFormat::VertexFormat(const unsigned int attributeCount)
 	{
 		m_pElements[i].nOffset = 0;
 		m_pElements[i].eType	= VAT_NONE;
-		m_pElements[i].eUsage = VAU_NONE;
-		m_pElements[i].nUsageIdx = 0;
+		m_pElements[i].eSemantic = VAS_NONE;
+		m_pElements[i].nSemanticIdx = 0;
 	}
 }
 
-void VertexFormat::Initialize(const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx, ...)
+void VertexFormat::Initialize(const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx, ...)
 {
 	unsigned int offset = 0;
 
-	SetAttribute(0, offset, usage, type, usageIdx);
+	SetAttribute(0, offset, semantic, type, semanticIdx);
 	offset += VertexAttributeTypeSize[type];
 
 	va_list args;
-	va_start(args, usageIdx);
+	va_start(args, semanticIdx);
 	for (unsigned int i = 1; i < m_nAttributeCount; i++)
 	{
-		VertexAttributeUsage tempUsage = va_arg(args, VertexAttributeUsage);
+		VertexAttributeSemantic tempSemantic = va_arg(args, VertexAttributeSemantic);
 		VertexAttributeType tempType = va_arg(args, VertexAttributeType);
-		unsigned int tempUsageIdx = va_arg(args, unsigned int);
-		SetAttribute(i, offset, tempUsage, tempType, tempUsageIdx);
+		unsigned int tempSemanticIdx = va_arg(args, unsigned int);
+		SetAttribute(i, offset, tempSemantic, tempType, tempSemanticIdx);
 		offset += VertexAttributeTypeSize[tempType];
 	}
 	va_end(args);
@@ -85,7 +85,7 @@ VertexFormat::~VertexFormat()
 }
 			 
 void VertexFormat::SetAttribute(const unsigned int attrIdx, const unsigned int offset,
-	const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx)
+	const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx)
 {
 	assert(attrIdx < m_nAttributeCount);
 
@@ -96,8 +96,8 @@ void VertexFormat::SetAttribute(const unsigned int attrIdx, const unsigned int o
 
 	m_pElements[attrIdx].nOffset = offset;
 	m_pElements[attrIdx].eType = type;
-	m_pElements[attrIdx].eUsage = usage;
-	m_pElements[attrIdx].nUsageIdx = usageIdx;
+	m_pElements[attrIdx].eSemantic = semantic;
+	m_pElements[attrIdx].nSemanticIdx = semanticIdx;
 }
 
 const unsigned int VertexFormat::CalculateStride() const
@@ -131,16 +131,16 @@ const VertexAttributeType VertexFormat::GetAttributeType(const unsigned int attr
 	return m_pElements[attrIdx].eType;
 }
 
-const VertexAttributeUsage VertexFormat::GetAttributeUsage(const unsigned int attrIdx) const
+const VertexAttributeSemantic VertexFormat::GetAttributeSemantic(const unsigned int attrIdx) const
 {
 	assert(attrIdx < m_nAttributeCount);
-	return m_pElements[attrIdx].eUsage;
+	return m_pElements[attrIdx].eSemantic;
 }
 
-const unsigned int VertexFormat::GetUsageIndex(const unsigned int attrIdx) const
+const unsigned int VertexFormat::GetSemanticIndex(const unsigned int attrIdx) const
 {
 	assert(attrIdx < m_nAttributeCount);
-	return m_pElements[attrIdx].nUsageIdx;
+	return m_pElements[attrIdx].nSemanticIdx;
 }
 
 const unsigned int VertexFormat::GetStride() const

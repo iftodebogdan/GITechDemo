@@ -35,6 +35,8 @@ using namespace AppFramework;
 #include "RenderResource.h"
 using namespace GITechDemoApp;
 
+#include "Utility/Hash.h"
+
 vector<RenderResource*> RenderResource::arrResources;
 ResourceManager* RenderResource::ResMgr = nullptr;
 
@@ -214,7 +216,7 @@ namespace GITechDemoApp
 					for (unsigned int j = 0; j < arrResources.size(); j++)
 					{
 						if (arrResources[j]->GetResourceType() == RES_SHADER_CONSTANT &&
-							desc.szName == ((ShaderConstantTemplate<void*>*)arrResources[j])->GetName())
+							desc.nNameHash == S3DHASH(((ShaderConstantTemplate<void*>*)arrResources[j])->GetName()))
 						{
 							ShaderConstantInstance constInst;
 							constInst.pShaderConstantTemplate = arrResources[j];

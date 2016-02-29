@@ -492,6 +492,17 @@ namespace Synesthesia3D
 		SYNESTHESIA3D_DLL const bool				GetInputHandleByName(const char* const inputName, unsigned int& inputHandle) const;
 		
 		/**
+		 * @brief	Retrieves the handle of the shader constant which matches the supplied name hash.
+		 * @note	Use @ref S3DHASH() from Utility/Hash.h to generate the hash.
+		 *
+		 * @param[in]	inputNameHash	Hash of the name of the shader constant (as appears in the shader).
+		 * @param[out]	inputHandle		Handle for the shader constant.
+		 *
+		 * @return	Success of operation.
+		 */
+		SYNESTHESIA3D_DLL const bool				GetInputHandleByNameHash(const unsigned int inputNameHash, unsigned int& inputHandle) const;
+
+		/**
 		 * @brief	Retrieves a detailed description of a shader constant.
 		 *
 		 * @param[in]	handle	Handle for the shader constant obtained from @ref GetInputHandleByName().

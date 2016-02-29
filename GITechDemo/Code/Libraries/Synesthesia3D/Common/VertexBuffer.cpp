@@ -56,7 +56,7 @@ IndexBuffer* VertexBuffer::GetIndexBuffer() const
 const bool VertexBuffer::HasPosition() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_POSITION)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_POSITION)
 			return true;
 
 	return false;
@@ -65,7 +65,7 @@ const bool VertexBuffer::HasPosition() const
 const bool VertexBuffer::HasNormal() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_NORMAL)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_NORMAL)
 			return true;
 
 	return false;
@@ -74,7 +74,7 @@ const bool VertexBuffer::HasNormal() const
 const bool VertexBuffer::HasTangent() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TANGENT)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_TANGENT)
 			return true;
 
 	return false;
@@ -83,27 +83,27 @@ const bool VertexBuffer::HasTangent() const
 const bool VertexBuffer::HasBinormal() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BINORMAL)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BINORMAL)
 			return true;
 
 	return false;
 }
 
-const bool VertexBuffer::HasTexCoord(const unsigned int usageIdx) const
+const bool VertexBuffer::HasTexCoord(const unsigned int semanticIdx) const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TEXCOORD
-			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_TEXCOORD
+			&& m_pVertexFormat->GetSemanticIndex(i) == semanticIdx)
 			return true;
 
 	return false;
 }
 
-const bool VertexBuffer::HasColor(const unsigned int usageIdx) const
+const bool VertexBuffer::HasColor(const unsigned int semanticIdx) const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_COLOR
-			&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_COLOR
+			&& m_pVertexFormat->GetSemanticIndex(i) == semanticIdx)
 			return true;
 
 	return false;
@@ -112,7 +112,7 @@ const bool VertexBuffer::HasColor(const unsigned int usageIdx) const
 const bool VertexBuffer::HasBlendIndices() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDINDICES)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BLENDINDICES)
 			return true;
 
 	return false;
@@ -121,7 +121,7 @@ const bool VertexBuffer::HasBlendIndices() const
 const bool VertexBuffer::HasBlendWeight() const
 {
 	for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-		if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDWEIGHT)
+		if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BLENDWEIGHT)
 			return true;
 
 	return false;

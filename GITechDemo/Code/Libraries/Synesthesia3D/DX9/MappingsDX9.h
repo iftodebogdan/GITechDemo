@@ -33,7 +33,7 @@ namespace Synesthesia3D
 	extern const DWORD BufferUsageDX9[BU_MAX];
 	extern const DWORD BufferLockingDX9[BL_MAX];
 	extern const BYTE VertexAttributeTypeDX9[VAT_MAX];
-	extern const BYTE VertexAttributeUsageDX9[VAU_MAX];
+	extern const BYTE VertexAttributeSemanticDX9[VAS_MAX];
 	extern const D3DFORMAT IndexBufferFormatDX9[IBF_MAX];
 	extern const D3DFORMAT PixelFormatDX9[PF_MAX];
 	extern const DWORD RenderStateMappingDX9[RS_MAX];

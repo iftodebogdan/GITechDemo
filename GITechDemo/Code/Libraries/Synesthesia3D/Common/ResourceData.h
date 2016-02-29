@@ -395,7 +395,7 @@ namespace Synesthesia3D
 		RT_FLOAT4,	/**< @brief Floating point register type. */
 		RT_SAMPLER,	/**< @brief Texture register type. */
 
-		RT_MAX		/**< DO NOT USE! INTERNAL USAGE ONLY! */
+		RT_MAX		/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
 	};
 
 	/**
@@ -404,6 +404,7 @@ namespace Synesthesia3D
 	struct ShaderInputDesc
 	{
 		std::string		szName;			/**< @brief Input name (as appears in shader source). */
+		unsigned int	nNameHash;		/**< @brief Hash of input name. */
 		InputType		eInputType;		/**< @brief Input data type. */
 		RegisterType	eRegisterType;	/**< @brief Input register type (not necessarily the same as it's data type). */
 		unsigned int	nRegisterIndex;	/**< @brief Input starting register ID. */
@@ -534,28 +535,28 @@ namespace Synesthesia3D
 		VAT_SHORT2,	/**< @brief Attribute is of a dual channel short integer data type. */
 		VAT_SHORT4,	/**< @brief Attribute is of a quadruple channel short integer data type. */
 
-		VAT_MAX		/**< DO NOT USE! INTERNAL USAGE ONLY! */
+		VAT_MAX		/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
 	};
 
 	/**
 	 * @brief	These flags describe an attribute's purpose
 	 */
-	enum VertexAttributeUsage
+	enum VertexAttributeSemantic
 	{
-		VAU_NONE,			/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
+		VAS_NONE,			/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
 
-		VAU_POSITION,		/**< @brief This attribute will be used as a position vector. */
-		VAU_NORMAL,			/**< @brief This attribute will be used as a normal vector. */
-		VAU_TANGENT,		/**< @brief This attribute will be used as a tangent vector. */
-		VAU_BINORMAL,		/**< @brief This attribute will be used as a binormal vector. */
-		VAU_TEXCOORD,		/**< @brief This attribute will be used as texture coordinates. */
-		VAU_COLOR,			/**< @brief This attribute will be used as a color value. */
-		VAU_BLENDINDICES,	/**< @brief This attribute will be used as bone indices. */
-		VAU_BLENDWEIGHT,	/**< @brief This attribute will be used as skinning weights. */
-		VAU_FOGCOORD,		/**< @brief This attribute will be used as a fog blend value. */
-		VAU_PSIZE,			/**< @brief This attribute will be used as the size of a point sprite. */
+		VAS_POSITION,		/**< @brief This attribute will be used as a position vector. */
+		VAS_NORMAL,			/**< @brief This attribute will be used as a normal vector. */
+		VAS_TANGENT,		/**< @brief This attribute will be used as a tangent vector. */
+		VAS_BINORMAL,		/**< @brief This attribute will be used as a binormal vector. */
+		VAS_TEXCOORD,		/**< @brief This attribute will be used as texture coordinates. */
+		VAS_COLOR,			/**< @brief This attribute will be used as a color value. */
+		VAS_BLENDINDICES,	/**< @brief This attribute will be used as bone indices. */
+		VAS_BLENDWEIGHT,	/**< @brief This attribute will be used as skinning weights. */
+		VAS_FOGCOORD,		/**< @brief This attribute will be used as a fog blend value. */
+		VAS_PSIZE,			/**< @brief This attribute will be used as the size of a point sprite. */
 
-		VAU_MAX				/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
+		VAS_MAX				/**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
 	};
 
 	/**
@@ -563,10 +564,10 @@ namespace Synesthesia3D
 	 */
 	struct VertexElement
 	{
-		unsigned int			nOffset;	/**< @brief The element's offset in the vertex format. */
-		VertexAttributeType		eType;		/**< @brief The data type of the element. */
-		VertexAttributeUsage	eUsage;		/**< @brief The usage/semantic of the element. */
-		unsigned int			nUsageIdx;	/**< @brief The usage/semantic index of the element. */
+		unsigned int			nOffset;		/**< @brief The element's offset in the vertex format. */
+		VertexAttributeType		eType;			/**< @brief The data type of the element. */
+		VertexAttributeSemantic	eSemantic;		/**< @brief The usage/semantic of the element. */
+		unsigned int			nSemanticIdx;	/**< @brief The usage/semantic index of the element. */
 
 		/**
 		 * @brief	Serializes the vertex element object.

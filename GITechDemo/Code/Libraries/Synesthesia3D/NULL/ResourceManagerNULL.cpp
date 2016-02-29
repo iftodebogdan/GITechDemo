@@ -58,23 +58,23 @@ const unsigned int ResourceManagerNULL::CreateVertexFormat(const unsigned int at
 }
 
 const unsigned int ResourceManagerNULL::CreateVertexFormat(
-	const unsigned int attributeCount, const VertexAttributeUsage usage,
-	const VertexAttributeType type, const unsigned int usageIdx, ...)
+	const unsigned int attributeCount, const VertexAttributeSemantic semantic,
+	const VertexAttributeType type, const unsigned int semanticIdx, ...)
 {
 	VertexFormat* vf = new VertexFormatNULL(attributeCount);
 	unsigned int offset = 0;
 
-	vf->SetAttribute(0, offset, usage, type, usageIdx);
+	vf->SetAttribute(0, offset, semantic, type, semanticIdx);
 	offset += VertexFormat::GetAttributeTypeSize(type);
 
 	va_list args;
-	va_start(args, usageIdx);
+	va_start(args, semanticIdx);
 	for (unsigned int i = 1, n = vf->GetAttributeCount(); i < n; i++)
 	{
-		VertexAttributeUsage tempUsage = va_arg(args, VertexAttributeUsage);
+		VertexAttributeSemantic tempSemantic = va_arg(args, VertexAttributeSemantic);
 		VertexAttributeType tempType = va_arg(args, VertexAttributeType);
-		unsigned int tempUsageIdx = va_arg(args, unsigned int);
-		vf->SetAttribute(i, offset, tempUsage, tempType, tempUsageIdx);
+		unsigned int tempSemanticIdx = va_arg(args, unsigned int);
+		vf->SetAttribute(i, offset, tempSemantic, tempType, tempSemanticIdx);
 		offset += VertexFormat::GetAttributeTypeSize(tempType);
 	}
 	va_end(args);

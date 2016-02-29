@@ -79,16 +79,16 @@ namespace Synesthesia3D
 		 * @brief	Describes a vertex format.
 		 *
 		 * @param[in]	attributeCount	The number of vertex format attributes.
-		 * @param[in]	usage			Vertex semantic.
+		 * @param[in]	semantic		Vertex semantic.
 		 * @param[in]	type			Data type.
-		 * @param[in]	usageIdx		Semantic index.
-		 * @param[in]	...				attributeCount - 1 pairs of usage and usageIdx.
+		 * @param[in]	semanticIdx		Semantic index.
+		 * @param[in]	...				attributeCount - 1 pairs of semantic and semanticIdx.
 		 *
 		 * @return	Resource ID corresponding to the created resource.
 		 *
 		 * @see		VertexFormat
 		 */
-		virtual	SYNESTHESIA3D_DLL	const unsigned int		CreateVertexFormat(const unsigned int attributeCount, const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx, ...) PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL	const unsigned int		CreateVertexFormat(const unsigned int attributeCount, const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx, ...) PURE_VIRTUAL;
 
 		/**
 		 * @brief	Creates an index buffer.

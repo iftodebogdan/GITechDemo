@@ -28,7 +28,7 @@ namespace Synesthesia3D
 		unsigned int positionOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_POSITION)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_POSITION)
 			{
 				positionOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -43,7 +43,7 @@ namespace Synesthesia3D
 		unsigned int normalOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_NORMAL)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_NORMAL)
 			{
 				normalOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -58,7 +58,7 @@ namespace Synesthesia3D
 		unsigned int tangentOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TANGENT)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_TANGENT)
 			{
 				tangentOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -73,7 +73,7 @@ namespace Synesthesia3D
 		unsigned int binormalOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BINORMAL)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BINORMAL)
 			{
 				binormalOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -83,13 +83,13 @@ namespace Synesthesia3D
 	}
 
 	template <typename T>
-	inline T& VertexBuffer::TexCoord(const unsigned int vertexIdx, const unsigned int usageIdx) const
+	inline T& VertexBuffer::TexCoord(const unsigned int vertexIdx, const unsigned int semanticIdx) const
 	{
 		unsigned int tcoordOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_TEXCOORD
-				&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_TEXCOORD
+				&& m_pVertexFormat->GetSemanticIndex(i) == semanticIdx)
 			{
 				tcoordOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -99,13 +99,13 @@ namespace Synesthesia3D
 	}
 
 	template <typename T>
-	inline T& VertexBuffer::Color(const unsigned int vertexIdx, const unsigned int usageIdx) const
+	inline T& VertexBuffer::Color(const unsigned int vertexIdx, const unsigned int semanticIdx) const
 	{
 		unsigned int colorOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_COLOR
-				&& m_pVertexFormat->GetUsageIndex(i) == usageIdx)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_COLOR
+				&& m_pVertexFormat->GetSemanticIndex(i) == semanticIdx)
 			{
 				colorOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -120,7 +120,7 @@ namespace Synesthesia3D
 		unsigned int blendIndOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDINDICES)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BLENDINDICES)
 			{
 				blendIndOffset = m_pVertexFormat->GetOffset(i);
 				break;
@@ -135,7 +135,7 @@ namespace Synesthesia3D
 		unsigned int blendWeightOffset = 0;
 
 		for (int i = 0, n = m_pVertexFormat->GetAttributeCount(); i < n; i++)
-			if (m_pVertexFormat->GetAttributeUsage(i) == VAU_BLENDWEIGHT)
+			if (m_pVertexFormat->GetAttributeSemantic(i) == VAS_BLENDWEIGHT)
 			{
 				blendWeightOffset = m_pVertexFormat->GetOffset(i);
 				break;

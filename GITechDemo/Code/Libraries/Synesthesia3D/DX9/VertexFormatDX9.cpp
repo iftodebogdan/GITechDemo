@@ -101,8 +101,8 @@ void VertexFormatDX9::Update()
 		m_pVertexElements[i].Offset = (WORD)GetOffset(i);
 		m_pVertexElements[i].Stream = (WORD)0;
 		m_pVertexElements[i].Type = VertexAttributeTypeDX9[GetAttributeType(i)];
-		m_pVertexElements[i].Usage = VertexAttributeUsageDX9[GetAttributeUsage(i)];
-		m_pVertexElements[i].UsageIndex = (BYTE)GetUsageIndex(i);
+		m_pVertexElements[i].Usage = VertexAttributeSemanticDX9[GetAttributeSemantic(i)];
+		m_pVertexElements[i].UsageIndex = (BYTE)GetSemanticIndex(i);
 	}
 
 	m_pVertexElements[m_nAttributeCount].Method = 0;

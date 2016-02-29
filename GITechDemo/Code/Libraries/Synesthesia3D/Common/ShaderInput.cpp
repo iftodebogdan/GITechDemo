@@ -30,6 +30,7 @@
 #include "ShaderProgram.h"
 using namespace Synesthesia3D;
 
+#include "Utility/Hash.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Compiler Warning(level 3) C4800											 //
@@ -57,9 +58,12 @@ ShaderInput::~ShaderInput()
 
 const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsigned int& inputHandle) const
 {
+	const unsigned int nNameHash = S3DHASH(inputName);
+
 	for (unsigned int i = 0, n = (unsigned int)m_pShaderTemplate->m_arrInputDesc.size(); i < n; i++)
 	{
-		if (m_pShaderTemplate->m_arrInputDesc[i].szName.compare(inputName) == 0)
+		//if (m_pShaderTemplate->m_arrInputDesc[i].szName.compare(inputName) == 0)
+		if (m_pShaderTemplate->m_arrInputDesc[i].nNameHash == nNameHash)
 		{
 			inputHandle = i;
 			return true;
@@ -73,6 +77,29 @@ const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsign
 		std::cout << "Could not find input \"" << inputName << "\" in " <<
 			(m_pShaderTemplate->m_pProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
 			" shader: \"" << m_pShaderTemplate->m_pProgram->GetFilePath() << "\"\n";
+#endif
+
+	return false;
+}
+
+const bool ShaderInput::GetInputHandleByNameHash(const unsigned int inputNameHash, unsigned int& inputHandle) const
+{
+	for (unsigned int i = 0, n = (unsigned int)m_pShaderTemplate->m_arrInputDesc.size(); i < n; i++)
+	{
+		if (m_pShaderTemplate->m_arrInputDesc[i].nNameHash == inputNameHash)
+		{
+			inputHandle = i;
+			return true;
+		}
+	}
+
+	inputHandle = ~0u;
+
+#ifdef _DEBUG
+	if (Renderer::GetInstance()->GetAPI() != API_NULL)
+		std::cout << "Could not find input with hash value \"" << std::hex << inputNameHash << std::dec << "\" in " <<
+		(m_pShaderTemplate->m_pProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
+		" shader: \"" << m_pShaderTemplate->m_pProgram->GetFilePath() << "\"\n";
 #endif
 
 	return false;

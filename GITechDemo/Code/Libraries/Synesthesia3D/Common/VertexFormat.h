@@ -38,11 +38,11 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Sets each vertex format attribute's properties.
 		 *
-		 * @param[in]	usage		The purpose of the attribute, it's semantic.
+		 * @param[in]	semantic	The purpose of the attribute, it's semantic.
 		 * @param[in]	type		The data type of the attribute.
-		 * @param[in]	usageIdx	The attribute's semantic index. For example, there can be multiple @ref VAU_TEXCOORD attributes, but they must have different indices.
+		 * @param[in]	semanticIdx	The attribute's semantic index. For example, there can be multiple @ref VAS_TEXCOORD attributes, but they must have different indices.
 		 */
-				SYNESTHESIA3D_DLL			void				Initialize(const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx, ...);
+				SYNESTHESIA3D_DLL			void				Initialize(const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx, ...);
 
 		/**
 		 * @brief	Sets a single attribute's properties.
@@ -50,11 +50,11 @@ namespace Synesthesia3D
 		 *
 		 * @param[in]	attrIdx		The index of the attribute.
 		 * @param[in]	offset		The memory offset of the attribute.
-		 * @param[in]	usage		The purpose of the attribute, it's semantic.
+		 * @param[in]	semantic	The purpose of the attribute, it's semantic.
 		 * @param[in]	type		The data type of the attribute.
-		 * @param[in]	usageIdx	The attribute's semantic index. For example, there can be multiple @ref VAU_TEXCOORD attributes, but they must have different indices.
+		 * @param[in]	semanticIdx	The attribute's semantic index. For example, there can be multiple @ref VAS_TEXCOORD attributes, but they must have different indices.
 		 */
-				SYNESTHESIA3D_DLL			void				SetAttribute(const unsigned int attrIdx, const unsigned int offset, const VertexAttributeUsage usage, const VertexAttributeType type, const unsigned int usageIdx);
+				SYNESTHESIA3D_DLL			void				SetAttribute(const unsigned int attrIdx, const unsigned int offset, const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx);
 
 		/**
 		 * @brief	Sets the vertex format stride.
@@ -87,12 +87,12 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Retrieves the semantic of the attribute with the specified index.
 		 */
-				SYNESTHESIA3D_DLL const VertexAttributeUsage	GetAttributeUsage(const unsigned int attrIdx) const;
+				SYNESTHESIA3D_DLL const VertexAttributeSemantic	GetAttributeSemantic(const unsigned int attrIdx) const;
 
 		/**
 		 * @brief	Retrieves the semantic index of the attributes with the specified index.
 		 */
-				SYNESTHESIA3D_DLL	const	unsigned int		GetUsageIndex(const unsigned int attrIdx) const;
+				SYNESTHESIA3D_DLL	const	unsigned int		GetSemanticIndex(const unsigned int attrIdx) const;
 
 		/**
 		 * @brief	Retrieves the vertex format's stride.

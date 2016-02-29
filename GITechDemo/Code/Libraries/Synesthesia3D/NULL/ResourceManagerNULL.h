@@ -32,8 +32,8 @@ namespace Synesthesia3D
 	public:
 		const unsigned int CreateVertexFormat(const unsigned int attributeCount);
 		const unsigned int CreateVertexFormat(
-			const unsigned int attributeCount, const VertexAttributeUsage usage,
-			const VertexAttributeType type, const unsigned int usageIdx, ...);
+			const unsigned int attributeCount, const VertexAttributeSemantic semantic,
+			const VertexAttributeType type, const unsigned int semanticIdx, ...);
 
 		const unsigned int CreateIndexBuffer(
 			const unsigned int indexCount, const IndexBufferFormat indexFormat = IBF_INDEX16,

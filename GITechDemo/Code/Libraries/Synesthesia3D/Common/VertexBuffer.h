@@ -140,23 +140,23 @@ namespace Synesthesia3D
 		 * @brief	Texture coordinate attribute accessor.
 		 */
 		template <typename T>
-			inline			T&			TexCoord(const unsigned int vertexIdx, const unsigned int usageIdx) const;
+			inline			T&			TexCoord(const unsigned int vertexIdx, const unsigned int semanticIdx) const;
 			
 		/**
 		 * @brief	Checks for the existence of the texture coordinate attribute.
 		 */
-		SYNESTHESIA3D_DLL const bool	HasTexCoord(const unsigned int usageIdx) const;
+		SYNESTHESIA3D_DLL const bool	HasTexCoord(const unsigned int semanticIdx) const;
 		
 		/**
 		 * @brief	Color attribute accessor.
 		 */
 		template <typename T>
-			inline			T&			Color(const unsigned int vertexIdx, const unsigned int usageIdx) const;
+			inline			T&			Color(const unsigned int vertexIdx, const unsigned int semanticIdx) const;
 			
 		/**
 		 * @brief	Checks for the existence of the color attribute.
 		 */
-		SYNESTHESIA3D_DLL const bool	HasColor(const unsigned int usageIdx) const;
+		SYNESTHESIA3D_DLL const bool	HasColor(const unsigned int semanticIdx) const;
 		
 		/**
 		 * @brief	Blend indices attribute accessor.

@@ -239,7 +239,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 		if (!bExtraResInit)
 		{
 			// Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
-			unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAU_POSITION, VAT_FLOAT4, 0);
+			unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAS_POSITION, VAT_FLOAT4, 0);
 			VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
 
 			unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);

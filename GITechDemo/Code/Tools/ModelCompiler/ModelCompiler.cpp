@@ -132,7 +132,7 @@ void ModelCompiler::Run(int argc, char* argv[])
 		Log << "\tName: " << model.arrMesh.back()->szName.c_str() << "\n";
 		Log << "\tMesh index: " << meshIdx << "\n";
 
-		std::vector<VertexAttributeUsage> arrVAU;
+		std::vector<VertexAttributeSemantic> arrVAS;
 		unsigned int countUVComponents[AI_MAX_NUMBER_OF_TEXTURECOORDS] = { 0 };
 		unsigned int maxUVChannels = 0;
 		unsigned int maxColorChannels = 0;
@@ -147,17 +147,17 @@ void ModelCompiler::Run(int argc, char* argv[])
 		Log << "\t[VERTEX FORMAT]" << "\n";
 
 		if (scene->mMeshes[meshIdx]->HasPositions())
-			if (std::find(arrVAU.begin(), arrVAU.end(), VAU_POSITION) == arrVAU.end())
+			if (std::find(arrVAS.begin(), arrVAS.end(), VAS_POSITION) == arrVAS.end())
 			{
-				arrVAU.push_back(VAU_POSITION);
-				Log << "\t\tVAU_POSITION" << "\n";
+				arrVAS.push_back(VAS_POSITION);
+				Log << "\t\tVAS_POSITION" << "\n";
 			}
 
 		if (scene->mMeshes[meshIdx]->HasNormals())
-			if (std::find(arrVAU.begin(), arrVAU.end(), VAU_NORMAL) == arrVAU.end())
+			if (std::find(arrVAS.begin(), arrVAS.end(), VAS_NORMAL) == arrVAS.end())
 			{
-				arrVAU.push_back(VAU_NORMAL);
-				Log << "\t\tVAU_NORMAL" << "\n";
+				arrVAS.push_back(VAS_NORMAL);
+				Log << "\t\tVAS_NORMAL" << "\n";
 			}
 
 		bool hasTexCoords = false;
@@ -167,14 +167,14 @@ void ModelCompiler::Run(int argc, char* argv[])
 				hasTexCoords = true;
 				maxUVChannels = tcIdx + 1;
 				countUVComponents[tcIdx] = scene->mMeshes[meshIdx]->mNumUVComponents[tcIdx];
-				Log << "\t\tVAU_TEXCOORD" << "\n";
+				Log << "\t\tVAS_TEXCOORD" << "\n";
 				Log << "\t\t\tChannel: " << tcIdx << "\n";
 				Log << "\t\t\tFormat: VAT_FLOAT" << countUVComponents[tcIdx] << "\n";
 			}
 		if (hasTexCoords)
 		{
-			if (std::find(arrVAU.begin(), arrVAU.end(), VAU_TEXCOORD) == arrVAU.end())
-				arrVAU.push_back(VAU_TEXCOORD);
+			if (std::find(arrVAS.begin(), arrVAS.end(), VAS_TEXCOORD) == arrVAS.end())
+				arrVAS.push_back(VAS_TEXCOORD);
 		}
 
 		bool hasVertexColors = false;
@@ -183,50 +183,50 @@ void ModelCompiler::Run(int argc, char* argv[])
 			{
 				hasVertexColors = true;
 				maxColorChannels = colorIdx + 1;
-				Log << "\t\tVAU_COLOR" << "\n";
+				Log << "\t\tVAS_COLOR" << "\n";
 				Log << "\t\t\tChannel: " << colorIdx << "\n";
 			}
 		if (hasVertexColors)
-			if (std::find(arrVAU.begin(), arrVAU.end(), VAU_COLOR) == arrVAU.end())
-				arrVAU.push_back(VAU_COLOR);
+			if (std::find(arrVAS.begin(), arrVAS.end(), VAS_COLOR) == arrVAS.end())
+				arrVAS.push_back(VAS_COLOR);
 
 		if (scene->mMeshes[meshIdx]->HasTangentsAndBitangents())
-			if (std::find(arrVAU.begin(), arrVAU.end(), VAU_TANGENT) == arrVAU.end())
+			if (std::find(arrVAS.begin(), arrVAS.end(), VAS_TANGENT) == arrVAS.end())
 			{
-				arrVAU.push_back(VAU_TANGENT);
-				arrVAU.push_back(VAU_BINORMAL);
-				Log << "\t\tVAU_TANGENT" << "\n";
-				Log << "\t\tVAU_BINORMAL" << "\n";
+				arrVAS.push_back(VAS_TANGENT);
+				arrVAS.push_back(VAS_BINORMAL);
+				Log << "\t\tVAS_TANGENT" << "\n";
+				Log << "\t\tVAS_BINORMAL" << "\n";
 			}
 
 		Log << "\t[/VERTEX FORMAT]" << "\n";
 
 		// Create the vertex format
-		const unsigned int vfIdx = resMan->CreateVertexFormat((unsigned int)arrVAU.size()
+		const unsigned int vfIdx = resMan->CreateVertexFormat((unsigned int)arrVAS.size()
 			+ (maxUVChannels ? maxUVChannels - 1 : 0)
 			+ (maxColorChannels ? maxColorChannels - 1 : 0));
 		model.arrMesh.back()->pVertexFormat = resMan->GetVertexFormat(vfIdx);
-		for (unsigned int vauIdx = 0, attribIdx = 0, offset = 0; vauIdx < arrVAU.size(); vauIdx++)
+		for (unsigned int vauIdx = 0, attribIdx = 0, offset = 0; vauIdx < arrVAS.size(); vauIdx++)
 		{
 			VertexAttributeType type = VAT_NONE;
-			switch (arrVAU[vauIdx])
+			switch (arrVAS[vauIdx])
 			{
-			case VAU_POSITION:
-			case VAU_NORMAL:
-			case VAU_TANGENT:
-			case VAU_BINORMAL:
+			case VAS_POSITION:
+			case VAS_NORMAL:
+			case VAS_TANGENT:
+			case VAS_BINORMAL:
 				type = VAT_FLOAT3;
 				break;
-			case VAU_TEXCOORD:
+			case VAS_TEXCOORD:
 				break;
-			case VAU_COLOR:
+			case VAS_COLOR:
 				type = VAT_UBYTE4;
 				break;
 			default:
 				assert(false);
 			}
 
-			if (arrVAU[vauIdx] == VAU_TEXCOORD)
+			if (arrVAS[vauIdx] == VAS_TEXCOORD)
 				for (unsigned int uvCh = 0; uvCh < maxUVChannels; uvCh++)
 				{
 					switch (countUVComponents[uvCh])
@@ -243,19 +243,19 @@ void ModelCompiler::Run(int argc, char* argv[])
 					default:
 						assert(false);
 					}
-					model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAU[vauIdx], type, uvCh);
+					model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAS[vauIdx], type, uvCh);
 					offset += VertexFormat::GetAttributeTypeSize(type);
 				}
 			else
-				if (arrVAU[vauIdx] == VAU_COLOR)
+				if (arrVAS[vauIdx] == VAS_COLOR)
 					for (unsigned int clrCh = 0; clrCh < maxColorChannels; clrCh++)
 					{
-						model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAU[vauIdx], type, clrCh);
+						model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAS[vauIdx], type, clrCh);
 						offset += VertexFormat::GetAttributeTypeSize(type);
 					}
 				else
 				{
-					model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAU[vauIdx], type, 0);
+					model.arrMesh.back()->pVertexFormat->SetAttribute(attribIdx++, offset, arrVAS[vauIdx], type, 0);
 					offset += VertexFormat::GetAttributeTypeSize(type);
 				}
 		}

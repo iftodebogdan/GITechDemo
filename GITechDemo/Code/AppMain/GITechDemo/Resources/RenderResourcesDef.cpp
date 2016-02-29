@@ -243,7 +243,7 @@ namespace GITechDemoApp
 	/* Volumetric directional light parameters */
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(nSampleCount,				int,			32						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLightIntensity,			float,			0.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMultScatterIntensity,		float,			0.05f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMultScatterIntensity,		float,			0.1f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(f3FogSpeed,				Vec3f,			Vec3f(20.f, -10.f, 20.f));
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFogVerticalFalloff,		float,			25.f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBlurDepthFalloff,			float,			0.0025f					);

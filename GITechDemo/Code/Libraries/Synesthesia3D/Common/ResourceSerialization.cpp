@@ -105,8 +105,8 @@ namespace Synesthesia3D
 	{
 		output_out.write((const char*)&ve_in.nOffset, sizeof(unsigned int));
 		output_out.write((const char*)&ve_in.eType, sizeof(VertexAttributeType));
-		output_out.write((const char*)&ve_in.eUsage, sizeof(VertexAttributeUsage));
-		output_out.write((const char*)&ve_in.nUsageIdx, sizeof(unsigned int));
+		output_out.write((const char*)&ve_in.eSemantic, sizeof(VertexAttributeSemantic));
+		output_out.write((const char*)&ve_in.nSemanticIdx, sizeof(unsigned int));
 
 		return output_out;
 	}
@@ -115,8 +115,8 @@ namespace Synesthesia3D
 	{
 		s_in.read((char*)&ve_out.nOffset, sizeof(unsigned int));
 		s_in.read((char*)&ve_out.eType, sizeof(VertexAttributeType));
-		s_in.read((char*)&ve_out.eUsage, sizeof(VertexAttributeUsage));
-		s_in.read((char*)&ve_out.nUsageIdx, sizeof(unsigned int));
+		s_in.read((char*)&ve_out.eSemantic, sizeof(VertexAttributeSemantic));
+		s_in.read((char*)&ve_out.nSemanticIdx, sizeof(unsigned int));
 
 		return s_in;
 	}
