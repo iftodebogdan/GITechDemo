@@ -25,7 +25,6 @@
 
 #include "d3dx9.h"
 #include "ShaderProgram.h"
-#include "ShaderTemplate.h"
 
 namespace Synesthesia3D
 {
@@ -37,9 +36,9 @@ namespace Synesthesia3D
 		ShaderProgramDX9(const ShaderProgramType programType, const char* srcData = "", const char* entryPoint = "", const char* profile = "");
 		~ShaderProgramDX9();
 
-		void Enable();
+		void Enable(ShaderInput* const shaderInput);
 		void Disable();
-		const bool Compile(const char* filePath, char* const errors, const char* entryPoint = "", const char* profile = "");
+		const bool Compile(const char* filePath, const char* entryPoint = "");
 		
 		void Bind();
 		void Unbind();

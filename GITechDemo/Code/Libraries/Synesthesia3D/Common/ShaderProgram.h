@@ -27,11 +27,12 @@
 
 namespace Synesthesia3D
 {
+	class ShaderProgram;
+	class ShaderInput;
 	class Texture;
 
 	/**
-	 * @brief	Holds the actual shader program.
-	 * @note	Currently, all member functions are protected. Use shader templates!
+	 * @brief	The bridge between a shader program and its inputs.
 	 */
 	class ShaderProgram
 	{
@@ -39,29 +40,48 @@ namespace Synesthesia3D
 	public:
 
 		/**
+		 * @brief	Binds the shader inputs and sets the shader to an active state.
+		 *
+		 * @param[in]	shaderInput		Pointer to a @ref ShaderInput object matching this shader binary.
+		 */
+		virtual	SYNESTHESIA3D_DLL void Enable(ShaderInput* const shaderInput);
+
+		/**
+		 * @brief	Binds the shader inputs and sets the shader to an active state.
+		 *
+		 * @param[in]	shaderInput		Reference to a @ref ShaderInput object matching this shader binary.
+		 */
+		virtual	SYNESTHESIA3D_DLL void Enable(ShaderInput& shaderInput);
+
+		/**
+		 * @brief	Sets the shader to an inactive state.
+		 */
+		virtual	SYNESTHESIA3D_DLL void Disable();
+
+		/**
+		 * @brief	Retrieves the constant table.
+		 */
+				SYNESTHESIA3D_DLL const std::vector<ShaderInputDesc> GetConstantTable();
+		
+		/**
 		 * @brief	Retrieves the shader type.
 		 */
-		const ShaderProgramType	GetProgramType() const;
+				SYNESTHESIA3D_DLL const ShaderProgramType	GetProgramType() const;
 		
 		/**
 		 * @brief	Retrieves the source file from which the shader was compiled.
 		 */
-		const char* const GetFilePath() const;
+				SYNESTHESIA3D_DLL const char* const GetFilePath() const;
 		
 		/**
 		 * @brief	Retrieves the compilation errors.
 		 */
-		const char* const GetCompilationErrors() const;
+				SYNESTHESIA3D_DLL const char* const GetCompilationErrors() const;
 		
 		/**
 		 * @brief	Retrieves the entry point function name.
 		 */
-		const char* const GetEntryPoint() const;
-		
-		/**
-		 * @brief	Retrieves the shader profile.
-		 */
-		const char* const GetProfile() const;
+				SYNESTHESIA3D_DLL const char* const GetEntryPoint() const;
 
 	protected:
 		
@@ -84,19 +104,24 @@ namespace Synesthesia3D
 		virtual ~ShaderProgram();
 
 		/**
-		 * @brief	Sets the shader to an active state.
+		 * @brief	Populate the @ref ShaderInputDesc array.
 		 */
-		virtual void Enable() PURE_VIRTUAL;
-		
+		void DescribeShaderInputs();
+
 		/**
-		 * @brief	Sets the shader to an inactive state.
+		 * @brief	Retrieves the total number of registers used by the shader program.
 		 */
-		virtual void Disable() PURE_VIRTUAL;
+		const unsigned int GetTotalNumberOfUsedRegisters() const;
+
+		/**
+		 * @brief	Retrieves the total size, in bytes, of shader inputs.
+		 */
+		const unsigned int GetTotalSizeOfInputConstants() const;
 		
 		/**
 		 * @brief	Compiles the shader source.
 		 */
-		virtual const bool Compile(const char* srcData, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "") PURE_VIRTUAL;
+		virtual const bool Compile(const char* filePath, const char* entryPoint = "");
 		
 		/**
 		 * @brief	Creates the platform specific resource.
@@ -250,13 +275,14 @@ namespace Synesthesia3D
 		 */
 		virtual void SetTexture(const unsigned int registerIndex, const Texture* const tex) PURE_VIRTUAL;
 
-		ShaderProgramType m_eProgramType;	/**< @brief Shader type. */
-		std::string m_szSrcFile;			/**< @brief File containing shader source code. */
-		std::string m_szErrors;				/**< @brief Compilation errors. */
-		std::string m_szEntryPoint;			/**< @brief Shader entry point function. */
-		std::string m_szProfile;			/**< @brief Shader profile. */
+		ShaderProgramType m_eProgramType;				/**< @brief Shader type. */
+		std::string m_szSrcFile;						/**< @brief File containing shader source code. */
+		std::string m_szErrors;							/**< @brief Compilation errors. */
+		std::string m_szEntryPoint;						/**< @brief Shader entry point function. */
+		std::vector<ShaderInputDesc> m_arrInputDesc;	/**< @brief An array containing metadata regarding each shader input. */
+		ShaderInput* m_pShaderInput;					/**< @brief A pointer to the currently active shader input */
 
-		friend class ShaderTemplate;
+		friend class ShaderInput;
 		friend class ResourceManager;
 	};
 }

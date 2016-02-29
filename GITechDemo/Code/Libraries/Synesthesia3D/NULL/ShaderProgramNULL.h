@@ -24,7 +24,6 @@
 #define SHADERPROGRAMNULL_H
 
 #include "ShaderProgram.h"
-#include "ShaderTemplate.h"
 
 namespace Synesthesia3D
 {
@@ -39,7 +38,7 @@ namespace Synesthesia3D
 
 		void Enable() {}
 		void Disable() {}
-		const bool Compile(const char* /*srcData*/, char* const /*errors*/, const char* /*entryPoint = ""*/, const char* /*profile = ""*/) { return true; }
+		const bool Compile(const char* /*filePath*/, const char* /*entryPoint = ""*/) { return true; }
 		
 		void Bind() {}
 		void Unbind() {}

@@ -40,7 +40,6 @@ extern MUTEX	IBMutex;
 extern MUTEX	VBMutex;
 extern MUTEX	ShdInMutex;
 extern MUTEX	ShdProgMutex;
-extern MUTEX	ShdTmplMutex;
 extern MUTEX	TexMutex;
 extern MUTEX	RTMutex;
 extern MUTEX	ModelMutex;
@@ -126,13 +125,19 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
 	return ret;
 }
 
-const unsigned int ResourceManagerDX9::CreateShaderProgram(const ShaderProgramType programType)
+const unsigned int ResourceManagerDX9::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
 {
-	ShaderProgram* sp = new ShaderProgramDX9(programType);
+	PUSH_PROFILE_MARKER(__FUNCSIG__);
+
+	ShaderProgramDX9* sp = new ShaderProgramDX9(programType);
 	MUTEX_LOCK(ShdProgMutex);
 	m_arrShaderProgram.push_back(sp);
 	const unsigned int ret = (unsigned int)m_arrShaderProgram.size() - 1;
 	MUTEX_UNLOCK(ShdProgMutex);
+	sp->Compile(filePath, entryPoint);
+
+	POP_PROFILE_MARKER();
+
 	return ret;
 }
 

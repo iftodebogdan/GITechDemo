@@ -333,9 +333,6 @@
     <ClInclude Include="NULL\SamplerStateNULL.h">
       <Filter>NULL</Filter>
     </ClInclude>
-    <ClInclude Include="NULL\ShaderProgramNULL.h">
-      <Filter>NULL</Filter>
-    </ClInclude>
     <ClInclude Include="NULL\TextureNULL.h">
       <Filter>NULL</Filter>
     </ClInclude>
@@ -355,9 +352,6 @@
       <Filter>DX9</Filter>
     </ClInclude>
     <ClInclude Include="DX9\SamplerStateDX9.h">
-      <Filter>DX9</Filter>
-    </ClInclude>
-    <ClInclude Include="DX9\ShaderProgramDX9.h">
       <Filter>DX9</Filter>
     </ClInclude>
     <ClInclude Include="DX9\TextureDX9.h">
@@ -381,12 +375,6 @@
     <ClInclude Include="Common\ShaderInput.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Common\ShaderProgram.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ShaderTemplate.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Texture.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -395,6 +383,11 @@
     </ClInclude>
     <ClInclude Include="Utility\Hash.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ShaderProgramDX9.h" />
+    <ClInclude Include="NULL\ShaderProgramNULL.h" />
+    <ClInclude Include="Common\ShaderProgram.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -456,9 +449,6 @@
     <ClCompile Include="NULL\SamplerStateNULL.cpp">
       <Filter>NULL</Filter>
     </ClCompile>
-    <ClCompile Include="NULL\ShaderProgramNULL.cpp">
-      <Filter>NULL</Filter>
-    </ClCompile>
     <ClCompile Include="NULL\TextureNULL.cpp">
       <Filter>NULL</Filter>
     </ClCompile>
@@ -478,9 +468,6 @@
       <Filter>DX9</Filter>
     </ClCompile>
     <ClCompile Include="DX9\SamplerStateDX9.cpp">
-      <Filter>DX9</Filter>
-    </ClCompile>
-    <ClCompile Include="DX9\ShaderProgramDX9.cpp">
       <Filter>DX9</Filter>
     </ClCompile>
     <ClCompile Include="DX9\TextureDX9.cpp">
@@ -504,13 +491,12 @@
     <ClCompile Include="Common\ShaderInput.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Common\ShaderProgram.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\ShaderTemplate.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Texture.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
+    <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
+    <ClCompile Include="Common\ShaderProgram.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>

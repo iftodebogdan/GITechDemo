@@ -70,7 +70,7 @@ namespace GITechDemoApp
 
 	extern AABoxf SceneAABB;
 
-	float CAMERA_MOVE_SPEED = 15.f;
+	float CAMERA_MOVE_SPEED = 250.f;
 	float CAMERA_SPEED_UP_FACTOR = 5.f;
 	float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
 	float CAMERA_ROTATE_SPEED = 75.f;
@@ -472,7 +472,7 @@ void GITechDemo::Update(const float fDeltaTime)
 			m_tCamera.fSpeedFactor = 1.f;
 
 		gmtl::normalize(m_tCamera.vMoveVec);
-		m_tCamera.vMoveVec *= CAMERA_MOVE_SPEED * m_tCamera.fSpeedFactor;
+		m_tCamera.vMoveVec *= CAMERA_MOVE_SPEED * m_tCamera.fSpeedFactor * fDeltaTime;
 		m_tCamera.vPos -=
 			Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][1] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
 			Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);

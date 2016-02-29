@@ -298,7 +298,6 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="Common\SamplerState.h" />
     <ClInclude Include="Common\ShaderInput.h" />
     <ClInclude Include="Common\ShaderProgram.h" />
-    <ClInclude Include="Common\ShaderTemplate.h" />
     <ClInclude Include="Common\Texture.h" />
     <ClInclude Include="DX9\MappingsDX9.h" />
     <ClInclude Include="DX9\RenderStateDX9.h" />
@@ -314,6 +313,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="DX9\IndexBufferDX9.h" />
     <ClInclude Include="Common\RenderState.h" />
     <ClInclude Include="Common\Renderer.h" />
+    <ClInclude Include="NULL\ShaderProgramNULL.h" />
     <ClInclude Include="Utility\Hash.h" />
     <ClInclude Include="NULL\IndexBufferNULL.h" />
     <ClInclude Include="NULL\RendererNULL.h" />
@@ -321,7 +321,6 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="NULL\RenderTargetNULL.h" />
     <ClInclude Include="NULL\ResourceManagerNULL.h" />
     <ClInclude Include="NULL\SamplerStateNULL.h" />
-    <ClInclude Include="NULL\ShaderProgramNULL.h" />
     <ClInclude Include="NULL\TextureNULL.h" />
     <ClInclude Include="NULL\VertexBufferNULL.h" />
     <ClInclude Include="NULL\VertexFormatNULL.h" />
@@ -407,7 +406,6 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClCompile Include="Common\SamplerState.cpp" />
     <ClCompile Include="Common\ShaderInput.cpp" />
     <ClCompile Include="Common\ShaderProgram.cpp" />
-    <ClCompile Include="Common\ShaderTemplate.cpp" />
     <ClCompile Include="Common\Texture.cpp" />
     <ClCompile Include="DX9\MappingsDX9.cpp" />
     <ClCompile Include="DX9\RenderStateDX9.cpp" />

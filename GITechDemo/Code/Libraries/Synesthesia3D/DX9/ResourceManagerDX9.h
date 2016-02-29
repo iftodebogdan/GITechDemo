@@ -43,11 +43,9 @@ namespace Synesthesia3D
 			VertexFormat* const vertexFormat, const unsigned int vertexCount,
 			IndexBuffer* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC);
 
-		const unsigned int CreateShaderInput(ShaderTemplate* const shaderTemplate);
+		const unsigned int CreateShaderInput(ShaderProgram* const shaderProgram);
 
-		const unsigned int CreateShaderProgram(const ShaderProgramType programType);
-
-		const unsigned int CreateShaderTemplate(ShaderProgram* const shaderProgram);
+		const unsigned int CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint = "");
 
 		const unsigned int CreateTexture(
 			const PixelFormat pixelFormat, const TextureType texType,

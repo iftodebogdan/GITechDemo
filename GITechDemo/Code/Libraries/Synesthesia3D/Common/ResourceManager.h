@@ -32,7 +32,7 @@ namespace Synesthesia3D
 	class IndexBuffer;
 	class Texture;
 	class ShaderProgram;
-	class ShaderTemplate;
+	class ShaderProgram;
 	class ShaderInput;
 	class RenderTarget;
 
@@ -120,25 +120,13 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Creates a shader input helper.
 		 *
-		 * @param[in]	shaderTemplate		Description of shader inputs.
+		 * @param[in]	shaderProgram		Description of shader inputs.
 		 *
 		 * @return	Resource ID corresponding to the created resource.
 		 *
 		 * @see		ShaderInput
 		 */
-				SYNESTHESIA3D_DLL	const unsigned int		CreateShaderInput(ShaderTemplate* const shaderTemplate);
-
-		/**
-		 * @brief	Creates a shader program
-		 * @note	Support for deferred creation of shader programs.
-		 *
-		 * @param[in]	programType		Shader stage.
-		 *
-		 * @return	Resource ID corresponding to the created resource.
-		 *
-		 * @see		ShaderProgram
-		 */
-		virtual	SYNESTHESIA3D_DLL	const unsigned int		CreateShaderProgram(const ShaderProgramType programType) PURE_VIRTUAL;
+				SYNESTHESIA3D_DLL	const unsigned int		CreateShaderInput(ShaderProgram* const shaderProgram);
 
 		/**
 		 * @brief	Creates a shader program.
@@ -153,19 +141,7 @@ namespace Synesthesia3D
 		 *
 		 * @see		ShaderProgram
 		 */
-				SYNESTHESIA3D_DLL	const unsigned int		CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors = nullptr, const char* entryPoint = "", const char* profile = "");
-
-		/**
-		 * @brief	Creates a shader template from a shader program.
-		 *
-		 * @param[in]	shaderProgram	A compiled shader program.
-		 *
-		 * @return	Resource ID corresponding to the created resource.
-		 *
-		 * @see		ShaderTemplate
-		 * @todo:	Shader templates will be extended in the future to encompass multiple passes / techniques.
-		 */
-				SYNESTHESIA3D_DLL	const unsigned int		CreateShaderTemplate(ShaderProgram* const shaderProgram);
+		virtual	SYNESTHESIA3D_DLL	const unsigned int		CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint = "") PURE_VIRTUAL;
 
 		/**
 		 * @brief	Creates a texture.
@@ -340,18 +316,7 @@ namespace Synesthesia3D
 		 * @see	CreateShaderProgram()
 		 */
 				SYNESTHESIA3D_DLL ShaderProgram*	const	GetShaderProgram(const unsigned int idx)	const;
-				
-		/**
-		 * @brief	Gets a shader template.
-		 *
-		 * @param[in]	idx		Resource ID.
-		 *
-		 * @return	Shader template object corresponding to the provided resource ID.
-		 *
-		 * @see	CreateShaderTemplate()
-		 */
-				SYNESTHESIA3D_DLL ShaderTemplate*	const	GetShaderTemplate(const unsigned idx)		const;
-				
+
 		/**
 		 * @brief	Gets a texture.
 		 *
@@ -429,16 +394,7 @@ namespace Synesthesia3D
 		 * @see	GetShaderProgram()
 		 */
 				SYNESTHESIA3D_DLL	const unsigned int		GetShaderProgramCount()		const;
-				
-		/**
-		 * @brief	Gets the number of shader templates.
-		 *
-		 * @return	The number of shader template objects.
-		 *
-		 * @see	GetShaderTemplate()
-		 */
-				SYNESTHESIA3D_DLL	const unsigned int		GetShaderTemplateCount()	const;
-				
+
 		/**
 		 * @brief	Gets the number of texture.
 		 *
@@ -538,16 +494,7 @@ namespace Synesthesia3D
 		 * @see CreateShaderProgram()
 		 */
 				SYNESTHESIA3D_DLL			void			ReleaseShaderProgram(const unsigned int idx);
-				
-		/**
-		 * @brief	Destroys a shader template.
-		 *
-		 * @param[in]	idx		Resource ID.
-		 *
-		 * @see CreateShaderTemplate()
-		 */
-				SYNESTHESIA3D_DLL			void			ReleaseShaderTemplate(const unsigned idx);
-				
+
 		/**
 		 * @brief	Destroys a texture.
 		 *
@@ -598,7 +545,6 @@ namespace Synesthesia3D
 		std::vector<VertexBuffer*>		m_arrVertexBuffer;		/**< @brief Array of vertex buffers created by the resource manager. */
 		std::vector<ShaderInput*>		m_arrShaderInput;		/**< @brief Array of shader inputs created by the resource manager */
 		std::vector<ShaderProgram*>		m_arrShaderProgram;		/**< @brief Array of shader programs created by the resource manager. */
-		std::vector<ShaderTemplate*>	m_arrShaderTemplate;	/**< @brief Array of shader templates created by the resource manager. */
 		std::vector<Texture*>			m_arrTexture;			/**< @brief Array of textures created by the resource manager. */
 		std::vector<RenderTarget*>		m_arrRenderTarget;		/**< @brief Array of render targets created by the resource manager. */
 		std::vector<Model*>				m_arrModel;				/**< @brief Array of models created by the resource manager. */

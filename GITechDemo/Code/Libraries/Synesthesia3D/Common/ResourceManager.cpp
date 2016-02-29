@@ -27,7 +27,6 @@
 #include "VertexBuffer.h"
 #include "ShaderInput.h"
 #include "ShaderProgram.h"
-#include "ShaderTemplate.h"
 #include "Texture.h"
 #include "RenderTarget.h"
 #include "Renderer.h"
@@ -44,7 +43,6 @@ MUTEX	IBMutex;
 MUTEX	VBMutex;
 MUTEX	ShdInMutex;
 MUTEX	ShdProgMutex;
-MUTEX	ShdTmplMutex;
 MUTEX	TexMutex;
 MUTEX	RTMutex;
 MUTEX	ModelMutex;
@@ -60,7 +58,6 @@ ResourceManager::ResourceManager()
 		MUTEX_INIT(VBMutex);
 		MUTEX_INIT(ShdInMutex);
 		MUTEX_INIT(ShdProgMutex);
-		MUTEX_INIT(ShdTmplMutex);
 		MUTEX_INIT(TexMutex);
 		MUTEX_INIT(RTMutex);
 		MUTEX_INIT(ModelMutex);
@@ -81,7 +78,6 @@ ResourceManager::~ResourceManager()
 		GetVertexBufferCount() ||
 		GetShaderInputCount() ||
 		GetShaderProgramCount() ||
-		GetShaderTemplateCount() ||
 		GetTextureCount() ||
 		GetRenderTargetCount() ||
 		GetModelCount())
@@ -94,7 +90,6 @@ ResourceManager::~ResourceManager()
 		MUTEX_DESTROY(VBMutex);
 		MUTEX_DESTROY(ShdInMutex);
 		MUTEX_DESTROY(ShdProgMutex);
-		MUTEX_DESTROY(ShdTmplMutex);
 		MUTEX_DESTROY(TexMutex);
 		MUTEX_DESTROY(RTMutex);
 		MUTEX_DESTROY(ModelMutex);
@@ -121,8 +116,6 @@ void ResourceManager::ReleaseAll()
 		delete m_arrShaderInput[i];
 	for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
 		delete m_arrShaderProgram[i];
-	for (unsigned int i = 0; i < m_arrShaderTemplate.size(); i++)
-		delete m_arrShaderTemplate[i];
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		delete m_arrRenderTarget[i];
 	for (unsigned int i = 0; i < m_arrTexture.size(); i++)
@@ -134,7 +127,6 @@ void ResourceManager::ReleaseAll()
 	m_arrVertexBuffer.clear();
 	m_arrShaderInput.clear();
 	m_arrShaderProgram.clear();
-	m_arrShaderTemplate.clear();
 	m_arrTexture.clear();
 	m_arrRenderTarget.clear();
 
@@ -193,41 +185,13 @@ void ResourceManager::UnbindAll()
 	POP_PROFILE_MARKER();
 }
 
-const unsigned int ResourceManager::CreateShaderInput(ShaderTemplate* const shaderTemplate)
+const unsigned int ResourceManager::CreateShaderInput(ShaderProgram* const shaderProgram)
 {
-	ShaderInput* const shdIn = new ShaderInput(shaderTemplate);
+	ShaderInput* const shdIn = new ShaderInput(shaderProgram);
 	MUTEX_LOCK(ShdInMutex);
 	m_arrShaderInput.push_back(shdIn);
 	const unsigned int ret = (unsigned int)m_arrShaderInput.size() - 1;
 	MUTEX_UNLOCK(ShdInMutex);
-	return ret;
-}
-
-const unsigned int ResourceManager::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, char* const errors, const char* entryPoint, const char* profile)
-{
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
-	const unsigned int spIdx = CreateShaderProgram(programType);
-	ShaderProgram* const sp = GetShaderProgram(spIdx);
-	sp->Compile(filePath, errors, entryPoint, profile);
-
-	POP_PROFILE_MARKER();
-
-	return spIdx;
-}
-
-const unsigned int ResourceManager::CreateShaderTemplate(ShaderProgram* const shaderProgram)
-{
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
-	ShaderTemplate* const shdTmpl = new ShaderTemplate(shaderProgram);
-	MUTEX_LOCK(ShdTmplMutex);
-	m_arrShaderTemplate.push_back(shdTmpl);
-	const unsigned int ret = (unsigned int)m_arrShaderTemplate.size() - 1;
-	MUTEX_UNLOCK(ShdTmplMutex);
-
-	POP_PROFILE_MARKER();
-
 	return ret;
 }
 
@@ -361,14 +325,6 @@ ShaderProgram* const ResourceManager::GetShaderProgram(const unsigned int idx) c
 	return m_arrShaderProgram[idx];
 }
 
-ShaderTemplate* const ResourceManager::GetShaderTemplate(const unsigned idx) const
-{
-	assert(idx < m_arrShaderTemplate.size());
-	if (idx >= m_arrShaderTemplate.size())
-		return nullptr;
-	return m_arrShaderTemplate[idx];
-}
-
 Texture* const ResourceManager::GetTexture(const unsigned int idx) const
 {
 	assert(idx < m_arrTexture.size());
@@ -416,11 +372,6 @@ const unsigned int ResourceManager::GetShaderInputCount() const
 const unsigned int ResourceManager::GetShaderProgramCount() const
 {
 	return (unsigned int)m_arrShaderProgram.size();
-}
-
-const unsigned int ResourceManager::GetShaderTemplateCount() const
-{
-	return (unsigned int)m_arrShaderTemplate.size();
 }
 
 const unsigned int ResourceManager::GetTextureCount() const
@@ -502,16 +453,6 @@ void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 	m_arrShaderProgram[idx] = nullptr;
 
 	POP_PROFILE_MARKER();
-}
-
-void ResourceManager::ReleaseShaderTemplate(const unsigned idx)
-{
-	assert(idx < m_arrShaderTemplate.size());
-	if (idx >= m_arrShaderTemplate.size())
-		return;
-
-	delete m_arrShaderTemplate[idx];
-	m_arrShaderTemplate[idx] = nullptr;
 }
 
 void ResourceManager::ReleaseTexture(const unsigned int idx)

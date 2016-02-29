@@ -40,7 +40,7 @@ ShaderProgramDX9::ShaderProgramDX9(const ShaderProgramType programType,
 	if (strlen(srcData))
 	{
 		PUSH_PROFILE_MARKER(__FUNCSIG__);
-		Compile(srcData, nullptr, entryPoint, profile);
+		Compile(srcData, entryPoint);
 		POP_PROFILE_MARKER();
 	}
 }
@@ -54,8 +54,12 @@ ShaderProgramDX9::~ShaderProgramDX9()
 	POP_PROFILE_MARKER();
 }
 
-void ShaderProgramDX9::Enable()
+void ShaderProgramDX9::Enable(ShaderInput* const shaderInput)
 {
+	PUSH_PROFILE_MARKER((m_szSrcFile + " : " + m_szEntryPoint + "()").c_str());
+
+	ShaderProgram::Enable(shaderInput);
+
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	assert(m_pVertexShader || m_pPixelShader);
@@ -71,6 +75,8 @@ void ShaderProgramDX9::Enable()
 		hr = device->SetPixelShader(m_pPixelShader);
 	}
 	assert(SUCCEEDED(hr));
+
+	POP_PROFILE_MARKER();
 
 	POP_PROFILE_MARKER();
 }
@@ -114,36 +120,33 @@ void ShaderProgramDX9::Disable()
 	}
 	assert(SUCCEEDED(hr));
 
+	ShaderProgram::Disable();
+
 	POP_PROFILE_MARKER();
 }
 
-const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, const char* entryPoint, const char* profile)
+const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoint)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-	m_szSrcFile = filePath;
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
+	const char* profile;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
-		if (strlen(profile) == 0)
-			profile = "vs_3_0";
+		profile = "vs_3_0";
 		if (strlen(entryPoint) == 0)
 			entryPoint = "vsmain";
 		break;
 	case SPT_PIXEL:
-		if (strlen(profile) == 0)
-			profile = "ps_3_0";
+		profile = "ps_3_0";
 		if (strlen(entryPoint) == 0)
 			entryPoint = "psmain";
 	}
 
 	LPD3DXBUFFER compiledData = nullptr;
 	LPD3DXBUFFER errorMsg = nullptr;
-	m_szEntryPoint = entryPoint;
-	m_szProfile = profile;
 	DWORD flags = NULL;
 
 #if defined(_DEBUG) || defined(_PROFILE)
@@ -164,12 +167,11 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 		//DWORD size = errorMsg->GetBufferSize();
 		const char* data = (const char*)errorMsg->GetBufferPointer();
 		cout << endl << data << endl;
+		OutputDebugString("[S3D] Error:\n");
+		OutputDebugString(data);
 		assert(compiledData);
 	}
 #endif
-
-	if (errors && errorMsg)
-		strcpy_s(errors, (int)errorMsg->GetBufferSize(), (const char*)errorMsg->GetBufferPointer());
 
 	if (errorMsg)
 		m_szErrors = (const char*)errorMsg->GetBufferPointer();
@@ -207,9 +209,11 @@ const bool ShaderProgramDX9::Compile(const char* filePath, char* const errors, c
 		refCount = errorMsg->Release();
 	assert(refCount == 0);
 
+	const bool ret = ShaderProgram::Compile(filePath, entryPoint);
+
 	POP_PROFILE_MARKER();
 
-	return true;
+	return ret;
 }
 
 const unsigned int ShaderProgramDX9::GetConstantCount() const
@@ -512,7 +516,7 @@ void ShaderProgramDX9::Bind()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	if (m_szSrcFile.length())
-		Compile(m_szSrcFile.c_str(), nullptr, m_szEntryPoint.c_str(), m_szProfile.c_str());
+		Compile(m_szSrcFile.c_str(), m_szEntryPoint.c_str());
 
 	POP_PROFILE_MARKER();
 }

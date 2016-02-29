@@ -24,7 +24,6 @@
 
 #include "Renderer.h"
 #include "ShaderInput.h"
-#include "ShaderTemplate.h"
 #include "ResourceManager.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
@@ -46,11 +45,11 @@ using namespace Synesthesia3D;
 ///////////////////////////////////////////////////////////////////////////////
 
 
-ShaderInput::ShaderInput(ShaderTemplate* const shaderTemplate)
-	: Buffer(shaderTemplate->GetTotalSizeOfInputConstants(), 1u, BU_NONE)
-	, m_pShaderTemplate(shaderTemplate)
+ShaderInput::ShaderInput(ShaderProgram* const shaderProgram)
+	: Buffer(shaderProgram->GetTotalSizeOfInputConstants(), 1u, BU_NONE)
+	, m_pShaderProgram(shaderProgram)
 {
-	assert(shaderTemplate);
+	assert(shaderProgram);
 }
 
 ShaderInput::~ShaderInput()
@@ -60,10 +59,10 @@ const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsign
 {
 	const unsigned int nNameHash = S3DHASH(inputName);
 
-	for (unsigned int i = 0, n = (unsigned int)m_pShaderTemplate->m_arrInputDesc.size(); i < n; i++)
+	for (unsigned int i = 0, n = (unsigned int)m_pShaderProgram->m_arrInputDesc.size(); i < n; i++)
 	{
-		//if (m_pShaderTemplate->m_arrInputDesc[i].szName.compare(inputName) == 0)
-		if (m_pShaderTemplate->m_arrInputDesc[i].nNameHash == nNameHash)
+		//if (m_pShaderProgram->m_arrInputDesc[i].szName.compare(inputName) == 0)
+		if (m_pShaderProgram->m_arrInputDesc[i].nNameHash == nNameHash)
 		{
 			inputHandle = i;
 			return true;
@@ -75,8 +74,8 @@ const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsign
 #ifdef _DEBUG
 	if(Renderer::GetInstance()->GetAPI() != API_NULL)
 		std::cout << "Could not find input \"" << inputName << "\" in " <<
-			(m_pShaderTemplate->m_pProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
-			" shader: \"" << m_pShaderTemplate->m_pProgram->GetFilePath() << "\"\n";
+			(m_pShaderProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
+			" shader: \"" << m_pShaderProgram->GetFilePath() << "\"\n";
 #endif
 
 	return false;
@@ -84,9 +83,9 @@ const bool ShaderInput::GetInputHandleByName(const char* const inputName, unsign
 
 const bool ShaderInput::GetInputHandleByNameHash(const unsigned int inputNameHash, unsigned int& inputHandle) const
 {
-	for (unsigned int i = 0, n = (unsigned int)m_pShaderTemplate->m_arrInputDesc.size(); i < n; i++)
+	for (unsigned int i = 0, n = (unsigned int)m_pShaderProgram->m_arrInputDesc.size(); i < n; i++)
 	{
-		if (m_pShaderTemplate->m_arrInputDesc[i].nNameHash == inputNameHash)
+		if (m_pShaderProgram->m_arrInputDesc[i].nNameHash == inputNameHash)
 		{
 			inputHandle = i;
 			return true;
@@ -98,8 +97,8 @@ const bool ShaderInput::GetInputHandleByNameHash(const unsigned int inputNameHas
 #ifdef _DEBUG
 	if (Renderer::GetInstance()->GetAPI() != API_NULL)
 		std::cout << "Could not find input with hash value \"" << std::hex << inputNameHash << std::dec << "\" in " <<
-		(m_pShaderTemplate->m_pProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
-		" shader: \"" << m_pShaderTemplate->m_pProgram->GetFilePath() << "\"\n";
+		(m_pShaderProgram->GetProgramType() == SPT_VERTEX ? "vertex" : "pixel") <<
+		" shader: \"" << m_pShaderProgram->GetFilePath() << "\"\n";
 #endif
 
 	return false;
@@ -107,8 +106,8 @@ const bool ShaderInput::GetInputHandleByNameHash(const unsigned int inputNameHas
 
 void ShaderInput::SetBoolArray(const unsigned int handle, const bool* const data)
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	
 	switch (desc.eRegisterType)
 	{
@@ -172,8 +171,8 @@ void ShaderInput::SetBool4(const unsigned int handle, const Vec<bool, 4> data)
 
 void ShaderInput::SetFloatArray(const unsigned int handle, const float* const data)
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	for (unsigned int i = 0; i < desc.nArrayElements; i++)
 	{
 		memcpy(
@@ -221,8 +220,8 @@ void ShaderInput::SetFloat4(const unsigned int handle, const Vec4f data)
 
 void ShaderInput::SetIntArray(const unsigned int handle, const int* const data)
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 
 	switch (desc.eRegisterType)
 	{
@@ -288,8 +287,8 @@ void ShaderInput::SetInt4(const unsigned int handle, const Vec4i data)
 
 const bool ShaderInput::GetBool(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_BOOL);
 	assert(desc.nColumns == 1);
@@ -301,8 +300,8 @@ const bool ShaderInput::GetBool(const unsigned int handle, const unsigned int id
 
 const Vec<bool, 2> ShaderInput::GetBool2(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_BOOL);
 	assert(desc.nColumns == 2);
@@ -322,8 +321,8 @@ const Vec<bool, 2> ShaderInput::GetBool2(const unsigned int handle, const unsign
 
 const Vec<bool, 3> ShaderInput::GetBool3(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_BOOL);
 	assert(desc.nColumns == 3);
@@ -345,8 +344,8 @@ const Vec<bool, 3> ShaderInput::GetBool3(const unsigned int handle, const unsign
 
 const Vec<bool, 4> ShaderInput::GetBool4(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_BOOL);
 	assert(desc.nColumns == 4);
@@ -370,8 +369,8 @@ const Vec<bool, 4> ShaderInput::GetBool4(const unsigned int handle, const unsign
 
 const int ShaderInput::GetInt(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_INT);
 	assert(desc.nColumns == 1);
@@ -383,8 +382,8 @@ const int ShaderInput::GetInt(const unsigned int handle, const unsigned int idx)
 
 const Vec2i ShaderInput::GetInt2(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_INT);
 	assert(desc.nColumns == 2);
@@ -404,8 +403,8 @@ const Vec2i ShaderInput::GetInt2(const unsigned int handle, const unsigned int i
 
 const Vec3i ShaderInput::GetInt3(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_INT);
 	assert(desc.nColumns == 3);
@@ -427,8 +426,8 @@ const Vec3i ShaderInput::GetInt3(const unsigned int handle, const unsigned int i
 
 const Vec4i ShaderInput::GetInt4(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_INT);
 	assert(desc.nColumns == 4);
@@ -452,8 +451,8 @@ const Vec4i ShaderInput::GetInt4(const unsigned int handle, const unsigned int i
 
 const float ShaderInput::GetFloat(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_FLOAT);
 	assert(desc.nColumns == 1);
@@ -462,8 +461,8 @@ const float ShaderInput::GetFloat(const unsigned int handle, const unsigned int 
 
 const Vec2f ShaderInput::GetFloat2(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_FLOAT);
 	assert(desc.nColumns == 2);
@@ -475,8 +474,8 @@ const Vec2f ShaderInput::GetFloat2(const unsigned int handle, const unsigned int
 
 const Vec3f ShaderInput::GetFloat3(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_FLOAT);
 	assert(desc.nColumns == 3);
@@ -489,8 +488,8 @@ const Vec3f ShaderInput::GetFloat3(const unsigned int handle, const unsigned int
 
 const Vec4f ShaderInput::GetFloat4(const unsigned int handle, const unsigned int idx) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	ShaderInputDesc desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	ShaderInputDesc desc = m_pShaderProgram->m_arrInputDesc[handle];
 	assert(idx < desc.nArrayElements);
 	assert(desc.eInputType == IT_FLOAT);
 	assert(desc.nColumns == 4);
@@ -524,16 +523,16 @@ const Matrix44f ShaderInput::GetMatrix4x4(const unsigned int handle, const unsig
 
 Texture* const ShaderInput::GetTexture(const unsigned int handle) const
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 	const unsigned int texIdx = *(unsigned int*)(m_pData + desc.nOffsetInBytes);
 	return Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx);
 }
 
 void ShaderInput::SetTexture(const unsigned int handle, const unsigned int texIdx)
 {
-	assert(handle < m_pShaderTemplate->m_arrInputDesc.size());
-	const ShaderInputDesc& desc = m_pShaderTemplate->m_arrInputDesc[handle];
+	assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+	const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 
 	assert(
 		texIdx == -1 ||
@@ -560,11 +559,11 @@ void ShaderInput::SetTexture(const unsigned int handle, const Texture* const tex
 
 const unsigned int ShaderInput::GetInputCount() const
 {
-	return (unsigned int)m_pShaderTemplate->m_arrInputDesc.size();
+	return (unsigned int)m_pShaderProgram->m_arrInputDesc.size();
 }
 
 const ShaderInputDesc& ShaderInput::GetInputDesc(const unsigned int handle) const
 {
 	assert(handle < GetInputCount());
-	return m_pShaderTemplate->m_arrInputDesc[handle];
+	return m_pShaderProgram->m_arrInputDesc[handle];
 }

@@ -32,7 +32,6 @@ using namespace gmtl;
 namespace Synesthesia3D
 {
 	class ShaderProgram;
-	class ShaderTemplate;
 	class ShaderInput;
 	class Texture;
 	class RenderTarget;
@@ -227,11 +226,6 @@ namespace GITechDemoApp
 		unsigned int	nVertexShaderProgIdx;
 		ShaderProgram*	pPixelShaderProg;
 		unsigned int	nPixelShaderProgIdx;
-
-		ShaderTemplate* pVertexShaderTemplate;
-		unsigned int	nVertexShaderTemplateIdx;
-		ShaderTemplate* pPixelShaderTemplate;
-		unsigned int	nPixelShaderTemplateIdx;
 
 		ShaderInput*	pVertexShaderInput;
 		unsigned int	nVertexShaderInputIdx;

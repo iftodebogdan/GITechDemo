@@ -42,7 +42,6 @@ extern MUTEX	IBMutex;
 extern MUTEX	VBMutex;
 extern MUTEX	ShdInMutex;
 extern MUTEX	ShdProgMutex;
-extern MUTEX	ShdTmplMutex;
 extern MUTEX	TexMutex;
 extern MUTEX	RTMutex;
 extern MUTEX	ModelMutex;
@@ -116,7 +115,7 @@ const unsigned int ResourceManagerNULL::CreateVertexBuffer(
 	return ret;
 }
 
-const unsigned int ResourceManagerNULL::CreateShaderProgram(const ShaderProgramType programType)
+const unsigned int ResourceManagerNULL::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
 {
 	ShaderProgram* sp = new ShaderProgramNULL(programType, "", "", "");
 	MUTEX_LOCK(ShdProgMutex);

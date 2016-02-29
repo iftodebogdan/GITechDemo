@@ -22,7 +22,7 @@
 #include "stdafx.h"
 
 #include <Renderer.h>
-#include <ShaderTemplate.h>
+#include <ShaderProgram.h>
 #include <ShaderInput.h>
 #include <RenderTarget.h>
 #include <ResourceManager.h>
@@ -159,14 +159,10 @@ namespace GITechDemoApp
 		: RenderResource(filePath, RES_SHADER)
 		, pVertexShaderProg(nullptr)
 		, pPixelShaderProg(nullptr)
-		, pVertexShaderTemplate(nullptr)
-		, pPixelShaderTemplate(nullptr)
 		, pVertexShaderInput(nullptr)
 		, pPixelShaderInput(nullptr)
 		, nVertexShaderProgIdx(~0u)
 		, nPixelShaderProgIdx(~0u)
-		, nVertexShaderTemplateIdx(~0u)
-		, nPixelShaderTemplateIdx(~0u)
 		, nVertexShaderInputIdx(~0u)
 		, nPixelShaderInputIdx(~0u)
 	{}
@@ -183,14 +179,9 @@ namespace GITechDemoApp
 			nPixelShaderProgIdx = ResMgr->CreateShaderProgram(szDesc.c_str(), SPT_PIXEL);
 			pPixelShaderProg = ResMgr->GetShaderProgram(nPixelShaderProgIdx);
 
-			nVertexShaderTemplateIdx = ResMgr->CreateShaderTemplate(pVertexShaderProg);
-			pVertexShaderTemplate = ResMgr->GetShaderTemplate(nVertexShaderTemplateIdx);
-			nPixelShaderTemplateIdx = ResMgr->CreateShaderTemplate(pPixelShaderProg);
-			pPixelShaderTemplate = ResMgr->GetShaderTemplate(nPixelShaderTemplateIdx);
-
-			nVertexShaderInputIdx = ResMgr->CreateShaderInput(pVertexShaderTemplate);
+			nVertexShaderInputIdx = ResMgr->CreateShaderInput(pVertexShaderProg);
 			pVertexShaderInput = ResMgr->GetShaderInput(nVertexShaderInputIdx);
-			nPixelShaderInputIdx = ResMgr->CreateShaderInput(pPixelShaderTemplate);
+			nPixelShaderInputIdx = ResMgr->CreateShaderInput(pPixelShaderProg);
 			pPixelShaderInput = ResMgr->GetShaderInput(nPixelShaderInputIdx);
 
 			for (int spt = SPT_NONE; spt < SPT_MAX; spt++)
@@ -289,8 +280,6 @@ namespace GITechDemoApp
 		{
 			ResMgr->ReleaseShaderInput(nPixelShaderInputIdx);
 			ResMgr->ReleaseShaderInput(nVertexShaderInputIdx);
-			ResMgr->ReleaseShaderTemplate(nPixelShaderTemplateIdx);
-			ResMgr->ReleaseShaderTemplate(nVertexShaderTemplateIdx);
 			ResMgr->ReleaseShaderProgram(nPixelShaderProgIdx);
 			ResMgr->ReleaseShaderProgram(nVertexShaderProgIdx);
 		}
@@ -300,12 +289,6 @@ namespace GITechDemoApp
 
 		nVertexShaderInputIdx = ~0u;
 		pVertexShaderInput = nullptr;
-
-		nPixelShaderTemplateIdx = ~0u;
-		pPixelShaderTemplate = nullptr;
-
-		nVertexShaderTemplateIdx = ~0u;
-		pVertexShaderTemplate = nullptr;
 
 		nPixelShaderProgIdx = ~0u;
 		pPixelShaderProg = nullptr;
@@ -576,14 +559,14 @@ namespace GITechDemoApp
 			}
 		}
 
-		pVertexShaderTemplate->Enable(pVertexShaderInput);
-		pPixelShaderTemplate->Enable(pPixelShaderInput);
+		pVertexShaderProg->Enable(pVertexShaderInput);
+		pPixelShaderProg->Enable(pPixelShaderInput);
 	}
 
 	void Shader::Disable()
 	{
-		pVertexShaderTemplate->Disable();
-		pPixelShaderTemplate->Disable();
+		pVertexShaderProg->Disable();
+		pPixelShaderProg->Disable();
 
 		POP_PROFILE_MARKER();
 	}

@@ -28,7 +28,7 @@
 namespace Synesthesia3D
 {
 	class Texture;
-	class ShaderTemplate;
+	class ShaderProgram;
 
 	/**
 	 * @brief	Handles data used by the shader during rendering.
@@ -520,9 +520,9 @@ namespace Synesthesia3D
 		 * @details	Meant to be used only by @ref ResourceManager.
 		 * @see		ResourceManager::CreateShaderInput()
 		 *
-		 * @param[in]	shaderTemplate		Shader template object corresponding to the compiled shader program.
+		 * @param[in]	shaderProgram		Shader program object corresponding to the compiled shader binary.
 		 */
-		ShaderInput(ShaderTemplate* const shaderTemplate);
+		ShaderInput(ShaderProgram* const shaderProgram);
 		
 		/**
 		 * @brief	Destructor.
@@ -532,7 +532,7 @@ namespace Synesthesia3D
 		 */
 		virtual ~ShaderInput();
 
-		ShaderTemplate* m_pShaderTemplate;	/**< @brief Pointer to the corresponding shader template. */
+		ShaderProgram* m_pShaderProgram;	/**< @brief Pointer to the corresponding shader program. */
 
 		friend class ResourceManager;
 	};
