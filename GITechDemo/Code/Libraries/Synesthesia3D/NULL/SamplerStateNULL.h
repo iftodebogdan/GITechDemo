@@ -30,7 +30,7 @@ namespace Synesthesia3D
 	class SamplerStateNULL : public SamplerState
 	{
 	public:
-		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
+		const bool	SetAnisotropy(const unsigned int slot, const unsigned int anisotropy);
 		const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
 		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
 		const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba);
@@ -40,6 +40,7 @@ namespace Synesthesia3D
 		const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
 
 		void		Reset() {}
+		const bool	Flush() { return true; }
 
 	protected:
 		SamplerStateNULL() {}

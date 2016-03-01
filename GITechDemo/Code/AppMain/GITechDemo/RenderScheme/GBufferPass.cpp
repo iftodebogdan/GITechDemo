@@ -39,6 +39,7 @@ namespace GITechDemoApp
 {
 	/* G-Buffer generation */
 	bool GBUFFER_Z_PREPASS = false;
+	int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
 }
 
 GBufferPass::GBufferPass(const char* const passName, RenderPass* const parentPass)
@@ -117,7 +118,12 @@ void GBufferPass::Draw()
 	for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
 	{
 		PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
-		
+
+		DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
+		RenderContext->GetResourceManager()->GetTexture(
+			SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx)
+			)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
+
 		texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 		texNormal = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_HEIGHT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 		bHasNormalMap = (texNormal != -1);

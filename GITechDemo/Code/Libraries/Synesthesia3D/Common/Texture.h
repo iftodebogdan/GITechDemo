@@ -295,7 +295,7 @@ namespace Synesthesia3D
 		 *
 		 * @param[in]	anisotropy	Anisotropic filtering level.
 		 */
-				SYNESTHESIA3D_DLL	void	SetAnisotropy(const float anisotropy);
+				SYNESTHESIA3D_DLL	void	SetAnisotropy(const unsigned int anisotropy);
 
 		/**
 		 * @brief	Sets the mip LOD bias.
@@ -363,7 +363,7 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Retrieves the anisotropic filter quality level.
 		 */
-				SYNESTHESIA3D_DLL const float					GetAnisotropy() const;
+				SYNESTHESIA3D_DLL const unsigned int			GetAnisotropy() const;
 
 		/**
 		 * @brief	Retrieves the mip LOD bias.

@@ -52,6 +52,7 @@ namespace GITechDemoApp
 
 	// G-Buffer
 	extern bool GBUFFER_Z_PREPASS;
+	extern int DIFFUSE_ANISOTROPY;
 
 	// Directional light
 	extern bool DIRECTIONAL_LIGHT_ENABLED;
@@ -126,7 +127,8 @@ namespace GITechDemoApp
 
 	// G-Buffer
 	IMPLEMENT_ARTIST_PARAMETER("Z-prepass",					"Populate the scene's depth buffer before generating the G-Buffer",		"G-Buffer",					GBUFFER_Z_PREPASS,							1.f);
-
+	IMPLEMENT_ARTIST_PARAMETER("Diffuse anisotropic level",	"Anisotropic filtering level for diffuse textures",						"G-Buffer",					DIFFUSE_ANISOTROPY,							1.f);
+	
 	// Directional light
 	IMPLEMENT_ARTIST_PARAMETER("Directional lights enable",	"Toggle the rendering of directional lights",							"Directional light",		DIRECTIONAL_LIGHT_ENABLED,					1.f);
 	IMPLEMENT_ARTIST_PARAMETER("BRDF model",				"0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann",	"Directional light",		nBRDFModel.GetCurrentValue(),				1.f);

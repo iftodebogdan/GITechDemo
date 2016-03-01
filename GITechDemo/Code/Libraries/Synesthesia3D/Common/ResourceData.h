@@ -290,7 +290,7 @@ namespace Synesthesia3D
 	 */
 	enum
 	{
-		MAX_ANISOTROPY = 16		/**< @brief Maximum anisotropy level. */
+		MAX_ANISOTROPY = 16u	/**< @brief Maximum anisotropy level. */
 	};
 
 	/**
@@ -339,7 +339,14 @@ namespace Synesthesia3D
 	 */
 	struct SamplerStateDesc
 	{
-		float					fAnisotropy;		/**< @brief Anisotropic filter quality level. */
+		enum
+		{
+			COORD_U = 0,
+			COORD_V = 1,
+			COORD_W = 2
+		};
+
+		unsigned int			nAnisotropy;		/**< @brief Anisotropic filter quality level. */
 		float					fLodBias;			/**< @brief Offset for mip sampling. */
 		SamplerFilter			eFilter;			/**< @brief Sampling filter used. */
 		Vec4f					vBorderColor;		/**< @brief Color of bolder when using SAM_BORDER as the addressing mode. */

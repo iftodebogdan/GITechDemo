@@ -45,7 +45,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
+				SYNESTHESIA3D_DLL	const bool	SetAnisotropy(const unsigned int slot, const unsigned int anisotropy);
 
 		/**
 		 * @brief	Sets the mip LOD bias.
@@ -55,7 +55,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
+				SYNESTHESIA3D_DLL	const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
 
 		/**
 		 * @brief	Sets the texture filtering type.
@@ -67,7 +67,7 @@ namespace Synesthesia3D
 		 *
 		 * @see		SamplerFilter
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
+				SYNESTHESIA3D_DLL	const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
 
 		/**
 		 * @brief	Sets the color of the border.
@@ -78,7 +78,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba);
+				SYNESTHESIA3D_DLL	const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba);
 
 		/**
 		 * @brief	Sets the texture addressing mode on the U axis.
@@ -88,7 +88,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
+				SYNESTHESIA3D_DLL	const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
 
 		/**
 		 * @brief	Sets the texture addressing mode on the V axis.
@@ -98,7 +98,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
+				SYNESTHESIA3D_DLL	const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
 
 		/**
 		 * @brief	Sets the texture addressing mode on the W axis.
@@ -108,7 +108,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
+				SYNESTHESIA3D_DLL	const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
 
 		/**
 		 * @brief	Sets the texture addressing mode.
@@ -118,7 +118,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual SYNESTHESIA3D_DLL	const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
+				SYNESTHESIA3D_DLL	const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
 
 		/**
 		 * @brief	Enables gamma correction when sampling from the texture.
@@ -130,7 +130,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL	const bool	SetSRGBEnabled(const unsigned int slot, const bool enabled);
+				SYNESTHESIA3D_DLL	const bool	SetSRGBEnabled(const unsigned int slot, const bool enabled);
 
 
 
@@ -141,7 +141,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	The anisoptropy level for specified sampler slot.
 		 */
-				SYNESTHESIA3D_DLL	const float					GetAnisotropy(const unsigned int slot) const;
+				SYNESTHESIA3D_DLL	const unsigned int			GetAnisotropy(const unsigned int slot) const;
 
 		/**
 		 * @brief	Retrieves the mip LOD bias.
@@ -219,7 +219,7 @@ namespace Synesthesia3D
 		 * @brief	Reset the sampler states to their default values.
 		 * @note	Affects all @ref MAX_NUM_PSAMPLERS texture slots.
 		 */
-		virtual	SYNESTHESIA3D_DLL		void	Reset() PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL		void	Reset();
 
 	protected:
 
@@ -234,6 +234,11 @@ namespace Synesthesia3D
 		 * @note	To be used only by @ref Renderer::DestroyInstance().
 		 */
 		virtual ~SamplerState();
+
+		/**
+		 * @brief	Pushes the current sampler states to the underlying API
+		 */
+		virtual	const bool	Flush() PURE_VIRTUAL;
 
 		SamplerStateDesc m_tCurrentState[MAX_NUM_PSAMPLERS];	/**< @brief The current sampler states for all @ref MAX_NUM_PSAMPLERS slots. */
 

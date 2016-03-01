@@ -29,7 +29,7 @@ SamplerState::SamplerState()
 {
 	for (unsigned int i = 0; i < MAX_NUM_PSAMPLERS; i++)
 	{
-		m_tCurrentState[i].fAnisotropy = 1.f;
+		m_tCurrentState[i].nAnisotropy = 1u;
 		m_tCurrentState[i].fLodBias = 0.f;
 		m_tCurrentState[i].eFilter = SF_MIN_MAG_POINT_MIP_NONE;
 		m_tCurrentState[i].vBorderColor = Vec4f(0.f, 0.f, 0.f, 0.f);
@@ -42,10 +42,10 @@ SamplerState::SamplerState()
 SamplerState::~SamplerState()
 {}
 
-const bool SamplerState::SetAnisotropy(const unsigned int slot, const float anisotropy)
+const bool SamplerState::SetAnisotropy(const unsigned int slot, const unsigned int anisotropy)
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
-	m_tCurrentState[slot].fAnisotropy = anisotropy;
+	m_tCurrentState[slot].nAnisotropy = Math::clamp(anisotropy, 1u, (unsigned int)MAX_ANISOTROPY);
 	return true;
 }
 
@@ -65,6 +65,13 @@ const bool SamplerState::SetFilter(const unsigned int slot, const SamplerFilter 
 
 const bool SamplerState::SetBorderColor(const unsigned int slot, const Vec4f& rgba)
 {
+	assert(
+		rgba[0] >= 0.f && rgba[0] <= 1.f &&
+		rgba[1] >= 0.f && rgba[1] <= 1.f &&
+		rgba[2] >= 0.f && rgba[2] <= 1.f &&
+		rgba[3] >= 0.f && rgba[3] <= 1.f
+		);
+
 	assert(slot < MAX_NUM_PSAMPLERS);
 	m_tCurrentState[slot].vBorderColor = rgba;
 	return true;
@@ -106,10 +113,10 @@ const bool SamplerState::SetSRGBEnabled(const unsigned int slot, const bool enab
 	return true;
 }
 
-const float SamplerState::GetAnisotropy(const unsigned int slot) const
+const unsigned int SamplerState::GetAnisotropy(const unsigned int slot) const
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
-	return m_tCurrentState[slot].fAnisotropy;
+	return m_tCurrentState[slot].nAnisotropy;
 }
 
 const float SamplerState::GetMipLodBias(const unsigned int slot) const
@@ -160,4 +167,20 @@ const bool SamplerState::GetSRGBEnabled(const unsigned int slot) const
 {
 	assert(slot < MAX_NUM_PSAMPLERS);
 	return m_tCurrentState[slot].bSRGBEnabled;
+}
+
+void SamplerState::Reset()
+{
+	for (unsigned int slot = 0; slot < MAX_NUM_PSAMPLERS; slot++)
+	{
+		SetAnisotropy(slot, 1u);
+		SetMipLodBias(slot, 0.f);
+		SetFilter(slot, SF_MIN_MAG_POINT_MIP_NONE);
+		SetBorderColor(slot, Vec4f(0.f, 0.f, 0.f, 0.f));
+		for (unsigned int j = 0; j < 3; j++)
+			SetAddressingMode(slot, SAM_WRAP);
+		SetSRGBEnabled(slot, false);
+	}
+
+	Flush();
 }

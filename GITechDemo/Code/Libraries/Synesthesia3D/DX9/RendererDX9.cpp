@@ -602,6 +602,8 @@ void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb)
 {
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
+	Renderer::DrawVertexBuffer(vb);
+
 	assert(vb);
 	vb->Enable();
 

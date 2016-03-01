@@ -226,7 +226,7 @@ namespace Synesthesia3D
 		 *
 		 * @param[in]	vb	A pointer to the vertex buffer resource.
 		 */
-		virtual	SYNESTHESIA3D_DLL			void		DrawVertexBuffer(VertexBuffer* const vb) PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL			void		DrawVertexBuffer(VertexBuffer* const vb);
 
 		/**
 		 * @brief	Marks the beginning of a user-defined event, viewable in graphical analysis tools.

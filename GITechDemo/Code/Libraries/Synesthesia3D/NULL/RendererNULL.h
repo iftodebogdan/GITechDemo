@@ -53,7 +53,7 @@ namespace Synesthesia3D
 		void		EndFrame() {}
 		void		SwapBuffers() {}
 		void		Clear(const Vec4f /*rgba*/, const float /*z*/, const unsigned int /*stencil*/) {}
-		void		DrawVertexBuffer(VertexBuffer* const /*vb*/) {}
+		void		DrawVertexBuffer(VertexBuffer* const vb) { Renderer::DrawVertexBuffer(vb); }
 
 		void		PushProfileMarker(const char* const label);
 		void		PopProfileMarker();

@@ -32,38 +32,45 @@ namespace Synesthesia3D
 	public:
 		const unsigned int MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const;
 
-		const bool	SetColorBlendEnabled(const bool enabled);
-		const bool	SetColorSrcBlend(const Blend alphaSrc);
-		const bool	SetColorDstBlend(const Blend alphaDst);
-		const bool	SetAlphaTestEnabled(const bool enabled);
-		const bool	SetAlphaTestFunc(const Cmp alphaFunc);
-		const bool	SetAlphaTestRef(const float alphaRef);
-		const bool	SetColorBlendFactor(const Vec4f rgba);
-		const bool	SetCullMode(const Cull cullMode);
-		const bool	SetZEnabled(const ZBuffer enabled);
-		const bool	SetZFunc(const Cmp zFunc);
-		const bool	SetZWriteEnabled(const bool enabled);
-		const bool	SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
-		const bool	SetSlopeScaledDepthBias(const float scale);
-		const bool	SetDepthBias(const float bias);
-		const bool	SetStencilEnabled(const bool enabled);
-		const bool	SetStencilFunc(const Cmp stencilFunc);
-		const bool	SetStencilRef(const unsigned long stencilRef);
-		const bool	SetStencilMask(const unsigned long stencilMask);
-		const bool	SetStencilWriteMask(const unsigned long stencilWriteMask);
-		const bool	SetStencilFail(const StencilOp stencilFail);
-		const bool	SetStencilZFail(const StencilOp stencilZFail);
-		const bool	SetStencilPass(const StencilOp stencilPass);
-		const bool	SetFillMode(const Fill fillMode);
-		const bool	SetScissorEnabled(const bool enabled);
 		const bool	SetScissor(const Vec2i size, const Vec2i offset = Vec2i(0, 0));
-		const bool	SetSRGBWriteEnabled(const bool enabled);
 
 		void		Reset();
 
 	protected:
 		RenderStateDX9();
 		~RenderStateDX9();
+
+		const bool Flush();
+
+		// Local render states, sync'ed with underlying API
+		bool			m_bColorBlendEnabledDX9;
+		Blend			m_eColorSrcBlendDX9;
+		Blend			m_eColorDstBlendDX9;
+		Vec4f			m_vColorBlendFactorDX9;
+		bool			m_bAlphaTestEnabledDX9;
+		Cmp				m_eAlphaFuncDX9;
+		float			m_fAlphaRefDX9;
+		Cull			m_eCullModeDX9;
+		ZBuffer			m_eZEnabledDX9;
+		Cmp				m_eZFuncDX9;
+		bool			m_bZWriteEnabledDX9;
+		bool			m_bColorWriteRedDX9;
+		bool			m_bColorWriteGreenDX9;
+		bool			m_bColorWriteBlueDX9;
+		bool			m_bColorWriteAlphaDX9;
+		float			m_fSlopeScaledDepthBiasDX9;
+		float			m_fDepthBiasDX9;
+		bool			m_bStencilEnabledDX9;
+		Cmp				m_eStencilFuncDX9;
+		unsigned long	m_lStencilRefDX9;
+		unsigned long	m_lStencilMaskDX9;
+		unsigned long	m_lStencilWriteMaskDX9;
+		StencilOp		m_eStencilFailDX9;
+		StencilOp		m_eStencilZFailDX9;
+		StencilOp		m_eStencilPassDX9;
+		Fill			m_eFillModeDX9;
+		bool			m_bScissorEnabledDX9;
+		bool			m_bSRGBEnabledDX9;
 
 		friend class RendererDX9;
 	};

@@ -52,6 +52,8 @@ void RenderState::Reset()
 	SetZFunc(CMP_LESSEQUAL);
 	SetZWriteEnabled(true);
 
+	SetColorWriteEnabled(true, true, true, true);
+
 	SetSlopeScaledDepthBias(0.f);
 	SetDepthBias(0.f);
 
@@ -70,6 +72,8 @@ void RenderState::Reset()
 
 	SetSRGBWriteEnabled(false);
 
+	Flush();
+
 	POP_PROFILE_MARKER();
 }
 
@@ -81,12 +85,16 @@ const bool RenderState::SetAlphaTestEnabled(const bool enabled)
 
 const bool RenderState::SetAlphaTestFunc(const Cmp alphaFunc)
 {
+	assert(alphaFunc > CMP && alphaFunc < CMP_MAX);
+
 	m_eAlphaFunc = alphaFunc;
 	return true;
 }
 
 const bool RenderState::SetAlphaTestRef(const float alphaRef)
 {
+	assert(alphaRef >= 0.f && alphaRef <= 1.f);
+
 	m_fAlphaRef = alphaRef;
 	return true;
 }
@@ -97,38 +105,55 @@ const bool RenderState::SetColorBlendEnabled(const bool enabled)
 	return true;
 }
 
-const bool RenderState::SetColorSrcBlend(const Blend alphaSrc)
+const bool RenderState::SetColorSrcBlend(const Blend colorSrc)
 {
-	m_eColorSrcBlend = alphaSrc;
+	assert(colorSrc > BLEND && colorSrc < BLEND_MAX);
+
+	m_eColorSrcBlend = colorSrc;
 	return true;
 }
 
-const bool RenderState::SetColorDstBlend(const Blend alphaDst)
+const bool RenderState::SetColorDstBlend(const Blend colorDst)
 {
-	m_eColorDstBlend = alphaDst;
+	assert(colorDst > BLEND && colorDst < BLEND_MAX);
+
+	m_eColorDstBlend = colorDst;
 	return true;
 }
 
 const bool RenderState::SetColorBlendFactor(const Vec4f rgba)
 {
+	assert(
+		rgba[0] >= 0.f && rgba[0] <= 1.f &&
+		rgba[1] >= 0.f && rgba[1] <= 1.f &&
+		rgba[2] >= 0.f && rgba[2] <= 1.f &&
+		rgba[3] >= 0.f && rgba[3] <= 1.f
+		);
+
 	m_vColorBlendFactor = rgba;
 	return true;
 }
 
 const bool RenderState::SetCullMode(const Cull cullMode)
 {
+	assert(cullMode > CULL && cullMode < CULL_MAX);
+
 	m_eCullMode = cullMode;
 	return true;
 }
 
 const bool RenderState::SetZEnabled(const ZBuffer enabled)
 {
+	assert(enabled > ZB && enabled < ZB_MAX);
+
 	m_eZEnabled = enabled;
 	return true;
 }
 
 const bool RenderState::SetZFunc(const Cmp zFunc)
 {
+	assert(zFunc > CMP && zFunc < CMP_MAX);
+
 	m_eZFunc = zFunc;
 	return true;
 }
@@ -168,6 +193,8 @@ const bool RenderState::SetStencilEnabled(const bool enabled)
 
 const bool RenderState::SetStencilFunc(const Cmp stencilFunc)
 {
+	assert(stencilFunc > CMP && stencilFunc < CMP_MAX);
+
 	m_eStencilFunc = stencilFunc;
 	return true;
 }
@@ -192,24 +219,32 @@ const bool RenderState::SetStencilWriteMask(const unsigned long stencilWriteMask
 
 const bool RenderState::SetStencilFail(const StencilOp stencilFail)
 {
+	assert(stencilFail > STENCILOP && stencilFail < STENCILOP_MAX);
+
 	m_eStencilFail = stencilFail;
 	return true;
 }
 
 const bool RenderState::SetStencilZFail(const StencilOp stencilZFail)
 {
+	assert(stencilZFail > STENCILOP && stencilZFail < STENCILOP_MAX);
+
 	m_eStencilZFail = stencilZFail;
 	return true;
 }
 
 const bool RenderState::SetStencilPass(const StencilOp stencilPass)
 {
+	assert(stencilPass > STENCILOP && stencilPass < STENCILOP_MAX);
+
 	m_eStencilPass = stencilPass;
 	return true;
 }
 
 const bool RenderState::SetFillMode(const Fill fillMode)
 {
+	assert(fillMode > FILL && fillMode < FILL_MAX);
+
 	m_eFillMode = fillMode;
 	return true;
 }

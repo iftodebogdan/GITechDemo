@@ -699,7 +699,7 @@ namespace GITechDemoApp
 						// Diffuse albedo texture
 						if (pModel->arrMaterial[i]->arrTexture[j]->eTexType == Synesthesia3D::Model::TextureDesc::TT_DIFFUSE)
 						{
-							tex->SetAnisotropy(/*MAX_ANISOTROPY*/ 1.f);
+							tex->SetAnisotropy(/*MAX_ANISOTROPY*/ 1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 							tex->SetSRGBEnabled(true);
 						}
@@ -707,28 +707,28 @@ namespace GITechDemoApp
 						// Specular power texture
 						if (pModel->arrMaterial[i]->arrTexture[j]->eTexType == Synesthesia3D::Model::TextureDesc::TT_SPECULAR)
 						{
-							tex->SetAnisotropy(1.f);
+							tex->SetAnisotropy(1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 						}
 
 						// Normal map
 						if (pModel->arrMaterial[i]->arrTexture[j]->eTexType == Synesthesia3D::Model::TextureDesc::TT_HEIGHT)
 						{
-							tex->SetAnisotropy(1.f);
+							tex->SetAnisotropy(1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 						}
 
 						// Material type map (dielectric/metallic)
 						if (pModel->arrMaterial[i]->arrTexture[j]->eTexType == Synesthesia3D::Model::TextureDesc::TT_AMBIENT)
 						{
-							tex->SetAnisotropy(1.f);
+							tex->SetAnisotropy(1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 						}
 
 						// Roughness map
 						if (pModel->arrMaterial[i]->arrTexture[j]->eTexType == Synesthesia3D::Model::TextureDesc::TT_SHININESS)
 						{
-							tex->SetAnisotropy(1.f);
+							tex->SetAnisotropy(1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 						}
 					}

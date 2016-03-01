@@ -25,7 +25,7 @@
 #include "SamplerStateNULL.h"
 using namespace Synesthesia3D;
 
-const bool SamplerStateNULL::SetAnisotropy(const unsigned int slot, const float anisotropy)
+const bool SamplerStateNULL::SetAnisotropy(const unsigned int slot, const unsigned int anisotropy)
 {
 	return SamplerState::SetAnisotropy(slot, anisotropy);
 }

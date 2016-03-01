@@ -283,7 +283,7 @@ Texture::Texture(
 	, m_fWidthRatio(1.f)
 	, m_fHeightRatio(1.f)
 {
-	m_tSamplerStates.fAnisotropy = 1.f;
+	m_tSamplerStates.nAnisotropy = 1u;
 	m_tSamplerStates.fLodBias = 0.f;
 	m_tSamplerStates.eFilter = SF_MIN_MAG_POINT_MIP_NONE;
 	m_tSamplerStates.vBorderColor = Vec4f(0.f, 0.f, 0.f, 0.f);
@@ -748,9 +748,9 @@ const CubeFace Texture::GetLockedCubeFace() const
 	return m_eLockedCubeFace;
 }
 
-void Texture::SetAnisotropy(const float anisotropy)
+void Texture::SetAnisotropy(const unsigned int anisotropy)
 {
-	m_tSamplerStates.fAnisotropy = Math::clamp(anisotropy, 1.f, (float)MAX_ANISOTROPY);
+	m_tSamplerStates.nAnisotropy = Math::clamp(anisotropy, 1u, (unsigned int)MAX_ANISOTROPY);
 }
 
 void Texture::SetMipLodBias(const float lodBias)
@@ -795,9 +795,9 @@ void Texture::SetSRGBEnabled(const bool enabled)
 	m_tSamplerStates.bSRGBEnabled = enabled;
 }
 
-const float Texture::GetAnisotropy() const
+const unsigned int Texture::GetAnisotropy() const
 {
-	return m_tSamplerStates.fAnisotropy;
+	return m_tSamplerStates.nAnisotropy;
 }
 
 const float Texture::GetMipLodBias() const

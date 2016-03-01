@@ -183,6 +183,12 @@ const DeviceCaps Renderer::GetDeviceCaps() const
 	return m_tDeviceCaps;
 }
 
+void Renderer::DrawVertexBuffer(VertexBuffer* const vb)
+{
+	GetSamplerStateManager()->Flush();
+	GetRenderStateManager()->Flush();
+}
+
 void Renderer::PushProfileMarker(const char* const /*label*/)
 {
 	MUTEX_LOCK(gCounterMutex);

@@ -34,23 +34,18 @@ namespace Synesthesia3D
 	class SamplerStateDX9 : public SamplerState
 	{
 	public:
-		const bool	SetAnisotropy(const unsigned int slot, const float anisotropy);
-		const bool	SetMipLodBias(const unsigned int slot, const float lodBias);
-		const bool	SetFilter(const unsigned int slot, const SamplerFilter filter);
-		const bool	SetBorderColor(const unsigned int slot, const Vec4f& rgba);
-		const bool	SetAddressingModeU(const unsigned int slot, const SamplerAddressingMode samU);
-		const bool	SetAddressingModeV(const unsigned int slot, const SamplerAddressingMode samV);
-		const bool	SetAddressingModeW(const unsigned int slot, const SamplerAddressingMode samW);
-		const bool	SetAddressingMode(const unsigned int slot, const SamplerAddressingMode samUVW);
-		const bool	SetSRGBEnabled(const unsigned int slot, const bool enabled);
-
-		void		Reset();
+		void	Reset();
 
 	protected:
 		SamplerStateDX9();
 		~SamplerStateDX9();
 
+		const bool	Flush();
+
 		_D3DTEXTUREFILTERTYPE	m_eCurrentMinFilter[MAX_NUM_PSAMPLERS];
+
+		// Local sampler states, sync'ed with underlying API
+		SamplerStateDesc m_tCurrentStateDX9[MAX_NUM_PSAMPLERS];
 
 		friend class RendererDX9;
 	};

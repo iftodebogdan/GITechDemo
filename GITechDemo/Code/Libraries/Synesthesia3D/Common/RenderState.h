@@ -44,7 +44,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetAlphaTestEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetAlphaTestEnabled(const bool enabled);
 
 		/**
 		 * @brief	Sets alpha test function.
@@ -53,7 +53,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetAlphaTestFunc(const Cmp alphaFunc);
+				SYNESTHESIA3D_DLL		const bool		SetAlphaTestFunc(const Cmp alphaFunc);
 
 		/**
 		 * @brief	Sets the reference value for alpha testing.
@@ -62,7 +62,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetAlphaTestRef(const float alphaRef);
+				SYNESTHESIA3D_DLL		const bool		SetAlphaTestRef(const float alphaRef);
 
 
 
@@ -73,25 +73,25 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetColorBlendEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetColorBlendEnabled(const bool enabled);
 
 		/**
 		 * @brief	Sets source color blending operation.
 		 *
-		 * @param[in]	alphaSrc	Source color blending operation.
+		 * @param[in]	colorSrc	Source color blending operation.
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetColorSrcBlend(const Blend alphaSrc);
+				SYNESTHESIA3D_DLL		const bool		SetColorSrcBlend(const Blend colorSrc);
 
 		/**
 		 * @brief	Sets destination color blending operation.
 		 *
-		 * @param[in]	alphaDst	Destination color blending operation.
+		 * @param[in]	colorDst	Destination color blending operation.
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetColorDstBlend(const Blend alphaDst);
+				SYNESTHESIA3D_DLL		const bool		SetColorDstBlend(const Blend colorDst);
 
 		/**
 		 * @brief	Sets color blending factor.
@@ -103,7 +103,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetColorBlendFactor(const Vec4f rgba);
+				SYNESTHESIA3D_DLL		const bool		SetColorBlendFactor(const Vec4f rgba);
 
 
 
@@ -114,7 +114,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetCullMode(const Cull cullMode);
+				SYNESTHESIA3D_DLL		const bool		SetCullMode(const Cull cullMode);
 
 
 
@@ -125,7 +125,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetZEnabled(const ZBuffer enabled);
+				SYNESTHESIA3D_DLL		const bool		SetZEnabled(const ZBuffer enabled);
 
 		/**
 		 * @brief	Sets depth comparison function.
@@ -134,7 +134,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetZFunc(const Cmp zFunc);
+				SYNESTHESIA3D_DLL		const bool		SetZFunc(const Cmp zFunc);
 
 		/**
 		 * @brief	Enables depth writing.
@@ -143,7 +143,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetZWriteEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetZWriteEnabled(const bool enabled);
 
 
 
@@ -157,7 +157,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
+				SYNESTHESIA3D_DLL		const bool		SetColorWriteEnabled(const bool red, const bool green, const bool blue, const bool alpha);
 
 
 
@@ -168,7 +168,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetSlopeScaledDepthBias(const float scale);
+				SYNESTHESIA3D_DLL		const bool		SetSlopeScaledDepthBias(const float scale);
 
 		/**
 		 * @brief	Sets depth bias.
@@ -177,7 +177,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetDepthBias(const float bias);
+				SYNESTHESIA3D_DLL		const bool		SetDepthBias(const float bias);
 
 
 
@@ -188,7 +188,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetStencilEnabled(const bool enabled);
 
 		/**
 		 * @brief	Sets stencil comparison function.
@@ -197,7 +197,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilFunc(const Cmp stencilFunc);
+				SYNESTHESIA3D_DLL		const bool		SetStencilFunc(const Cmp stencilFunc);
 
 		/**
 		 * @brief	Sets stencil reference value.
@@ -206,7 +206,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilRef(const unsigned long stencilRef);
+				SYNESTHESIA3D_DLL		const bool		SetStencilRef(const unsigned long stencilRef);
 
 		/**
 		 * @brief	Sets stencil mask.
@@ -215,7 +215,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilMask(const unsigned long stencilMask);
+				SYNESTHESIA3D_DLL		const bool		SetStencilMask(const unsigned long stencilMask);
 
 		/**
 		 * @brief	Sets stencil write mask.
@@ -224,7 +224,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilWriteMask(const unsigned long stencilWriteMask);
+				SYNESTHESIA3D_DLL		const bool		SetStencilWriteMask(const unsigned long stencilWriteMask);
 
 		/**
 		 * @brief	Sets stencil fail operation.
@@ -233,7 +233,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilFail(const StencilOp stencilFail);
+				SYNESTHESIA3D_DLL		const bool		SetStencilFail(const StencilOp stencilFail);
 
 		/**
 		 * @brief	Sets stencil pass / depth fail operation.
@@ -242,7 +242,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilZFail(const StencilOp stencilZFail);
+				SYNESTHESIA3D_DLL		const bool		SetStencilZFail(const StencilOp stencilZFail);
 
 		/**
 		 * @brief	Sets stencil pass operation.
@@ -251,7 +251,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetStencilPass(const StencilOp stencilPass);
+				SYNESTHESIA3D_DLL		const bool		SetStencilPass(const StencilOp stencilPass);
 
 
 
@@ -262,7 +262,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetFillMode(const Fill fillMode);
+				SYNESTHESIA3D_DLL		const bool		SetFillMode(const Fill fillMode);
 
 
 
@@ -273,7 +273,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetScissorEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetScissorEnabled(const bool enabled);
 
 		/**
 		 * @brief	Sets scissor.
@@ -294,7 +294,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Success of operation.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetSRGBWriteEnabled(const bool enabled);
+				SYNESTHESIA3D_DLL		const bool		SetSRGBWriteEnabled(const bool enabled);
 
 
 
@@ -488,6 +488,13 @@ namespace Synesthesia3D
 		 * @details	Meant to be used only by @ref Renderer::DestroyInstance().
 		 */
 		virtual ~RenderState();
+
+
+
+		/**
+		 * @brief	Pushes the current render states to the underlying API
+		 */
+		virtual	const bool	Flush() PURE_VIRTUAL;
 
 
 
