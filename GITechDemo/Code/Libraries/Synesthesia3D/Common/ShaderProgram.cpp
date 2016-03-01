@@ -90,8 +90,6 @@ const unsigned int ShaderProgram::GetTotalSizeOfInputConstants() const
 
 void ShaderProgram::Enable(ShaderInput* const shaderInput)
 {
-	//PUSH_PROFILE_MARKER((m_szSrcFile + " : " + m_szEntryPoint + "() - " + m_szProfile).c_str());
-
 	assert(m_pShaderInput == nullptr);
 	//assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
@@ -143,8 +141,6 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
 
 		POP_PROFILE_MARKER();
 	}
-
-	//POP_PROFILE_MARKER();
 }
 
 void ShaderProgram::Disable()

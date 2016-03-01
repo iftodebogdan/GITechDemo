@@ -33,6 +33,9 @@ void RendererNULL::Initialize(void* /*hWnd*/)
 	m_pResourceManager = new ResourceManagerNULL();
 	m_pRenderStateManager = new RenderStateNULL();
 	m_pSamplerStateManager = new SamplerStateNULL();
+
+	m_pSamplerStateManager->Reset();
+	m_pRenderStateManager->Reset();
 }
 
 void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const

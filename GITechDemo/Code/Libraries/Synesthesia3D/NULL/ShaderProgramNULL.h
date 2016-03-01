@@ -36,10 +36,6 @@ namespace Synesthesia3D
 			: ShaderProgram(programType) {}
 		~ShaderProgramNULL() {}
 
-		void Enable() {}
-		void Disable() {}
-		const bool Compile(const char* /*filePath*/, const char* /*entryPoint = ""*/) { return true; }
-		
 		void Bind() {}
 		void Unbind() {}
 
