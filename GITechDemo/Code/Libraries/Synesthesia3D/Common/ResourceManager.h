@@ -118,9 +118,9 @@ namespace Synesthesia3D
 		virtual	SYNESTHESIA3D_DLL	const unsigned int		CreateVertexBuffer(VertexFormat* const vertexFormat, const unsigned int vertexCount, IndexBuffer* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC) PURE_VIRTUAL;
 
 		/**
-		 * @brief	Creates a shader input helper.
+		 * @brief	Creates a shader input object which allows for configuring shader constants.
 		 *
-		 * @param[in]	shaderProgram		Description of shader inputs.
+		 * @param[in]	shaderProgram		Shader binary object used for describing shader inputs.
 		 *
 		 * @return	Resource ID corresponding to the created resource.
 		 *
@@ -133,9 +133,7 @@ namespace Synesthesia3D
 		 *
 		 * @param[in]	filePath		Path to shader file.
 		 * @param[in]	programType		Shader stage.
-		 * @param[out]	errors			Optional output string with compilation errors.
 		 * @param[in]	entryPoint		Optional entry function name.
-		 * @param[in]	profile			Optional shader model version.
 		 *
 		 * @return	Resource ID corresponding to the created resource.
 		 *

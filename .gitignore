@@ -21,9 +21,10 @@ bld/
 /*/[Bb]in/
 [Oo]bj/
 [Bb]in[Tt]emp/
-**/Doc/html/
 
 # Synesthesia3D files
+**/Synesthesia3D/Doc/html/
+**/Synesthesia3D/Doc/*.chm
 *.s3dmdl
 *.s3dtex
 

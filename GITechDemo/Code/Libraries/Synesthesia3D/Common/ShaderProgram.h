@@ -32,7 +32,7 @@ namespace Synesthesia3D
 	class Texture;
 
 	/**
-	 * @brief	The bridge between a shader program and its inputs.
+	 * @brief	Holds the actual shader binary and allows for pairing with a @ref ShaderInput object for rendering.
 	 */
 	class ShaderProgram
 	{
