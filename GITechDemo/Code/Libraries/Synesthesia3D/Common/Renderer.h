@@ -262,7 +262,7 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Retrieves the device's capabilities.
 		 */
-				SYNESTHESIA3D_DLL	const DeviceCaps		GetDeviceCaps() const;
+				SYNESTHESIA3D_DLL	const DeviceCaps&		GetDeviceCaps() const;
 
 	protected:
 

@@ -47,8 +47,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Simple color texture copy onto a color render target
 	if(bSingleChannelCopy)
 		// For use with single channel textures (e.g. SSAO buffer)
-		f4Color = float4(tex2D(texSource, input.f2TexCoord).rrr, 1.f);
+		f4Color = tex2D(texSource, input.f2TexCoord).rrrr;
 	else
-		f4Color = float4(tex2D(texSource, input.f2TexCoord).rgb, 1.f);
+		f4Color = tex2D(texSource, input.f2TexCoord);
 }
 ////////////////////////////////////////////////////////////////////

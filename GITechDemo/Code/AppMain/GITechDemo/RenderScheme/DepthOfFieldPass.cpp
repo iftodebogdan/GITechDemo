@@ -37,8 +37,8 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-	bool DOF_ENABLED = false;
-	bool DOF_USE_QUARTER_RESOLUTION_BUFFER = false;
+	bool DOF_ENABLED = true;
+	bool DOF_USE_QUARTER_RESOLUTION_BUFFER = true;
 	float DOF_AUTOFOCUS_TIME = 0.25f;
 }
 

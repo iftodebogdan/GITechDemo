@@ -11,9 +11,6 @@
     <Filter Include="Build">
       <UniqueIdentifier>{b444acb2-7ea9-4b03-881e-a4de0a0df295}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Common">
-      <UniqueIdentifier>{fd0b29d0-9f3f-43c0-b8b8-a8c3041fdaf6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Framework">
       <UniqueIdentifier>{99143029-9cc7-4db0-bc81-c829d538c047}</UniqueIdentifier>
     </Filter>
@@ -34,6 +31,9 @@
     </Filter>
     <Filter Include="Framework\Windows\Precompiled Headers">
       <UniqueIdentifier>{8433ffc2-3fbc-4741-a134-1233de8fe1ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Include">
+      <UniqueIdentifier>{fd0b29d0-9f3f-43c0-b8b8-a8c3041fdaf6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -275,19 +275,19 @@
       <Filter>Build</Filter>
     </None>
     <None Include="..\..\Data\shaders\Common.hlsl">
-      <Filter>Shaders\Common</Filter>
+      <Filter>Shaders\Include</Filter>
     </None>
     <None Include="..\..\Data\shaders\CSMUtils.hlsl">
-      <Filter>Shaders\Common</Filter>
+      <Filter>Shaders\Include</Filter>
     </None>
     <None Include="..\..\Data\shaders\PostProcessingUtils.hlsl">
-      <Filter>Shaders\Common</Filter>
+      <Filter>Shaders\Include</Filter>
     </None>
     <None Include="..\..\Data\shaders\RSMCommon.hlsl">
-      <Filter>Shaders\Common</Filter>
+      <Filter>Shaders\Include</Filter>
     </None>
     <None Include="..\..\Data\shaders\Utils.hlsl">
-      <Filter>Shaders\Common</Filter>
+      <Filter>Shaders\Include</Filter>
     </None>
     <None Include="GITechDemo.licenseheader" />
   </ItemGroup>

@@ -282,7 +282,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearWhite,				float,			11.2f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLumaAdaptSpeed,			float,			1.f						);
 	// Bloom
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,		float,			0.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,		float,			0.6f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomPower,				float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomStrength,			float,			0.75f					);
 	// FXAA
@@ -292,8 +292,8 @@ namespace GITechDemoApp
 	// DoF
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalDepth,				float,			100.f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalLength,				float,			75.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFStop,					float,			3.5f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCoC,						float,			0.02f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFStop,					float,			2.8f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCoC,						float,			0.03f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofStart,				float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofFalloff,			float,			2.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofStart,				float,			1.f						);
@@ -301,7 +301,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bManualDof,				bool,			false					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugFocus,				bool,			false					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAutofocus,				bool,			true					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMaxBlur,					float,			1.5f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMaxBlur,					float,			2.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightThreshold,		float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightGain,			float,			10.f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehBias,				float,			0.75f					);

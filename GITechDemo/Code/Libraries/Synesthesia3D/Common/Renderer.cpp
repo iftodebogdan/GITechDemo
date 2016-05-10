@@ -178,7 +178,7 @@ SamplerState* const Renderer::GetSamplerStateManager() const
 	return m_pSamplerStateManager;
 }
 
-const DeviceCaps Renderer::GetDeviceCaps() const
+const DeviceCaps& Renderer::GetDeviceCaps() const
 {
 	return m_tDeviceCaps;
 }

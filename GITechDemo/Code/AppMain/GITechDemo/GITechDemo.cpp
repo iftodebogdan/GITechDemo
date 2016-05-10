@@ -66,7 +66,7 @@ namespace GITechDemoApp
 
 	bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
 
-	Perlin PerlinNoise(1, 0.01f, 1.f, (int)time(NULL));
+	Perlin PerlinNoise(1, 0.05f, 1.f, (int)time(NULL));
 
 	extern AABoxf SceneAABB;
 
@@ -510,17 +510,20 @@ void GITechDemo::Update(const float fDeltaTime)
 					PerlinNoise.Get(time, 0.f),
 					PerlinNoise.Get(0.f, time),
 					PerlinNoise.Get(time, time));
-				perlinPos[0] = perlinPos[0] + 1.f / 2.f;
-				perlinPos[1] = perlinPos[1] + 1.f / 2.f;
-				perlinPos[2] = perlinPos[2] + 1.f / 2.f;
+
+				perlinPos[0] = (perlinPos[0] + 1.f) / 2.f;
+				perlinPos[1] = (perlinPos[1] + 1.f) / 2.f;
+				perlinPos[2] = (perlinPos[2] + 1.f) / 2.f;
+
+				// Wrap around to 0.f when reaching 1.f
 				perlinPos[0] = perlinPos[0] - floor(perlinPos[0]);
 				perlinPos[1] = perlinPos[1] - floor(perlinPos[1]);
 				perlinPos[2] = perlinPos[2] - floor(perlinPos[2]);
 
 				m_tCamera.vPos = -Vec3f(
-					((SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) * perlinPos[0] + SceneAABB.getMin()[0]) / 1.5f,
-					((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) * perlinPos[1] + SceneAABB.getMin()[1]) / 1.5f,
-					((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2]) / 1.5f
+					((SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) * perlinPos[0] + SceneAABB.getMin()[0]),
+					((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) * perlinPos[1] + SceneAABB.getMin()[1]),
+					((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2])
 					);
 
 				Vec3f sponzaCenter(
