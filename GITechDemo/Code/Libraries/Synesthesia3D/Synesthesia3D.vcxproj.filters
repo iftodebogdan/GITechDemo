@@ -389,6 +389,7 @@
     <ClInclude Include="Common\ShaderProgram.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Utility\Debug.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -499,6 +500,7 @@
     <ClCompile Include="Common\ShaderProgram.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Utility\Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Synesthesia3D.licenseheader" />

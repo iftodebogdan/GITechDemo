@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -96,7 +96,12 @@ namespace Synesthesia3D
 		 * @note	The window offset parameter is useful when the user wants to display the backbuffer in a part of the window.
 		 * @note	When in fullscreen mode, the window offset parameter has no effect.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false) PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL		const bool		SetScreenResolution(
+			const Vec2i size,
+			const Vec2i offset = Vec2i(0, 0),
+			const bool fullscreen = false,
+			const unsigned int refreshRate = 0,
+			const bool vsync = true) PURE_VIRTUAL;
 
 		/**
 		 * @brief	Returns the size of the backbuffer.
@@ -107,6 +112,11 @@ namespace Synesthesia3D
 		 * @brief	Returns the window offset.
 		 */
 		virtual	SYNESTHESIA3D_DLL		const Vec2i		GetScreenOffset() const;
+		
+		/**
+		 * @brief	Checks VSync status
+		 */
+		virtual	SYNESTHESIA3D_DLL		const bool			GetVSyncStatus() const PURE_VIRTUAL;
 
 		/**
 		 * @brief	Returns the backbuffer pixel format.
@@ -130,7 +140,7 @@ namespace Synesthesia3D
 		 *
 		 * @see		GetDeviceCaps()
 		 */
-				SYNESTHESIA3D_DLL			void		ValidateScreenResolution(Vec2i& size) const;
+				SYNESTHESIA3D_DLL			void		ValidateScreenResolution(Vec2i& size, unsigned int& refreshRate) const;
 
 		/**
 		 * @brief	Sets viewport size and offset.

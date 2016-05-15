@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -24,8 +24,22 @@
 #define RENDERERDX9_H
 
 #include <d3d9.h>
+
 #include "Renderer.h"
 #include "MappingsDX9.h"
+
+#ifdef _DEBUG
+	#include <DxErr.h>
+	#define S3D_VALIDATE_HRESULT(hr) \
+		{ \
+			if (FAILED(hr)) { \
+				S3D_DBGPRINT("Error %s %s\n", DXGetErrorString(hr), DXGetErrorDescription(hr)); \
+			} \
+			assert(SUCCEEDED(hr)); \
+		}
+#else
+	#define S3D_VALIDATE_HRESULT(hr) ((void)0)	
+#endif
 
 namespace Synesthesia3D
 {
@@ -34,8 +48,9 @@ namespace Synesthesia3D
 		RendererDX9();
 		~RendererDX9();
 
-		void	CheckDeviceCaps();
-		void	ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp);
+		void		CheckDeviceCaps();
+		void		ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp);
+		const bool	ResetDevice(D3DPRESENT_PARAMETERS& pp);
 
 		// Used to create the D3DDevice
 		IDirect3D9*				m_pD3D;
@@ -49,8 +64,9 @@ namespace Synesthesia3D
 
 		void		Initialize(void* hWnd);
 
-		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false);
+		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true);
 		const Vec2i			GetScreenResolution() const { return Vec2i(m_ePresentParameters.BackBufferWidth, m_ePresentParameters.BackBufferHeight); }
+		const bool			GetVSyncStatus() const { return m_ePresentParameters.PresentationInterval != D3DPRESENT_INTERVAL_IMMEDIATE; }
 		const PixelFormat	GetBackBufferFormat() const { return MatchPixelFormat(m_ePresentParameters.BackBufferFormat); }
 
 		void		SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0));

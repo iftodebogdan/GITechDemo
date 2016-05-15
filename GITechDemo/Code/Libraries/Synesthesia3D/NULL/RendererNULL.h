@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ namespace Synesthesia3D
 		void	CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
 		void	CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
 		
-		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false) { m_vScreenSize = size; return true; }
+		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true) { m_vScreenSize = size; return true; }
 		const Vec2i			GetScreenResolution() const { return m_vScreenSize; }
 		const bool			IsFullscreen() const { return true; }
 		const PixelFormat	GetBackBufferFormat() const { return PF_NONE; }
@@ -57,6 +57,8 @@ namespace Synesthesia3D
 
 		void		PushProfileMarker(const char* const label);
 		void		PopProfileMarker();
+
+		const bool	GetVSyncStatus() const { return true; };
 
 		friend class Renderer;
 	};

@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ void VertexFormatDX9::Enable()
 		Update();
 
 	HRESULT hr = device->SetVertexDeclaration(m_pVertexDeclaration);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -70,7 +70,7 @@ void VertexFormatDX9::Disable()
 	//Check to see if this vertex declaration is the one currently enabled
 	IDirect3DVertexDeclaration9* activeDecl = nullptr;
 	hr = device->GetVertexDeclaration(&activeDecl);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	assert(activeDecl == m_pVertexDeclaration);
 	ULONG refCount = 0;
 	refCount = activeDecl->Release();
@@ -78,7 +78,7 @@ void VertexFormatDX9::Disable()
 #endif //_DEBUG
 
 	hr = device->SetVertexDeclaration(0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 	*/
@@ -113,7 +113,7 @@ void VertexFormatDX9::Update()
 	m_pVertexElements[m_nAttributeCount].UsageIndex = 0;
 
 	HRESULT hr = device->CreateVertexDeclaration(m_pVertexElements, &m_pVertexDeclaration);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }

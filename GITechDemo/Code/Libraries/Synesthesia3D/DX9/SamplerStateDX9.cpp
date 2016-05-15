@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -104,7 +104,7 @@ const bool SamplerStateDX9::Flush()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 
 	for (unsigned int slot = 0; slot < MAX_NUM_PSAMPLERS; slot++)
 	{

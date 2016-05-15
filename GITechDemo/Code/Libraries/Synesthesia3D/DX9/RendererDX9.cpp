@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -203,9 +203,13 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 	if (!pp.Windowed)
 	{
 		Vec2i screenSize(pp.BackBufferWidth, pp.BackBufferHeight);
-		ValidateScreenResolution(screenSize);
+		ValidateScreenResolution(screenSize, pp.FullScreen_RefreshRateInHz);
 		pp.BackBufferWidth = screenSize[0];
 		pp.BackBufferHeight = screenSize[1];
+	}
+	else
+	{
+		pp.FullScreen_RefreshRateInHz = 0;
 	}
 
 	// Validate backbuffer count
@@ -234,24 +238,7 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 	}
 
 	// Validate refresh rate
-	if (!pp.Windowed)
-	{
-		UINT validRefresh = 0;
-		for (unsigned int i = 0; i < m_tDeviceCaps.arrSupportedScreenFormats.size(); i++)
-		{
-			if (GetBackBufferFormat() == m_tDeviceCaps.arrSupportedScreenFormats[i].ePixelFormat &&
-				pp.BackBufferWidth == m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth &&
-				pp.BackBufferHeight == m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight &&
-				validRefresh < m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate &&
-				pp.FullScreen_RefreshRateInHz >= m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate)
-			{
-				validRefresh = m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate;
-			}
-		}
-
-		pp.FullScreen_RefreshRateInHz = validRefresh;
-	}
-	else
+	if (pp.Windowed)
 		pp.FullScreen_RefreshRateInHz = 0;
 
 	// Validate MSAA
@@ -424,7 +411,7 @@ void RendererDX9::Initialize(void* hWnd)
 	POP_PROFILE_MARKER();
 }
 
-const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset, const bool fullscreen)
+const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
 {
 	Vec2i validOffset(offset);
 	if (fullscreen)
@@ -434,8 +421,10 @@ const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset
 	if (size[0] == m_ePresentParameters.BackBufferWidth &&
 		size[1] == m_ePresentParameters.BackBufferHeight &&
 		validOffset == m_vBackBufferOffset &&
-		fullscreen == !m_ePresentParameters.Windowed)
-		return false;
+		fullscreen == !m_ePresentParameters.Windowed &&
+		refreshRate == m_ePresentParameters.FullScreen_RefreshRateInHz &&
+		vsync == GetVSyncStatus())
+		return true;
 
 	// Some sanity checks
 	if (!m_pd3dDevice ||
@@ -466,19 +455,27 @@ const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset
 
 	// Windowed or fullscreen?
 	pp.Windowed = (BOOL)(!fullscreen);
-	pp.FullScreen_RefreshRateInHz = fullscreen ? 60 : 0;
+	pp.FullScreen_RefreshRateInHz = fullscreen ? refreshRate : 0;
 
-	// Unbind resources
-	GetResourceManager()->UnbindAll();
+	// Set VSync status
+	pp.PresentationInterval = vsync ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
 
 	// Validate and correct the present parameters
 	ValidatePresentParameters(pp);
 
-	// Reset the device
-	hr = m_pd3dDevice->Reset(&pp);
-	assert(SUCCEEDED(hr));
+	// If, after validation, the resulting present parameters
+	// are identical to the ones we set before, skip setting them.
+	if (memcmp(&pp, &m_ePresentParameters, sizeof(D3DPRESENT_PARAMETERS)) == 0)
+	{
+		POP_PROFILE_MARKER();
+		return true;
+	}
 
-	if (SUCCEEDED(hr))
+	// Unbind resources
+	GetResourceManager()->UnbindAll();
+
+	// Reset the device
+	if (ResetDevice(pp))
 	{
 		m_ePresentParameters = pp;
 		m_vBackBufferOffset = validOffset;
@@ -537,8 +534,7 @@ const bool RendererDX9::BeginFrame()
 		GetResourceManager()->UnbindAll();
 
 		// Reset the device
-		hr = m_pd3dDevice->Reset(&m_ePresentParameters);
-		if (FAILED(hr))
+		if (!ResetDevice(m_ePresentParameters))
 		{
 			POP_PROFILE_MARKER();
 			return false;
@@ -677,4 +673,18 @@ void RendererDX9::PopProfileMarker()
 	Renderer::PopProfileMarker();
 	D3DPERF_EndEvent();
 #endif
+}
+
+const bool RendererDX9::ResetDevice(D3DPRESENT_PARAMETERS& pp)
+{
+	HRESULT hr = E_FAIL;
+	int attempts = 0;
+
+	do {
+		hr = m_pd3dDevice->Reset(&pp);
+		attempts++;
+	} while (FAILED(hr) && attempts < 3);
+	S3D_VALIDATE_HRESULT(hr);
+
+	return SUCCEEDED(hr);
 }

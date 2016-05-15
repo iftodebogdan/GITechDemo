@@ -52,6 +52,9 @@ const float fToeNumerator;		// = 0.02;
 const float fToeDenominator;	// = 0.30;
 const float fLinearWhite;		// = 11.2;
 
+const float fFrameTime;
+const float fFilmGrainAmount;
+
 float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 {
 	return f3Color * rcp(1.f + fAvgLuma);
@@ -117,5 +120,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	//f4Color = float4(pow(abs(f3FinalColor), rcp(2.2f)), 1);
 	// Encode gamma-corrected luma in the alpha channel for FXAA
 	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), rcp(2.2f)));
+
+	// Film grain needs to be applied after tonemapping, so as not to be affected by exposure variance
+	if(fFilmGrainAmount > 0.f)
+		f4Color.rgb += (frac(sin(dot(input.f2TexCoord + float2(fFrameTime, fFrameTime), float2(12.9898f, 78.233f))) * 43758.5453f) * 2.f - 1.f) * fFilmGrainAmount;
 }
 ////////////////////////////////////////////////////////////////////

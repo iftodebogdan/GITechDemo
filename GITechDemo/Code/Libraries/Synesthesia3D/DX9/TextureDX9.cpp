@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ void TextureDX9::Enable(const unsigned int texUnit) const
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
 	HRESULT hr = device->SetTexture(texUnit, m_pTexture);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -77,7 +77,7 @@ void TextureDX9::Disable(const unsigned int texUnit) const
 #ifdef _DEBUG
 	IDirect3DBaseTexture9* activeTex = nullptr;
 	hr = device->GetTexture(texUnit, &activeTex);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	assert(activeTex == m_pTexture);
 	unsigned int refCount = 1;
 	refCount = activeTex->Release();
@@ -86,7 +86,7 @@ void TextureDX9::Disable(const unsigned int texUnit) const
 #endif
 
 	hr = device->SetTexture(texUnit, 0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -183,7 +183,7 @@ void TextureDX9::Unlock()
 		hr = ((IDirect3DCubeTexture9*)m_pTexture)->UnlockRect((D3DCUBEMAP_FACES)GetCubeFaceIndex(m_eLockedCubeFace), m_nLockedMip);
 	else
 		hr = ((IDirect3DTexture9*)m_pTexture)->UnlockRect((UINT)m_nLockedMip);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	m_pTempBuffer = nullptr;
 
 	Texture::Unlock();
@@ -278,7 +278,7 @@ void TextureDX9::Bind()
 			BufferUsageDX9[m_eBufferUsage], PixelFormatDX9[m_ePixelFormat],
 			pool, (IDirect3DCubeTexture9**)&m_pTexture, 0);
 	}
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	switch (GetTextureType())
 	{

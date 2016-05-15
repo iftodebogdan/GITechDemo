@@ -314,6 +314,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="Common\RenderState.h" />
     <ClInclude Include="Common\Renderer.h" />
     <ClInclude Include="NULL\ShaderProgramNULL.h" />
+    <ClInclude Include="Utility\Debug.h" />
     <ClInclude Include="Utility\Hash.h" />
     <ClInclude Include="NULL\IndexBufferNULL.h" />
     <ClInclude Include="NULL\RendererNULL.h" />
@@ -462,6 +463,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClCompile Include="Common\VertexBuffer.cpp" />
     <ClCompile Include="DX9\VertexBufferDX9.cpp" />
     <ClCompile Include="Utility\ColorUtility.cpp" />
+    <ClCompile Include="Utility\Debug.cpp" />
     <ClCompile Include="Utility\HalfFloat.cpp" />
   </ItemGroup>
   <ItemGroup>

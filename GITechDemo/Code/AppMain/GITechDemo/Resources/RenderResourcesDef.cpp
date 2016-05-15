@@ -158,8 +158,8 @@ namespace GITechDemoApp
 	IMPLEMENT_DYNAMIC_RENDER_TARGET(SSAOQuarterBuffer1, 1, PF_L8, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
 
 	// Depth of field render targets
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldFullBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
-	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldQuarterBuffer, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 0.5f, 0.5f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldBuffer0, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
+	IMPLEMENT_DYNAMIC_RENDER_TARGET(DepthOfFieldBuffer1, 1, PF_A16B16G16R16F, PF_NONE, PF_NONE, PF_NONE, 1.f, 1.f, PF_NONE);
 	IMPLEMENT_RENDER_TARGET(AutofocusBuffer0, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
 	IMPLEMENT_RENDER_TARGET(AutofocusBuffer1, 1, PF_R16F, PF_NONE, PF_NONE, PF_NONE, 1u, 1u, PF_NONE);
 
@@ -205,6 +205,10 @@ namespace GITechDemoApp
 	RenderTarget* SSAOQuarterBuffer[2] = {
 		&SSAOQuarterBuffer0,
 		&SSAOQuarterBuffer1
+	};
+	RenderTarget* DepthOfFieldBuffer[2] = {
+		&DepthOfFieldBuffer0,
+		&DepthOfFieldBuffer1
 	};
 	RenderTarget* AdaptedLuminance[2] = {
 		&AdaptedLuminance0,
@@ -281,6 +285,7 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fToeDenominator,			float,			0.25f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLinearWhite,				float,			11.2f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fLumaAdaptSpeed,			float,			1.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFilmGrainAmount,			float,			0.003f					);
 	// Bloom
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBrightnessThreshold,		float,			0.6f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBloomPower,				float,			1.f						);
@@ -291,31 +296,18 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFxaaEdgeThresholdMin,		float,			0.0833f					);
 	// DoF
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalDepth,				float,			100.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalLength,				float,			75.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFocalLength,				float,			100.f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFStop,					float,			2.8f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fCoC,						float,			0.03f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofStart,				float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNearDofFalloff,			float,			2.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofStart,				float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fFarDofFalloff,			float,			3.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bManualDof,				bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bDebugFocus,				bool,			false					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bAutofocus,				bool,			true					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMaxBlur,					float,			2.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightThreshold,		float,			1.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightGain,			float,			10.f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehBias,				float,			0.75f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fBokehFringe,				float,			2.f						);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bPentagonBokeh,			bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fPentagonFeather,			float,			0.4f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bUseNoise,					bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fNoiseAmount,				float,			0.0001f					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(bBlurDepth,				bool,			false					);
-	IMPLEMENT_ARTIST_SHADER_CONSTANT(fDepthBlurSize,			float,			0.001f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightThreshold,		float,			3.f						);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fHighlightGain,			float,			15.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fApertureSize,				float,			0.0075f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(bVignetting,				bool,			true					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignOut,					float,			1.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignIn,					float,			0.f						);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fVignFade,					float,			22.f					);
+	IMPLEMENT_ARTIST_SHADER_CONSTANT(fChromaShiftAmount,		float,			3.f						);
 	// Motion blur
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(fMotionBlurIntensity,		float,			0.01f					);
 	IMPLEMENT_ARTIST_SHADER_CONSTANT(nMotionBlurNumSamples,		int,			5						);

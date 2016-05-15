@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -126,28 +126,42 @@ const Vec2i Renderer::GetScreenOffset() const
 	return m_vBackBufferOffset;
 }
 
-void Renderer::ValidateScreenResolution(Vec2i& size) const
+void Renderer::ValidateScreenResolution(Vec2i& size, unsigned int& refreshRate) const
 {
 	if (GetAPI() == API_NULL)
 		return;
 
+	if (refreshRate == 0)
+		refreshRate = UINT_MAX;
+
 	Vec2i bestMatch(0, 0);
+	unsigned int bestRRMatch = 0;
 	for (unsigned int i = 0; i < m_tDeviceCaps.arrSupportedScreenFormats.size(); i++)
 	{
 		if (GetBackBufferFormat() == m_tDeviceCaps.arrSupportedScreenFormats[i].ePixelFormat)
 		{
-			if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth > bestMatch[0] &&
+			if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth >= bestMatch[0] &&
 				(int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth <= size[0]) ||
-				((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight > bestMatch[1] &&
-					(int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight <= size[1]))
+				
+				((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight >= bestMatch[1] &&
+				(int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight <= size[1]))
 			{
 				bestMatch[0] = m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth;
 				bestMatch[1] = m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight;
+				
+				if ((m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate > bestRRMatch &&
+					m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate <= refreshRate) ||
+					(bestRRMatch > refreshRate && m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate < bestRRMatch) ||
+					bestRRMatch == 0)
+				{
+					bestRRMatch = m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate;
+				}
 			}
 		}
 	}
 
 	size = bestMatch;
+	refreshRate = bestRRMatch;
 }
 
 void Renderer::ConvertOGLProjMatToD3D(Matrix44f& matProj)

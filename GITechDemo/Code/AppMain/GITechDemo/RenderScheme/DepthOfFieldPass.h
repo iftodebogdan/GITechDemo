@@ -32,8 +32,10 @@ namespace GITechDemoApp
 
 	private:
 		void AutofocusPass();
-		void CalculateDoF();
+		void AccumulateDoFEffect();
+		void CalculateBlurFactor();
 		void ApplyDoF();
+		void SwapDoFTargets();
 	};
 }
 

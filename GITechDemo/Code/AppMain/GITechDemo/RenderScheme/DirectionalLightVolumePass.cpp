@@ -207,10 +207,6 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 
 	PUSH_PROFILE_MARKER("Apply (bilateral upscale)");
 
-	const float fUpsampleDepthThresholdBkp = fUpsampleDepthThreshold;
-	if (!DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
-		fUpsampleDepthThreshold = 1.f;
-
 	//LightAccumulationBuffer.Enable();
 
 	f2HalfTexelOffset = Vec2f(
@@ -238,7 +234,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 	texSource = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
 	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-	if (DIR_LIGHT_VOLUME_QUARTER_RES)
+	if (DIR_LIGHT_VOLUME_QUARTER_RES && DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
 	{
 		NearestDepthUpscaleShader.Enable();
 		RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -252,9 +248,6 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 	}
 
 	//LightAccumulationBuffer.Disable();
-
-	if (!DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
-		fUpsampleDepthThreshold = fUpsampleDepthThresholdBkp;
 
 	POP_PROFILE_MARKER();
 }

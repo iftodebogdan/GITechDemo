@@ -59,7 +59,9 @@ namespace GITechDemoApp
 		void* m_pHWND;
 		float m_fDeltaTime;
 		gainput::InputMap* m_pInputMap;
-		int m_fLastFrameResX, m_fLastFrameResY;
+		int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
+		Vec2i m_vLastFrameViewport;
+		bool m_bLastFrameFullscreen, m_bLastFrameVSync;
 
 		MUTEX mResInitMutex;
 

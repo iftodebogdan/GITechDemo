@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -67,7 +67,7 @@ void VertexBufferDX9::Enable(const unsigned int offset)
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetStreamSource(0, m_pVertexBuffer, offset * m_nElementSize, m_pVertexFormat->GetStride());
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -93,7 +93,7 @@ void VertexBufferDX9::Disable()
 #endif
 	
 	hr = device->SetStreamSource(0, 0, 0, 0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	if (m_pIndexBuffer)
 		m_pIndexBuffer->Disable();
@@ -112,7 +112,7 @@ void VertexBufferDX9::Lock(const BufferLocking lockMode)
 	//The pointer to the locked data is saved for future use
 	assert(m_pTempBuffer == nullptr);
 	HRESULT hr = m_pVertexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingDX9[lockMode]);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -124,7 +124,7 @@ void VertexBufferDX9::Unlock()
 	//Unlock the vertex data
 	assert(m_pTempBuffer != nullptr);
 	HRESULT hr = m_pVertexBuffer->Unlock();
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	m_pTempBuffer = nullptr;
 
 	POP_PROFILE_MARKER();
@@ -143,7 +143,7 @@ void VertexBufferDX9::Bind()
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->CreateVertexBuffer((UINT)m_nSize, BufferUsageDX9[m_eBufferUsage], 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	Lock(BL_WRITE_ONLY);
 	Update();

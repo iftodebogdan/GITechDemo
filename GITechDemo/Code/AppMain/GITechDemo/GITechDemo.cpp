@@ -57,6 +57,8 @@ namespace GITechDemoApp
 	bool FULLSCREEN_ENABLED = false;
 	int FULLSCREEN_RESOLUTION_X = 0;
 	int FULLSCREEN_RESOLUTION_Y = 0;
+	int FULLSCREEN_REFRESH_RATE = 0;
+	bool VSYNC_ENABLED = true;
 }
 
 namespace GITechDemoApp
@@ -159,19 +161,36 @@ bool GITechDemo::Init(void* hWnd)
 
 	RenderResource::SetResourceManager(ResourceMgr);
 
+	const std::vector<const Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+
 	// Set the highest available fullscreen resolution
-	for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
+	for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
 	{
-		if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+		if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
 		{
-			if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > FULLSCREEN_RESOLUTION_X ||
-				(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > FULLSCREEN_RESOLUTION_Y)
+			if ((int)arrSupportedScreenFormats[i].nWidth > FULLSCREEN_RESOLUTION_X ||
+				(int)arrSupportedScreenFormats[i].nHeight > FULLSCREEN_RESOLUTION_Y)
 			{
-				m_fLastFrameResX = FULLSCREEN_RESOLUTION_X = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-				m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y = RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+				FULLSCREEN_RESOLUTION_X = arrSupportedScreenFormats[i].nWidth;
+				FULLSCREEN_RESOLUTION_Y = arrSupportedScreenFormats[i].nHeight;
+				FULLSCREEN_REFRESH_RATE = arrSupportedScreenFormats[i].nRefreshRate;
+			}
+
+			if ((int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X ||
+				(int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y ||
+				(int)arrSupportedScreenFormats[i].nRefreshRate > FULLSCREEN_REFRESH_RATE)
+			{
+				FULLSCREEN_REFRESH_RATE = arrSupportedScreenFormats[i].nRefreshRate;
 			}
 		}
 	}
+
+	m_nLastFrameResX = -1;
+	m_nLastFrameResY = -1;
+	m_vLastFrameViewport = Vec2i(-1, -1);
+	m_nLastFrameRefreshRate = -1;
+	m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
+	m_bLastFrameVSync = VSYNC_ENABLED;
 
 	return true;
 }
@@ -279,110 +298,178 @@ void GITechDemo::Update(const float fDeltaTime)
 	Framework* const pFW = Framework::GetInstance();
 	pFW->GetClientArea(cLeft, cTop, cRight, cBottom);
 	const Vec2i viewportSize = Vec2i(cRight - cLeft, cBottom - cTop);
+	
+	const std::vector<const Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
 	// Update fullscreen resolution setting
-	if (FULLSCREEN_RESOLUTION_X > m_fLastFrameResX)
+	if (m_nLastFrameResX != -1 ||
+		m_nLastFrameResY != -1 ||
+		m_vLastFrameViewport != Vec2i(-1, -1) ||
+		m_nLastFrameRefreshRate != -1)
 	{
-		// X resolution increased
-		FULLSCREEN_RESOLUTION_X = INT_MAX;
-		FULLSCREEN_RESOLUTION_Y = INT_MAX;
-		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
+		if (FULLSCREEN_RESOLUTION_X > m_nLastFrameResX)
 		{
-			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			// X resolution increased
+			FULLSCREEN_RESOLUTION_X = INT_MAX;
+			FULLSCREEN_RESOLUTION_Y = INT_MAX;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth > m_fLastFrameResX &&
-					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth <= FULLSCREEN_RESOLUTION_X)
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
 				{
-					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+					if ((int)arrSupportedScreenFormats[i].nWidth > m_nLastFrameResX &&
+						(int)arrSupportedScreenFormats[i].nWidth <= FULLSCREEN_RESOLUTION_X)
+					{
+						FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
+						FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+					}
 				}
 			}
-		}
-		if(FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
-		{
-			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
-		}
-	}
-	else if (FULLSCREEN_RESOLUTION_X < m_fLastFrameResX)
-	{
-		// X resolution decreased
-		FULLSCREEN_RESOLUTION_X = 0;
-		FULLSCREEN_RESOLUTION_Y = 0;
-		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
-		{
-			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth < m_fLastFrameResX &&
-					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth >= FULLSCREEN_RESOLUTION_X)
-				{
-					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-				}
+				FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
+				FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
 			}
 		}
-		if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+		else if (FULLSCREEN_RESOLUTION_X < m_nLastFrameResX)
 		{
-			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
-		}
-	}
-	else if (FULLSCREEN_RESOLUTION_Y > m_fLastFrameResY)
-	{
-		// Y resolution increased
-		FULLSCREEN_RESOLUTION_X = INT_MAX;
-		FULLSCREEN_RESOLUTION_Y = INT_MAX;
-		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
-		{
-			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			// X resolution decreased
+			FULLSCREEN_RESOLUTION_X = 0;
+			FULLSCREEN_RESOLUTION_Y = 0;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight > m_fLastFrameResY &&
-					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight <= FULLSCREEN_RESOLUTION_Y)
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
 				{
-					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
+					if ((int)arrSupportedScreenFormats[i].nWidth < m_nLastFrameResX &&
+						(int)arrSupportedScreenFormats[i].nWidth >= FULLSCREEN_RESOLUTION_X)
+					{
+						FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
+						FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+					}
 				}
 			}
-		}
-		if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
-		{
-			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
-		}
-	}
-	else if (FULLSCREEN_RESOLUTION_Y < m_fLastFrameResY)
-	{
-		// Y resolution decreased
-		FULLSCREEN_RESOLUTION_X = 0;
-		FULLSCREEN_RESOLUTION_Y = 0;
-		for (unsigned int i = 0; i < RenderContext->GetDeviceCaps().arrSupportedScreenFormats.size(); i++)
-		{
-			if (RenderContext->GetBackBufferFormat() == RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].ePixelFormat)
+			if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
 			{
-				if ((int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight < m_fLastFrameResY &&
-					(int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight >= FULLSCREEN_RESOLUTION_Y)
-				{
-					FULLSCREEN_RESOLUTION_X = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nWidth;
-					FULLSCREEN_RESOLUTION_Y = (int)RenderContext->GetDeviceCaps().arrSupportedScreenFormats[i].nHeight;
-				}
+				FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
+				FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
 			}
 		}
-		if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+		else if (FULLSCREEN_RESOLUTION_Y > m_nLastFrameResY)
 		{
-			FULLSCREEN_RESOLUTION_X = m_fLastFrameResX; // Reset resolution setting in case
-			FULLSCREEN_RESOLUTION_Y = m_fLastFrameResY; // we didn't find another suitable one
+			// Y resolution increased
+			FULLSCREEN_RESOLUTION_X = INT_MAX;
+			FULLSCREEN_RESOLUTION_Y = INT_MAX;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+			{
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
+				{
+					if ((int)arrSupportedScreenFormats[i].nHeight > m_nLastFrameResY &&
+						(int)arrSupportedScreenFormats[i].nHeight <= FULLSCREEN_RESOLUTION_Y)
+					{
+						FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
+						FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+					}
+				}
+			}
+			if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
+			{
+				FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
+				FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+			}
+		}
+		else if (FULLSCREEN_RESOLUTION_Y < m_nLastFrameResY)
+		{
+			// Y resolution decreased
+			FULLSCREEN_RESOLUTION_X = 0;
+			FULLSCREEN_RESOLUTION_Y = 0;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+			{
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
+				{
+					if ((int)arrSupportedScreenFormats[i].nHeight < m_nLastFrameResY &&
+						(int)arrSupportedScreenFormats[i].nHeight >= FULLSCREEN_RESOLUTION_Y)
+					{
+						FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
+						FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+					}
+				}
+			}
+			if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+			{
+				FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
+				FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+			}
+		}
+		else if (FULLSCREEN_REFRESH_RATE > m_nLastFrameRefreshRate)
+		{
+			// Refresh rate increased
+			FULLSCREEN_REFRESH_RATE = INT_MAX;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+			{
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
+					(int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X &&
+					(int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y)
+				{
+					if ((int)arrSupportedScreenFormats[i].nRefreshRate > m_nLastFrameRefreshRate &&
+						(int)arrSupportedScreenFormats[i].nRefreshRate <= FULLSCREEN_REFRESH_RATE)
+					{
+						FULLSCREEN_REFRESH_RATE = (int)arrSupportedScreenFormats[i].nRefreshRate;
+					}
+				}
+			}
+			if (FULLSCREEN_REFRESH_RATE == INT_MAX)
+			{
+				// Reset resolution setting in case we didn't find another suitable one
+				FULLSCREEN_REFRESH_RATE = m_nLastFrameRefreshRate;
+			}
+		}
+		else if (FULLSCREEN_REFRESH_RATE < m_nLastFrameRefreshRate)
+		{
+			// Refresh rate decreased
+			FULLSCREEN_REFRESH_RATE = 0;
+			for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+			{
+				if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
+					(int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X &&
+					(int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y)
+				{
+					if ((int)arrSupportedScreenFormats[i].nRefreshRate < m_nLastFrameRefreshRate &&
+						(int)arrSupportedScreenFormats[i].nRefreshRate >= FULLSCREEN_REFRESH_RATE)
+					{
+						FULLSCREEN_REFRESH_RATE = (int)arrSupportedScreenFormats[i].nRefreshRate;
+					}
+				}
+			}
+			if (FULLSCREEN_REFRESH_RATE == 0)
+			{
+				// Reset resolution setting in case we didn't find another suitable one
+				FULLSCREEN_REFRESH_RATE = m_nLastFrameRefreshRate;
+			}
 		}
 	}
 
 	// Set the size of the backbuffer accordingly
-	if (!pFW->IsRenderingPaused())
+	if (!pFW->IsRenderingPaused() &&
+		(m_nLastFrameResX != FULLSCREEN_RESOLUTION_X ||
+		m_nLastFrameResY != FULLSCREEN_RESOLUTION_Y ||
+		m_nLastFrameRefreshRate != FULLSCREEN_REFRESH_RATE ||
+		m_vLastFrameViewport != viewportSize ||
+		m_bLastFrameFullscreen != FULLSCREEN_ENABLED ||
+		m_bLastFrameVSync != VSYNC_ENABLED))
+	{
 		RenderContext->SetScreenResolution(
 			FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
 			Vec2i(0, 0),
-			FULLSCREEN_ENABLED);
+			FULLSCREEN_ENABLED,
+			FULLSCREEN_REFRESH_RATE,
+			VSYNC_ENABLED);
 
-	m_fLastFrameResX = FULLSCREEN_RESOLUTION_X;
-	m_fLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+		m_nLastFrameResX = FULLSCREEN_RESOLUTION_X;
+		m_nLastFrameResY = FULLSCREEN_RESOLUTION_Y;
+		m_nLastFrameRefreshRate = FULLSCREEN_REFRESH_RATE;
+		m_vLastFrameViewport = viewportSize;
+		m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
+		m_bLastFrameVSync = VSYNC_ENABLED;
+	}
 
 	// Handle user input
 	unsigned int cmd = APP_CMD_NONE;

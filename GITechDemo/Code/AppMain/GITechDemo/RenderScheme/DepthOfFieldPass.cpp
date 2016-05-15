@@ -38,8 +38,8 @@ using namespace GITechDemoApp;
 namespace GITechDemoApp
 {
 	bool DOF_ENABLED = true;
-	bool DOF_USE_QUARTER_RESOLUTION_BUFFER = true;
 	float DOF_AUTOFOCUS_TIME = 0.25f;
+	int DOF_NUM_PASSES = 4;
 }
 
 DepthOfFieldPass::DepthOfFieldPass(const char* const passName, RenderPass* const parentPass)
@@ -60,27 +60,20 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 		return;
 
 	ResourceMgr->GetTexture(
-		DepthOfFieldFullBuffer.GetRenderTarget()->GetColorBuffer(0)
+		DepthOfFieldBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 	ResourceMgr->GetTexture(
-		DepthOfFieldFullBuffer.GetRenderTarget()->GetColorBuffer(0)
-		)->SetAddressingMode(SAM_CLAMP);
-	ResourceMgr->GetTexture(
-		DepthOfFieldQuarterBuffer.GetRenderTarget()->GetColorBuffer(0)
-		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-	ResourceMgr->GetTexture(
-		DepthOfFieldQuarterBuffer.GetRenderTarget()->GetColorBuffer(0)
+		DepthOfFieldBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetAddressingMode(SAM_CLAMP);
 
+	ResourceMgr->GetTexture(
+		DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+	)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+	ResourceMgr->GetTexture(
+		DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+	)->SetAddressingMode(SAM_CLAMP);
+
 	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-	f2TexelSize = Vec2f(
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-		);
-	f2TexSize = Vec2f(
-		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-		);
 
 	ResourceMgr->GetTexture(AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 	ResourceMgr->GetTexture(AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -129,18 +122,57 @@ void DepthOfFieldPass::AutofocusPass()
 
 // Apply DoF effect to a separate target with
 // CoC value in the alpha channel for compositing
-void DepthOfFieldPass::CalculateDoF()
+void DepthOfFieldPass::AccumulateDoFEffect()
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;
 
-	PUSH_PROFILE_MARKER("Calculate");
+	PUSH_PROFILE_MARKER("Accumulate");
 
-	if (DOF_USE_QUARTER_RESOLUTION_BUFFER)
-		DepthOfFieldQuarterBuffer.Enable();
-	else
-		DepthOfFieldFullBuffer.Enable();
+	DepthOfFieldBuffer[0]->Enable();
+
+	const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+
+	f2HalfTexelOffset = Vec2f(
+		0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
+		0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
+		);
+	f2TexelSize = Vec2f(
+		1.f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
+		1.f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
+	);
+	f2TexSize = Vec2f(
+		(float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
+		(float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
+	);
+	texSource = DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+
+	BokehDofShader.Enable();
+	RenderContext->DrawVertexBuffer(FullScreenTri);
+	BokehDofShader.Disable();
+
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(colorBlendEnabled);
+
+	DepthOfFieldBuffer[0]->Disable();
+
+	POP_PROFILE_MARKER();
+}
+
+void DepthOfFieldPass::CalculateBlurFactor()
+{
+	Renderer* RenderContext = Renderer::GetInstance();
+	if (!RenderContext)
+		return;
+
+	PUSH_PROFILE_MARKER("Calculate Blur");
+
+	// Set aperture size to 0, so that the shader only calculates CoC values
+	float bkp = fApertureSize;
+	fApertureSize = 0.f;
+
+	DepthOfFieldBuffer[0]->Enable();
 
 	const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
 	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
@@ -148,7 +180,15 @@ void DepthOfFieldPass::CalculateDoF()
 	f2HalfTexelOffset = Vec2f(
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-		);
+	);
+	f2TexelSize = Vec2f(
+		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+	);
+	f2TexSize = Vec2f(
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+	);
 	texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 
 	BokehDofShader.Enable();
@@ -157,10 +197,10 @@ void DepthOfFieldPass::CalculateDoF()
 
 	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(colorBlendEnabled);
 
-	if (DOF_USE_QUARTER_RESOLUTION_BUFFER)
-		DepthOfFieldQuarterBuffer.Disable();
-	else
-		DepthOfFieldFullBuffer.Disable();
+	DepthOfFieldBuffer[0]->Disable();
+
+	// Reset aperture size
+	fApertureSize = bkp;
 
 	POP_PROFILE_MARKER();
 }
@@ -178,20 +218,10 @@ void DepthOfFieldPass::ApplyDoF()
 	LightAccumulationBuffer.Enable();
 
 	const bool blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
-	const Blend dstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
-	const Blend srcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
 	bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
 	Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 
-	if (DOF_USE_QUARTER_RESOLUTION_BUFFER)
-	{
-		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
-		RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_INVSRCALPHA);
-		RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_SRCALPHA);
-	}
-	else
-		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
-
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
 	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
@@ -199,19 +229,21 @@ void DepthOfFieldPass::ApplyDoF()
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
-	texSource = (
-		DOF_USE_QUARTER_RESOLUTION_BUFFER ?
-		DepthOfFieldQuarterBuffer.GetRenderTarget() :
-		DepthOfFieldFullBuffer.GetRenderTarget()
-		)->GetColorBuffer(0);
+	f2TexelSize = Vec2f(
+		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+	);
+	f2TexSize = Vec2f(
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+	);
+	texSource = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
 
 	ColorCopyShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	ColorCopyShader.Disable();
 
 	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnabled);
-	RenderContext->GetRenderStateManager()->SetColorDstBlend(dstBlend);
-	RenderContext->GetRenderStateManager()->SetColorSrcBlend(srcBlend);
 	RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWrite);
 	RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
 
@@ -226,6 +258,27 @@ void DepthOfFieldPass::Draw()
 		return;
 	
 	AutofocusPass();
-	CalculateDoF();
+
+	CalculateBlurFactor();
+
+	float bkp = fApertureSize;
+	for (int i = 0; i < DOF_NUM_PASSES; i++)
+	{
+		SwapDoFTargets();
+		AccumulateDoFEffect();
+		
+		// Vary aperture size per pass so as to have a better sample distribution
+		fApertureSize = fApertureSize - bkp / (float)DOF_NUM_PASSES;
+	}
+	fApertureSize = bkp;
+
 	ApplyDoF();
+}
+
+void DepthOfFieldPass::SwapDoFTargets()
+{
+	GITechDemoApp::RenderTarget* rtBkp;
+	rtBkp = DepthOfFieldBuffer[0];
+	DepthOfFieldBuffer[0] = DepthOfFieldBuffer[1];
+	DepthOfFieldBuffer[1] = rtBkp;
 }

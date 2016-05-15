@@ -86,8 +86,8 @@ namespace GITechDemoApp
 
 	// Bokeh DoF
 	extern bool DOF_ENABLED;
-	extern bool DOF_USE_QUARTER_RESOLUTION_BUFFER;
 	extern float DOF_AUTOFOCUS_TIME;
+	extern int DOF_NUM_PASSES;
 
 	// Motion blur
 	extern bool MOTION_BLUR_ENABLED;
@@ -106,10 +106,12 @@ namespace GITechDemoApp
 	// FXAA
 	extern bool FXAA_ENABLED;
 
-	// Fullscreen resolution
+	// Window properties
 	extern bool FULLSCREEN_ENABLED;
 	extern int FULLSCREEN_RESOLUTION_X;
 	extern int FULLSCREEN_RESOLUTION_Y;
+	extern int FULLSCREEN_REFRESH_RATE;
+	extern bool VSYNC_ENABLED;
 	//------------------------------------------------------
 
 	//////////////////////////////////////////////
@@ -203,30 +205,19 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Focal length",				"Focal length in mm",													"Bokeh DoF",				fFocalLength.GetCurrentValue(),				1.f);
 	IMPLEMENT_ARTIST_PARAMETER("F-stop",					"F-stop value",															"Bokeh DoF",				fFStop.GetCurrentValue(),					1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Circle of confusion",		"Circle of confusion size in mm (35mm film = 0.03mm)",					"Bokeh DoF",				fCoC.GetCurrentValue(),						0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Near start",				"Near plane DoF blur start (artist friendly parameter)",				"Bokeh DoF",				fNearDofStart.GetCurrentValue(),			1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Near falloff",				"Near plane DoF blur falloff distance (artist friendly parameter)",		"Bokeh DoF",				fNearDofFalloff.GetCurrentValue(),			1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Far start",					"Far plane DoF blur start (artist friendly parameter)",					"Bokeh DoF",				fFarDofStart.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Far falloff",				"Far plane DoF blur falloff distance (artist friendly parameter)",		"Bokeh DoF",				fFarDofFalloff.GetCurrentValue(),			1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Manual DoF",				"Switch between artist friendly and physically based parameters",		"Bokeh DoF",				bManualDof.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Debug focus",				"Show debug auto focus point and focal range",							"Bokeh DoF",				bDebugFocus.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Autofocus",					"Use autofocus",														"Bokeh DoF",				bAutofocus.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Autofocus time",			"Autofocus animation duration in seconds",								"Bokeh DoF",				DOF_AUTOFOCUS_TIME,							1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Max blur",					"Blur factor (0.f = no blur, 1.f default)",								"Bokeh DoF",				fMaxBlur.GetCurrentValue(),					0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Aperture size",				"Affects size of bokeh",												"Bokeh DoF",				fApertureSize.GetCurrentValue(),			0.001f);
+	IMPLEMENT_ARTIST_PARAMETER("DoF pass count",			"The number of times to apply the DoF shader",							"Bokeh DoF",				DOF_NUM_PASSES,								1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Highlight threshold",		"Brightness-pass filter threshold (higher = sparser bokeh)",			"Bokeh DoF",				fHighlightThreshold.GetCurrentValue(),		0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Highlight gain",			"Brightness gain (higher = more prominent bokeh)",						"Bokeh DoF",				fHighlightGain.GetCurrentValue(),			0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Bokeh bias",				"Bokeh edge bias (shift weights towards edges)",						"Bokeh DoF",				fBokehBias.GetCurrentValue(),				0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Bokeh fringe",				"Bokeh chromatic aberration",											"Bokeh DoF",				fBokehFringe.GetCurrentValue(),				0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Pentagon bokeh",			"Use pentagon as bokeh shape",											"Bokeh DoF",				bPentagonBokeh.GetCurrentValue(),			1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Pentagon feather",			"Pentagon edge feathering",												"Bokeh DoF",				fPentagonFeather.GetCurrentValue(),			0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Noise",						"Use noise instead of pattern for sample dithering",					"Bokeh DoF",				bUseNoise.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Noise amount",				"Dither amount",														"Bokeh DoF",				fNoiseAmount.GetCurrentValue(),				0.001f);
-	IMPLEMENT_ARTIST_PARAMETER("Blur depth",				"Blur the depth buffer for softer edges",								"Bokeh DoF",				bBlurDepth.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Depth blur size",			"Depth blur kernel size",												"Bokeh DoF",				fDepthBlurSize.GetCurrentValue(),			0.001f);
+	IMPLEMENT_ARTIST_PARAMETER("Autofocus",					"Use autofocus",														"Bokeh DoF",				bAutofocus.GetCurrentValue(),				1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Autofocus time",			"Autofocus animation duration in seconds",								"Bokeh DoF",				DOF_AUTOFOCUS_TIME,							1.f);;
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting",				"Optical lens vignetting effect",										"Bokeh DoF",				bVignetting.GetCurrentValue(),				1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting out",			"Vignetting outer border",												"Bokeh DoF",				fVignOut.GetCurrentValue(),					0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting in",				"Vignetting inner border",												"Bokeh DoF",				fVignIn.GetCurrentValue(),					0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting fade",			"F-stops until vignette fades",											"Bokeh DoF",				fVignFade.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"Bokeh DoF",				DOF_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
+
+	// Chromatic abberation (part of DoF shader)
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift amount",		"The amount of chromatic separation",									"Chromatic abberation",		fChromaShiftAmount.GetCurrentValue(),		0.1f);
 
 	// Motion blur
 	IMPLEMENT_ARTIST_PARAMETER("Motion blur enable",		"Toggle the rendering of the motion blur effect",						"Motion blur",				MOTION_BLUR_ENABLED,						1.f);
@@ -267,6 +258,9 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Toe denominator",			"Denominator of the toe part of the filmic tone mapping curve",			"HDR tone mapping",			fToeDenominator.GetCurrentValue(),			0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Linear white",				"Reference linear white value of the filmic tone mapping curve",		"HDR tone mapping",			fLinearWhite.GetCurrentValue(),				0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Exposure adapt speed",		"Seconds in which the exposure adapts to scene brightness",				"HDR tone mapping",			fLumaAdaptSpeed.GetCurrentValue(),			0.1f);
+	
+	// Film grain (part of HDR tonemapping shader)
+	IMPLEMENT_ARTIST_PARAMETER("Film grain amount",			"Amount of film grain applied to the image",							"Film grain",				fFilmGrainAmount.GetCurrentValue(),			0.001f);
 
 	// FXAA
 	IMPLEMENT_ARTIST_PARAMETER("FXAA enable",				"Toggle the FXAA filter",												"FXAA",						FXAA_ENABLED,								1.f);
@@ -279,9 +273,11 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Text color G",				"HUD text color - green component",										"HUD",						f3TextColor.GetCurrentValue()[1],			0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Text color B",				"HUD text color - blue component",										"HUD",						f3TextColor.GetCurrentValue()[2],			0.1f);
 
-	// Fullscreen resolution
+	// Window properties
 	IMPLEMENT_ARTIST_PARAMETER("Fullscreen enabled",		"Toggle between window mode and fulscreen mode",						"Window",					FULLSCREEN_ENABLED,							1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Resolution X (width)",		"Set the resolution on the X axis (only affects fullscreen mode)",		"Window",					FULLSCREEN_RESOLUTION_X,					1.f);
 	IMPLEMENT_ARTIST_PARAMETER("Resolution Y (height)",		"Set the resolution on the Y axis (only affects fullscreen mode)",		"Window",					FULLSCREEN_RESOLUTION_Y,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Refresh rate",				"Set the refresh rate of the display (only affects fullscreen mode)",	"Window",					FULLSCREEN_REFRESH_RATE,					1.f);
+	IMPLEMENT_ARTIST_PARAMETER("VSync enabled",				"Synchronizes backbuffer swapping with screen refresh rate",			"Window",					VSYNC_ENABLED,								1.f);
 	//------------------------------------------------------
 }

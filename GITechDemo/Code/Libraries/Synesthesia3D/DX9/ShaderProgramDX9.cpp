@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ void ShaderProgramDX9::Enable(ShaderInput* const shaderInput)
 	assert(m_pVertexShader || m_pPixelShader);
 	
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -86,7 +86,7 @@ void ShaderProgramDX9::Disable()
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 
 #ifdef _DEBUG
 	IDirect3DVertexShader9* activeVShader = nullptr;
@@ -441,7 +441,7 @@ void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* c
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -461,7 +461,7 @@ void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 	switch (m_eProgramType)
 	{
 	case SPT_VERTEX:
@@ -480,7 +480,7 @@ void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* con
 	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-	HRESULT hr = S_FALSE;
+	HRESULT hr = E_FAIL;
 	
 	// Convert the bool (2 bytes) array to a Microsoft BOOL (4 bytes) array
 	BOOL* tempBuffer = new BOOL[registerCount];

@@ -121,8 +121,8 @@ namespace GITechDemoApp
 	DECLARE_RENDER_TARGET(SSAOFullBuffer1);
 	DECLARE_RENDER_TARGET(SSAOQuarterBuffer0);
 	DECLARE_RENDER_TARGET(SSAOQuarterBuffer1);
-	DECLARE_RENDER_TARGET(DepthOfFieldFullBuffer);
-	DECLARE_RENDER_TARGET(DepthOfFieldQuarterBuffer);
+	DECLARE_RENDER_TARGET(DepthOfFieldBuffer0);
+	DECLARE_RENDER_TARGET(DepthOfFieldBuffer1);
 	DECLARE_RENDER_TARGET(AutofocusBuffer0);
 	DECLARE_RENDER_TARGET(AutofocusBuffer1);
 	DECLARE_RENDER_TARGET(MotionBlurBuffer);
@@ -144,6 +144,7 @@ namespace GITechDemoApp
 	extern RenderTarget* BloomBuffer[2];
 	extern RenderTarget* SSAOFullBuffer[2];
 	extern RenderTarget* SSAOQuarterBuffer[2];
+	extern RenderTarget* DepthOfFieldBuffer[2];
 	extern RenderTarget* AdaptedLuminance[2];
 	extern RenderTarget* AutofocusBuffer[2];
 	extern RenderTarget* SphericalLensFlareBuffer[2];
@@ -269,6 +270,7 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fToeNumerator,				float		);
 	DECLARE_SHADER_CONSTANT(fToeDenominator,			float		);
 	DECLARE_SHADER_CONSTANT(fLinearWhite,				float		);
+	DECLARE_SHADER_CONSTANT(fFilmGrainAmount,			float		);
 
 	//	- LumaAdapt.hlsl
 	DECLARE_SHADER_CONSTANT(fLumaAdaptSpeed,			float		);
@@ -300,29 +302,16 @@ namespace GITechDemoApp
 	DECLARE_SHADER_CONSTANT(fFocalLength,				float		);
 	DECLARE_SHADER_CONSTANT(fFStop,						float		);
 	DECLARE_SHADER_CONSTANT(fCoC,						float		);
-	DECLARE_SHADER_CONSTANT(fNearDofStart,				float		);
-	DECLARE_SHADER_CONSTANT(fNearDofFalloff,			float		);
-	DECLARE_SHADER_CONSTANT(fFarDofStart,				float		);
-	DECLARE_SHADER_CONSTANT(fFarDofFalloff,				float		);
-	DECLARE_SHADER_CONSTANT(bManualDof,					bool		);
-	DECLARE_SHADER_CONSTANT(bDebugFocus,				bool		);
 	DECLARE_SHADER_CONSTANT(bAutofocus,					bool		);
-	DECLARE_SHADER_CONSTANT(fMaxBlur,					float		);
+	DECLARE_SHADER_CONSTANT(texTargetFocus,				sampler2D	);
+	DECLARE_SHADER_CONSTANT(fApertureSize,				float		);
 	DECLARE_SHADER_CONSTANT(fHighlightThreshold,		float		);
 	DECLARE_SHADER_CONSTANT(fHighlightGain,				float		);
-	DECLARE_SHADER_CONSTANT(fBokehBias,					float		);
-	DECLARE_SHADER_CONSTANT(fBokehFringe,				float		);
-	DECLARE_SHADER_CONSTANT(bPentagonBokeh,				bool		);
-	DECLARE_SHADER_CONSTANT(fPentagonFeather,			float		);
-	DECLARE_SHADER_CONSTANT(bUseNoise,					bool		);
-	DECLARE_SHADER_CONSTANT(fNoiseAmount,				float		);
-	DECLARE_SHADER_CONSTANT(bBlurDepth,					bool		);
-	DECLARE_SHADER_CONSTANT(fDepthBlurSize,				float		);
 	DECLARE_SHADER_CONSTANT(bVignetting,				bool		);
 	DECLARE_SHADER_CONSTANT(fVignOut,					float		);
 	DECLARE_SHADER_CONSTANT(fVignIn,					float		);
 	DECLARE_SHADER_CONSTANT(fVignFade,					float		);
-	DECLARE_SHADER_CONSTANT(texTargetFocus,				sampler2D	);
+	DECLARE_SHADER_CONSTANT(fChromaShiftAmount,			float		);
 
 	//	- PostProcessingUtils.hlsl
 	DECLARE_SHADER_CONSTANT(f2LinearDepthEquation,		Vec2f		);

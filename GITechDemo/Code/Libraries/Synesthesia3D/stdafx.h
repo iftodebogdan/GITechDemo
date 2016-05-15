@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -28,18 +28,22 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
-// Exclude rarely-used stuff from Windows headers
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifdef WIN32
+	// Exclude rarely-used stuff from Windows headers
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <WinBase.h>
+#endif
 
 // TODO: reference additional headers your program requires here
 
 // Memory leak guard on debug
 #ifdef _DEBUG
-#include <vld.h>
+	#include <vld.h>
 #endif
 
 // Include common header files
 #include <assert.h>
+#include <malloc.h>
 
 #endif //STDAFX_H

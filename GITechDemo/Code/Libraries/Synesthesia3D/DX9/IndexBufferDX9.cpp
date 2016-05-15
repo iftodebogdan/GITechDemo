@@ -3,7 +3,7 @@
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify
@@ -56,7 +56,7 @@ void IndexBufferDX9::Enable()
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetIndices(m_pIndexBuffer);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -71,7 +71,7 @@ void IndexBufferDX9::Disable()
 #ifdef _DEBUG
 	IDirect3DIndexBuffer9* activeBuffer = 0;
 	hr = device->GetIndices(&activeBuffer);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	assert(activeBuffer == m_pIndexBuffer);
 	ULONG refCount = 1;
 	refCount = activeBuffer->Release();
@@ -79,7 +79,7 @@ void IndexBufferDX9::Disable()
 #endif
 
 	hr = device->SetIndices(0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -90,7 +90,7 @@ void IndexBufferDX9::Lock(const BufferLocking lockMode)
 
 	assert(m_pTempBuffer == nullptr);
 	HRESULT hr = m_pIndexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingDX9[lockMode]);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	POP_PROFILE_MARKER();
 }
@@ -101,7 +101,7 @@ void IndexBufferDX9::Unlock()
 
 	assert(m_pTempBuffer != nullptr);
 	HRESULT hr = m_pIndexBuffer->Unlock();
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 	m_pTempBuffer = nullptr;
 
 	POP_PROFILE_MARKER();
@@ -119,7 +119,7 @@ void IndexBufferDX9::Bind()
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->CreateIndexBuffer((UINT)m_nSize, BufferUsageDX9[m_eBufferUsage], IndexBufferFormatDX9[m_eIndexFormat], D3DPOOL_DEFAULT, &m_pIndexBuffer, 0);
-	assert(SUCCEEDED(hr));
+	S3D_VALIDATE_HRESULT(hr);
 
 	Lock(BL_WRITE_ONLY);
 	Update();
