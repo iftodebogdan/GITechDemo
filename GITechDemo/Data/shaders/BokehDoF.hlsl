@@ -80,7 +80,7 @@ const float	fVignOut;		//	Vignetting outer border
 const float	fVignIn;		//	Vignetting inner border
 const float	fVignFade;		//	F-stops until vignette fades
 
-// Chromatic abberation
+// Chromatic aberration
 const float fChromaShiftAmount;	// Color separation factor
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
@@ -112,6 +112,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 		for (int i = 0; i < APERTURE_BLADE_COUNT; i++)
 		{
+			// Retrieve sample color and CoC value
 			const float4 f4Sample = tex2D(texSource, input.f2TexCoord + f2KernelOffset[i] * fApertureSize * fDofBlurFactor * float2(fAspectRatioScale, 1.f));
 			const float fSampleDofBlurFactor = f4Sample.a * 2.f - 1.f;
 
@@ -143,7 +144,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		const float c	=	(fFocalPointMm	-	fFocalLength)	/	(fFocalPointMm	*	fFStop	*	fCoC);
 		fDofBlurFactor	=	saturate(abs(a - b) * c) * sign(fLinearDepth - fFocalPoint);
 
-		// Apply chromatic abberation effect
+		// Apply chromatic aberration effect
 		if (fChromaShiftAmount > 0.f)
 		{
 			// The effect is more intense towards the exterior of the screen

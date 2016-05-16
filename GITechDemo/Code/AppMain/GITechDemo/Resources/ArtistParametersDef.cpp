@@ -216,8 +216,8 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting in",				"Vignetting inner border",												"Bokeh DoF",				fVignIn.GetCurrentValue(),					0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Vignetting fade",			"F-stops until vignette fades",											"Bokeh DoF",				fVignFade.GetCurrentValue(),				1.f);
 
-	// Chromatic abberation (part of DoF shader)
-	IMPLEMENT_ARTIST_PARAMETER("Chroma shift amount",		"The amount of chromatic separation",									"Chromatic abberation",		fChromaShiftAmount.GetCurrentValue(),		0.1f);
+	// Chromatic aberration (part of DoF shader)
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift amount",		"The amount of chromatic separation",									"Chromatic aberration",		fChromaShiftAmount.GetCurrentValue(),		0.1f);
 
 	// Motion blur
 	IMPLEMENT_ARTIST_PARAMETER("Motion blur enable",		"Toggle the rendering of the motion blur effect",						"Motion blur",				MOTION_BLUR_ENABLED,						1.f);
@@ -240,8 +240,8 @@ namespace GITechDemoApp
 	IMPLEMENT_ARTIST_PARAMETER("Ghost radial weight",		"Falloff factor for bright spots that are near screen edges",			"Lens flare",				fGhostRadialWeightExp.GetCurrentValue(),	0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Halo size",					"Halo size scale factor",												"Lens flare",				fHaloSize.GetCurrentValue(),				0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Halo radial weight",		"Determines halo thickness",											"Lens flare",				fHaloRadialWeightExp.GetCurrentValue(),		0.1f);
-	IMPLEMENT_ARTIST_PARAMETER("Chroma shift enable",		"Toggle the application of a chromatic abberation effect",				"Lens flare",				bChromaShift.GetCurrentValue(),				1.f);
-	IMPLEMENT_ARTIST_PARAMETER("Chroma shift factor",		"Intensity of chromatic abberation effect",								"Lens flare",				fShiftFactor.GetCurrentValue(),				0.1f);
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift enable",		"Toggle the application of a chromatic aberration effect",				"Lens flare",				bChromaShift.GetCurrentValue(),				1.f);
+	IMPLEMENT_ARTIST_PARAMETER("Chroma shift factor",		"Intensity of chromatic aberration effect",								"Lens flare",				fShiftFactor.GetCurrentValue(),				0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Lens dirt intensity",		"Scale factor for lens dirt texture samples",							"Lens flare",				fLensDirtIntensity.GetCurrentValue(),		0.1f);
 	IMPLEMENT_ARTIST_PARAMETER("Lens star burst intensity",	"Scale factor for lens star burst texture samples",						"Lens flare",				fLensStarBurstIntensity.GetCurrentValue(),	0.1f);
 

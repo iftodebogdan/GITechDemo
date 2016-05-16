@@ -54,12 +54,12 @@ const float fGhostRadialWeightExp;
 const float fHaloSize;
 const float fHaloRadialWeightExp;
 
-// Chromatic abberation feature
+// Chromatic aberration feature
 const bool bChromaShift;
 const float fShiftFactor;
 
 // Replacement for tex2D() which adds a
-// chromatic abberation effect to texture samples
+// chromatic aberration effect to texture samples
 float4 FetchChromaShiftedTextureSample(sampler2D tex, float2 texCoord)
 {
 	if (bChromaShift)
