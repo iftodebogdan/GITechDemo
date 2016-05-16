@@ -121,12 +121,12 @@ const API Renderer::GetAPI()
 	return ms_eAPI;
 }
 
-const Vec2i Renderer::GetScreenOffset() const
+const Vec2i Renderer::GetDisplayOffset() const
 {
 	return m_vBackBufferOffset;
 }
 
-void Renderer::ValidateScreenResolution(Vec2i& size, unsigned int& refreshRate) const
+void Renderer::ValidateDisplayResolution(Vec2i& size, unsigned int& refreshRate) const
 {
 	if (GetAPI() == API_NULL)
 		return;

@@ -13,9 +13,6 @@
     <Filter Include="SDK\DX9">
       <UniqueIdentifier>{9ac381ef-b408-4115-96c3-e6f42f9e81f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SDK\gmtl">
       <UniqueIdentifier>{5bb3b6bb-fc19-44b2-831b-22f05e809442}</UniqueIdentifier>
     </Filter>
@@ -76,6 +73,9 @@
     <Filter Include="NULL">
       <UniqueIdentifier>{c7d8505b-d140-4e76-99be-18af54c0096d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX9\RendererDX9.h">
@@ -128,21 +128,6 @@
     </ClInclude>
     <ClInclude Include="DX9\IndexBufferDX9.h">
       <Filter>DX9</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Buffer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\IndexBuffer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Renderer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\VertexBuffer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\VertexFormat.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="SDK\gmtl\include\gmtl\AABox.h">
       <Filter>SDK\gmtl</Filter>
@@ -357,27 +342,6 @@
     <ClInclude Include="DX9\TextureDX9.h">
       <Filter>DX9</Filter>
     </ClInclude>
-    <ClInclude Include="Common\RenderState.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\RenderTarget.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ResourceData.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ResourceManager.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\SamplerState.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ShaderInput.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Texture.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\Mutex.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -386,10 +350,46 @@
     </ClInclude>
     <ClInclude Include="DX9\ShaderProgramDX9.h" />
     <ClInclude Include="NULL\ShaderProgramNULL.h" />
-    <ClInclude Include="Common\ShaderProgram.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Utility\Debug.h" />
+    <ClInclude Include="Base\Buffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\IndexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Renderer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\RenderState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\RenderTarget.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ResourceData.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ResourceManager.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\SamplerState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ShaderInput.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ShaderProgram.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Texture.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\VertexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\VertexFormat.h">
+      <Filter>Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -410,21 +410,6 @@
     </ClCompile>
     <ClCompile Include="DX9\IndexBufferDX9.cpp">
       <Filter>DX9</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\Buffer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\IndexBuffer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\Renderer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\VertexBuffer.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\VertexFormat.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="Utility\HalfFloat.cpp">
       <Filter>Utility</Filter>
@@ -474,41 +459,53 @@
     <ClCompile Include="DX9\TextureDX9.cpp">
       <Filter>DX9</Filter>
     </ClCompile>
-    <ClCompile Include="Common\RenderState.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\RenderTarget.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\ResourceManager.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\ResourceSerialization.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\SamplerState.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\ShaderInput.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\Texture.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
     <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
-    <ClCompile Include="Common\ShaderProgram.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="Utility\Debug.cpp" />
+    <ClCompile Include="Base\Buffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\IndexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Renderer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\RenderState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\RenderTarget.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ResourceManager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ResourceSerialization.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\SamplerState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ShaderInput.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ShaderProgram.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Texture.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\VertexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\VertexFormat.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Synesthesia3D.licenseheader" />
     <None Include="SDK\DX9\Include\d3dx9math.inl">
       <Filter>SDK\DX9\include</Filter>
-    </None>
-    <None Include="Common\VertexBuffer.inl">
-      <Filter>Common</Filter>
     </None>
     <None Include="SDK\vld\bin\x64\dbghelp.dll">
       <Filter>SDK\vld\bin\x64</Filter>
@@ -528,8 +525,11 @@
     <None Include="SDK\vld\bin\Win32\Microsoft.DTfW.DHL.manifest">
       <Filter>SDK\vld\bin\x86</Filter>
     </None>
-    <None Include="Common\ShaderInput.inl">
-      <Filter>Common</Filter>
+    <None Include="Base\ShaderInput.inl">
+      <Filter>Base</Filter>
+    </None>
+    <None Include="Base\VertexBuffer.inl">
+      <Filter>Base</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

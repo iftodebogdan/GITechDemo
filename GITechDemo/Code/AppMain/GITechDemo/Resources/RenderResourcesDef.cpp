@@ -50,14 +50,14 @@ namespace GITechDemoApp
 	//////////////
 	// Shaders	//
 	//////////////
-	IMPLEMENT_SHADER(BokehDofShader,					"shaders/BokehDoF.hlsl");
-	IMPLEMENT_SHADER(RSMUpscaleShader,					"shaders/RSMUpscale.hlsl");
 	IMPLEMENT_SHADER(DirectionalLightVolumeShader,		"shaders/DirectionalLightVolume.hlsl");
+	IMPLEMENT_SHADER(RSMUpscaleShader,					"shaders/RSMUpscale.hlsl");
 	IMPLEMENT_SHADER(RSMApplyShader,					"shaders/RSMApply.hlsl");
 	IMPLEMENT_SHADER(DirectionalLightShader,			"shaders/DirectionalLight.hlsl");
 	IMPLEMENT_SHADER(SphericalLensFlareFeaturesShader,	"shaders/SphericalLensFlareFeatures.hlsl");
 	IMPLEMENT_SHADER(SsaoShader,						"shaders/SSAO.hlsl");
 	IMPLEMENT_SHADER(BilateralBlurShader,				"shaders/BilateralBlur.hlsl");
+	IMPLEMENT_SHADER(BokehDofShader,					"shaders/BokehDoF.hlsl");
 	IMPLEMENT_SHADER(FxaaShader,						"shaders/FXAA.hlsl");
 	IMPLEMENT_SHADER(AnamorphicLensFlareBlurShader,		"shaders/AnamorphicLensFlareBlur.hlsl");
 	IMPLEMENT_SHADER(AnamorphicLensFlareFeaturesShader,	"shaders/AnamorphicLensFlareFeatures.hlsl");

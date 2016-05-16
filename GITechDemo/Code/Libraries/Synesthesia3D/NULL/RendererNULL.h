@@ -44,9 +44,11 @@ namespace Synesthesia3D
 		void	CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
 		void	CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
 		
-		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true) { m_vScreenSize = size; return true; }
-		const Vec2i			GetScreenResolution() const { return m_vScreenSize; }
+		const bool			SetDisplayResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true) { m_vScreenSize = size; return true; }
+		const Vec2i			GetDisplayResolution() const { return m_vScreenSize; }
 		const bool			IsFullscreen() const { return true; }
+		const bool			GetVSyncStatus() const { return true; };
+		const unsigned int	GetDisplayRefreshRate() const { return 0; }
 		const PixelFormat	GetBackBufferFormat() const { return PF_NONE; }
 
 		const bool	BeginFrame() { return true; }
@@ -58,7 +60,6 @@ namespace Synesthesia3D
 		void		PushProfileMarker(const char* const label);
 		void		PopProfileMarker();
 
-		const bool	GetVSyncStatus() const { return true; };
 
 		friend class Renderer;
 	};

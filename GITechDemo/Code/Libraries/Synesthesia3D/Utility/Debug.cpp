@@ -32,6 +32,7 @@
 	void _S3D_DBGPRINT(char* szFile, int nLineNumber, char* szDebugFormatString, ...)
 	{
 	#ifdef WIN32
+		#define DBGPRINT_HEADER "%s(%d): [S3D] "
 		INT cbFormatString = 0;
 		va_list args;
 		STRSAFE_LPSTR szDebugString = NULL;
@@ -39,14 +40,14 @@
 	
 		va_start(args, szDebugFormatString);
 	
-		cbFormatString = _scprintf("[S3D] %s:%d - ", szFile, nLineNumber) * sizeof(STRSAFE_LPSTR);
+		cbFormatString = _scprintf(DBGPRINT_HEADER, szFile, nLineNumber) * sizeof(STRSAFE_LPSTR);
 		cbFormatString += _vscprintf(szDebugFormatString, args) * sizeof(STRSAFE_LPSTR) + 2;
 	
 		/* Depending on the size of the format string, allocate space on the stack or the heap. */
 		szDebugString = (STRSAFE_LPSTR)_malloca(cbFormatString);
 	
 		/* Populate the buffer with the contents of the format string. */
-		StringCbPrintf(szDebugString, cbFormatString, "[S3D] %s:%d - ", szFile, nLineNumber);
+		StringCbPrintf(szDebugString, cbFormatString, DBGPRINT_HEADER, szFile, nLineNumber);
 		StringCbLength(szDebugString, cbFormatString, &st_Offset);
 		StringCbVPrintf(&szDebugString[st_Offset], cbFormatString - st_Offset, szDebugFormatString, args);
 	

@@ -64,9 +64,10 @@ namespace Synesthesia3D
 
 		void		Initialize(void* hWnd);
 
-		const bool			SetScreenResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true);
-		const Vec2i			GetScreenResolution() const { return Vec2i(m_ePresentParameters.BackBufferWidth, m_ePresentParameters.BackBufferHeight); }
+		const bool			SetDisplayResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true);
+		const Vec2i			GetDisplayResolution() const { return Vec2i(m_ePresentParameters.BackBufferWidth, m_ePresentParameters.BackBufferHeight); }
 		const bool			GetVSyncStatus() const { return m_ePresentParameters.PresentationInterval != D3DPRESENT_INTERVAL_IMMEDIATE; }
+		const unsigned int	GetDisplayRefreshRate() const { return m_ePresentParameters.FullScreen_RefreshRateInHz; }
 		const PixelFormat	GetBackBufferFormat() const { return MatchPixelFormat(m_ePresentParameters.BackBufferFormat); }
 
 		void		SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0));

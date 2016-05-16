@@ -140,7 +140,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -172,7 +172,7 @@ DEL /F /Q "$(OutDir)\vld_x86.dll"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;$(ProjectDir)SDK\vld\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -208,7 +208,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -230,7 +230,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -253,7 +253,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -276,7 +276,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Common;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)SDK\DX9\include;$(ProjectDir)SDK\gmtl\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -292,13 +292,13 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Common\ResourceData.h" />
-    <ClInclude Include="Common\RenderTarget.h" />
-    <ClInclude Include="Common\ResourceManager.h" />
-    <ClInclude Include="Common\SamplerState.h" />
-    <ClInclude Include="Common\ShaderInput.h" />
-    <ClInclude Include="Common\ShaderProgram.h" />
-    <ClInclude Include="Common\Texture.h" />
+    <ClInclude Include="Base\ResourceData.h" />
+    <ClInclude Include="Base\RenderTarget.h" />
+    <ClInclude Include="Base\ResourceManager.h" />
+    <ClInclude Include="Base\SamplerState.h" />
+    <ClInclude Include="Base\ShaderInput.h" />
+    <ClInclude Include="Base\ShaderProgram.h" />
+    <ClInclude Include="Base\Texture.h" />
     <ClInclude Include="DX9\MappingsDX9.h" />
     <ClInclude Include="DX9\RenderStateDX9.h" />
     <ClInclude Include="DX9\RenderTargetDX9.h" />
@@ -307,12 +307,12 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="DX9\ShaderProgramDX9.h" />
     <ClInclude Include="DX9\TextureDX9.h" />
     <ClInclude Include="DX9\VertexFormatDX9.h" />
-    <ClInclude Include="Common\Buffer.h" />
+    <ClInclude Include="Base\Buffer.h" />
     <ClInclude Include="DX9\RendererDX9.h" />
-    <ClInclude Include="Common\IndexBuffer.h" />
+    <ClInclude Include="Base\IndexBuffer.h" />
     <ClInclude Include="DX9\IndexBufferDX9.h" />
-    <ClInclude Include="Common\RenderState.h" />
-    <ClInclude Include="Common\Renderer.h" />
+    <ClInclude Include="Base\RenderState.h" />
+    <ClInclude Include="Base\Renderer.h" />
     <ClInclude Include="NULL\ShaderProgramNULL.h" />
     <ClInclude Include="Utility\Debug.h" />
     <ClInclude Include="Utility\Hash.h" />
@@ -338,7 +338,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="SDK\DX9\Include\d3dx9shape.h" />
     <ClInclude Include="SDK\DX9\Include\d3dx9tex.h" />
     <ClInclude Include="SDK\DX9\Include\d3dx9xof.h" />
-    <ClInclude Include="Common\VertexFormat.h" />
+    <ClInclude Include="Base\VertexFormat.h" />
     <ClInclude Include="SDK\gmtl\include\gmtl\AABox.h" />
     <ClInclude Include="SDK\gmtl\include\gmtl\AABoxOps.h" />
     <ClInclude Include="SDK\gmtl\include\gmtl\AxisAngle.h" />
@@ -393,21 +393,21 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="SDK\vld\include\vld.h" />
     <ClInclude Include="SDK\vld\include\vld_def.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Common\VertexBuffer.h" />
+    <ClInclude Include="Base\VertexBuffer.h" />
     <ClInclude Include="DX9\VertexBufferDX9.h" />
     <ClInclude Include="Utility\ColorUtility.h" />
     <ClInclude Include="Utility\HalfFloat.h" />
     <ClInclude Include="Utility\Mutex.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\ResourceSerialization.cpp" />
-    <ClCompile Include="Common\RenderState.cpp" />
-    <ClCompile Include="Common\RenderTarget.cpp" />
-    <ClCompile Include="Common\ResourceManager.cpp" />
-    <ClCompile Include="Common\SamplerState.cpp" />
-    <ClCompile Include="Common\ShaderInput.cpp" />
-    <ClCompile Include="Common\ShaderProgram.cpp" />
-    <ClCompile Include="Common\Texture.cpp" />
+    <ClCompile Include="Base\ResourceSerialization.cpp" />
+    <ClCompile Include="Base\RenderState.cpp" />
+    <ClCompile Include="Base\RenderTarget.cpp" />
+    <ClCompile Include="Base\ResourceManager.cpp" />
+    <ClCompile Include="Base\SamplerState.cpp" />
+    <ClCompile Include="Base\ShaderInput.cpp" />
+    <ClCompile Include="Base\ShaderProgram.cpp" />
+    <ClCompile Include="Base\Texture.cpp" />
     <ClCompile Include="DX9\MappingsDX9.cpp" />
     <ClCompile Include="DX9\RenderStateDX9.cpp" />
     <ClCompile Include="DX9\RenderTargetDX9.cpp" />
@@ -416,7 +416,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
     <ClCompile Include="DX9\TextureDX9.cpp" />
     <ClCompile Include="DX9\VertexFormatDX9.cpp" />
-    <ClCompile Include="Common\Buffer.cpp" />
+    <ClCompile Include="Base\Buffer.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -438,10 +438,10 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="DX9\RendererDX9.cpp" />
-    <ClCompile Include="Common\IndexBuffer.cpp" />
+    <ClCompile Include="Base\IndexBuffer.cpp" />
     <ClCompile Include="DX9\IndexBufferDX9.cpp" />
-    <ClCompile Include="Common\Renderer.cpp" />
-    <ClCompile Include="Common\VertexFormat.cpp" />
+    <ClCompile Include="Base\Renderer.cpp" />
+    <ClCompile Include="Base\VertexFormat.cpp" />
     <ClCompile Include="NULL\IndexBufferNULL.cpp" />
     <ClCompile Include="NULL\RendererNULL.cpp" />
     <ClCompile Include="NULL\RenderStateNULL.cpp" />
@@ -460,17 +460,17 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Common\VertexBuffer.cpp" />
+    <ClCompile Include="Base\VertexBuffer.cpp" />
     <ClCompile Include="DX9\VertexBufferDX9.cpp" />
     <ClCompile Include="Utility\ColorUtility.cpp" />
     <ClCompile Include="Utility\Debug.cpp" />
     <ClCompile Include="Utility\HalfFloat.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Common\ShaderInput.inl" />
+    <None Include="Base\ShaderInput.inl" />
     <None Include="Synesthesia3D.licenseheader" />
     <None Include="SDK\DX9\Include\d3dx9math.inl" />
-    <None Include="Common\VertexBuffer.inl" />
+    <None Include="Base\VertexBuffer.inl" />
     <None Include="SDK\vld\bin\x64\dbghelp.dll" />
     <None Include="SDK\vld\bin\x64\vld_x64.dll" />
     <None Include="SDK\vld\bin\Win32\dbghelp.dll" />

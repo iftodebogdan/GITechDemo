@@ -24,7 +24,7 @@
 
 	#ifdef _DEBUG
 		#define S3D_DBGPRINT(szDebugFormatString, ...) _S3D_DBGPRINT(__FILE__, __LINE__, szDebugFormatString, __VA_ARGS__)
-		void _S3D_DBGPRINT(char* szFunction, int nLineNumber, char* szDebugFormatString, ...);
+		void _S3D_DBGPRINT(char* szFile, int nLineNumber, char* szDebugFormatString, ...);
 	#else
 		#define S3D_DBGPRINT( kwszDebugFormatString, ... ) ((void)0)
 	#endif

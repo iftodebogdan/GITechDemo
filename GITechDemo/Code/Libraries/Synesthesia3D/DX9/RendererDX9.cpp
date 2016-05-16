@@ -203,7 +203,7 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 	if (!pp.Windowed)
 	{
 		Vec2i screenSize(pp.BackBufferWidth, pp.BackBufferHeight);
-		ValidateScreenResolution(screenSize, pp.FullScreen_RefreshRateInHz);
+		ValidateDisplayResolution(screenSize, pp.FullScreen_RefreshRateInHz);
 		pp.BackBufferWidth = screenSize[0];
 		pp.BackBufferHeight = screenSize[1];
 	}
@@ -411,7 +411,7 @@ void RendererDX9::Initialize(void* hWnd)
 	POP_PROFILE_MARKER();
 }
 
-const bool RendererDX9::SetScreenResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
+const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
 {
 	Vec2i validOffset(offset);
 	if (fullscreen)

@@ -456,7 +456,7 @@ void GITechDemo::Update(const float fDeltaTime)
 		m_bLastFrameFullscreen != FULLSCREEN_ENABLED ||
 		m_bLastFrameVSync != VSYNC_ENABLED))
 	{
-		RenderContext->SetScreenResolution(
+		RenderContext->SetDisplayResolution(
 			FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
 			Vec2i(0, 0),
 			FULLSCREEN_ENABLED,

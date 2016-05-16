@@ -116,8 +116,8 @@ void HUDPass::Update(const float fDeltaTime)
 		return;
 
 	if (!m_pHUDTexture ||
-		RenderContext->GetScreenResolution()[0] * HUD_TEX_WIDTH_RATIO != m_pHUDTexture->GetWidth() ||
-		RenderContext->GetScreenResolution()[1] * HUD_TEX_HEIGHT_RATIO != m_pHUDTexture->GetHeight())
+		RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO != m_pHUDTexture->GetWidth() ||
+		RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO != m_pHUDTexture->GetHeight())
 	{
 		if (m_pHUDTexture)
 		{
@@ -126,8 +126,8 @@ void HUDPass::Update(const float fDeltaTime)
 		}
 
 		m_nHUDTextureIdx = ResourceMgr->CreateTexture(PF_L8, TT_2D,
-			(unsigned int)(RenderContext->GetScreenResolution()[0] * HUD_TEX_WIDTH_RATIO),
-			(unsigned int)(RenderContext->GetScreenResolution()[1] * HUD_TEX_HEIGHT_RATIO),
+			(unsigned int)(RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO),
+			(unsigned int)(RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO),
 			1, 1, BU_DYNAMIC);
 		m_pHUDTexture = ResourceMgr->GetTexture(m_nHUDTextureIdx);
 	}
@@ -215,7 +215,7 @@ void HUDPass::Draw()
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	HUDTextShader.Disable();
 
-	RenderContext->SetViewport(RenderContext->GetScreenResolution());
+	RenderContext->SetViewport(RenderContext->GetDisplayResolution());
 
 	RSMgr->SetSRGBWriteEnabled(sRGBEnabled);
 	RSMgr->SetColorBlendEnabled(blendEnabled);

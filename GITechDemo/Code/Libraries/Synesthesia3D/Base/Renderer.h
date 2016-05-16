@@ -87,16 +87,18 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Sets backbuffer size, window offset and fullscreen mode.
 		 *
-		 * @param[in]	size		The size of the backbuffer, in number of pixels on each axis.
-		 * @param[in]	offset		An offset with respect to the window in which the backbuffer is being displayed.
-		 * @param[in]	fullscreen	Switch the application into fullscreen (true) or windowed (false) mode.
+		 * @param[in]	size			The size of the backbuffer, in number of pixels on each axis.
+		 * @param[in]	offset			An offset with respect to the window in which the backbuffer is being displayed.
+		 * @param[in]	fullscreen		Switch the application into fullscreen (true) or windowed (false) mode.
+		 * @param[in]	refreshRate		Set the specified display refresh rate (only affects fullscreen mode).
+		 * @param[in]	vsync			Switch VSync on or off.
 		 *
 		 * @return	Success of operation.
 		 *
 		 * @note	The window offset parameter is useful when the user wants to display the backbuffer in a part of the window.
 		 * @note	When in fullscreen mode, the window offset parameter has no effect.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool		SetScreenResolution(
+		virtual	SYNESTHESIA3D_DLL		const bool		SetDisplayResolution(
 			const Vec2i size,
 			const Vec2i offset = Vec2i(0, 0),
 			const bool fullscreen = false,
@@ -106,17 +108,22 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Returns the size of the backbuffer.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const Vec2i		GetScreenResolution() const PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL		const Vec2i		GetDisplayResolution() const PURE_VIRTUAL;
 
 		/**
 		 * @brief	Returns the window offset.
 		 */
-		virtual	SYNESTHESIA3D_DLL		const Vec2i		GetScreenOffset() const;
+		virtual	SYNESTHESIA3D_DLL		const Vec2i		GetDisplayOffset() const;
 		
 		/**
 		 * @brief	Checks VSync status
 		 */
-		virtual	SYNESTHESIA3D_DLL		const bool			GetVSyncStatus() const PURE_VIRTUAL;
+		virtual	SYNESTHESIA3D_DLL		const bool		GetVSyncStatus() const PURE_VIRTUAL;
+
+		/**
+		 * @brief	Retrieves display refresh rate.
+		 */
+		virtual	SYNESTHESIA3D_DLL	const unsigned int	GetDisplayRefreshRate() const PURE_VIRTUAL;
 
 		/**
 		 * @brief	Returns the backbuffer pixel format.
@@ -131,16 +138,17 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Validates the supplied backbuffer size, searching for the highest resolution lower than it.
 		 *
-		 * @param[in,out]	size	The requested size of the backbuffer, in number of pixels on each axis.
-		 *							In case the requested resolution is not valid, the function will set this
-		 *							parameter to the highest valid resolution lower than the requested one.
+		 * @param[in,out]	size			The requested size of the backbuffer, in number of pixels on each axis.
+		 *									In case the requested resolution is not valid, the function will set this
+		 *									parameter to the highest valid resolution lower than the requested one.
+		 * @param[in,out]	refreshRate		The requested display refresh rate. Will be set to the closest possible valid value.
 		 *
 		 * @note	When in fullscreen mode, there are restrictions to the size of the backbuffer based on
 		 *			graphics card and monitor capabilities. This is not the case when in window mode.
 		 *
 		 * @see		GetDeviceCaps()
 		 */
-				SYNESTHESIA3D_DLL			void		ValidateScreenResolution(Vec2i& size, unsigned int& refreshRate) const;
+				SYNESTHESIA3D_DLL			void		ValidateDisplayResolution(Vec2i& size, unsigned int& refreshRate) const;
 
 		/**
 		 * @brief	Sets viewport size and offset.
@@ -148,7 +156,7 @@ namespace Synesthesia3D
 		 * @param[in]	size	The size of the viewport.
 		 * @param[in]	offset	The offset for the viewport.
 		 *
-		 * @note	This function differs from @ref SetScreenResolution() since the viewport transformation is
+		 * @note	This function differs from @ref SetDisplayResolution() since the viewport transformation is
 		 *			applied when the geometry in clip space is converted to pixel coordinates (screen space).
 		 */
 		virtual	SYNESTHESIA3D_DLL			void		SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) PURE_VIRTUAL;
@@ -158,7 +166,7 @@ namespace Synesthesia3D
 		 *
 		 * @param[out]	matProj		The calculated projection matrix.
 		 * @param[in]	fovYRad		The field of view angle in radians on the Y axis.
-		 * @param[in]	aspectRatio	The screen's aspect ratio (width/height).
+		 * @param[in]	aspectRatio	The display's aspect ratio (width/height).
 		 * @param[in]	zNear		The distance to the near clipping plane.
 		 * @param[in]	zFar		The distance to the far clipping plane.
 		 */
@@ -213,10 +221,10 @@ namespace Synesthesia3D
 		virtual SYNESTHESIA3D_DLL			void		EndFrame() PURE_VIRTUAL;
 
 		/**
-		 * @brief	Presents the contents of the backbuffer on screen.
+		 * @brief	Presents the contents of the backbuffer to the display.
 		 *
 		 * @note	@ref SwapBuffers() must be called after @ref EndFrame() and before @ref BeginFrame().
-		 *			It will also apply the window offset set by @ref SetScreenResolution() if the application is in windowed mode.
+		 *			It will also apply the window offset set by @ref SetDisplayResolution() if the application is in windowed mode.
 		 */
 		virtual	SYNESTHESIA3D_DLL			void		SwapBuffers() PURE_VIRTUAL;
 
