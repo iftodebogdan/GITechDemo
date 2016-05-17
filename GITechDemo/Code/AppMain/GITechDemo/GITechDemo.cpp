@@ -58,7 +58,7 @@ namespace GITechDemoApp
 	int FULLSCREEN_RESOLUTION_X = 0;
 	int FULLSCREEN_RESOLUTION_Y = 0;
 	int FULLSCREEN_REFRESH_RATE = 0;
-	bool VSYNC_ENABLED = true;
+	bool VSYNC_ENABLED = false;
 }
 
 namespace GITechDemoApp
