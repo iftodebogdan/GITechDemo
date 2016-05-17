@@ -56,6 +56,7 @@ namespace AppFramework
 		return 0;
 	}
 }
+
 void FrameworkWin::Init(HINSTANCE& hInstance, int& nCmdShow)
 {
 	m_hInstance = hInstance;
@@ -255,6 +256,8 @@ int FrameworkWin::Run()
 				#endif
 					BringWindowToTop(m_hWnd);
 					SetFocus(m_hWnd);
+					SetActiveWindow(m_hWnd);
+					SetForegroundWindow(m_hWnd);
 				}
 
 				// Give some CPU time to other threads
@@ -314,7 +317,7 @@ ATOM FrameworkWin::MyRegisterClass(HINSTANCE hInstance)
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_FRAMEWORK));
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCE(IDC_FRAMEWORK);
+	wcex.lpszMenuName = NULL; //MAKEINTRESOURCE(IDC_FRAMEWORK);
 	wcex.lpszClassName = m_szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -396,7 +399,14 @@ LRESULT CALLBACK FrameworkWin::WndProc(HWND hWnd, UINT message, WPARAM wParam, L
 	case WM_KILLFOCUS:
 	case WM_SETFOCUS:
 	case WM_ACTIVATE:
-		PauseRendering(message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
+	{
+		bool bOutOfFocus = (message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
+		PauseRendering(bOutOfFocus);
+		if (IsFullscreen() && bOutOfFocus)
+			OnSetWindowedCursor();
+		else if (IsFullscreen() && !bOutOfFocus)
+			OnSetFullscreenCursor();
+	}
 	//case WM_NCACTIVATE:	// Causes a focus issue with the assert dialog
 	case WM_MOUSEACTIVATE:
 	case WM_ACTIVATEAPP:
@@ -431,6 +441,9 @@ INT_PTR CALLBACK FrameworkWin::About(HWND hDlg, UINT message, WPARAM wParam, LPA
 
 void FrameworkWin::ShowCursor(const bool bShow)
 {
+	if (IsFullscreen() && bShow)
+		return;
+
 	// Loop until counter is reset
 	while((::ShowCursor(bShow) < 0) == bShow);
 }
@@ -561,4 +574,44 @@ void FrameworkWin::ErrorExit(LPTSTR lpszFunction)
 		LocalFree(lpDisplayBuf);
 
 	ExitProcess(dw);
+}
+
+//HMENU g_menuBkp = NULL;
+
+void FrameworkWin::OnSwitchToFullscreenMode()
+{
+	Framework::OnSwitchToFullscreenMode();
+
+	OutputDebugString("[FrameworkWin] Setting fullscreen mode window style\n");
+	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+	//g_menuBkp = GetMenu(m_hWnd);
+	//SetMenu(m_hWnd, NULL);
+	OnSetFullscreenCursor();
+}
+
+void FrameworkWin::OnSwitchToWindowedMode()
+{
+	Framework::OnSwitchToWindowedMode();
+
+	OutputDebugString("[FrameworkWin] Setting windowed mode window style\n");
+	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_GROUP | WS_TABSTOP);
+	//SetMenu(m_hWnd, g_menuBkp);
+	ShowWindow(m_hWnd, SW_SHOWNORMAL);
+	OnSetWindowedCursor();
+}
+
+void FrameworkWin::OnSetFullscreenCursor()
+{
+	const POINT pt = { 0, 0 };
+	MONITORINFO mi = { sizeof(MONITORINFO) };
+	GetMonitorInfo(MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY), &mi);
+
+	ShowCursor(false);
+	ClipCursor(&mi.rcMonitor);
+}
+
+void FrameworkWin::OnSetWindowedCursor()
+{
+	ShowCursor(true);
+	ClipCursor(NULL);
 }

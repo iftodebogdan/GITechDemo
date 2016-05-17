@@ -27,13 +27,17 @@ namespace AppFramework
 	class Framework
 	{
 	public:
-		Framework() { m_pInstance = this; };
+		Framework()
+			: m_bPauseRendering(false)
+			, m_bIsFullscreen(false)
+		{ m_pInstance = this; };
 		virtual ~Framework() { m_pInstance = nullptr; };
 
 		virtual int Run() = 0;
 		static Framework* const GetInstance() { return m_pInstance; }
 
 		const bool	IsRenderingPaused() { return m_bPauseRendering; }
+		const bool	IsFullscreen() { return m_bIsFullscreen; }
 
 		// Low level, platform specific functionality required by the application
 		virtual void ShowCursor(const bool bShow) = 0;
@@ -45,12 +49,16 @@ namespace AppFramework
 		virtual unsigned int	GetTicks() = 0; // in microseconds
 		virtual void			Sleep(const unsigned int miliseconds) = 0;
 
+		virtual void OnSwitchToFullscreenMode() { m_bIsFullscreen = true; }
+		virtual void OnSwitchToWindowedMode() { m_bIsFullscreen = false; }
+
 	protected:
 		// Rendering pause
 		void	PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
 		virtual float	CalculateDeltaTime() = 0; // in miliseconds
 		// Pause rendering when not in focus
 		bool	m_bPauseRendering;
+		bool	m_bIsFullscreen;
 		static Framework*	m_pInstance;
 	};
 }

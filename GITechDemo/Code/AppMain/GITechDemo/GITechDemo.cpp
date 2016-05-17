@@ -452,10 +452,15 @@ void GITechDemo::Update(const float fDeltaTime)
 		(m_nLastFrameResX != FULLSCREEN_RESOLUTION_X ||
 		m_nLastFrameResY != FULLSCREEN_RESOLUTION_Y ||
 		m_nLastFrameRefreshRate != FULLSCREEN_REFRESH_RATE ||
-		m_vLastFrameViewport != viewportSize ||
+		(m_vLastFrameViewport != viewportSize && !FULLSCREEN_ENABLED) ||
 		m_bLastFrameFullscreen != FULLSCREEN_ENABLED ||
 		m_bLastFrameVSync != VSYNC_ENABLED))
 	{
+		if (!m_bLastFrameFullscreen && FULLSCREEN_ENABLED)
+			pFW->OnSwitchToFullscreenMode();
+		else if(m_bLastFrameFullscreen && !FULLSCREEN_ENABLED)
+			pFW->OnSwitchToWindowedMode();
+
 		RenderContext->SetDisplayResolution(
 			FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
 			Vec2i(0, 0),

@@ -50,6 +50,9 @@ namespace AppFramework
 		unsigned int	GetTicks(); // in microseconds
 		void			Sleep(const unsigned int miliseconds);
 
+		void OnSwitchToFullscreenMode();
+		void OnSwitchToWindowedMode();
+
 	private:
 		// Windows specific stuff
 		ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -64,6 +67,9 @@ namespace AppFramework
 		int			m_nCmdShow;
 
 		float		CalculateDeltaTime(); // in miliseconds
+
+		void OnSetFullscreenCursor();
+		void OnSetWindowedCursor();
 
 		// Error handling
 		void ErrorExit(LPTSTR lpszFunction);
