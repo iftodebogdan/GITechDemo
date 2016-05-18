@@ -37,7 +37,8 @@ using namespace GITechDemoApp;
 
 #include "Utility/Hash.h"
 
-vector<RenderResource*> RenderResource::arrResources;
+// Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
+//vector<RenderResource*> RenderResource::arrResources;
 ResourceManager* RenderResource::ResMgr = nullptr;
 
 namespace GITechDemoApp

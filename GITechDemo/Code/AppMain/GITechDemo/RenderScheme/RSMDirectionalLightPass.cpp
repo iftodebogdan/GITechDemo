@@ -30,7 +30,7 @@ using namespace Synesthesia3D;
 #include "RSMDirectionalLightPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 namespace GITechDemoApp
 {

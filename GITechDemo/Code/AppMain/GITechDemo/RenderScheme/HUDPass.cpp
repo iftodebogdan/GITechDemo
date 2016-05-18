@@ -34,7 +34,7 @@ using namespace Synesthesia3D;
 #include "HUDPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 namespace GITechDemoApp
 {

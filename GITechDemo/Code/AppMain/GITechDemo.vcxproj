@@ -367,13 +367,13 @@ echo.</Command>
     <ClInclude Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\SkyPass.h" />
     <ClInclude Include="GITechDemo\Resource.h" />
+    <ClInclude Include="GITechDemo\Resources\AppResources.h" />
     <ClInclude Include="GITechDemo\Resources\ArtistParameter.h" />
     <ClInclude Include="GITechDemo\Utilities\GaussianFilter.h" />
     <ClInclude Include="GITechDemo\GITechDemo.h" />
     <ClInclude Include="GITechDemo\Utilities\PerlinNoise.h" />
     <ClInclude Include="GITechDemo\Utilities\Poisson.h" />
     <ClInclude Include="GITechDemo\Resources\RenderResource.h" />
-    <ClInclude Include="GITechDemo\Resources\RenderResourcesDef.h" />
     <ClInclude Include="Framework\Windows\stdafx.h" />
     <ClInclude Include="Framework\Windows\targetver.h" />
     <ClInclude Include="Framework\Timestamp.h" />
@@ -400,15 +400,14 @@ echo.</Command>
     <ClCompile Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\SkyPass.cpp" />
+    <ClCompile Include="GITechDemo\Resources\AppResources.cpp" />
     <ClCompile Include="GITechDemo\Resources\ArtistParameter.cpp" />
-    <ClCompile Include="GITechDemo\Resources\ArtistParametersDef.cpp" />
     <ClCompile Include="GITechDemo\Utilities\GaussianFilter.cpp" />
     <ClCompile Include="Framework\main.cpp" />
     <ClCompile Include="GITechDemo\GITechDemo.cpp" />
     <ClCompile Include="GITechDemo\Utilities\PerlinNoise.cpp" />
     <ClCompile Include="GITechDemo\Utilities\Poisson.cpp" />
     <ClCompile Include="GITechDemo\Resources\RenderResource.cpp" />
-    <ClCompile Include="GITechDemo\Resources\RenderResourcesDef.cpp" />
     <ClCompile Include="Framework\Windows\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

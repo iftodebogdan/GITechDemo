@@ -29,7 +29,7 @@ using namespace Synesthesia3D;
 #include "PostProcessingPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 namespace GITechDemoApp
 {

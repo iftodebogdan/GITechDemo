@@ -35,7 +35,7 @@ using namespace Synesthesia3D;
 #include "SkyPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)

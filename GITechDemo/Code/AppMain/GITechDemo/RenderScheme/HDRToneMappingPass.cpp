@@ -31,7 +31,7 @@ using namespace Synesthesia3D;
 #include "HDRToneMappingPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 namespace GITechDemoApp
 {

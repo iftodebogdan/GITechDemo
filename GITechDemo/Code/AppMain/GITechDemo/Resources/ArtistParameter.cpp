@@ -24,7 +24,6 @@
 #include <gainput/gainput.h>
 
 #include "ArtistParameter.h"
-#include "RenderResourcesDef.h"
 #include "HUDPass.h"
 using namespace GITechDemoApp;
 
@@ -37,6 +36,19 @@ ArtistParameterManager* ArtistParameterManager::ms_pInstance = nullptr;
 namespace GITechDemoApp
 {
 	extern HUDPass HUD_PASS;
+
+	const unsigned long long g_TypeHash[4] =
+	{
+		typeid(float).hash_code(),
+		typeid(int).hash_code(),
+		typeid(unsigned int).hash_code(),
+		typeid(bool).hash_code()
+	};
+
+#define IS_FLOAT(ArtistParamPtr)	(ArtistParamPtr->nTypeHash == g_TypeHash[0])
+#define IS_INT(ArtistParamPtr)		(ArtistParamPtr->nTypeHash == g_TypeHash[1])
+#define IS_UINT(ArtistParamPtr)		(ArtistParamPtr->nTypeHash == g_TypeHash[2])
+#define IS_BOOL(ArtistParamPtr)		(ArtistParamPtr->nTypeHash == g_TypeHash[3])
 }
 
 ArtistParameterManager::ArtistParameterManager()
@@ -140,7 +152,7 @@ void ArtistParameterManager::Update()
 			fStep *= MIN_STEP_MULTIPLIER;
 
 		char szTempBuffer[2048];
-		if (pCurrAP->nTypeHash == typeid(float).hash_code())
+		if (IS_FLOAT(pCurrAP))
 		{
 			sprintf_s(szTempBuffer, "Current: %g", *(float*)pCurrAP->pParam);
 			HUD_PASS.PrintLn(szTempBuffer);
@@ -152,7 +164,7 @@ void ArtistParameterManager::Update()
 			else if (cmd & APM_CMD_STEP_DOWN)
 				*(float*)pCurrAP->pParam -= fStep;
 		}
-		else if (pCurrAP->nTypeHash == typeid(int).hash_code())
+		else if (IS_INT(pCurrAP))
 		{
 			sprintf_s(szTempBuffer, "Current: %d", *(int*)pCurrAP->pParam);
 			HUD_PASS.PrintLn(szTempBuffer);
@@ -164,7 +176,7 @@ void ArtistParameterManager::Update()
 			else if (cmd & APM_CMD_STEP_DOWN)
 				*(int*)pCurrAP->pParam -= (int)fStep;
 		}
-		else if (pCurrAP->nTypeHash == typeid(unsigned int).hash_code())
+		else if (IS_UINT(pCurrAP))
 		{
 			sprintf_s(szTempBuffer, "Current: %u", *(unsigned int*)pCurrAP->pParam);
 			HUD_PASS.PrintLn(szTempBuffer);
@@ -176,7 +188,7 @@ void ArtistParameterManager::Update()
 			else if (cmd & APM_CMD_STEP_DOWN)
 				*(unsigned int*)pCurrAP->pParam -= (unsigned int)fStep;
 		}
-		else if (pCurrAP->nTypeHash == typeid(bool).hash_code())
+		else if (IS_BOOL(pCurrAP))
 		{
 			sprintf_s(szTempBuffer, "Current: %s", *(bool*)pCurrAP->pParam ? "True" : "False");
 			HUD_PASS.PrintLn(szTempBuffer);
@@ -187,7 +199,7 @@ void ArtistParameterManager::Update()
 				*(bool*)pCurrAP->pParam = !(*(bool*)pCurrAP->pParam);
 		}
 		else
-			assert(0);
+			assert(0); // Support for data type hasn't been implemented!
 		
 		if (pCurrAP->nTypeHash != typeid(bool).hash_code())
 		{

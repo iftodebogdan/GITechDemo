@@ -115,9 +115,6 @@
     <ClInclude Include="GITechDemo\Resources\RenderResource.h">
       <Filter>App\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="GITechDemo\Resources\RenderResourcesDef.h">
-      <Filter>App\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\RenderScheme.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
@@ -138,6 +135,9 @@
     </ClInclude>
     <ClInclude Include="Framework\Timestamp.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\AppResources.h">
+      <Filter>App\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -207,13 +207,7 @@
     <ClCompile Include="GITechDemo\Resources\ArtistParameter.cpp">
       <Filter>App\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="GITechDemo\Resources\ArtistParametersDef.cpp">
-      <Filter>App\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="GITechDemo\Resources\RenderResource.cpp">
-      <Filter>App\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="GITechDemo\Resources\RenderResourcesDef.cpp">
       <Filter>App\Resources</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\RenderScheme.cpp">
@@ -236,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="Framework\Timestamp.cpp">
       <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\AppResources.cpp">
+      <Filter>App\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

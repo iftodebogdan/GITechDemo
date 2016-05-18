@@ -31,7 +31,7 @@ using namespace Synesthesia3D;
 #include "DepthOfFieldPass.h"
 using namespace GITechDemoApp;
 
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 
 #include "GITechDemo.h"
 

@@ -36,7 +36,7 @@ using namespace Synesthesia3D;
 using namespace AppFramework;
 
 #include "GITechDemo.h"
-#include "RenderResourcesDef.h"
+#include "AppResources.h"
 #include "RenderScheme.h"
 #include "PerlinNoise.h"
 #include "ArtistParameter.h"
