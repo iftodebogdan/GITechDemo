@@ -30,7 +30,8 @@ using namespace GITechDemoApp;
 #define MAX_STEP_MULTIPLIER (10.f)
 #define MIN_STEP_MULTIPLIER (0.1f)
 
-vector<ArtistParameter*> ArtistParameterManager::ms_arrParams;
+// Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
+//vector<ArtistParameter*> ArtistParameterManager::ms_arrParams;
 ArtistParameterManager* ArtistParameterManager::ms_pInstance = nullptr;
 
 namespace GITechDemoApp

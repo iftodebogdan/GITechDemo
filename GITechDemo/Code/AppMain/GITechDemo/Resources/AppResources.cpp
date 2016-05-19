@@ -26,6 +26,9 @@
 using namespace GITechDemoApp;
 using namespace Synesthesia3D;
 
+vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
+vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from ArtistParameter.cpp
+
 //////////////////
 // DO NOT USE!	//
 //////////////////
@@ -43,7 +46,6 @@ using namespace Synesthesia3D;
 #define RENDER_TARGET_FUNC_THREE(Name, RT0, RT1, RT2, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 3, RT0, RT1, RT2, PF_NONE, (RTType)Width, (RTType)Height, DepthFormat)
 #define RENDER_TARGET_FUNC_FOUR(Name, RT0, RT1, RT2, RT3, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 4, RT0, RT1, RT2, RT3, (RTType)Width, (RTType)Height, DepthFormat)
 #define INFER_RENDER_TARGET_FUNC(_1, _2, _3, _4, _5, _6, _7, _8, Func, ...) Func
-vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
 ///////////////////////////////////////////////////////////
 
 //////////////////////////
@@ -343,23 +345,24 @@ namespace GITechDemoApp
 
 	/* General parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(fZNear,					float,			10.f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fZFar,						float,			5000.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fZFar,					float,			5000.f					);
 
 	/* Directional light parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,			float,			20.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,				float,			25.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,			float,			0.25f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,			float,			1.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,			float,			1.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,		float,			1.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,		float,			1.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,				int,			COOK_TORRANCE_BECKMANN	);
 
 	/* Volumetric directional light parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,				int,			32						);
-	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			0.5f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,		float,			0.1f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fSampleDistrib,			float,			0.5f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			0.25f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,	float,			0.02f					);
 	CREATE_SHADER_CONSTANT_OBJECT(f3FogSpeed,				Vec3f,			Vec3f(20.f, -10.f, 20.f));
 	CREATE_SHADER_CONSTANT_OBJECT(fFogVerticalFalloff,		float,			25.f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fBlurDepthFalloff,			float,			0.0025f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fBlurDepthFalloff,		float,			0.0025f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fUpsampleDepthThreshold,	float,			0.0015f					);
 
 	/* Sun parameters */
@@ -368,29 +371,29 @@ namespace GITechDemoApp
 
 	/* Cascaded Shadow Map parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(bDebugCascades,			bool,			false					);
-	CREATE_SHADER_CONSTANT_OBJECT(fCascadeBlendSize,			float,			50.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fCascadeBlendSize,		float,			50.f					);
 
 	/* Reflective Shadow Map parameters */
-	CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,				float,			500.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,			float,			500.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,			float,			0.025f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fWeightThreshold,			float,			0.002f					);
-	CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,			bool,			false					);
+	CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,		bool,			false					);
 
 	/* Screen-Space Ambient Occlusion */
-	CREATE_SHADER_CONSTANT_OBJECT(fSSAOSampleRadius,			float,			10.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fSSAOSampleRadius,		float,			10.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fSSAOIntensity,			float,			5.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fSSAOScale,				float,			0.05f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fSSAOBias,					float,			0.25f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fSSAOBias,				float,			0.25f					);
 
 	/* Post-processing parameters */
 	// Tone mapping
-	CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,				float,			0.2f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,			float,			0.2f					);
 	CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp,			Vec2f,			Vec2f(0.00001f, 0.25f)	);
-	CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,			float,			0.15f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,		float,			0.15f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fLinearStrength,			float,			0.5f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fLinearAngle,				float,			0.07f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fToeStrength,				float,			3.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fToeNumerator,				float,			0.02f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fToeNumerator,			float,			0.02f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fToeDenominator,			float,			0.25f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fLinearWhite,				float,			11.2f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed,			float,			1.f						);
@@ -402,7 +405,7 @@ namespace GITechDemoApp
 	// FXAA
 	CREATE_SHADER_CONSTANT_OBJECT(fFxaaSubpix,				float,			0.75f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThreshold,		float,			0.166f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThresholdMin,		float,			0.0833f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThresholdMin,	float,			0.0833f					);
 	// DoF
 	CREATE_SHADER_CONSTANT_OBJECT(fFocalDepth,				float,			100.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fFocalLength,				float,			100.f					);
@@ -411,20 +414,20 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(bAutofocus,				bool,			true					);
 	CREATE_SHADER_CONSTANT_OBJECT(fHighlightThreshold,		float,			3.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fHighlightGain,			float,			15.f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,				float,			0.0075f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,			float,			0.0075f					);
 	CREATE_SHADER_CONSTANT_OBJECT(bVignetting,				bool,			true					);
 	CREATE_SHADER_CONSTANT_OBJECT(fVignOut,					float,			1.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fVignIn,					float,			0.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fVignFade,					float,			22.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fVignFade,				float,			22.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,		float,			3.f						);
 	// Motion blur
 	CREATE_SHADER_CONSTANT_OBJECT(fMotionBlurIntensity,		float,			0.01f					);
-	CREATE_SHADER_CONSTANT_OBJECT(nMotionBlurNumSamples,		int,			5						);
+	CREATE_SHADER_CONSTANT_OBJECT(nMotionBlurNumSamples,	int,			5						);
 	// Lens flare
-	CREATE_SHADER_CONSTANT_OBJECT(nGhostSamples,				int,			5						);
+	CREATE_SHADER_CONSTANT_OBJECT(nGhostSamples,			int,			5						);
 	CREATE_SHADER_CONSTANT_OBJECT(fGhostDispersal,			float,			0.37f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fGhostRadialWeightExp,		float,			1.5f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fHaloSize,					float,			0.6f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fGhostRadialWeightExp,	float,			1.5f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fHaloSize,				float,			0.6f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fHaloRadialWeightExp,		float,			5.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(bChromaShift,				bool,			true					);
 	CREATE_SHADER_CONSTANT_OBJECT(fShiftFactor,				float,			1.f						);
@@ -553,7 +556,6 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Light direction - X axis",	"Directional light direction on the X axis of the world",				"Directional light",		f3LightDir.GetCurrentValue()[0],			0.01f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Light direction - Z axis",	"Directional light direction on the Z axis of the world",				"Directional light",		f3LightDir.GetCurrentValue()[2],			0.01f);
 
-
 	// CSM
 	CREATE_ARTIST_PARAMETER_OBJECT("Debug cascades",			"Draw cascades with different colors",									"Cascaded shadow map",		bDebugCascades.GetCurrentValue(),			1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Cascade blend size",		"The size of the blend band between overlapping cascades",				"Cascaded shadow map",		fCascadeBlendSize.GetCurrentValue(),		1.f);
@@ -581,6 +583,7 @@ namespace GITechDemoApp
 	// Volumetric lights
 	CREATE_ARTIST_PARAMETER_OBJECT("Volumetric lights enable",	"Toggle the rendering of the volumetric lighting effect (directional)",	"Volumetric lights",		DIR_LIGHT_VOLUME_ENABLE,					1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Sample count",				"The number of samples taken across the ray's length",					"Volumetric lights",		nSampleCount.GetCurrentValue(),				10.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Sample distribution",		"< 1 means higher density of samples near the camera",					"Volumetric lights",		fSampleDistrib.GetCurrentValue(),			0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Intensity",					"Intensity of the volumetric effect",									"Volumetric lights",		fLightIntensity.GetCurrentValue(),			0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Mult. scatter intensity",	"Intensity of the faked multiple scattering effect",					"Volumetric lights",		fMultScatterIntensity.GetCurrentValue(),	0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Fog vertical falloff",		"Factor for the exponential vertical falloff of the fog effect",		"Volumetric lights",		fFogVerticalFalloff.GetCurrentValue(),		1.f);
