@@ -19,7 +19,7 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsl"
+#include "Common.hlsli"
 
 #define	NUM_CASCADES (4)		// Number of supported cascades
 const float2	f2CascadeBoundsMin[NUM_CASCADES];	// Light-view space AABBs corresponding

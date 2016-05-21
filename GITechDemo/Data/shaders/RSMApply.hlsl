@@ -22,7 +22,7 @@
 // This define will modify the behaviour of the RSMApply() function so that 
 // it is aware that we are in the apply pass (instead of the upscale pass).
 #define RSM_APPLY_PASS (1)
-#include "RSMCommon.hlsl"
+#include "RSMCommon.hlsli"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;

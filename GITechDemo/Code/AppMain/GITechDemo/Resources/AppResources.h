@@ -202,13 +202,13 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fSunRadius,				float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fSunBrightness,			float		);
 
-	//	- CSMUtils.hlsl
+	//	- CSMUtils.hlslii
 	CREATE_SHADER_CONSTANT_HANDLE(f2CascadeBoundsMin,		Vec2f*		);
 	CREATE_SHADER_CONSTANT_HANDLE(f2CascadeBoundsMax,		Vec2f*		);
 	CREATE_SHADER_CONSTANT_HANDLE(f44CascadeProjMat,		Matrix44f*	);
 	CREATE_SHADER_CONSTANT_HANDLE(fCascadeBlendSize,		float		);
 
-	//	- Utils.hlsl
+	//	- Utils.hlsli
 	CREATE_SHADER_CONSTANT_HANDLE(f2PoissonDisk,			Vec2f*		);
 
 	//	- DirectionalLightVolume.hlsl
@@ -228,7 +228,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(f44LightWorldViewMat,		Matrix44f	);
 	CREATE_SHADER_CONSTANT_HANDLE(f44RSMWorldViewProjMat,	Matrix44f	);
 
-	//	- RSMCommon.hlsl
+	//	- RSMCommon.hlsli
 	CREATE_SHADER_CONSTANT_HANDLE(texRSMFluxBuffer,			sampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(texRSMNormalBuffer,		sampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(texRSMDepthBuffer,		sampler2D	);
@@ -301,7 +301,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fVignFade,				float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fChromaShiftAmount,		float		);
 
-	//	- PostProcessingUtils.hlsl
+	//	- PostProcessingUtils.hlslii
 	CREATE_SHADER_CONSTANT_HANDLE(f2LinearDepthEquation,	Vec2f		);
 	CREATE_SHADER_CONSTANT_HANDLE(f2DepthHalfTexelOffset,	Vec2f		);
 

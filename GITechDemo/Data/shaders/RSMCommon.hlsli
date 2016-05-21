@@ -19,8 +19,8 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "PostProcessingUtils.hlsl"
-#include "Utils.hlsl"
+#include "PostProcessingUtils.hlsli"
+#include "Utils.hlsli"
 
 const sampler2D	texRSMFluxBuffer;	// RSM flux data
 const sampler2D texRSMNormalBuffer;	// RSM normal data

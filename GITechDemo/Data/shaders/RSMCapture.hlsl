@@ -19,7 +19,7 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Utils.hlsl"
+#include "Utils.hlsli"
 
 // Vertex shader /////////////////////////////////////////////////
 const float4x4 f44RSMWorldViewProjMat;

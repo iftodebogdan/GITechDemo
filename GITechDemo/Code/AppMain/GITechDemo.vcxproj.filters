@@ -271,22 +271,22 @@
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="..\..\Data\shaders\Common.hlsl">
-      <Filter>Shaders\Include</Filter>
-    </None>
-    <None Include="..\..\Data\shaders\CSMUtils.hlsl">
-      <Filter>Shaders\Include</Filter>
-    </None>
-    <None Include="..\..\Data\shaders\PostProcessingUtils.hlsl">
-      <Filter>Shaders\Include</Filter>
-    </None>
-    <None Include="..\..\Data\shaders\RSMCommon.hlsl">
-      <Filter>Shaders\Include</Filter>
-    </None>
-    <None Include="..\..\Data\shaders\Utils.hlsl">
-      <Filter>Shaders\Include</Filter>
-    </None>
     <None Include="GITechDemo.licenseheader" />
+    <None Include="..\..\Data\shaders\Common.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\CSMUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\PostProcessingUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\RSMCommon.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\Utils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">

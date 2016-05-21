@@ -19,7 +19,7 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsl"
+#include "Common.hlsli"
 
 //////////////////////////////////////////////////////////////////
 // Normal encoding / decoding using Stereographic Projection	//

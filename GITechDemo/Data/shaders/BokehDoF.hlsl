@@ -19,8 +19,8 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "PostProcessingUtils.hlsl"
-#include "Utils.hlsl"
+#include "PostProcessingUtils.hlsli"
+#include "Utils.hlsli"
 
 // Disable "warning X4122: sum of ... and ... cannot be represented accurately in double precision"
 #pragma warning (disable: 4122)

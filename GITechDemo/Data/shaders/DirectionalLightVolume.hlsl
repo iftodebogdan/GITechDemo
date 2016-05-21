@@ -19,9 +19,9 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "PostProcessingUtils.hlsl"
-#include "Utils.hlsl"
-#include "CSMUtils.hlsl"
+#include "PostProcessingUtils.hlsli"
+#include "Utils.hlsli"
+#include "CSMUtils.hlsli"
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
