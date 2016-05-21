@@ -26,6 +26,7 @@ void ModelCompiler::Run(int argc, char* argv[])
 	bool bValidCmdParams = false;
 	bool bQuiet = false;
 	char outputDirPath[1024] = "";
+	char outputLogDirPath[1024] = "";
 
 	for (unsigned int arg = 1; arg < (unsigned int)argc; arg++)
 	{
@@ -41,6 +42,13 @@ void ModelCompiler::Run(int argc, char* argv[])
 			{
 				arg++;
 				strcpy_s(outputDirPath, argv[arg]);
+				continue;
+			}
+
+			if (_stricmp(argv[arg], "-log") == 0)
+			{
+				arg++;
+				strcpy_s(outputLogDirPath, argv[arg]);
 				continue;
 			}
 
@@ -61,6 +69,7 @@ void ModelCompiler::Run(int argc, char* argv[])
 		cout << "Options:" << endl;
 		cout << "-q\t\tQuiet. Does not produce output to the console window" << endl;
 		cout << "-d output/dir/\tOverride default output directory (output/dir/ must exist!)" << endl;
+		cout << "-log output/dir/\tOverride default log output directory (output/dir/ must exist!)" << endl;
 		return;
 	}
 
@@ -78,13 +87,16 @@ void ModelCompiler::Run(int argc, char* argv[])
 	std::strftime(time, 80, "%Y%m%d%H%M%S", timeinfo);
 	delete timeinfo;
 
-	if (!(CreateDirectoryA("Logs", NULL) || ERROR_ALREADY_EXISTS == GetLastError()))
+	if (strlen(outputLogDirPath) == 0)
+		strcpy_s(outputLogDirPath, "Logs");
+
+	if (!(CreateDirectoryA(outputLogDirPath, NULL) || ERROR_ALREADY_EXISTS == GetLastError()))
 	{
 		cout << "ModelCompiler requires write permission into the current directory";
 		return;
 	}
 
-	sprintf_s(logName, 1024, "Logs\\ModelCompiler_%s_%s.log", time, fileName);
+	sprintf_s(logName, 1024, "%s\\ModelCompiler_%s_%s.log", outputLogDirPath, time, fileName);
 	mstream Log(logName, ofstream::trunc, !bQuiet);
 
 	Log << "Compiling: \"" << argv[argc - 1] << "\"\n";

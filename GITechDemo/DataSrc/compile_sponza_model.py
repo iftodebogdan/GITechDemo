@@ -89,7 +89,7 @@ for file in modelFiles:
 	compiledFileExists = os.path.isfile(modelOutputPath + os.path.splitext(file)[0] + ".s3dmdl")
 	if sourceFileIsNewer or not compiledFileExists or forceRebuildModels:
 		print "Compiling model \"" + rootModelDir.replace(scriptAbsPath + "/", "") + file + "\""
-		subprocess.call([modelCompilerExe, "-q", "-d", modelOutputPath, rootModelDir + file])
+		subprocess.call([modelCompilerExe, "-q", "-d", modelOutputPath, "-log", scriptAbsPath + "/Logs", rootModelDir + file])
 	else:
 		print "Model \"" + rootModelDir.replace(scriptAbsPath + "/", "") + file + "\" is up-to-date"
 
@@ -107,7 +107,7 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			compiledFileExists = os.path.isfile(textureOutputPath + os.path.splitext(name)[0] + ".s3dtex")
 			if sourceFileIsNewer or not compiledFileExists or forceRebuildTextures:
 				print "Compiling texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\""
-				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + textureOutputPath + " " + os.path.join(root, name))
+				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + textureOutputPath + " -log " + scriptAbsPath + "/Logs " + os.path.join(root, name))
 			else:
 				print "Texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\" is up-to-date"
 

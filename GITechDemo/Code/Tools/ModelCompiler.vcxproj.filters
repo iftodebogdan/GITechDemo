@@ -5,7 +5,7 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Model Compiler">
+    <Filter Include="Main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
@@ -15,26 +15,26 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="ModelCompiler\ModelCompiler.h">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="ModelCompiler\stdafx.h">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="ModelCompiler\targetver.h">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModelCompiler\ModelCompiler.cpp">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="ModelCompiler\stdafx.cpp">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ModelCompiler\ReadMe.txt">
-      <Filter>Model Compiler</Filter>
+      <Filter>Main</Filter>
     </Text>
   </ItemGroup>
 </Project>

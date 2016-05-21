@@ -5,20 +5,20 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Texture Compiler">
+    <Filter Include="Main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureCompiler\TextureCompiler.h">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="TextureCompiler\stdafx.h">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="TextureCompiler\targetver.h">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Common\Logging.h">
       <Filter>Common</Filter>
@@ -26,15 +26,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TextureCompiler\stdafx.cpp">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="TextureCompiler\TextureCompiler.cpp">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TextureCompiler\ReadMe.txt">
-      <Filter>Texture Compiler</Filter>
+      <Filter>Main</Filter>
     </Text>
   </ItemGroup>
 </Project>

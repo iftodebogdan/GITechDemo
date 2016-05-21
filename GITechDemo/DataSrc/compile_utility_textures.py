@@ -78,7 +78,7 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			compiledFileExists = os.path.isfile(outputPath + os.path.splitext(name)[0] + ".s3dtex")
 			if sourceFileIsNewer or not compiledFileExists or defaultForceRebuild:
 				print "Compiling texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\""
-				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + outputPath + " " + os.path.join(root, name))
+				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + outputPath + " -log " + scriptAbsPath + "/Logs " + os.path.join(root, name))
 			else:
 				print "Texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\" is up-to-date"
 

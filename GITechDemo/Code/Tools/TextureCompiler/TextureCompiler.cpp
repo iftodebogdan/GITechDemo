@@ -245,6 +245,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 	bool bQuiet = false;
 	PixelFormat format = PF_NONE;
 	char outputDirPath[1024] = "";
+	char outputLogDirPath[1024] = "";
 	unsigned int mipCount = 0;
 
 	for (unsigned int arg = 1; arg < (unsigned int)argc; arg++)
@@ -402,6 +403,13 @@ void TextureCompiler::Run(int argc, char* argv[])
 				continue;
 			}
 
+			if (_stricmp(argv[arg], "-log") == 0)
+			{
+				arg++;
+				strcpy_s(outputLogDirPath, argv[arg]);
+				continue;
+			}
+
 			break;
 		}
 		else
@@ -420,6 +428,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 		cout << "-q\t\tQuiet. Does not produce output to the console window" << endl;
 		cout << "-f format\tOptional pixel format (see below) for conversion" << endl;
 		cout << "-d output/dir/\tOverride default output directory (output/dir/ must exist!)" << endl;
+		cout << "-log output/dir/\tOverride default log output directory (output/dir/ must exist!)" << endl;
 		cout << "-mip n\tNumber of generated mip levels: 0 (default) = all, 1 = none, etc." << endl << endl;
 		
 		cout << "Pixel formats:" << endl;
@@ -446,13 +455,16 @@ void TextureCompiler::Run(int argc, char* argv[])
 	std::strftime(time, 80, "%Y%m%d%H%M%S", timeinfo);
 	delete timeinfo;
 
-	if (!(CreateDirectoryA("Logs", NULL) || ERROR_ALREADY_EXISTS == GetLastError()))
+	if (strlen(outputLogDirPath) == 0)
+		strcpy_s(outputLogDirPath, "Logs");
+
+	if (!(CreateDirectoryA(outputLogDirPath, NULL) || ERROR_ALREADY_EXISTS == GetLastError()))
 	{
 		cout << "TextureCompiler requires write permission into the current directory";
 		return;
 	}
 
-	sprintf_s(logName, 1024, "Logs\\TextureCompiler_%s_%s.log", time, fileName);
+	sprintf_s(logName, 1024, "%s\\TextureCompiler_%s_%s.log", outputLogDirPath, time, fileName);
 	mstream Log(logName, ofstream::trunc, !bQuiet);
 
 	const unsigned long long startTick = GetTickCount64();
