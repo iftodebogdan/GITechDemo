@@ -36,6 +36,9 @@ from collections import defaultdict
 defaultArchitecture = "x64"
 defaultForceRebuild = False
 
+# Retrieve absolute path of this script
+scriptAbsPath = os.path.abspath(os.path.dirname(os.path.realpath(__file__)));
+
 # Process command arguments
 for opt in sys.argv:
 	if(opt.lower() == "x64"):
@@ -46,15 +49,15 @@ for opt in sys.argv:
 		defaultForceRebuild = True
 
 # Set paths for model compilation
-rootModelDir = "models/sponza/"
+rootModelDir = scriptAbsPath + "/models/sponza/"
 modelFiles = ["sponza.obj"]
-modelOutputPath = "../Data/models/sponza/"
-modelCompilerExe = "../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/ModelCompiler.exe"
+modelOutputPath = scriptAbsPath + "/../Data/models/sponza/"
+modelCompilerExe = scriptAbsPath + "/../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/ModelCompiler.exe"
 
 # Set paths for texture compilation
-pathToTextureFiles = "models/sponza/textures/"
-textureOutputPath = "../Data/models/sponza/textures/"
-textureCompilerExe = "../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/TextureCompiler.exe"
+pathToTextureFiles = scriptAbsPath + "/models/sponza/textures/"
+textureOutputPath = scriptAbsPath + "/../Data/models/sponza/textures/"
+textureCompilerExe = scriptAbsPath + "/../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/TextureCompiler.exe"
 
 # Set custom arguments for individual texture files
 customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
@@ -65,13 +68,13 @@ customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
 # Detect modification of model compiler executable
 forceRebuildModels = defaultForceRebuild
 if os.path.getmtime(modelCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
-	print "Model compiler (\"" + modelCompilerExe + "\") modification detected. Forcing rebuild of all model assets"
+	print "Model compiler (\"" + modelCompilerExe.replace(scriptAbsPath + "/", "") + "\") modification detected. Forcing rebuild of all model assets"
 	forceRebuildModels = True
 
 # Detect modification of texture compiler executable
 forceRebuildTextures = defaultForceRebuild
 if os.path.getmtime(textureCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
-	print "Texture compiler (\"" + textureCompilerExe + "\") modification detected. Forcing rebuild of all texture assets"
+	print "Texture compiler (\"" + textureCompilerExe.replace(scriptAbsPath + "/", "") + "\") modification detected. Forcing rebuild of all texture assets"
 	forceRebuildTextures = True
 
 start = time.clock()
@@ -85,10 +88,10 @@ for file in modelFiles:
 	sourceFileIsNewer = os.path.getmtime(rootModelDir + file) > os.path.getmtime(os.path.realpath(__file__))
 	compiledFileExists = os.path.isfile(modelOutputPath + os.path.splitext(file)[0] + ".s3dmdl")
 	if sourceFileIsNewer or not compiledFileExists or forceRebuildModels:
-		print "Compiling model \"" + rootModelDir + file + "\""
+		print "Compiling model \"" + rootModelDir.replace(scriptAbsPath + "/", "") + file + "\""
 		subprocess.call([modelCompilerExe, "-q", "-d", modelOutputPath, rootModelDir + file])
 	else:
-		print "Model \"" + rootModelDir + file + "\" is up-to-date"
+		print "Model \"" + rootModelDir.replace(scriptAbsPath + "/", "") + file + "\" is up-to-date"
 
 ##########################################
 
@@ -103,10 +106,10 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			sourceFileIsNewer = os.path.getmtime(os.path.join(root, name)) > os.path.getmtime(os.path.realpath(__file__))
 			compiledFileExists = os.path.isfile(textureOutputPath + os.path.splitext(name)[0] + ".s3dtex")
 			if sourceFileIsNewer or not compiledFileExists or forceRebuildTextures:
-				print "Compiling texture \"" + os.path.join(root, name) + "\""
+				print "Compiling texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\""
 				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + textureOutputPath + " " + os.path.join(root, name))
 			else:
-				print "Texture \"" + os.path.join(root, name) + "\" is up-to-date"
+				print "Texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\" is up-to-date"
 
 ##########################################
 

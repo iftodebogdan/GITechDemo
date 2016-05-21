@@ -146,10 +146,18 @@ def Run():
 	
 	
 	
-	# Compile code (tools too, if required)
+	# Compile tools, if required
 	build_tools_win.Run()
 	logging.info("")
-		
+
+
+
+	# Compile data, if required
+	build_data_win.Run()
+	logging.info("")
+	
+	
+	# Compile project
 	logging.info("Starting project build process...")
 	logging.info("Force rebuild: " + str(defaultForceRebuild))
 	logging.info("Build configuration: " + defaultBuildConfiguration)
@@ -167,30 +175,25 @@ def Run():
 			" (" + defaultBuildConfiguration + "|" + defaultArchitecture + ") in " + \
 			str(time.clock() - startProjectBuild) + " seconds.")
 		logging.info("")
-	
-	
-	
-	# Compile data
-	build_data_win.Run()
-	logging.info("")
-	
-	
-	
+
+
+
 	# Copy and organize build files
 	logging.info("Configuring build:")
 	
 	# Create directory structure
 	logging.info("Creating directory structure...")
-	rootBuildDir = "Windows/" + projectName
+	rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
 	utils.MakeDir(rootBuildDir + "/bin/" +
 		("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
 		defaultArchitecture)
 	utils.MakeDir(rootBuildDir + "/data")
-	
+
 	# Copy binaries
 	logging.info("Copying binaries...")
 	pathToBinaries = [
-		"../Bin/" + defaultArchitecture + "/" + defaultBuildConfiguration + "/" + projectName + "/",
+		utils.GetScriptAbsolutePath() +
+		"/../Bin/" + defaultArchitecture + "/" + defaultBuildConfiguration + "/" + projectName + "/",
 		rootBuildDir + "/bin/" +
 		("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
 		defaultArchitecture
@@ -200,7 +203,7 @@ def Run():
 	
 	# Copy data
 	logging.info("Copying data...")
-	utils.CopyTree("../Data/", rootBuildDir + "/data")
+	utils.CopyTree(utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir + "/data")
 	
 	# Create batch file
 	logging.info("Creating batch file...")

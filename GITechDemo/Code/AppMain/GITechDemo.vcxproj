@@ -137,9 +137,7 @@
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.
@@ -172,9 +170,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.
@@ -213,9 +209,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.
@@ -252,9 +246,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.
@@ -292,9 +284,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.
@@ -332,9 +322,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>cd "$(SolutionDir)..\..\Build\"
-echo.
-call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
+      <Command>call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\External\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)
 echo.

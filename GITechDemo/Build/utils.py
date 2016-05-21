@@ -79,6 +79,14 @@ def CopyTree(src, dst, symlinks = False, ignore = None):
 
 
 
+def GetScriptPath():
+	return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+def GetScriptAbsolutePath():
+	return os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])))
+
+
+
 def BuildSLN(slnName, pathToTools, platformToolset, envSetupBat, platform, buildConfig, forceRebuild):
 	os.environ["PATH"] += os.pathsep + pathToTools
 	cmd = \
@@ -90,7 +98,7 @@ def BuildSLN(slnName, pathToTools, platformToolset, envSetupBat, platform, build
 		cmd += " /t:rebuild "
 	else:
 		cmd += " "
-	cmd += "\"" + os.getcwd() + "/../Code/Solutions/"
+	cmd += "\"" + os.path.realpath(GetScriptAbsolutePath() + "/../Code/Solutions/") + "/"
 	cmd += slnName + ".sln\""
 	
 	proc = subprocess.Popen( \
@@ -105,9 +113,10 @@ def BuildSLN(slnName, pathToTools, platformToolset, envSetupBat, platform, build
 
 
 def SetupLogging(logName):
-	MakeDir("Logs")
+	logDirPath = GetScriptAbsolutePath() + "/Logs/"
+	MakeDir(logDirPath)
 	logging.basicConfig( \
-		filename = "Logs/" + logName + "_" + \
+		filename = logDirPath + logName + "_" + \
 		"{:%Y%m%d%H%M%S}".format(datetime.datetime.now()) + \
 		".log", level = logging.INFO, \
 		format = '%(asctime)s - %(levelname)s: %(message)s', \

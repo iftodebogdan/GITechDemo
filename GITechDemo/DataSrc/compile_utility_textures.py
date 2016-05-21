@@ -36,6 +36,9 @@ from collections import defaultdict
 defaultArchitecture = "x64"
 defaultForceRebuild = False
 
+# Retrieve absolute path of this script
+scriptAbsPath = os.path.abspath(os.path.dirname(os.path.realpath(sys.argv[0])));
+
 # Process command arguments
 for opt in sys.argv:
 	if(opt.lower() == "x64"):
@@ -46,9 +49,9 @@ for opt in sys.argv:
 		defaultForceRebuild = True
 
 # Set paths
-pathToTextureFiles = "textures/"
-outputPath = "../Data/textures/"
-textureCompilerExe = "../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/TextureCompiler.exe"
+pathToTextureFiles = scriptAbsPath + "/textures/"
+outputPath = scriptAbsPath + "/../Data/textures/"
+textureCompilerExe = scriptAbsPath + "/../Bin/" + defaultArchitecture + "/Release/Synesthesia3DTools/TextureCompiler.exe"
 
 # Set custom arguments for individual files
 customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
@@ -62,7 +65,7 @@ customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
 
 # Detect modification of texture compiler executable
 if os.path.getmtime(textureCompilerExe) > os.path.getmtime(os.path.realpath(__file__)):
-	print "Texture compiler (\"" + textureCompilerExe + "\") modification detected. Forcing rebuild of all texture assets"
+	print "Texture compiler (\"" + textureCompilerExe.replace(scriptAbsPath + "/", "") + "\") modification detected. Forcing rebuild of all texture assets"
 	defaultForceRebuild = True
 
 start = time.clock()
@@ -74,10 +77,10 @@ for root, dir, files in os.walk(pathToTextureFiles):
 			sourceFileIsNewer = os.path.getmtime(os.path.join(root, name)) > os.path.getmtime(os.path.realpath(__file__))
 			compiledFileExists = os.path.isfile(outputPath + os.path.splitext(name)[0] + ".s3dtex")
 			if sourceFileIsNewer or not compiledFileExists or defaultForceRebuild:
-				print "Compiling texture \"" + os.path.join(root, name) + "\""
+				print "Compiling texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\""
 				subprocess.call(textureCompilerExe + " " + customArgs[name] + " -d " + outputPath + " " + os.path.join(root, name))
 			else:
-				print "Texture \"" + os.path.join(root, name) + "\" is up-to-date"
+				print "Texture \"" + os.path.join(root, name).replace(scriptAbsPath + "/", "") + "\" is up-to-date"
 
 print "Done in " + str(time.clock() - start) + " seconds.";
 

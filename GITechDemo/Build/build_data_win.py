@@ -65,16 +65,17 @@ def Run():
 
 	# Compile data
 	if(dataBuildScript):
+		absDataSrcDir = os.path.realpath(utils.GetScriptAbsolutePath() + dataSrcDir)
 		logging.info("Starting data build process...")
-		logging.info("Data source directory: " + os.getcwd() + dataSrcDir)
+		logging.info("Data source directory: " + absDataSrcDir)
 		logging.info("")
 		for script in dataBuildScript:
 			logging.info("Running script: \"" + script + "\"")
 			proc = subprocess.Popen( \
-				['python.exe', '-u', os.getcwd() + dataSrcDir + script] + sys.argv[1:], \
+				['python.exe', '-u', absDataSrcDir + "/" + script] + sys.argv[1:], \
 				stdout = subprocess.PIPE, \
 				stderr = subprocess.STDOUT, \
-				cwd = os.getcwd() + dataSrcDir)
+				cwd = absDataSrcDir)
 			for line in iter(proc.stdout.readline, ""):
 				logging.info(line.replace('\n', '').replace('\r', ''))
 			if proc.wait() != 0:
