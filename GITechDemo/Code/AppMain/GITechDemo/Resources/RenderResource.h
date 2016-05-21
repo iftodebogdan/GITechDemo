@@ -84,6 +84,8 @@ namespace GITechDemoApp
 		RenderResource(const char* filePath, ResourceType resType);
 		virtual ~RenderResource();
 
+		virtual void operator= (const RenderResource& lhs) { assert(0); }
+
 		unsigned int	nId;
 		string			szDesc;
 		ResourceType	eResType;
@@ -111,6 +113,8 @@ namespace GITechDemoApp
 		const bool Init();
 		void Free();
 
+		void operator= (const Model& lhs) { assert(0); }
+
 		Synesthesia3D::Model*	pModel;
 		unsigned int			nModelIdx;
 
@@ -133,6 +137,8 @@ namespace GITechDemoApp
 	protected:
 		const bool Init();
 		void Free();
+
+		void operator= (const Texture& lhs) { assert(0); }
 
 		Synesthesia3D::Texture* pTexture;
 		unsigned int nTexIdx;
@@ -162,6 +168,7 @@ namespace GITechDemoApp
 		T& GetCurrentValue() { return currentValue; }
 
 		void operator=(const T& value) { currentValue = value; }
+		void operator= (const ShaderConstantTemplate& lhs) { currentValue = lhs.currentValue; }
 
 		operator T&() { return currentValue; }
 
@@ -222,6 +229,8 @@ namespace GITechDemoApp
 		const bool Init();
 		void Free();
 
+		void operator= (const Shader& lhs) { assert(0); }
+
 		ShaderProgram*	pVertexShaderProg;
 		unsigned int	nVertexShaderProgIdx;
 		ShaderProgram*	pPixelShaderProg;
@@ -257,6 +266,8 @@ namespace GITechDemoApp
 	protected:
 		const bool Init();
 		void Free();
+		
+		void operator= (const RenderTarget& lhs) { assert(0); }
 
 		Synesthesia3D::RenderTarget*	pRenderTarget;
 		unsigned int nRenderTargetIdx;

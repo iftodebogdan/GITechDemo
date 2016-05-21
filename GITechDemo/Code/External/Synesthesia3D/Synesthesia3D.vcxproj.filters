@@ -1,0 +1,582 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DX9">
+      <UniqueIdentifier>{f471d7d9-5b9c-4eb7-945b-a481d1cc9f7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompiled Headers">
+      <UniqueIdentifier>{79a60a48-2e59-4113-82f3-277b80932e12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{739a8db1-d9b1-4385-9aff-b3f33a049f2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DX9">
+      <UniqueIdentifier>{9ac381ef-b408-4115-96c3-e6f42f9e81f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl">
+      <UniqueIdentifier>{5bb3b6bb-fc19-44b2-831b-22f05e809442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld">
+      <UniqueIdentifier>{e81de7bb-e6e4-4312-a501-828cb3edbb7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DX9\include">
+      <UniqueIdentifier>{1f44b508-2285-4781-a140-124efc709298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DX9\lib">
+      <UniqueIdentifier>{52a11e51-d079-4de2-88fa-f8b686fe4657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DX9\lib\x86">
+      <UniqueIdentifier>{2cbc280c-766e-4e71-ac28-7d531638edea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\DX9\lib\x64">
+      <UniqueIdentifier>{99ca2b10-8aa9-4a4d-a505-44db1dd94344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\include">
+      <UniqueIdentifier>{e0bb3fe3-5875-4d51-adc7-059b4ce9ac3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\lib">
+      <UniqueIdentifier>{6e3a5ad6-4f85-4f9c-b812-c56de21114d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\bin">
+      <UniqueIdentifier>{c57a9bcb-08a6-4974-baf2-3e1fe48685e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\bin\x86">
+      <UniqueIdentifier>{2d390e5b-940c-422b-bb40-c91339ea550c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\bin\x64">
+      <UniqueIdentifier>{e5ee058e-1fc7-428a-be1c-e3bf8e58c14f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\lib\x86">
+      <UniqueIdentifier>{6426b60a-9a24-4064-badd-10bd92ae99e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\vld\lib\x64">
+      <UniqueIdentifier>{69777518-0526-43d2-8f0a-68e380276013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Util">
+      <UniqueIdentifier>{8eae4715-580e-448f-86eb-847566c542d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Numerics">
+      <UniqueIdentifier>{e4b869f8-da89-4ab0-9332-5a6e4a24783b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Misc">
+      <UniqueIdentifier>{8dd77dd3-3d24-49c6-b867-08ceab2e53c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Fit">
+      <UniqueIdentifier>{9bef4b63-9a85-4c3b-af2f-35d8d39b0a96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\External">
+      <UniqueIdentifier>{cbbbd886-d6d3-4d8b-887e-c2c150d9524e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{19ed8260-c898-4af5-aaaa-7b725117f2d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NULL">
+      <UniqueIdentifier>{c7d8505b-d140-4e76-99be-18af54c0096d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DX9\RendererDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\VertexFormatDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\MappingsDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\VertexBufferDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\IndexBufferDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\HalfFloat.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\ColorUtility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\IndexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RendererNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RenderStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\RenderTargetNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\ResourceManagerNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\SamplerStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\TextureNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\VertexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\VertexFormatNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\RenderStateDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\RenderTargetDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ResourceManagerDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\SamplerStateDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\TextureDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Mutex.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Hash.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Buffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\IndexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Renderer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\RenderState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\RenderTarget.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ResourceData.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ResourceManager.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\SamplerState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ShaderInput.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\ShaderProgram.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Texture.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\VertexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\VertexFormat.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3d9.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3d9caps.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3d9types.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9anim.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9core.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9effect.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9math.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9mesh.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9shader.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9shape.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9tex.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\d3dx9xof.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\External\OpenSGConvert.h">
+      <Filter>External\gmtl\External</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Fit\GaussPointsFit.h">
+      <Filter>External\gmtl\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Misc\MatrixConvert.h">
+      <Filter>External\gmtl\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Numerics\Eigen.h">
+      <Filter>External\gmtl\Numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Util\Assert.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Util\Meta.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Util\StaticAssert.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\AABox.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\AABoxOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\AxisAngle.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\AxisAngleOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Comparitors.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Config.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Containment.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Coord.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\CoordOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Defines.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\EulerAngle.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\EulerAngleOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Frustum.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\FrustumOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Generate.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\gmtl.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Helpers.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Intersection.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\LineSeg.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\LineSegOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Math.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Matrix.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\MatrixOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\OOBox.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Output.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\ParametricCurve.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Plane.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\PlaneOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Point.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Quat.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\QuatOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Ray.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\RayOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Sphere.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\SphereOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Tri.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\TriOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Vec.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\VecBase.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\VecExprMeta.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\VecOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\VecOpsMeta.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Version.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\gmtl\include\gmtl\Xforms.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="External\vld\include\vld.h">
+      <Filter>External\vld\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\vld\include\vld_def.h">
+      <Filter>External\vld\include</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ShaderProgramDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
+    <ClInclude Include="External\DX9\include\DxErr.h">
+      <Filter>External\DX9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="NULL\ShaderProgramNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Debug.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DX9\RendererDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\MappingsDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\VertexBufferDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\VertexFormatDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\IndexBufferDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\HalfFloat.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\ColorUtility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\IndexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RendererNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RenderStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\RenderTargetNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\ResourceManagerNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\SamplerStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\TextureNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\VertexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\VertexFormatNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\RenderStateDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\RenderTargetDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ResourceManagerDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\SamplerStateDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\TextureDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Buffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\IndexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Renderer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\RenderState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\RenderTarget.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ResourceManager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ResourceSerialization.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\SamplerState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ShaderInput.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\ShaderProgram.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Texture.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\VertexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\VertexFormat.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ShaderProgramDX9.cpp">
+      <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="NULL\ShaderProgramNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\Debug.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Synesthesia3D.licenseheader" />
+    <None Include="Base\ShaderInput.inl">
+      <Filter>Base</Filter>
+    </None>
+    <None Include="Base\VertexBuffer.inl">
+      <Filter>Base</Filter>
+    </None>
+    <None Include="External\DX9\include\d3dx9math.inl">
+      <Filter>External\DX9\include</Filter>
+    </None>
+    <None Include="External\vld\bin\Win32\dbghelp.dll">
+      <Filter>External\vld\bin\x86</Filter>
+    </None>
+    <None Include="External\vld\bin\Win32\Microsoft.DTfW.DHL.manifest">
+      <Filter>External\vld\bin\x86</Filter>
+    </None>
+    <None Include="External\vld\bin\Win32\vld_x86.dll">
+      <Filter>External\vld\bin\x86</Filter>
+    </None>
+    <None Include="External\vld\bin\x64\dbghelp.dll">
+      <Filter>External\vld\bin\x64</Filter>
+    </None>
+    <None Include="External\vld\bin\x64\Microsoft.DTfW.DHL.manifest">
+      <Filter>External\vld\bin\x64</Filter>
+    </None>
+    <None Include="External\vld\bin\x64\vld_x64.dll">
+      <Filter>External\vld\bin\x64</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="External\DX9\lib\Win32\d3d9.lib">
+      <Filter>External\DX9\lib\x86</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\Win32\d3dx9.lib">
+      <Filter>External\DX9\lib\x86</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\Win32\d3dx9d.lib">
+      <Filter>External\DX9\lib\x86</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\Win32\DxErr.lib">
+      <Filter>External\DX9\lib\x86</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\x64\d3d9.lib">
+      <Filter>External\DX9\lib\x64</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\x64\d3dx9.lib">
+      <Filter>External\DX9\lib\x64</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\x64\d3dx9d.lib">
+      <Filter>External\DX9\lib\x64</Filter>
+    </Library>
+    <Library Include="External\DX9\lib\x64\DxErr.lib">
+      <Filter>External\DX9\lib\x64</Filter>
+    </Library>
+    <Library Include="External\vld\lib\Win32\vld.lib">
+      <Filter>External\vld\lib\x86</Filter>
+    </Library>
+    <Library Include="External\vld\lib\x64\vld.lib">
+      <Filter>External\vld\lib\x64</Filter>
+    </Library>
+  </ItemGroup>
+</Project>

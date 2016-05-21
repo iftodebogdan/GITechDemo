@@ -9,11 +9,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GITechDemo", "..\AppMain\GI
 		{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B} = {78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Synesthesia3D", "..\Libraries\Synesthesia3D\Synesthesia3D.vcxproj", "{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Synesthesia3D", "..\External\Synesthesia3D\Synesthesia3D.vcxproj", "{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "..\Libraries\freetype-2.6\freetype.vcxproj", "{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "..\External\freetype-2.6\freetype.vcxproj", "{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gainput", "..\Libraries\gainput-0.10.0-beta\gainput.vcxproj", "{84A40273-6042-41CE-8DA8-CD1D538E1FC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gainput", "..\External\gainput-0.10.0-beta\gainput.vcxproj", "{84A40273-6042-41CE-8DA8-CD1D538E1FC1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rd Party", "3rd Party", "{46B65AC7-D08F-415C-A5E1-D9F3D58A8641}"
 EndProject

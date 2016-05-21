@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelCompiler", "..\Tools\ModelCompiler.vcxproj", "{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Synesthesia3D", "..\Libraries\Synesthesia3D\Synesthesia3D.vcxproj", "{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Synesthesia3D", "..\External\Synesthesia3D\Synesthesia3D.vcxproj", "{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureCompiler", "..\Tools\TextureCompiler.vcxproj", "{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compilers", "Compilers", "{25047967-23B6-467B-968F-29345819BC90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{A5B4C002-F357-4F72-846A-C349443A981F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,5 +62,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E0EAEA76-90F3-4D19-B1C7-DA8148DEA215} = {25047967-23B6-467B-968F-29345819BC90}
+		{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F} = {A5B4C002-F357-4F72-846A-C349443A981F}
+		{DF734DC0-15BC-4CFF-B55E-D76D0ABC8B86} = {25047967-23B6-467B-968F-29345819BC90}
 	EndGlobalSection
 EndGlobal

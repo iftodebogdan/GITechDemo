@@ -32,6 +32,16 @@ import utils
 
 
 
+#############################################################################
+#		Arguments:															#
+#---------------------------------------------------------------------------#
+#	'win32' to use the 32 bit version of the tools							#
+#	'x64' to use the 64 bit version of the tools (default)					#
+#	'rebuild' to force rebuilding all data assets							#
+#############################################################################
+
+
+
 def Run():
 	#################
 	# Configuration #
@@ -61,7 +71,7 @@ def Run():
 		for script in dataBuildScript:
 			logging.info("Running script: \"" + script + "\"")
 			proc = subprocess.Popen( \
-				['python.exe', '-u', os.getcwd() + dataSrcDir + script], \
+				['python.exe', '-u', os.getcwd() + dataSrcDir + script] + sys.argv[1:], \
 				stdout = subprocess.PIPE, \
 				stderr = subprocess.STDOUT, \
 				cwd = os.getcwd() + dataSrcDir)
