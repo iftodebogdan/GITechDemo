@@ -65,6 +65,14 @@ void GBufferPass::Update(const float fDeltaTime)
 
 	f44WorldViewMat = f44ViewMat * f44WorldMat;
 	f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
+
+	// In order to have better low-intensity precision in the G-Buffer (which is in LDR format, obviously)
+	// we need to delay the gamma correction of input textures right up until we need them to be linear,
+	// which is at the lighting stage. To achieve this, we need to keep the G-buffer in sRGB format.
+	// The rest of the rendering pipeline supports HDR, so we keep color information in linear format
+	// up until the tone mapping pass, where we output a LDR sRGB texture.
+	// Kudos to VladC of FUN labs for pointing this out!
+	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 }
 
 void GBufferPass::Draw()

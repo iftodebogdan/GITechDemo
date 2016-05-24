@@ -702,7 +702,9 @@ namespace GITechDemoApp
 						{
 							tex->SetAnisotropy(/*MAX_ANISOTROPY*/ 1u);
 							tex->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-							tex->SetSRGBEnabled(true);
+
+							// Check note in GBufferPass.cpp about sRGB G-Buffer
+							//tex->SetSRGBEnabled(true);
 						}
 
 						// Specular power texture
