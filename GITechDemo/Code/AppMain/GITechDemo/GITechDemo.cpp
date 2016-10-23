@@ -72,6 +72,7 @@ namespace GITechDemoApp
 
 	extern AABoxf SceneAABB;
 
+	float CAMERA_FOV = 60.f;
 	float CAMERA_MOVE_SPEED = 250.f;
 	float CAMERA_SPEED_UP_FACTOR = 5.f;
 	float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
@@ -664,7 +665,7 @@ void GITechDemo::Update(const float fDeltaTime)
 	f44ViewMat = m_tCamera.mRot * makeTrans(m_tCamera.vPos, Type2Type<Matrix44f>());
 
 	// Calculate projection matrix
-	RenderContext->CreatePerspectiveMatrix(f44ProjMat, Math::deg2Rad(60.f), (float)viewportSize[0] / (float)viewportSize[1], fZNear, fZFar);
+	RenderContext->CreatePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear, fZFar);
 	gmtl::invertFull((Matrix44f&)f44InvProjMat, (Matrix44f&)f44ProjMat);
 
 	// Calculate some composite matrices

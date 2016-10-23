@@ -67,6 +67,7 @@ namespace GITechDemoApp
 	//////////////////////////////////////////////////////
 
 	// Camera
+	extern float CAMERA_FOV;
 	extern float CAMERA_MOVE_SPEED;
 	extern float CAMERA_SPEED_UP_FACTOR;
 	extern float CAMERA_SLOW_DOWN_FACTOR;
@@ -420,6 +421,9 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(fVignIn,					float,			0.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fVignFade,				float,			22.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,		float,			3.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fQuarticDistortionCoef,	float,			-0.02f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fCubicDistortionModifier,	float,			-0.03f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fDistortionScale,			float,			1.f						);
 	// Motion blur
 	CREATE_SHADER_CONSTANT_OBJECT(fMotionBlurIntensity,		float,			0.01f					);
 	CREATE_SHADER_CONSTANT_OBJECT(nMotionBlurNumSamples,	int,			5						);
@@ -533,6 +537,7 @@ namespace GITechDemoApp
 	// Camera
 	CREATE_ARTIST_PARAMETER_OBJECT("Z-Near",					"Distance to the nearest Z clip plane",									"Camera",					fZNear.GetCurrentValue(),					0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Z-Far",						"Distance to the furthest Z clip plane",								"Camera",					fZFar.GetCurrentValue(),					10.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("FOV",						"Vertical field of view",												"Camera",					CAMERA_FOV,									1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Movement speed",			"Camera movement speed",												"Camera",					CAMERA_MOVE_SPEED,							1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Speed up factor",			"Camera speed multiplier when pressing the 'speed up' button",			"Camera",					CAMERA_SPEED_UP_FACTOR,						1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Slow down factor",			"Camera speed multiplier when pressing the 'slow down' button",			"Camera",					CAMERA_SLOW_DOWN_FACTOR,					0.1f);
@@ -631,6 +636,11 @@ namespace GITechDemoApp
 
 	// Chromatic aberration (part of DoF shader)
 	CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift amount",		"The amount of chromatic separation",									"Chromatic aberration",		fChromaShiftAmount.GetCurrentValue(),		0.1f);
+
+	// Lens distortion (part of DoF shader)
+	CREATE_ARTIST_PARAMETER_OBJECT("K coefficient",				"Quartic distortion coefficient",										"Lens distortion",			fQuarticDistortionCoef.GetCurrentValue(),	0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("K cube modifier",			"Cubic distortion modifier",											"Lens distortion",			fCubicDistortionModifier.GetCurrentValue(),	0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Distortion scale",			"Scales the screen to compensate for overscan/underscan",				"Lens distortion",			fDistortionScale.GetCurrentValue(),			0.01f);
 
 	// Motion blur
 	CREATE_ARTIST_PARAMETER_OBJECT("Motion blur enable",		"Toggle the rendering of the motion blur effect",						"Motion blur",				MOTION_BLUR_ENABLED,						1.f);

@@ -300,8 +300,11 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fVignIn,					float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fVignFade,				float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fChromaShiftAmount,		float		);
+	CREATE_SHADER_CONSTANT_HANDLE(fQuarticDistortionCoef,	float		);
+	CREATE_SHADER_CONSTANT_HANDLE(fCubicDistortionModifier,	float		);
+	CREATE_SHADER_CONSTANT_HANDLE(fDistortionScale,			float		);
 
-	//	- PostProcessingUtils.hlslii
+	//	- PostProcessingUtils.hlsli
 	CREATE_SHADER_CONSTANT_HANDLE(f2LinearDepthEquation,	Vec2f		);
 	CREATE_SHADER_CONSTANT_HANDLE(f2DepthHalfTexelOffset,	Vec2f		);
 

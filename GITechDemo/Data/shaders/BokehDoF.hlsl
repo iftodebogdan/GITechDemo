@@ -83,6 +83,24 @@ const float	fVignFade;		//	F-stops until vignette fades
 // Chromatic aberration
 const float fChromaShiftAmount;	// Color separation factor
 
+// Lens distortion
+const float fQuarticDistortionCoef;
+const float fCubicDistortionModifier;
+const float fDistortionScale;
+
+void ApplyLensDistortion(in out float2 f2TexCoord)
+{
+	if (fQuarticDistortionCoef != 0 || fCubicDistortionModifier != 0 || fDistortionScale != 0)
+	{
+		const float fAspectRatioScale = f2TexSize.y / f2TexSize.x;
+		f2TexCoord -= 0.5f;
+		const float r2 = fAspectRatioScale * fAspectRatioScale * f2TexCoord.x * f2TexCoord.x + f2TexCoord.y * f2TexCoord.y;
+		const float f = 1.f + r2 * (fQuarticDistortionCoef + fCubicDistortionModifier * sqrt(r2));
+		f2TexCoord *= f * fDistortionScale;
+		f2TexCoord += 0.5f;
+	}
+}
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	// Offsets for aperture blade shaped blur kernel
@@ -97,6 +115,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		//sin(6.f / APERTURE_BLADE_COUNT * 6.283f), cos(6.f / APERTURE_BLADE_COUNT * 6.283f),
 		//sin(7.f / APERTURE_BLADE_COUNT * 6.283f), cos(7.f / APERTURE_BLADE_COUNT * 6.283f)
 	};
+
+	// Apply lens distortion equation to texture coordinates
+	ApplyLensDistortion(input.f2TexCoord);
 
 	// Initial sample
 	const float4	f4CenterSample	= tex2D(texSource, input.f2TexCoord);
