@@ -1,6 +1,8 @@
 ## GITechDemo
 ###### Global illumination technical demo
 
+![GITechDemo v1.6.1 screenshot](https://cloud.githubusercontent.com/assets/3004291/15302439/a855f494-1bbb-11e6-85fa-7af9e1429357.png)
+
 GITechDemo is a global illumination technical demo application developed using a proprietary rendering engine and incorporates the following rendering techniques:
 - High-dynamic-range rendering
 - Deferred shading
