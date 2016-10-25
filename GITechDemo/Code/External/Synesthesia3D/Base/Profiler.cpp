@@ -109,7 +109,7 @@ const unsigned int Profiler::GetGPUProfileMarkerCount() const
 void Profiler::ReleaseGPUProfileMarkerResults()
 {
 #if ENABLE_PROFILE_MARKERS
-	for (int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
+	for (unsigned int i = 0; i < (unsigned int)m_arrGPUProfileMarkerResult.size(); i++)
 	{
 		delete m_arrGPUProfileMarkerResult[i];
 	}

@@ -124,7 +124,7 @@ void ProfilerDX9::ReleaseGPUProfileMarkerResults()
 #if ENABLE_PROFILE_MARKERS
 	Profiler::ReleaseGPUProfileMarkerResults();
 
-	for (int i = 0; i < m_arrD3DDisjointQuery.size(); i++)
+	for (unsigned int i = 0; i < (unsigned int)m_arrD3DDisjointQuery.size(); i++)
 	{
 		m_arrD3DDisjointQuery[i].disjointQuery->Release();
 		m_arrD3DDisjointQuery[i].freqQuery->Release();
@@ -138,7 +138,7 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
 {
 #if ENABLE_PROFILE_MARKERS
 	// Update disjoint queries and their respective timestamp queries
-	for (int i = 0; i < m_arrD3DDisjointQuery.size(); i++)
+	for (unsigned int i = 0; i < (unsigned int)m_arrD3DDisjointQuery.size(); i++)
 	{
 		LPDIRECT3DQUERY9 djQuery = m_arrD3DDisjointQuery[i].disjointQuery;
 		LPDIRECT3DQUERY9 freqQuery = m_arrD3DDisjointQuery[i].freqQuery;
@@ -199,11 +199,11 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
 				// Remove older disjoint queries and their corresponding timestamp queries
 				if (isOldDisjointQuery)
 				{
-					for (int j = 0; j < i; j++)
+					for (unsigned int j = 0; j < i; j++)
 					{
 						LPDIRECT3DQUERY9 oldDjQuery = m_arrD3DDisjointQuery[j].disjointQuery;
 						LPDIRECT3DQUERY9 oldFreqQuery = m_arrD3DDisjointQuery[j].freqQuery;
-						for (int k = 0; k < m_arrGPUProfileMarkerResult.size(); k++)
+						for (unsigned int k = 0; k < (unsigned int)m_arrGPUProfileMarkerResult.size(); k++)
 						{
 							GPUProfileMarkerResultDX9* result = (GPUProfileMarkerResultDX9*)m_arrGPUProfileMarkerResult[k];
 							if (result && result->m_tD3DDisjointQuery.disjointQuery == oldDjQuery)
