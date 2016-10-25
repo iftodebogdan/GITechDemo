@@ -41,6 +41,7 @@ namespace GITechDemoApp
 	/* G-Buffer generation */
 	bool GBUFFER_Z_PREPASS = false;
 	int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
+	bool GBUFFER_USE_NORMAL_MAPS = true;
 }
 
 GBufferPass::GBufferPass(const char* const passName, RenderPass* const parentPass)
@@ -135,7 +136,7 @@ void GBufferPass::Draw()
 
 		texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 		texNormal = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_HEIGHT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-		bHasNormalMap = (texNormal != -1);
+		bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
 		// For Blinn-Phong BRDF
 		texSpec = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SPECULAR, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);

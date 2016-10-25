@@ -69,9 +69,10 @@ const bool bHasSpecMap;		// Is specular map available?
 
 struct PSOut
 {
-	float4 f4Diffuse	:	SV_TARGET0;
-	float4 f4Normal		:	SV_TARGET1;
-	float4 f4Material	:	SV_TARGET2;
+	float4 f4Diffuse		:	SV_TARGET0;
+	float4 f4Normal			:	SV_TARGET1;
+	float4 f4Material		:	SV_TARGET2;
+	float4 f4VertexNormal	:	SV_TARGET3;
 };
 
 void psmain(VSOut input, out PSOut output)
@@ -104,5 +105,6 @@ void psmain(VSOut input, out PSOut output)
 	output.f4Diffuse = f4DiffuseColor;
 	output.f4Normal = EncodeNormal(f3Normal);
 	output.f4Material = float4(fMatType, fRoughness, 0.f, 0.f);
+	output.f4SmoothNormal = EncodeNormal(input.f3Normal); // smooth per-vertex normals required to reduce noise from indirect lighting
 }
 ////////////////////////////////////////////////////////////////////

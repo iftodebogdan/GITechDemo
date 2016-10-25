@@ -78,6 +78,7 @@ namespace GITechDemoApp
 	// G-Buffer
 	extern bool GBUFFER_Z_PREPASS;
 	extern int DIFFUSE_ANISOTROPY;
+	extern bool GBUFFER_USE_NORMAL_MAPS;
 
 	// Directional light
 	extern bool DIRECTIONAL_LIGHT_ENABLED;
@@ -216,8 +217,9 @@ namespace GITechDemoApp
 	//	RT0:	A8R8G8B8 with diffuse albedo in RGB and specular power in A
 	//	RT1:	G16R16F with compressed normals (stereographic projection)
 	//	RT2:	G16R16 with material type (dielectric/metallic) in R and roughness in G (Cook-Torrance only)
+	//	RT3:	G16R16F with vertex normals, which are innately low frequency, required to reduce noise from indirect lighting
 	//	DS:		INTZ (for sampling as a regular texture later)
-	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(GBuffer, PF_A8R8G8B8, PF_G16R16F, PF_G16R16, 1.f, 1.f, PF_INTZ);
+	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(GBuffer, PF_A8R8G8B8, PF_G16R16F, PF_G16R16, PF_G16R16F, 1.f, 1.f, PF_INTZ);
 
 	// Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
 	CREATE_STATIC_RENDER_TARGET_OBJECT(ShadowMapDir, PF_NONE, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], PF_INTZ);
@@ -365,8 +367,8 @@ namespace GITechDemoApp
 	/* Volumetric directional light parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,				int,			32						);
 	CREATE_SHADER_CONSTANT_OBJECT(fSampleDistrib,			float,			0.5f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			5.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,	float,			0.5f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			0.2f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,	float,			0.01f					);
 	CREATE_SHADER_CONSTANT_OBJECT(f3FogSpeed,				Vec3f,			Vec3f(20.f, -10.f, 20.f));
 	CREATE_SHADER_CONSTANT_OBJECT(fFogVerticalFalloff,		float,			25.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fBlurDepthFalloff,		float,			0.0025f					);
@@ -382,7 +384,7 @@ namespace GITechDemoApp
 
 	/* Reflective Shadow Map parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,			float,			500.f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,			float,			0.025f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,			float,			0.035f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fWeightThreshold,			float,			0.002f					);
 	CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,		bool,			false					);
 
@@ -554,6 +556,7 @@ namespace GITechDemoApp
 	// G-Buffer
 	CREATE_ARTIST_PARAMETER_OBJECT("Z-prepass",					"Populate the scene's depth buffer before generating the G-Buffer",		"G-Buffer",					GBUFFER_Z_PREPASS,							1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Diffuse anisotropic level",	"Anisotropic filtering level for diffuse textures",						"G-Buffer",					DIFFUSE_ANISOTROPY,							1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Use normal maps",			"Toggles the use of normal maps or per-vertex normals",					"G-Buffer",					GBUFFER_USE_NORMAL_MAPS,					1.f);
 	
 	// Directional light
 	CREATE_ARTIST_PARAMETER_OBJECT("Directional lights enable",	"Toggle the rendering of directional lights",							"Directional light",		DIRECTIONAL_LIGHT_ENABLED,					1.f);

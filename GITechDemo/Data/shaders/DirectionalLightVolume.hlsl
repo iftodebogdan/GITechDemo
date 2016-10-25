@@ -109,7 +109,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Reduce noisiness by truncating the starting position
 	const float3 f3RayLightVS = f3CameraPositionLightVS - f3RayPosLightVS;
 	const float3 f3RayDirLightVS = normalize(f3RayLightVS);
-	const float fRaymarchDistance = trunc(clamp(length(f3RayLightVS), 0.f, fRaymarchDistanceLimit));
+	float fRaymarchDistance = /*trunc*/(clamp(length(f3RayLightVS), 0.f, fRaymarchDistanceLimit));
 
 	// Calculate the size of each step
 	const float fStepLen = fRaymarchDistance * rcp((float)nSampleCount);
@@ -169,7 +169,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		// Calculate the final light contribution for the sample on the ray
 		// and add it to the total contribution of the ray
 		//f4Color.rgb += TAU * (bLit * (PHI * 0.25f * PI_RCP) * fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU) * exp(-fSampleDist * TAU) * fStepLen;
-		f4Color.rgb += (fMultScatterIntensity + fLightIntensity * bLit) * exp(-fSampleDist * TAU) * fDensity * TAU * (PHI * 0.25f * PI_RCP) * fStepLen; // * (fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU)
+		f4Color.rgb += (fMultScatterIntensity + fLightIntensity * bLit) * exp(-fSampleDist * TAU) * fDensity * TAU * (PHI * 0.25f * PI_RCP) * fSampleDist; // * (fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU)
 	}
 
 	// Moved some calculations outside of the above 'for' as an optimization

@@ -104,7 +104,7 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
 	texRSMFluxBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(0);
 	texRSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);
 	texRSMDepthBuffer = RSMBuffer.GetRenderTarget()->GetDepthBuffer();
-	texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
+	texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(3); // use vertex normals to reduce noise
 	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 	texSource = IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 }
