@@ -46,10 +46,10 @@ namespace Synesthesia3D
 		 *
 		 * @return	A single R8G8B8X8 value.
 		 */
-		static SYNESTHESIA3D_DLL dword MakeR8G8B8(
-			const byte red,
-			const byte green,
-			const byte blue);
+		static SYNESTHESIA3D_DLL s3dDword MakeR8G8B8(
+			const s3dByte red,
+			const s3dByte green,
+			const s3dByte blue);
 		
 		/**
 		 * @brief	Encode provided red, green, blue and alpha values into a single R8G8B8A8 value.
@@ -61,11 +61,11 @@ namespace Synesthesia3D
 		 *
 		 * @return	A single R8G8B8A8 value.
 		 */
-		static SYNESTHESIA3D_DLL dword MakeR8G8B8A8(
-			const byte red,
-			const byte green,
-			const byte blue,
-			const byte alpha);
+		static SYNESTHESIA3D_DLL s3dDword MakeR8G8B8A8(
+			const s3dByte red,
+			const s3dByte green,
+			const s3dByte blue,
+			const s3dByte alpha);
 		
 		/**
 		 * @brief	Decode provided R8G8B8X8 value into red, green and blue values.
@@ -76,10 +76,10 @@ namespace Synesthesia3D
 		 * @param[out]	blue	Blue channel value.
 		 */
 		static SYNESTHESIA3D_DLL void ExtractR8G8B8(
-			const dword rgb,
-			byte& red,
-			byte& green,
-			byte& blue);
+			const s3dDword rgb,
+			s3dByte& red,
+			s3dByte& green,
+			s3dByte& blue);
 		
 		/**
 		 * @brief	Decode provided R8G8B8A8 value into red, green, blue and alpha values.
@@ -91,11 +91,11 @@ namespace Synesthesia3D
 		 * @param[out]	alpha	Alpha channel value.
 		 */
 		static SYNESTHESIA3D_DLL void ExtractR8G8B8A8(
-			const dword rgba,
-			byte& red,
-			byte& green,
-			byte& blue,
-			byte& alpha);
+			const s3dDword rgba,
+			s3dByte& red,
+			s3dByte& green,
+			s3dByte& blue,
+			s3dByte& alpha);
 		
 		/**
 		 * @brief	Encode provided red, green and blue values into a single B8G8R8X8 value.
@@ -107,10 +107,10 @@ namespace Synesthesia3D
 		 *
 		 * @return	A single B8G8R8X8 value.
 		 */
-		static SYNESTHESIA3D_DLL dword MakeB8G8R8(
-			const byte red,
-			const byte green,
-			const byte blue);
+		static SYNESTHESIA3D_DLL s3dDword MakeB8G8R8(
+			const s3dByte red,
+			const s3dByte green,
+			const s3dByte blue);
 
 		/**
 		 * @brief	Encode provided red, green, blue and alpha values into a single B8G8R8A8 value.
@@ -122,11 +122,11 @@ namespace Synesthesia3D
 		 *
 		 * @return	A single B8G8R8A8 value.
 		 */
-		static SYNESTHESIA3D_DLL dword MakeB8G8R8A8(
-			const byte red,
-			const byte green,
-			const byte blue,
-			const byte alpha);
+		static SYNESTHESIA3D_DLL s3dDword MakeB8G8R8A8(
+			const s3dByte red,
+			const s3dByte green,
+			const s3dByte blue,
+			const s3dByte alpha);
 		
 		/**
 		 * @brief	Decode provided B8G8R8X8 value into red, green and blue values.
@@ -137,10 +137,10 @@ namespace Synesthesia3D
 		 * @param[out]	blue	Blue channel value.
 		 */
 		static SYNESTHESIA3D_DLL void ExtractB8G8R8(
-			const dword bgr,
-			byte& red,
-			byte& green,
-			byte& blue);
+			const s3dDword bgr,
+			s3dByte& red,
+			s3dByte& green,
+			s3dByte& blue);
 		
 		/**
 		 * @brief	Decode provided B8G8R8A8 value into red, green, blue and alpha values.
@@ -152,11 +152,11 @@ namespace Synesthesia3D
 		 * @param[out]	alpha	Alpha channel value.
 		 */
 		static SYNESTHESIA3D_DLL void ExtractB8G8R8A8(
-			const dword bgra,
-			byte& red,
-			byte& green,
-			byte& blue,
-			byte& alpha);
+			const s3dDword bgra,
+			s3dByte& red,
+			s3dByte& green,
+			s3dByte& blue,
+			s3dByte& alpha);
 		
 		/**
 		 * @brief	Encode provided red, green and blue values into a single R5G6B5 value.
@@ -167,10 +167,10 @@ namespace Synesthesia3D
 		 *
 		 * @return	A single R5G6B5 value.
 		 */
-		static SYNESTHESIA3D_DLL word MakeR5G6B5(
-			const byte red,
-			const byte green,
-			const byte blue);
+		static SYNESTHESIA3D_DLL s3dWord MakeR5G6B5(
+			const s3dByte red,
+			const s3dByte green,
+			const s3dByte blue);
 		
 		/**
 		 * @brief	Decode provided R5G6B5 value into red, green and blue values.
@@ -181,10 +181,10 @@ namespace Synesthesia3D
 		 * @param[out]	blue	Blue channel value.
 		 */
 		static SYNESTHESIA3D_DLL void ExtractR5G6B5(
-			const word rgb,
-			byte& red,
-			byte& green,
-			byte& blue);
+			const s3dWord rgb,
+			s3dByte& red,
+			s3dByte& green,
+			s3dByte& blue);
 
 
 
@@ -198,7 +198,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromR5G6B5(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromR5G6B5(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A1R5G5B5 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -210,7 +210,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA1R5G5B5(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA1R5G5B5(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A4R4G4B4 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -222,7 +222,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA4R4G4B4(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA4R4G4B4(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -234,7 +234,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a L8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -246,7 +246,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromL8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromL8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A8L8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -258,7 +258,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA8L8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA8L8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a R8G8B8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -270,7 +270,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromR8G8B8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromR8G8B8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A8R8G8B8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -282,7 +282,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA8R8G8B8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA8R8G8B8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A8B8G8R8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -294,7 +294,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA8B8G8R8(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA8B8G8R8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a L16 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -306,7 +306,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromL16(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromL16(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a G16R16 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -318,7 +318,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromG16R16(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromG16R16(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A16B16G16R16 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -330,7 +330,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA16B16G16R16(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA16B16G16R16(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a R16F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -341,7 +341,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromR16F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromR16F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a G16R16F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -352,7 +352,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromG16R16F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromG16R16F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A16B16G16R16F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -363,7 +363,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA16B16G16R16F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA16B16G16R16F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a R32F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -374,7 +374,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromR32F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromR32F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a G32R32F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -385,7 +385,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromG32R32F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromG32R32F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a A32B32G32R32F texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -396,7 +396,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromA32B32G32R32F(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromA32B32G32R32F(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a DXT1 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -408,7 +408,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromDXT1(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromDXT1(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a DXT3 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -420,7 +420,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromDXT3(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromDXT3(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Decodes a DXT5 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
@@ -432,7 +432,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertFromDXT5(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertFromDXT5(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 
 
@@ -446,7 +446,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToR5G6B5(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToR5G6B5(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A1R5G5B5 texture buffer.
@@ -458,7 +458,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA1R5G5B5(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA1R5G5B5(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A4R4G4B4 texture buffer.
@@ -470,7 +470,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA4R4G4B4(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA4R4G4B4(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A8 texture buffer.
@@ -482,7 +482,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a L8 texture buffer.
@@ -494,7 +494,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToL8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToL8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A8L8 texture buffer.
@@ -506,7 +506,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA8L8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA8L8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a R8G8B8 texture buffer.
@@ -518,7 +518,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToR8G8B8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToR8G8B8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A8R8G8B8 texture buffer.
@@ -530,7 +530,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA8R8G8B8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA8R8G8B8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A8B8G8R8 texture buffer.
@@ -542,7 +542,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA8B8G8R8(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA8B8G8R8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a L16 texture buffer.
@@ -554,7 +554,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToL16(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToL16(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a G16R16 texture buffer.
@@ -566,7 +566,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToG16R16(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToG16R16(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A16B16G16R16 texture buffer.
@@ -578,7 +578,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA16B16G16R16(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA16B16G16R16(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a R16F texture buffer.
@@ -589,7 +589,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToR16F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToR16F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a G16R16F texture buffer.
@@ -600,7 +600,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToG16R16F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToG16R16F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A16B16G16R16F texture buffer.
@@ -611,7 +611,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA16B16G16R16F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA16B16G16R16F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a R32F texture buffer.
@@ -622,7 +622,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToR32F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToR32F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a G32R32F texture buffer.
@@ -633,7 +633,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToG32R32F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToG32R32F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A32B32G32R32F texture buffer.
@@ -644,7 +644,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToA32B32G32R32F(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToA32B32G32R32F(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a DXT1 texture buffer.
@@ -656,7 +656,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToDXT1(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToDXT1(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a DXT3 texture buffer.
@@ -668,7 +668,7 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToDXT3(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToDXT3(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Encodes an array of floating-point red, green, blue and alpha values (in this order) into a DXT5 texture buffer.
@@ -680,18 +680,18 @@ namespace Synesthesia3D
 		 * @param[in]	height		Texture height.
 		 * @param[in]	depth		Texture depth.
 		 */
-		static SYNESTHESIA3D_DLL void ConvertToDXT5(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+		static SYNESTHESIA3D_DLL void ConvertToDXT5(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
 		/**
 		 * @brief	Allows convenient usage of "convert from" functions.
 		 */
-		typedef void(*ConvertFromFunc)(const byte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth);
+		typedef void(*ConvertFromFunc)(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth);
 		static SYNESTHESIA3D_DLL ConvertFromFunc ConvertFrom[PF_MAX]; /**< @brief "Convert from" function look up table, for convenience. */
 		
 		/**
 		 * @brief	Allows convenient usage of "convert to" functions.
 		 */
-		typedef void(*ConvertToFunc)(const Vec4f* const inRGBA, byte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth);
+		typedef void(*ConvertToFunc)(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth);
 		static SYNESTHESIA3D_DLL ConvertToFunc ConvertTo[PF_MAX]; /**< @brief "Convert to" function look up table, for convenience. */
 	};
 }

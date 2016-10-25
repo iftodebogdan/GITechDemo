@@ -33,39 +33,4 @@
 		#define assert(_Expression) ((void)0)
 	#endif
 
-	#ifndef ENABLE_PROFILE_MARKERS
-		#if defined(_DEBUG) || defined(_PROFILE)
-			#define ENABLE_PROFILE_MARKERS (1)	/**< @brief	Enable/disable profile markers. */
-		#else
-			#define ENABLE_PROFILE_MARKERS (0)	/**< @brief	Enable/disable profile markers. */
-		#endif
-	#endif
-	
-	#if ENABLE_PROFILE_MARKERS
-		extern int g_nProfileMarkerCounter;	/**< Counter for keeping track of profile markers pushes/pops. */
-		#ifndef PUSH_PROFILE_MARKER
-			/**
-			 * @brief	Macro for simple introduction of a profile marker.
-			 */
-			#define PUSH_PROFILE_MARKER(label) \
-				if(Synesthesia3D::Renderer::GetInstance()) \
-					Synesthesia3D::Renderer::GetInstance()->PushProfileMarker(label)
-		#endif
-		#ifndef POP_PROFILE_MARKER
-			/**
-			 * @brief	Macro for simple removing of a profile marker.
-			 */
-			#define POP_PROFILE_MARKER() \
-				if(Synesthesia3D::Renderer::GetInstance()) \
-					Synesthesia3D::Renderer::GetInstance()->PopProfileMarker()
-		#endif
-	#else
-		#ifndef PUSH_PROFILE_MARKER
-			#define PUSH_PROFILE_MARKER(label) ((void)0)
-		#endif
-		#ifndef POP_PROFILE_MARKER
-			#define POP_PROFILE_MARKER() ((void)0)
-		#endif
-	#endif
-
 #endif

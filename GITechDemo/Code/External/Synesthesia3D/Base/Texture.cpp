@@ -24,6 +24,7 @@
 
 #include "Texture.h"
 #include "Renderer.h"
+#include "Profiler.h"
 #include "../Utility/ColorUtility.h"
 using namespace Synesthesia3D;
 
@@ -318,7 +319,7 @@ Texture::Texture(
 	ComputeTextureProperties(Vec3i(sizeX, sizeY, sizeZ));
 
 	// Allocate memory for our texture
-	m_pData = new byte[m_nSize];
+	m_pData = new s3dByte[m_nSize];
 }
 
 Texture::~Texture()
@@ -469,13 +470,13 @@ void Texture::SetDynamicSizeRatios(const float widthRatio, const float heightRat
 
 		// Reallocate memory for our texture
 		delete[] m_pData;
-		m_pData = new byte[m_nSize];
+		m_pData = new s3dByte[m_nSize];
 
 		Bind();
 	}
 }
 
-byte* const Texture::GetMipData(const unsigned int mipmapLevel)
+s3dByte* const Texture::GetMipData(const unsigned int mipmapLevel)
 {
 	if (m_eTexType == TT_CUBE)
 	{
@@ -487,7 +488,7 @@ byte* const Texture::GetMipData(const unsigned int mipmapLevel)
 	// when we create render targets so as to reduce their memory footprint.
 	if (m_eBufferUsage == BU_RENDERTAGET && m_pData == nullptr)
 	{
-		m_pData = new byte[m_nSize];
+		m_pData = new s3dByte[m_nSize];
 		assert(m_pData != nullptr);
 		memset(m_pData, 0, m_nSize);
 	}
@@ -495,7 +496,7 @@ byte* const Texture::GetMipData(const unsigned int mipmapLevel)
 	return m_pData + GetMipOffset(mipmapLevel);
 }
 
-byte* const Texture::GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel) const
+s3dByte* const Texture::GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel) const
 {
 	if (m_eTexType != TT_CUBE)
 	{
@@ -510,8 +511,6 @@ byte* const Texture::GetMipData(const CubeFace cubeFace, const unsigned int mipm
 
 const bool Texture::GenerateMips()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	// Just to be safe (might be useful later when porting on other platforms)
 	assert(sizeof(Vec4f) == sizeof(float) * 4);
 
@@ -530,8 +529,8 @@ const bool Texture::GenerateMips()
 	{
 		for (unsigned int mip = 1; mip < GetMipCount(); mip++)
 		{
-			byte* texelsSrc = faceCount == 1 ? GetMipData(mip - 1) : GetMipData(face, mip - 1);
-			byte* texelsDst = faceCount == 1 ? GetMipData(mip) : GetMipData(face, mip);
+			s3dByte* texelsSrc = faceCount == 1 ? GetMipData(mip - 1) : GetMipData(face, mip - 1);
+			s3dByte* texelsDst = faceCount == 1 ? GetMipData(mip) : GetMipData(face, mip);
 
 			unsigned int widthSrc = GetWidth(mip - 1);
 			unsigned int heightSrc = GetHeight(mip - 1);
@@ -610,8 +609,6 @@ const bool Texture::GenerateMips()
 
 	delete[] rgba;
 
-	POP_PROFILE_MARKER();
-
 	return true;
 }
 
@@ -623,7 +620,7 @@ void Texture::Bind()
 
 		// Reallocate memory for our texture
 		delete[] m_pData;
-		m_pData = new byte[m_nSize];
+		m_pData = new s3dByte[m_nSize];
 	}
 }
 

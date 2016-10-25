@@ -36,6 +36,8 @@ namespace gainput
 
 namespace GITechDemoApp
 {
+	class RenderPass;
+
 	class GITechDemo : public App
 	{
 	public:
@@ -55,6 +57,8 @@ namespace GITechDemoApp
 		const float GetDeltaTime() { return m_fDeltaTime; }
 
 	private:
+		void DrawGPUProfileScreen(const RenderPass* pass = nullptr, const unsigned int level = 0) const;
+
 		Camera m_tCamera;
 		void* m_pHWND;
 		float m_fDeltaTime;

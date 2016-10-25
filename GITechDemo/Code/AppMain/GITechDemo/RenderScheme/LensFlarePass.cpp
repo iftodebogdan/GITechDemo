@@ -26,6 +26,7 @@
 #include <RenderTarget.h>
 #include <Texture.h>
 #include <RenderState.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "LensFlarePass.h"

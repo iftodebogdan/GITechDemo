@@ -86,75 +86,75 @@ ColorUtility::ConvertToFunc ColorUtility::ConvertTo[PF_MAX] =
 	0							// PF_INTZ
 };
 
-dword ColorUtility::MakeR8G8B8(const byte red, const byte green, const byte blue)
+s3dDword ColorUtility::MakeR8G8B8(const s3dByte red, const s3dByte green, const s3dByte blue)
 {
 	return (red | (green << 8) | (blue << 16) | (255 << 24));
 }
 
-dword ColorUtility::MakeR8G8B8A8(const byte red, const byte green, const byte blue, const byte alpha)
+s3dDword ColorUtility::MakeR8G8B8A8(const s3dByte red, const s3dByte green, const s3dByte blue, const s3dByte alpha)
 {
 	return (red | (green << 8) | (blue << 16) | (alpha << 24));
 }
 
-void ColorUtility::ExtractR8G8B8(const dword rgb, byte & red, byte & green, byte & blue)
+void ColorUtility::ExtractR8G8B8(const s3dDword rgb, s3dByte & red, s3dByte & green, s3dByte & blue)
 {
-	red		= (byte)((rgb & 0x000000FF));
-	green	= (byte)((rgb & 0x0000FF00) >> 8);
-	blue	= (byte)((rgb & 0x00FF0000) >> 16);
+	red		= (s3dByte)((rgb & 0x000000FF));
+	green	= (s3dByte)((rgb & 0x0000FF00) >> 8);
+	blue	= (s3dByte)((rgb & 0x00FF0000) >> 16);
 }
 
-void ColorUtility::ExtractR8G8B8A8(const dword rgba, byte & red, byte & green, byte & blue, byte & alpha)
+void ColorUtility::ExtractR8G8B8A8(const s3dDword rgba, s3dByte & red, s3dByte & green, s3dByte & blue, s3dByte & alpha)
 {
-	red		= (byte)((rgba & 0x000000FF));
-	green	= (byte)((rgba & 0x0000FF00) >> 8);
-	blue	= (byte)((rgba & 0x00FF0000) >> 16);
-	alpha	= (byte)((rgba & 0xFF000000) >> 24);
+	red		= (s3dByte)((rgba & 0x000000FF));
+	green	= (s3dByte)((rgba & 0x0000FF00) >> 8);
+	blue	= (s3dByte)((rgba & 0x00FF0000) >> 16);
+	alpha	= (s3dByte)((rgba & 0xFF000000) >> 24);
 }
 
-dword ColorUtility::MakeB8G8R8(const byte red, const byte green, const byte blue)
+s3dDword ColorUtility::MakeB8G8R8(const s3dByte red, const s3dByte green, const s3dByte blue)
 {
 	return (blue | (green << 8) | (red << 16) | (255 << 24));
 }
 
-dword ColorUtility::MakeB8G8R8A8(const byte red, const byte green, const byte blue, const byte alpha)
+s3dDword ColorUtility::MakeB8G8R8A8(const s3dByte red, const s3dByte green, const s3dByte blue, const s3dByte alpha)
 {
 	return (blue | (green << 8) | (red << 16) | (alpha << 24));
 }
 
-void ColorUtility::ExtractB8G8R8(const dword rgb, byte & red, byte & green, byte & blue)
+void ColorUtility::ExtractB8G8R8(const s3dDword rgb, s3dByte & red, s3dByte & green, s3dByte & blue)
 {
-	blue = (byte)((rgb & 0x000000FF));
-	green = (byte)((rgb & 0x0000FF00) >> 8);
-	red = (byte)((rgb & 0x00FF0000) >> 16);
+	blue = (s3dByte)((rgb & 0x000000FF));
+	green = (s3dByte)((rgb & 0x0000FF00) >> 8);
+	red = (s3dByte)((rgb & 0x00FF0000) >> 16);
 }
 
-void ColorUtility::ExtractB8G8R8A8(const dword rgba, byte & red, byte & green, byte & blue, byte & alpha)
+void ColorUtility::ExtractB8G8R8A8(const s3dDword rgba, s3dByte & red, s3dByte & green, s3dByte & blue, s3dByte & alpha)
 {
-	blue= (byte)(rgba & 0x000000FF);
-	green = (byte)((rgba & 0x0000FF00) >> 8);
-	red = (byte)((rgba & 0x00FF0000) >> 16);
-	alpha = (byte)((rgba & 0xFF000000) >> 24);
+	blue= (s3dByte)(rgba & 0x000000FF);
+	green = (s3dByte)((rgba & 0x0000FF00) >> 8);
+	red = (s3dByte)((rgba & 0x00FF0000) >> 16);
+	alpha = (s3dByte)((rgba & 0xFF000000) >> 24);
 }
 
-word ColorUtility::MakeR5G6B5(const byte red, const byte green, const byte blue)
+s3dWord ColorUtility::MakeR5G6B5(const s3dByte red, const s3dByte green, const s3dByte blue)
 {
-	word r = ((word)(red & 0x1F)) >> 3;
-	word g = ((word)(green & 0x3F)) >> 2;
-	word b = ((word)(blue & 0x1F)) >> 3;
+	s3dWord r = ((s3dWord)(red & 0x1F)) >> 3;
+	s3dWord g = ((s3dWord)(green & 0x3F)) >> 2;
+	s3dWord b = ((s3dWord)(blue & 0x1F)) >> 3;
 	return (b | (g << 5) | (r << 11));
 }
 
-void ColorUtility::ExtractR5G6B5(const word rgb, byte & red, byte & green, byte & blue)
+void ColorUtility::ExtractR5G6B5(const s3dWord rgb, s3dByte & red, s3dByte & green, s3dByte & blue)
 {
-	blue = (byte)(((rgb & 0x001F) << 3) | ((rgb & 0x001F) >> 2));
-	green = (byte)(((rgb & 0x07E0) >> 3) | ((rgb & 0x07E0) >> 9));
-	red = (byte)(((rgb & 0xF800) >> 8) | ((rgb & 0xF800) >> 13));
+	blue = (s3dByte)(((rgb & 0x001F) << 3) | ((rgb & 0x001F) >> 2));
+	green = (s3dByte)(((rgb & 0x07E0) >> 3) | ((rgb & 0x07E0) >> 9));
+	red = (s3dByte)(((rgb & 0xF800) >> 8) | ((rgb & 0xF800) >> 13));
 }
 
-void ColorUtility::ConvertFromR5G6B5(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromR5G6B5(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
@@ -165,10 +165,10 @@ void ColorUtility::ConvertFromR5G6B5(const byte * const inData, Vec4f * const ou
 	}
 }
 
-void ColorUtility::ConvertFromA1R5G5B5(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA1R5G5B5(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
@@ -179,10 +179,10 @@ void ColorUtility::ConvertFromA1R5G5B5(const byte * const inData, Vec4f * const 
 	}
 }
 
-void ColorUtility::ConvertFromA4R4G4B4(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA4R4G4B4(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src, ++texel)
 	{
@@ -193,10 +193,10 @@ void ColorUtility::ConvertFromA4R4G4B4(const byte * const inData, Vec4f * const 
 	}
 }
 
-void ColorUtility::ConvertFromA8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -207,10 +207,10 @@ void ColorUtility::ConvertFromA8(const byte * const inData, Vec4f * const outRGB
 	}
 }
 
-void ColorUtility::ConvertFromL8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromL8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -222,10 +222,10 @@ void ColorUtility::ConvertFromL8(const byte * const inData, Vec4f * const outRGB
 	}
 }
 
-void ColorUtility::ConvertFromA8L8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA8L8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -238,10 +238,10 @@ void ColorUtility::ConvertFromA8L8(const byte * const inData, Vec4f * const outR
 	}
 }
 
-void ColorUtility::ConvertFromR8G8B8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromR8G8B8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -252,10 +252,10 @@ void ColorUtility::ConvertFromR8G8B8(const byte * const inData, Vec4f * const ou
 	}
 }
 
-void ColorUtility::ConvertFromA8R8G8B8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA8R8G8B8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -266,10 +266,10 @@ void ColorUtility::ConvertFromA8R8G8B8(const byte * const inData, Vec4f * const 
 	}
 }
 
-void ColorUtility::ConvertFromA8B8G8R8(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA8B8G8R8(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const byte* src = (const byte*)inData;
+	const s3dByte* src = (const s3dByte*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -280,10 +280,10 @@ void ColorUtility::ConvertFromA8B8G8R8(const byte * const inData, Vec4f * const 
 	}
 }
 
-void ColorUtility::ConvertFromL16(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromL16(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -295,10 +295,10 @@ void ColorUtility::ConvertFromL16(const byte * const inData, Vec4f * const outRG
 	}
 }
 
-void ColorUtility::ConvertFromG16R16(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromG16R16(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -309,10 +309,10 @@ void ColorUtility::ConvertFromG16R16(const byte * const inData, Vec4f * const ou
 	}
 }
 
-void ColorUtility::ConvertFromA16B16G16R16(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA16B16G16R16(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const word* src = (const word*)inData;
+	const s3dWord* src = (const s3dWord*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -323,10 +323,10 @@ void ColorUtility::ConvertFromA16B16G16R16(const byte * const inData, Vec4f * co
 	}
 }
 
-void ColorUtility::ConvertFromR16F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromR16F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const half* src = (const half*)inData;
+	const s3dHalf* src = (const s3dHalf*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -337,10 +337,10 @@ void ColorUtility::ConvertFromR16F(const byte * const inData, Vec4f * const outR
 	}
 }
 
-void ColorUtility::ConvertFromG16R16F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromG16R16F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const half* src = (const half*)inData;
+	const s3dHalf* src = (const s3dHalf*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -351,10 +351,10 @@ void ColorUtility::ConvertFromG16R16F(const byte * const inData, Vec4f * const o
 	}
 }
 
-void ColorUtility::ConvertFromA16B16G16R16F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA16B16G16R16F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
-	const half* src = (const half*)inData;
+	const s3dHalf* src = (const s3dHalf*)inData;
 	Vec4f* texel = outRGBA;
 	for (unsigned int i = 0; i < numTexels; ++i, ++texel)
 	{
@@ -365,7 +365,7 @@ void ColorUtility::ConvertFromA16B16G16R16F(const byte * const inData, Vec4f * c
 	}
 }
 
-void ColorUtility::ConvertFromR32F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromR32F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const float* src = (const float*)inData;
@@ -379,7 +379,7 @@ void ColorUtility::ConvertFromR32F(const byte * const inData, Vec4f * const outR
 	}
 }
 
-void ColorUtility::ConvertFromG32R32F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromG32R32F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const float* src = (const float*)inData;
@@ -393,7 +393,7 @@ void ColorUtility::ConvertFromG32R32F(const byte * const inData, Vec4f * const o
 	}
 }
 
-void ColorUtility::ConvertFromA32B32G32R32F(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertFromA32B32G32R32F(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const float* src = (const float*)inData;
@@ -407,21 +407,21 @@ void ColorUtility::ConvertFromA32B32G32R32F(const byte * const inData, Vec4f * c
 	}
 }
 
-void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
+void ColorUtility::ConvertFromDXT1(const s3dByte * const inData, Vec4f * const outRGBA, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
 {
 	assert(width % 4 == 0 && height % 4 == 0);
 
 	unsigned int numBlocksX = width / 4;
 	unsigned int numBlocksY = height / 4;
-	const qword* blockData = (const qword*)inData;
+	const s3dQword* blockData = (const s3dQword*)inData;
 	for (unsigned blockY = 0; blockY < numBlocksY; blockY++)
 		for (unsigned blockX = 0; blockX < numBlocksX; blockX++)
 		{
 			unsigned int block = blockX + blockY * numBlocksX;
-			word color0 = *((word*)(blockData + block));
-			word color1 = *(((word*)(blockData + block)) + 1);
+			s3dWord color0 = *((s3dWord*)(blockData + block));
+			s3dWord color1 = *(((s3dWord*)(blockData + block)) + 1);
 
-			byte r0, g0, b0, r1, g1, b1;
+			s3dByte r0, g0, b0, r1, g1, b1;
 			ExtractR5G6B5(color0, r0, g0, b0);
 			ExtractR5G6B5(color1, r1, g1, b1);
 
@@ -431,7 +431,7 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 				// 00 = color_0, 01 = color_1, 10 = color_2, 11 = color_3
 				// These 2-bit codes correspond to the 2-bit fields 
 				// stored in the 64-bit block.
-				byte r2, g2, b2, r3, g3, b3;
+				s3dByte r2, g2, b2, r3, g3, b3;
 				r2 = (2 * r0 + r1) / 3;
 				g2 = (2 * g0 + g1) / 3;
 				b2 = (2 * b0 + b1) / 3;
@@ -439,11 +439,11 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 				g3 = (g0 + 2 * g1) / 3;
 				b3 = (b0 + 2 * b1) / 3;
 
-				byte* bitmap = (byte*)(((word*)(blockData + block)) + 2);
+				s3dByte* bitmap = (s3dByte*)(((s3dWord*)(blockData + block)) + 2);
 				for (unsigned int texelY = 0; texelY < 4; texelY++)
 					for (unsigned int texelX = 0; texelX < 4; texelX++)
 					{
-						byte encodedColor = 0;
+						s3dByte encodedColor = 0;
 						switch (texelX)
 						{
 						case 0:
@@ -495,16 +495,16 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 				// 11 = transparent.
 				// These 2-bit codes correspond to the 2-bit fields 
 				// stored in the 64-bit block.
-				byte r2, g2, b2;
+				s3dByte r2, g2, b2;
 				r2 = (r0 + r1) / 2;
 				g2 = (g0 + g1) / 2;
 				b2 = (b0 + b1) / 2;
 
-				byte* bitmap = (byte*)(((word*)(blockData + block)) + 2);
+				s3dByte* bitmap = (s3dByte*)(((s3dWord*)(blockData + block)) + 2);
 				for (unsigned int texelY = 0; texelY < 4; texelY++)
 					for (unsigned int texelX = 0; texelX < 4; texelX++)
 					{
-						byte encodedColor = 0;
+						s3dByte encodedColor = 0;
 						switch (texelX)
 						{
 						case 0:
@@ -552,225 +552,188 @@ void ColorUtility::ConvertFromDXT1(const byte * const inData, Vec4f * const outR
 		}
 }
 
-void ColorUtility::ConvertFromDXT3(const byte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
+void ColorUtility::ConvertFromDXT3(const s3dByte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
 
-void ColorUtility::ConvertFromDXT5(const byte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
+void ColorUtility::ConvertFromDXT5(const s3dByte * const /*inData*/, Vec4f * const /*outRGBA*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
 
-void ColorUtility::ConvertToR5G6B5(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToR5G6B5(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)((*src)[0] * 31.f) >> 3;
-		word g = (word)((*src)[1] * 63.f) >> 2;
-		word b = (word)((*src)[2] * 31.f) >> 3;
+		s3dWord r = (s3dWord)((*src)[0] * 31.f) >> 3;
+		s3dWord g = (s3dWord)((*src)[1] * 63.f) >> 2;
+		s3dWord b = (s3dWord)((*src)[2] * 31.f) >> 3;
 		*texel++ = b | (g << 5) | (r << 11);
 	}
 }
 
-void ColorUtility::ConvertToA1R5G5B5(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA1R5G5B5(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)((*src)[0] * 31.f);
-		word g = (word)((*src)[1] * 31.f);
-		word b = (word)((*src)[2] * 31.f);
-		word a = (word)(*src)[3];
+		s3dWord r = (s3dWord)((*src)[0] * 31.f);
+		s3dWord g = (s3dWord)((*src)[1] * 31.f);
+		s3dWord b = (s3dWord)((*src)[2] * 31.f);
+		s3dWord a = (s3dWord)(*src)[3];
 		*texel++ = b | (g << 5) | (r << 10) | (a << 15);
 	}
 }
 
-void ColorUtility::ConvertToA4R4G4B4(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA4R4G4B4(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		word r = (word)((*src)[0] * 15.f);
-		word g = (word)((*src)[1] * 15.f);
-		word b = (word)((*src)[2] * 15.f);
-		word a = (word)((*src)[3] * 15.f);
+		s3dWord r = (s3dWord)((*src)[0] * 15.f);
+		s3dWord g = (s3dWord)((*src)[1] * 15.f);
+		s3dWord b = (s3dWord)((*src)[2] * 15.f);
+		s3dWord a = (s3dWord)((*src)[3] * 15.f);
 		*texel++ = b | (g << 4) | (r << 8) | (a << 12);
 	}
 }
 
-void ColorUtility::ConvertToA8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[3] * 255.f);
+		*texel++ = (s3dByte)((*src)[3] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToL8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToL8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[0] * 255.f);
+		*texel++ = (s3dByte)((*src)[0] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToA8L8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA8L8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[0] * 255.f);
-		*texel++ = (byte)((*src)[3] * 255.f);
+		*texel++ = (s3dByte)((*src)[0] * 255.f);
+		*texel++ = (s3dByte)((*src)[3] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToR8G8B8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToR8G8B8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[2] * 255.f);
-		*texel++ = (byte)((*src)[1] * 255.f);
-		*texel++ = (byte)((*src)[0] * 255.f);
+		*texel++ = (s3dByte)((*src)[2] * 255.f);
+		*texel++ = (s3dByte)((*src)[1] * 255.f);
+		*texel++ = (s3dByte)((*src)[0] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToA8R8G8B8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA8R8G8B8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[2] * 255.f);
-		*texel++ = (byte)((*src)[1] * 255.f);
-		*texel++ = (byte)((*src)[0] * 255.f);
-		*texel++ = (byte)((*src)[3] * 255.f);
+		*texel++ = (s3dByte)((*src)[2] * 255.f);
+		*texel++ = (s3dByte)((*src)[1] * 255.f);
+		*texel++ = (s3dByte)((*src)[0] * 255.f);
+		*texel++ = (s3dByte)((*src)[3] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToA8B8G8R8(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA8B8G8R8(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	byte* texel = (byte*)outData;
+	s3dByte* texel = (s3dByte*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (byte)((*src)[0] * 255.f);
-		*texel++ = (byte)((*src)[1] * 255.f);
-		*texel++ = (byte)((*src)[2] * 255.f);
-		*texel++ = (byte)((*src)[3] * 255.f);
+		*texel++ = (s3dByte)((*src)[0] * 255.f);
+		*texel++ = (s3dByte)((*src)[1] * 255.f);
+		*texel++ = (s3dByte)((*src)[2] * 255.f);
+		*texel++ = (s3dByte)((*src)[3] * 255.f);
 	}
 }
 
-void ColorUtility::ConvertToL16(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToL16(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)((*src)[0] * 65535.f);
+		*texel++ = (s3dWord)((*src)[0] * 65535.f);
 	}
 }
 
-void ColorUtility::ConvertToG16R16(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToG16R16(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)((*src)[0] * 65535.f);
-		*texel++ = (word)((*src)[1] * 65535.f);
+		*texel++ = (s3dWord)((*src)[0] * 65535.f);
+		*texel++ = (s3dWord)((*src)[1] * 65535.f);
 	}
 }
 
-void ColorUtility::ConvertToA16B16G16R16(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA16B16G16R16(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	word* texel = (word*)outData;
+	s3dWord* texel = (s3dWord*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
-		*texel++ = (word)((*src)[0] * 65535.f);
-		*texel++ = (word)((*src)[1] * 65535.f);
-		*texel++ = (word)((*src)[2] * 65535.f);
-		*texel++ = (word)((*src)[3] * 65535.f);
+		*texel++ = (s3dWord)((*src)[0] * 65535.f);
+		*texel++ = (s3dWord)((*src)[1] * 65535.f);
+		*texel++ = (s3dWord)((*src)[2] * 65535.f);
+		*texel++ = (s3dWord)((*src)[3] * 65535.f);
 	}
 }
 
-void ColorUtility::ConvertToR16F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToR16F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	half* texel = (half*)outData;
-	for (unsigned int i = 0; i < numTexels; ++i, ++src)
-	{
-		*texel++ = (*src)[0];
-	}
-}
-
-void ColorUtility::ConvertToG16R16F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
-{
-	const unsigned int numTexels = width * height * depth;
-	const Vec4f* src = inRGBA;
-	half* texel = (half*)outData;
-	for (unsigned int i = 0; i < numTexels; ++i, ++src)
-	{
-		*texel++ = (*src)[0];
-		*texel++ = (*src)[1];
-	}
-}
-
-void ColorUtility::ConvertToA16B16G16R16F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
-{
-	const unsigned int numTexels = width * height * depth;
-	const Vec4f* src = inRGBA;
-	half* texel = (half*)outData;
-	for (unsigned int i = 0; i < numTexels; ++i, ++src)
-	{
-		*texel++ = (*src)[0];
-		*texel++ = (*src)[1];
-		*texel++ = (*src)[2];
-		*texel++ = (*src)[3];
-	}
-}
-
-void ColorUtility::ConvertToR32F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
-{
-	const unsigned int numTexels = width * height * depth;
-	const Vec4f* src = inRGBA;
-	float* texel = (float*)outData;
+	s3dHalf* texel = (s3dHalf*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
 		*texel++ = (*src)[0];
 	}
 }
 
-void ColorUtility::ConvertToG32R32F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToG16R16F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	float* texel = (float*)outData;
+	s3dHalf* texel = (s3dHalf*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
 		*texel++ = (*src)[0];
@@ -778,11 +741,11 @@ void ColorUtility::ConvertToG32R32F(const Vec4f * const inRGBA, byte * const out
 	}
 }
 
-void ColorUtility::ConvertToA32B32G32R32F(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+void ColorUtility::ConvertToA16B16G16R16F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
 {
 	const unsigned int numTexels = width * height * depth;
 	const Vec4f* src = inRGBA;
-	float* texel = (float*)outData;
+	s3dHalf* texel = (s3dHalf*)outData;
 	for (unsigned int i = 0; i < numTexels; ++i, ++src)
 	{
 		*texel++ = (*src)[0];
@@ -792,7 +755,44 @@ void ColorUtility::ConvertToA32B32G32R32F(const Vec4f * const inRGBA, byte * con
 	}
 }
 
-void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outData, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
+void ColorUtility::ConvertToR32F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+{
+	const unsigned int numTexels = width * height * depth;
+	const Vec4f* src = inRGBA;
+	float* texel = (float*)outData;
+	for (unsigned int i = 0; i < numTexels; ++i, ++src)
+	{
+		*texel++ = (*src)[0];
+	}
+}
+
+void ColorUtility::ConvertToG32R32F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+{
+	const unsigned int numTexels = width * height * depth;
+	const Vec4f* src = inRGBA;
+	float* texel = (float*)outData;
+	for (unsigned int i = 0; i < numTexels; ++i, ++src)
+	{
+		*texel++ = (*src)[0];
+		*texel++ = (*src)[1];
+	}
+}
+
+void ColorUtility::ConvertToA32B32G32R32F(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+{
+	const unsigned int numTexels = width * height * depth;
+	const Vec4f* src = inRGBA;
+	float* texel = (float*)outData;
+	for (unsigned int i = 0; i < numTexels; ++i, ++src)
+	{
+		*texel++ = (*src)[0];
+		*texel++ = (*src)[1];
+		*texel++ = (*src)[2];
+		*texel++ = (*src)[3];
+	}
+}
+
+void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, s3dByte * const outData, const unsigned int width, const unsigned int height, const unsigned int /*depth*/)
 {
 	// Algorithm inspired from http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/dxtc/doc/cuda_dxtc.pdf
 
@@ -873,17 +873,17 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 			rgb1[2] = Math::clamp(abs(rgb1[2]), 0.f, 1.f);
 
 			// R8G8B8A8 -> R5G6B6
-			word color0 =
-				((((byte)(rgb0[0] * 255.f)) >> 3) << 11) |
-				((((byte)(rgb0[1] * 255.f)) >> 2) << 5) |
-				((((byte)(rgb0[2] * 255.f)) >> 3));
-			word color1 =
-				((((byte)(rgb1[0] * 255.f)) >> 3) << 11) |
-				((((byte)(rgb1[1] * 255.f)) >> 2) << 5) |
-				((((byte)(rgb1[2] * 255.f)) >> 3));
+			s3dWord color0 =
+				((((s3dByte)(rgb0[0] * 255.f)) >> 3) << 11) |
+				((((s3dByte)(rgb0[1] * 255.f)) >> 2) << 5) |
+				((((s3dByte)(rgb0[2] * 255.f)) >> 3));
+			s3dWord color1 =
+				((((s3dByte)(rgb1[0] * 255.f)) >> 3) << 11) |
+				((((s3dByte)(rgb1[1] * 255.f)) >> 2) << 5) |
+				((((s3dByte)(rgb1[2] * 255.f)) >> 3));
 
 			// 4 pixels / byte (one row of the block), 4 columns => 4 bytes
-			byte bitmap[4];
+			s3dByte bitmap[4];
 			memset(&bitmap, 0, sizeof(bitmap));
 
 			// if the colours are identical, it's faster
@@ -925,7 +925,7 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 			{
 				if (color0 > color1)
 				{
-					word tmp = color0;
+					s3dWord tmp = color0;
 					color0 = color1;
 					color1 = tmp;
 				}
@@ -960,21 +960,21 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, byte * const outDat
 					}
 			}
 
-			qword blockData = 0;
-			((word*)&blockData)[0] = color0;
-			((word*)&blockData)[1] = color1;
-			((word*)&blockData)[2] = (((word)bitmap[1]) << 8) | bitmap[0];
-			((word*)&blockData)[3] = (((word)bitmap[3]) << 8) | bitmap[2];
-			memcpy(outData + (blockX + blockY * numBlocksX) * sizeof(qword), &blockData, sizeof(qword));
+			s3dQword blockData = 0;
+			((s3dWord*)&blockData)[0] = color0;
+			((s3dWord*)&blockData)[1] = color1;
+			((s3dWord*)&blockData)[2] = (((s3dWord)bitmap[1]) << 8) | bitmap[0];
+			((s3dWord*)&blockData)[3] = (((s3dWord)bitmap[3]) << 8) | bitmap[2];
+			memcpy(outData + (blockX + blockY * numBlocksX) * sizeof(s3dQword), &blockData, sizeof(s3dQword));
 		}
 }
 
-void ColorUtility::ConvertToDXT3(const Vec4f * const /*inRGBA*/, byte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
+void ColorUtility::ConvertToDXT3(const Vec4f * const /*inRGBA*/, s3dByte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }
 
-void ColorUtility::ConvertToDXT5(const Vec4f * const /*inRGBA*/, byte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
+void ColorUtility::ConvertToDXT5(const Vec4f * const /*inRGBA*/, s3dByte * const /*outData*/, const unsigned int /*width*/, const unsigned int /*height*/, const unsigned int /*depth*/)
 {
 	assert(false); // TODO
 }

@@ -2,7 +2,7 @@
  *	This file is part of the "GITechDemo" application
  *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *		File:	RenderPass.cpp
+ *		File:	HDRDownsampleForBloomPass.h
  *		Author:	Bogdan Iftode
  *
  *	This program is free software: you can redistribute it and/or modify
@@ -19,49 +19,22 @@
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "stdafx.h"
-
-#include <Renderer.h>
-#include <Profiler.h>
-using namespace Synesthesia3D;
-
-#include "GITechDemo.h"
+#ifndef HDR_DOWNSAMPLE_FOR_BLOOM_PASS_H_
+#define HDR_DOWNSAMPLE_FOR_BLOOM_PASS_H_
 
 #include "RenderPass.h"
-using namespace GITechDemoApp;
 
-RenderPass::RenderPass(const char* const passName, RenderPass* const parentPass)
-	: m_szPassName(passName)
+namespace GITechDemoApp
 {
-	if(parentPass)
-		parentPass->AddChildPass(this);
-}
+	class RenderTarget;
 
-RenderPass::~RenderPass()
-{}
-
-void RenderPass::AddChildPass(RenderPass* const childPass)
-{
-	m_arrChildList.push_back(childPass);
-}
-
-void RenderPass::Draw()
-{
-	PUSH_PROFILE_MARKER_WITH_GPU_QUERY(GetPassName());
-	DrawChildren();
-	POP_PROFILE_MARKER();
-}
-
-void RenderPass::DrawChildren()
-{
-	for (unsigned int child = 0; child < m_arrChildList.size(); child++)
+	class HDRDownsampleForBloomPass : public RenderPass
 	{
-		if (m_arrChildList[child] != nullptr)
-		{
-			PUSH_PROFILE_MARKER_WITH_GPU_QUERY(m_arrChildList[child]->GetPassName());
-			m_arrChildList[child]->Update(((GITechDemo*)AppMain)->GetDeltaTime());
-			m_arrChildList[child]->Draw();
-			POP_PROFILE_MARKER();
-		}
-	}
+		IMPLEMENT_RENDER_PASS(HDRDownsampleForBloomPass)
+
+	private:
+		void DownsampleForBloomPass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest);
+	};
 }
+
+#endif //HDR_DOWNSAMPLE_FOR_BLOOM_PASS_H_

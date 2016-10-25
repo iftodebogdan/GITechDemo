@@ -26,6 +26,7 @@
 #include <Texture.h>
 #include <RenderState.h>
 #include <RenderTarget.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "BloomPass.h"
@@ -87,24 +88,24 @@ void BloomPass::BloomBrightnessFilter()
 	// Not necesarry
 	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-	const SamplerFilter samplerFilter = ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->GetFilter();
-	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+	const SamplerFilter samplerFilter = ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->GetFilter();
+	ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 
 	f2HalfTexelOffset = Vec2f(
 		0.5f / BloomBuffer[0]->GetRenderTarget()->GetWidth(),
 		0.5f / BloomBuffer[0]->GetRenderTarget()->GetHeight()
 		);
 	f2TexelSize = Vec2f(
-		1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
-		1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
+		1.f / HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
+		1.f / HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight()
 		);
-	texSource = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
+	texSource = HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0);
 
 	DownsampleShader.Enable();
 	RenderContext->DrawVertexBuffer(FullScreenTri);
 	DownsampleShader.Disable();
 
-	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(samplerFilter);
+	ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(samplerFilter);
 
 	BloomBuffer[0]->Disable();
 

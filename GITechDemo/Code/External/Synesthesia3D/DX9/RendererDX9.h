@@ -43,6 +43,8 @@
 
 namespace Synesthesia3D
 {
+	class ProfilerDX9;
+
 	class RendererDX9 : public Renderer
 	{
 		RendererDX9();
@@ -54,11 +56,12 @@ namespace Synesthesia3D
 
 		// Used to create the D3DDevice
 		IDirect3D9*				m_pD3D;
+
 		// Our rendering device
 		IDirect3DDevice9*		m_pd3dDevice;
 		D3DPRESENT_PARAMETERS	m_ePresentParameters;
 		bool					m_bDeviceLost;
-		
+
 	public:
 		static	RendererDX9* const	GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
 
@@ -82,12 +85,11 @@ namespace Synesthesia3D
 		void		Clear(const Vec4f rgba, const float z, const unsigned int stencil);
 		void		DrawVertexBuffer(VertexBuffer* const vb);
 
-		void		PushProfileMarker(const char* const label);
-		void		PopProfileMarker();
-
 		IDirect3DDevice9* const	GetDevice() const { return m_pd3dDevice; };
 		IDirect3D9* const		GetDriver() const { return m_pD3D; }
 		const bool		 		IsDeviceLost() const { return m_bDeviceLost; }
+
+		ProfilerDX9* const		GetProfiler() const { return (ProfilerDX9*)m_pProfiler; }
 
 		friend class Renderer;
 	};

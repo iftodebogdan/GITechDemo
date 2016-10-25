@@ -43,7 +43,7 @@ Buffer::Buffer(const unsigned int elementCount, const unsigned int elementSize, 
 	// Texture::GetMipData() for the first time.
 	if (elementCount > 0 && elementSize > 0 && usage != BU_RENDERTAGET)
 	{
-		m_pData = new byte[m_nSize];
+		m_pData = new s3dByte[m_nSize];
 		assert(m_pData != nullptr);
 		memset(m_pData, 0, m_nSize);
 	}
@@ -74,7 +74,7 @@ const unsigned int Buffer::GetSize() const
 	return m_nSize;
 }
 
-byte* Buffer::GetData() const
+s3dByte* Buffer::GetData() const
 {
 	return m_pData;
 }

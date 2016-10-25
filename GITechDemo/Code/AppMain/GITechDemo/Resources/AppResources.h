@@ -95,6 +95,7 @@ namespace GITechDemoApp
 	CREATE_RENDER_TARGET_HANDLE(VolumetricLightQuarterBuffer1);
 	CREATE_RENDER_TARGET_HANDLE(HDRDownsampleQuarterBuffer);
 	CREATE_RENDER_TARGET_HANDLE(HDRDownsampleSixteenthBuffer);
+	CREATE_RENDER_TARGET_HANDLE(HDRDownsampleForBloomBuffer);
 	CREATE_RENDER_TARGET_HANDLE(AverageLuminanceBuffer0);
 	CREATE_RENDER_TARGET_HANDLE(AverageLuminanceBuffer1);
 	CREATE_RENDER_TARGET_HANDLE(AverageLuminanceBuffer2);
@@ -162,32 +163,32 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(f2HalfTexelOffset,		Vec2f		);
 	CREATE_SHADER_CONSTANT_HANDLE(f2TexelSize,				Vec2f		);
 	CREATE_SHADER_CONSTANT_HANDLE(f2TexSize,				Vec2f		);
-	CREATE_SHADER_CONSTANT_HANDLE(texSource,				sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texDiffuse,				sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texDepthBuffer,			sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texNormalBuffer,			sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texShadowMap,				sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texLumaInput,				sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texSource,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texDiffuse,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texDepthBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texNormalBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texShadowMap,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texLumaInput,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(f3LightDir,				Vec3f		);
 	CREATE_SHADER_CONSTANT_HANDLE(nKernel,					int			);
 	CREATE_SHADER_CONSTANT_HANDLE(bSingleChannelCopy,		bool		);
 	CREATE_SHADER_CONSTANT_HANDLE(nSampleCount,				int			);
 
 	//	- GBufferGeneration.hlsl
-	CREATE_SHADER_CONSTANT_HANDLE(texNormal,				sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texNormal,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(bHasNormalMap,			bool		);
-	CREATE_SHADER_CONSTANT_HANDLE(texSpec,					sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texSpec,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(bHasSpecMap,				bool		);
-	CREATE_SHADER_CONSTANT_HANDLE(texMatType,				sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texRoughness,				sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texMatType,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texRoughness,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fSpecIntensity,			float		);
 
 	//	- DirectionalLight.hlsl
-	CREATE_SHADER_CONSTANT_HANDLE(texMaterialBuffer,		sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texIrradianceMap,			samplerCUBE	);
-	CREATE_SHADER_CONSTANT_HANDLE(texEnvMap,				samplerCUBE	);
+	CREATE_SHADER_CONSTANT_HANDLE(texMaterialBuffer,		s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texIrradianceMap,			s3dSamplerCUBE	);
+	CREATE_SHADER_CONSTANT_HANDLE(texEnvMap,				s3dSamplerCUBE	);
 	CREATE_SHADER_CONSTANT_HANDLE(nBRDFModel,				int			);
-	CREATE_SHADER_CONSTANT_HANDLE(texDiffuseBuffer,			sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texDiffuseBuffer,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fAmbientFactor,			float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fIrradianceFactor,		float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fReflectionFactor,		float		);
@@ -198,7 +199,7 @@ namespace GITechDemoApp
 
 	//	- Skybox.hlsl
 	CREATE_SHADER_CONSTANT_HANDLE(f44SkyViewProjMat,		Matrix44f	);
-	CREATE_SHADER_CONSTANT_HANDLE(texSkyCube,				samplerCUBE	);
+	CREATE_SHADER_CONSTANT_HANDLE(texSkyCube,				s3dSamplerCUBE	);
 	CREATE_SHADER_CONSTANT_HANDLE(fSunRadius,				float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fSunBrightness,			float		);
 
@@ -217,8 +218,8 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fRaymarchDistanceLimit,	float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fLightIntensity,			float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fMultScatterIntensity,	float		);
-	CREATE_SHADER_CONSTANT_HANDLE(texDitherMap,				sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texNoise,					sampler3D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texDitherMap,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texNoise,					s3dSampler3D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fElapsedTime,				float		);
 	CREATE_SHADER_CONSTANT_HANDLE(f3FogBox,					Vec3f		);
 	CREATE_SHADER_CONSTANT_HANDLE(f3FogSpeed,				Vec3f		);
@@ -229,9 +230,9 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(f44RSMWorldViewProjMat,	Matrix44f	);
 
 	//	- RSMCommon.hlsli
-	CREATE_SHADER_CONSTANT_HANDLE(texRSMFluxBuffer,			sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texRSMNormalBuffer,		sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texRSMDepthBuffer,		sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texRSMFluxBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texRSMNormalBuffer,		s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texRSMDepthBuffer,		s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(f3RSMKernel,				Vec3f*		);
 	CREATE_SHADER_CONSTANT_HANDLE(f44RSMProjMat,			Matrix44f	);
 	CREATE_SHADER_CONSTANT_HANDLE(f44RSMInvProjMat,			Matrix44f	);
@@ -249,7 +250,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(f2AvgLumaClamp,			Vec2f		);
 	
 	//	- HDRToneMapping.hlsl
-	CREATE_SHADER_CONSTANT_HANDLE(texAvgLuma,				sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texAvgLuma,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fExposureBias,			float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fShoulderStrength,		float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fLinearStrength,			float		);
@@ -262,7 +263,7 @@ namespace GITechDemoApp
 
 	//	- LumaAdapt.hlsl
 	CREATE_SHADER_CONSTANT_HANDLE(fLumaAdaptSpeed,			float		);
-	CREATE_SHADER_CONSTANT_HANDLE(texLumaTarget,			sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texLumaTarget,			s3dSampler2D	);
 
 	//	- Downsample.hlsl
 	CREATE_SHADER_CONSTANT_HANDLE(fBrightnessThreshold,		float		);
@@ -291,7 +292,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fFStop,					float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fCoC,						float		);
 	CREATE_SHADER_CONSTANT_HANDLE(bAutofocus,				bool		);
-	CREATE_SHADER_CONSTANT_HANDLE(texTargetFocus,			sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texTargetFocus,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fApertureSize,			float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fHighlightThreshold,		float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fHighlightGain,			float		);
@@ -317,7 +318,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(nMotionBlurNumSamples,	int			);
 
 	//	- SphericalLensFlareFeatures.hlsl
-	CREATE_SHADER_CONSTANT_HANDLE(texGhostColorLUT,			sampler1D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texGhostColorLUT,			s3dSampler1D	);
 	CREATE_SHADER_CONSTANT_HANDLE(nGhostSamples,			int			);
 	CREATE_SHADER_CONSTANT_HANDLE(fGhostDispersal,			float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fGhostRadialWeightExp,	float		);
@@ -327,9 +328,9 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_HANDLE(fShiftFactor,				float		);
 
 	//	- LensFlareApply.hlsl
-	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareFeatures,		sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareDirt,			sampler2D	);
-	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareStarBurst,	sampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareFeatures,		s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareDirt,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_HANDLE(texLensFlareStarBurst,	s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_HANDLE(fLensDirtIntensity,		float		);
 	CREATE_SHADER_CONSTANT_HANDLE(fLensStarBurstIntensity,	float		);
 	CREATE_SHADER_CONSTANT_HANDLE(f33LensFlareStarBurstMat,	Matrix33f	);

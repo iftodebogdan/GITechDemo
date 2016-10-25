@@ -26,7 +26,7 @@
 //////////////////////////
 // Some useful defines	//
 //////////////////////////
-#define CREATE_ROOT_PASS() GITechDemoApp::RenderPass GITechDemoApp::RenderScheme::RootPass("Root Pass", nullptr);
+#define CREATE_ROOT_PASS() GITechDemoApp::RenderPass GITechDemoApp::RenderScheme::RootPass("Frame", nullptr);
 #define ROOT_PASS RenderScheme::GetRootPass()
 #define ADD_RENDER_PASS(Object, Class, Name, Parent) namespace GITechDemoApp { Class Object ( Name, & Parent ); }
 ///////////////////////////////////////////////////////////
@@ -72,6 +72,10 @@ CREATE_ROOT_PASS()
 		#include "DirectionalIndirectLightPass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Directional Indirect Light Pass", LIGHTING_PASS)
 	
+		// Downsample the light accumulation buffer here, because we don't want the volumetric light to be bloomed
+		#include "HDRDownsampleForBloomPass.h"
+		ADD_RENDER_PASS(HDR_DOWNSAMPLE_FOR_BLOOM_PASS, HDRDownsampleForBloomPass, "HDR Downsample For Bloom Pass", LIGHTING_PASS)
+
 		// Volumetric directional light
 		#include "DirectionalLightVolumePass.h"
 		ADD_RENDER_PASS(DIRECTIONAL_LIGHT_VOLUME_PASS, DirectionalLightVolumePass, "Directional Light Volume Pass", LIGHTING_PASS)

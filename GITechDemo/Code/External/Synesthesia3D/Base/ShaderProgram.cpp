@@ -28,6 +28,7 @@
 #include "ShaderInput.h"
 #include "Texture.h"
 #include "ResourceManager.h"
+#include "Profiler.h"
 using namespace Synesthesia3D;
 
 #include "Utility/Hash.h"

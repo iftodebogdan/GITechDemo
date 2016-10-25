@@ -26,6 +26,7 @@
 #include "TextureDX9.h"
 #include "RendererDX9.h"
 #include "MappingsDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 IDirect3DSurface9* RenderTargetDX9::ms_pBBColorSurfBkp = nullptr;
@@ -37,8 +38,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	HRESULT hr;
 
 	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
@@ -56,8 +55,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
@@ -66,8 +63,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	HRESULT hr;
 
 	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
@@ -85,8 +80,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
@@ -96,8 +89,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	HRESULT hr;
 
 	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
@@ -115,8 +106,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
@@ -126,8 +115,6 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 	, m_pColorSurface(nullptr)
 	, m_pDepthSurface(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	HRESULT hr;
 
 	m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
@@ -145,14 +132,10 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
 		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTargetDX9::~RenderTargetDX9()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Unbind();
 
 	if (m_pColorSurface)
@@ -160,14 +143,10 @@ RenderTargetDX9::~RenderTargetDX9()
 		delete[] m_pColorSurface;
 		m_pColorSurface = nullptr;
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTargetDX9::Enable()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -196,14 +175,10 @@ void RenderTargetDX9::Enable()
 	assert(SUCCEEDED(hr));
 
 	RenderTarget::Enable();
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTargetDX9::Disable()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	RenderTarget::Disable();
 
 	if (!GetActiveRenderTarget())
@@ -236,8 +211,6 @@ void RenderTargetDX9::Disable()
 		assert(refCount == 0);
 		ms_pBBDepthSurfBkp = nullptr;
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture)
@@ -297,7 +270,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 	{
 		memcpy(
 			texture->GetMipData(0) + i * texture->GetWidth() * texture->GetElementSize(),
-			(byte*)rect.pBits + i * rect.Pitch,
+			(s3dByte*)rect.pBits + i * rect.Pitch,
 			texture->GetWidth() * texture->GetElementSize()
 			);
 	}
@@ -337,8 +310,6 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 
 void RenderTargetDX9::Bind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	HRESULT hr;
 
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
@@ -354,14 +325,10 @@ void RenderTargetDX9::Bind()
 		hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
 		assert(SUCCEEDED(hr));
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTargetDX9::Unbind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	unsigned int refCount = 0;
 
 	if (ms_pBBColorSurfBkp)
@@ -394,6 +361,4 @@ void RenderTargetDX9::Unbind()
 	}
 	// Inconsistent between the retail and debug DX9 runtimes
 	//assert(refCount == 1);
-
-	POP_PROFILE_MARKER();
 }

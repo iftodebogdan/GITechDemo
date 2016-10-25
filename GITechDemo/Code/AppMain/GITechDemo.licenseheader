@@ -1,4 +1,4 @@
-﻿extensions: .cpp .h .inl .hlsl
+﻿extensions: .cpp .h .inl .hlsl .hlsli
 /*=============================================================================
  *	This file is part of the "%Project%" application
  *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>

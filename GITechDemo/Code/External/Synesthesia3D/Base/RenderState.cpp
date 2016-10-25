@@ -24,6 +24,7 @@
 
 #include "RenderState.h"
 #include "Renderer.h"
+#include "Profiler.h"
 using namespace Synesthesia3D;
 
 RenderState::RenderState()
@@ -34,8 +35,6 @@ RenderState::~RenderState()
 
 void RenderState::Reset()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	// Set defaults
 	SetColorBlendEnabled(false);
 	SetColorSrcBlend(BLEND_ONE);
@@ -73,8 +72,6 @@ void RenderState::Reset()
 	SetSRGBWriteEnabled(false);
 
 	Flush();
-
-	POP_PROFILE_MARKER();
 }
 
 const bool RenderState::SetAlphaTestEnabled(const bool enabled)

@@ -25,15 +25,12 @@
 #include "RendererDX9.h"
 #include "MappingsDX9.h"
 #include "RenderStateDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 RenderStateDX9::RenderStateDX9()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Reset();
-
-	POP_PROFILE_MARKER();
 }
 
 RenderStateDX9::~RenderStateDX9()
@@ -85,22 +82,15 @@ const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsign
 
 const bool RenderStateDX9::SetScissor(const Vec2i size, const Vec2i offset)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	const RECT scissorRect = { offset[0], offset[1], offset[0] + size[0], offset[1] + size[1] };
 	HRESULT hr = device->SetScissorRect(&scissorRect);
 	assert(SUCCEEDED(hr));
-
-	POP_PROFILE_MARKER();
-
 	return SUCCEEDED(hr);
 }
 
 void RenderStateDX9::Reset()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 	DWORD value;
@@ -233,14 +223,10 @@ void RenderStateDX9::Reset()
 
 
 	RenderState::Reset();
-
-	POP_PROFILE_MARKER();
 }
 
 const bool RenderStateDX9::Flush()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = E_FAIL;
 
@@ -534,8 +520,6 @@ const bool RenderStateDX9::Flush()
 		else
 			return false;
 	}
-
-	POP_PROFILE_MARKER();
 
 	return true;
 }

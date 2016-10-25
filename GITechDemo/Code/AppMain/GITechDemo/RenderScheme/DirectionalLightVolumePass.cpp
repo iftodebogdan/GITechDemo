@@ -26,6 +26,7 @@
 #include <RenderState.h>
 #include <RenderTarget.h>
 #include <Texture.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "GITechDemo.h"

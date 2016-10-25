@@ -138,6 +138,9 @@ namespace GITechDemoApp
 	extern int FULLSCREEN_REFRESH_RATE;
 	extern bool VSYNC_ENABLED;
 
+	// Profiling
+	extern bool GPU_PROFILE_SCREEN;
+
 	// Some misc. resources
 	extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
 	extern const unsigned int RSM_SIZE;
@@ -239,6 +242,9 @@ namespace GITechDemoApp
 	// HDR downsampled buffer (1/4 and 1/16 resolution)
 	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(HDRDownsampleQuarterBuffer, PF_A16B16G16R16F, 0.5f, 0.5f, PF_NONE);
 	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(HDRDownsampleSixteenthBuffer, PF_A16B16G16R16F, 0.25f, 0.25f, PF_NONE);
+
+	// HDR downsampled buffer for bloom pass (1/16 resolution, no volumetric lighting)
+	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(HDRDownsampleForBloomBuffer, PF_A16B16G16R16F, 0.25f, 0.25f, PF_NONE);
 
 	// Average luminance buffers (64x64, 16x16, 4x4, two 1x1, one target luma, one current luma)
 	CREATE_STATIC_RENDER_TARGET_OBJECT(AverageLuminanceBuffer0, PF_R16F, 64u, 64u, PF_NONE);
@@ -359,8 +365,8 @@ namespace GITechDemoApp
 	/* Volumetric directional light parameters */
 	CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,				int,			32						);
 	CREATE_SHADER_CONSTANT_OBJECT(fSampleDistrib,			float,			0.5f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			0.25f					);
-	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,	float,			0.02f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,			float,			5.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,	float,			0.5f					);
 	CREATE_SHADER_CONSTANT_OBJECT(f3FogSpeed,				Vec3f,			Vec3f(20.f, -10.f, 20.f));
 	CREATE_SHADER_CONSTANT_OBJECT(fFogVerticalFalloff,		float,			25.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fBlurDepthFalloff,		float,			0.0025f					);
@@ -400,9 +406,9 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed,			float,			1.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fFilmGrainAmount,			float,			0.003f					);
 	// Bloom
-	CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,		float,			0.6f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,		float,			0.5f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,				float,			1.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,			float,			0.75f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,			float,			1.f						);
 	// FXAA
 	CREATE_SHADER_CONSTANT_OBJECT(fFxaaSubpix,				float,			0.75f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThreshold,		float,			0.166f					);
@@ -454,25 +460,25 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(f44ViewProjMat,				Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewProjMat,			Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(texDiffuse,					sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texNormal,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texDiffuse,					s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texNormal,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(bHasNormalMap,				bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(texSpec,						sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texSpec,						s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(bHasSpecMap,					bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(texMatType,					sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texRoughness,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texMatType,					s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texRoughness,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(fSpecIntensity,				float		);
 	CREATE_SHADER_CONSTANT_OBJECT(f2HalfTexelOffset,			Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(texDepthBuffer,				sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texMaterialBuffer,			sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texIrradianceMap,				samplerCUBE	);
-	CREATE_SHADER_CONSTANT_OBJECT(texEnvMap,					samplerCUBE	);
+	CREATE_SHADER_CONSTANT_OBJECT(texDepthBuffer,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texMaterialBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texIrradianceMap,				s3dSamplerCUBE	);
+	CREATE_SHADER_CONSTANT_OBJECT(texEnvMap,					s3dSamplerCUBE	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44SkyViewProjMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(texSkyCube,					samplerCUBE	);
-	CREATE_SHADER_CONSTANT_OBJECT(texDiffuseBuffer,				sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texSkyCube,					s3dSamplerCUBE	);
+	CREATE_SHADER_CONSTANT_OBJECT(texDiffuseBuffer,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44InvProjMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(texNormalBuffer,				sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texShadowMap,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texNormalBuffer,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texShadowMap,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f2OneOverShadowMapSize,		Vec2f		);
 	CREATE_SHADER_CONSTANT_OBJECT(f44ViewMat,					Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44InvViewMat,				Matrix44f	);
@@ -489,41 +495,41 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(f44RSMWorldViewProjMat,		Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewMat,			Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44LightViewProjMat,			Matrix44f*	);
-	CREATE_SHADER_CONSTANT_OBJECT(texRSMFluxBuffer,				sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texRSMNormalBuffer,			sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texRSMDepthBuffer,			sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texRSMFluxBuffer,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texRSMNormalBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texRSMDepthBuffer,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f3RSMKernel,					Vec3f*		);
 	CREATE_SHADER_CONSTANT_OBJECT(f44RSMProjMat,				Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44RSMInvProjMat,				Matrix44f	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRSMViewMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(texLumaInput,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLumaInput,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(bInitialLumaPass,				bool		);
 	CREATE_SHADER_CONSTANT_OBJECT(bFinalLumaPass,				bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(texAvgLuma,					sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texSource,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texAvgLuma,					s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texSource,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f2TexelSize,					Vec2f		);
 	CREATE_SHADER_CONSTANT_OBJECT(fFrameTime,					float		);
-	CREATE_SHADER_CONSTANT_OBJECT(texLumaTarget,				sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLumaTarget,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(bApplyBrightnessFilter,		bool		);
 	CREATE_SHADER_CONSTANT_OBJECT(nKernel,						int			);
 	CREATE_SHADER_CONSTANT_OBJECT(nDownsampleFactor,			int			);
 	CREATE_SHADER_CONSTANT_OBJECT(f2TexSize,					Vec2f		);
 	CREATE_SHADER_CONSTANT_OBJECT(bAdjustIntensity,				bool		);
 	CREATE_SHADER_CONSTANT_OBJECT(f2LinearDepthEquation,		Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(texTargetFocus,				sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texTargetFocus,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f44PrevViewProjMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(texGhostColorLUT,				sampler1D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareFeatures,			sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareDirt,				sampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareStarBurst,		sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texGhostColorLUT,				s3dSampler1D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareFeatures,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareDirt,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareStarBurst,		s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f33LensFlareStarBurstMat,		Matrix33f	);
 	CREATE_SHADER_CONSTANT_OBJECT(bSingleChannelCopy,			bool		);
 	CREATE_SHADER_CONSTANT_OBJECT(f3CameraPositionLightVS,		Vec3f		);
 	CREATE_SHADER_CONSTANT_OBJECT(fRaymarchDistanceLimit,		float		);
-	CREATE_SHADER_CONSTANT_OBJECT(texDitherMap,					sampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texDitherMap,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(f2BlurDir,					Vec2f		);
 	CREATE_SHADER_CONSTANT_OBJECT(f2DepthHalfTexelOffset,		Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(texNoise,						sampler3D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texNoise,						s3dSampler3D	);
 	CREATE_SHADER_CONSTANT_OBJECT(fElapsedTime,					float		);
 	CREATE_SHADER_CONSTANT_OBJECT(f3FogBox,						Vec3f		);
 	//--------------------------------------------------------------------------
@@ -695,6 +701,9 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Text color R",				"HUD text color - red component",										"HUD",						f3TextColor.GetCurrentValue()[0],			0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Text color G",				"HUD text color - green component",										"HUD",						f3TextColor.GetCurrentValue()[1],			0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Text color B",				"HUD text color - blue component",										"HUD",						f3TextColor.GetCurrentValue()[2],			0.1f);
+
+	// Profiling
+	CREATE_ARTIST_PARAMETER_OBJECT("Display GPU timings",		"Toggle the display of GPU timings (debug and profile only)",			"Profiler",					GPU_PROFILE_SCREEN,							1.f);
 
 	// Window properties
 	CREATE_ARTIST_PARAMETER_OBJECT("Fullscreen enabled",		"Toggle between window mode and fulscreen mode",						"Window",					FULLSCREEN_ENABLED,							1.f);

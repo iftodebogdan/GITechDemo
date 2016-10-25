@@ -71,7 +71,7 @@ HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
 			error = FT_Set_Char_Size(
 				face,		/* handle to face object			*/
 				0,			/* char_width in 1/64th of points	*/
-				14 * 64,	/* char_height in 1/64th of points	*/
+				10 * 64,	/* char_height in 1/64th of points	*/
 				92,			/* horizontal device resolution		*/
 				92);		/* vertical device resolution		*/
 			assert(error == FT_Err_Ok);
@@ -90,7 +90,7 @@ HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
 				m_pGlyphCache[i].width = slot->bitmap.width;
 				m_pGlyphCache[i].rows = slot->bitmap.rows;
 				m_pGlyphCache[i].advance_x = slot->advance.x;
-				m_pGlyphCache[i].advance_y = face->height;
+				m_pGlyphCache[i].advance_y = face->height / 2;
 			}
 
 			error = FT_Done_Face(face);

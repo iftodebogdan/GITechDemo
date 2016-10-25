@@ -399,6 +399,12 @@
     <ClInclude Include="Utility\Debug.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Base\Profiler.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="DX9\ProfilerDX9.h">
+      <Filter>DX9</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -515,6 +521,12 @@
     </ClCompile>
     <ClCompile Include="Utility\Debug.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Profiler.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DX9\ProfilerDX9.cpp">
+      <Filter>DX9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

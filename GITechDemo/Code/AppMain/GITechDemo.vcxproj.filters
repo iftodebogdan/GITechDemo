@@ -139,6 +139,9 @@
     <ClInclude Include="GITechDemo\Resources\AppResources.h">
       <Filter>App\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -233,6 +236,9 @@
     </ClCompile>
     <ClCompile Include="GITechDemo\Resources\AppResources.cpp">
       <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp">
+      <Filter>App\Render Schemes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

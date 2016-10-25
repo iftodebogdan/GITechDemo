@@ -25,6 +25,7 @@
 #include "RendererDX9.h"
 #include "MappingsDX9.h"
 #include "VertexFormatDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 VertexFormatDX9::VertexFormatDX9(const unsigned int attributeCount)
@@ -34,17 +35,11 @@ VertexFormatDX9::VertexFormatDX9(const unsigned int attributeCount)
 
 VertexFormatDX9::~VertexFormatDX9()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Unbind();
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexFormatDX9::Enable()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	
 	//Sync our vertex declaration before enabling it
@@ -53,15 +48,12 @@ void VertexFormatDX9::Enable()
 
 	HRESULT hr = device->SetVertexDeclaration(m_pVertexDeclaration);
 	S3D_VALIDATE_HRESULT(hr);
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexFormatDX9::Disable()
 {
 	//Apparently this is not needed, resulting in a warning when using the debug DX9 libraries
 	/*
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
@@ -79,15 +71,11 @@ void VertexFormatDX9::Disable()
 
 	hr = device->SetVertexDeclaration(0);
 	S3D_VALIDATE_HRESULT(hr);
-
-	POP_PROFILE_MARKER();
 	*/
 }
 
 void VertexFormatDX9::Update()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	ULONG refCount = 0;
 	if (m_pVertexDeclaration)
 		refCount = m_pVertexDeclaration->Release();
@@ -114,28 +102,18 @@ void VertexFormatDX9::Update()
 
 	HRESULT hr = device->CreateVertexDeclaration(m_pVertexElements, &m_pVertexDeclaration);
 	S3D_VALIDATE_HRESULT(hr);
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexFormatDX9::Bind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Update();
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexFormatDX9::Unbind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	ULONG refCount = 0;
 	if(m_pVertexDeclaration)
 		refCount = m_pVertexDeclaration->Release();
 	assert(refCount == 0);
 	m_pVertexDeclaration = nullptr;
-
-	POP_PROFILE_MARKER();
 }

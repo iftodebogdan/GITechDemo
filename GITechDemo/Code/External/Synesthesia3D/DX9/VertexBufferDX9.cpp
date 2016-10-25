@@ -28,6 +28,7 @@
 #include "VertexFormatDX9.h"
 #include "VertexBufferDX9.h"
 #include "IndexBufferDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 VertexBufferDX9::VertexBufferDX9(VertexFormatDX9* const vertexFormat, const unsigned int vertexCount, IndexBufferDX9* const indexBuffer, const BufferUsage usage)
@@ -36,26 +37,16 @@ VertexBufferDX9::VertexBufferDX9(VertexFormatDX9* const vertexFormat, const unsi
 	, m_pTempBuffer(nullptr)
 {
 	if (vertexCount != 0)
-	{
-		PUSH_PROFILE_MARKER(__FUNCSIG__);
 		Bind();
-		POP_PROFILE_MARKER();
-	}
 }
 
 VertexBufferDX9::~VertexBufferDX9()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Unbind();
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Enable(const unsigned int offset)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(offset < GetElementCount());
 
 	//Enable the proper vertex format for our vertex buffer
@@ -68,14 +59,10 @@ void VertexBufferDX9::Enable(const unsigned int offset)
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->SetStreamSource(0, m_pVertexBuffer, offset * m_nElementSize, m_pVertexFormat->GetStride());
 	S3D_VALIDATE_HRESULT(hr);
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Disable()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -101,33 +88,23 @@ void VertexBufferDX9::Disable()
 	//Disable our vertex format
 	assert(m_pVertexFormat != nullptr);
 	m_pVertexFormat->Disable();
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Lock(const BufferLocking lockMode)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//The pointer to the locked data is saved for future use
 	assert(m_pTempBuffer == nullptr);
 	HRESULT hr = m_pVertexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingDX9[lockMode]);
 	S3D_VALIDATE_HRESULT(hr);
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Unlock()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//Unlock the vertex data
 	assert(m_pTempBuffer != nullptr);
 	HRESULT hr = m_pVertexBuffer->Unlock();
 	S3D_VALIDATE_HRESULT(hr);
 	m_pTempBuffer = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Update()
@@ -139,8 +116,6 @@ void VertexBufferDX9::Update()
 
 void VertexBufferDX9::Bind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = device->CreateVertexBuffer((UINT)m_nSize, BufferUsageDX9[m_eBufferUsage], 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
 	S3D_VALIDATE_HRESULT(hr);
@@ -148,19 +123,13 @@ void VertexBufferDX9::Bind()
 	Lock(BL_WRITE_ONLY);
 	Update();
 	Unlock();
-
-	POP_PROFILE_MARKER();
 }
 
 void VertexBufferDX9::Unbind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	ULONG refCount = 0;
 	if(m_pVertexBuffer)
 		refCount = m_pVertexBuffer->Release();
 	assert(refCount == 0);
 	m_pVertexBuffer = nullptr;
-
-	POP_PROFILE_MARKER();
 }

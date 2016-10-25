@@ -30,6 +30,7 @@
 #include <VertexBuffer.h>
 #include <IndexBuffer.h>
 #include <VertexFormat.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "Framework.h"
@@ -59,6 +60,8 @@ namespace GITechDemoApp
 	int FULLSCREEN_RESOLUTION_Y = 0;
 	int FULLSCREEN_REFRESH_RATE = 0;
 	bool VSYNC_ENABLED = false;
+
+	bool GPU_PROFILE_SCREEN = false;
 }
 
 namespace GITechDemoApp
@@ -292,8 +295,6 @@ void GITechDemo::Update(const float fDeltaTime)
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;
-
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
 
 	int cLeft, cTop, cRight, cBottom;
 	Framework* const pFW = Framework::GetInstance();
@@ -614,17 +615,15 @@ void GITechDemo::Update(const float fDeltaTime)
 				perlinPos[2] = perlinPos[2] - floor(perlinPos[2]);
 
 				m_tCamera.vPos = -Vec3f(
-					((SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) * perlinPos[0] + SceneAABB.getMin()[0]),
-					((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) * perlinPos[1] + SceneAABB.getMin()[1]),
-					((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2])
+					((SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) * perlinPos[0] + SceneAABB.getMin()[0]) * 1.5f,
+					((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) * (perlinPos[1] - 0.15f) + SceneAABB.getMin()[1]),
+					((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2]) * 0.9f
 					);
 
-				Vec3f sponzaCenter(
-					(SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) / 2.f + SceneAABB.getMin()[0],
-					((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) / 2.f + SceneAABB.getMin()[1]) / 2.f,
-					(SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) / 2.f + SceneAABB.getMin()[2]);
-				Vec3f zAxis = makeNormal(Vec3f(sponzaCenter + m_tCamera.vPos));
-				//static Vec3f upVec = abs(zAxis[1]) == 1.f ? Vec3f(0.f, 0.f, 1.f) : Vec3f(0.f, 1.f, 0.f);
+				Vec3f lookAtPos = f3LightDir.GetCurrentValue() * 1500.f;
+				lookAtPos[1] = gmtl::Math::Max(((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) / 1.75f + SceneAABB.getMin()[1]) / 1.75f, -m_tCamera.vPos[1]);
+
+				Vec3f zAxis = makeNormal(Vec3f(lookAtPos + m_tCamera.vPos));
 				Vec3f upVec = Vec3f(0.f, 1.f, 0.f);
 				Vec3f xAxis = makeNormal(makeCross(upVec, zAxis));
 				Vec3f yAxis = makeCross(zAxis, xAxis);
@@ -686,26 +685,61 @@ void GITechDemo::Update(const float fDeltaTime)
 
 	// Draw controls on HUD
 	static bool bDrawControls = true;
-	if(!pAPM->IsDrawingOnHUD() && bDrawControls)
+	if(!pAPM->IsDrawingOnHUD())
 	{
-		HUD_PASS.PrintLn("Left mouse button (hold) + mouse move: control camera pitch/yaw");
-		HUD_PASS.PrintLn("Right mouse button (hold) + mouse move: control camera roll");
-		HUD_PASS.PrintLn("W/A/S/D: move camera forward/backward/left/right");
-		HUD_PASS.PrintLn("LShift (hold): faster camera movement");
-		HUD_PASS.PrintLn("LCtrl (hold): slower camera movement");
-
-		if (pAPM->GetParameterCount() > 0)
+		if (bDrawControls)
 		{
-			HUD_PASS.PrintLn("");
-			HUD_PASS.PrintLn("Directional arrows up/down: cycle configurable parameters");
-			HUD_PASS.PrintLn("RShift + Directional arrows up/down: cycle parameter categories");
-			HUD_PASS.PrintLn("Directional arrows left/right: modify currently selected parameter");
+			HUD_PASS.PrintLn("Left mouse button (hold) + mouse move: control camera pitch/yaw");
+			HUD_PASS.PrintLn("Right mouse button (hold) + mouse move: control camera roll");
+			HUD_PASS.PrintLn("W/A/S/D: move camera forward/backward/left/right");
+			HUD_PASS.PrintLn("LShift (hold): faster camera movement");
+			HUD_PASS.PrintLn("LCtrl (hold): slower camera movement");
+
+			if (pAPM->GetParameterCount() > 0)
+			{
+				HUD_PASS.PrintLn("");
+				HUD_PASS.PrintLn("Directional arrows up/down: cycle configurable parameters");
+				HUD_PASS.PrintLn("RShift + Directional arrows up/down: cycle parameter categories");
+				HUD_PASS.PrintLn("Directional arrows left/right: modify currently selected parameter");
+			}
 		}
 	}
 	if (cmd & (APP_CMD_FORWARD | APP_CMD_BACKWARD | APP_CMD_LEFT | APP_CMD_RIGHT))
 		bDrawControls = false;
 
-	POP_PROFILE_MARKER();
+	if (GPU_PROFILE_SCREEN)
+	{
+		if (pAPM->IsDrawingOnHUD() || bDrawControls)
+			HUD_PASS.PrintLn("");
+		DrawGPUProfileScreen();
+	}
+}
+
+void GITechDemo::DrawGPUProfileScreen(const RenderPass* pass, const unsigned int level) const
+{
+	Renderer* RenderContext = Renderer::GetInstance();
+	if (!RenderContext)
+		return;
+
+	if (pass == nullptr)
+		pass = &RenderScheme::GetRootPass();
+
+	if (pass)
+	{
+		const float result = RenderContext->GetProfiler()->RetrieveGPUProfileMarkerResult(pass->GetPassName());
+
+		if (result >= 0)
+		{
+			char szTempBuffer[256];
+			sprintf_s(szTempBuffer, "%s: %g ms", pass->GetPassName(), result);
+			for (unsigned int j = 0; j < level; j++)
+				HUD_PASS.Print("  ");
+			HUD_PASS.PrintLn(szTempBuffer);
+		}
+
+		for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
+			DrawGPUProfileScreen(pass->GetChildren()[i], level + 1);
+	}
 }
 
 void GITechDemo::Draw()

@@ -27,6 +27,7 @@
 #include <RenderTarget.h>
 #include <ResourceManager.h>
 #include <Texture.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "Framework.h"

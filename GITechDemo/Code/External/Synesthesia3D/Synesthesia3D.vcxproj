@@ -292,6 +292,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <CustomBuildStep />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Base\Profiler.h" />
     <ClInclude Include="Base\ResourceData.h" />
     <ClInclude Include="Base\RenderTarget.h" />
     <ClInclude Include="Base\ResourceManager.h" />
@@ -300,6 +301,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="Base\ShaderProgram.h" />
     <ClInclude Include="Base\Texture.h" />
     <ClInclude Include="DX9\MappingsDX9.h" />
+    <ClInclude Include="DX9\ProfilerDX9.h" />
     <ClInclude Include="DX9\RenderStateDX9.h" />
     <ClInclude Include="DX9\RenderTargetDX9.h" />
     <ClInclude Include="DX9\ResourceManagerDX9.h" />
@@ -401,6 +403,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClInclude Include="Utility\Mutex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Base\Profiler.cpp" />
     <ClCompile Include="Base\ResourceSerialization.cpp" />
     <ClCompile Include="Base\RenderState.cpp" />
     <ClCompile Include="Base\RenderTarget.cpp" />
@@ -410,6 +413,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
     <ClCompile Include="Base\ShaderProgram.cpp" />
     <ClCompile Include="Base\Texture.cpp" />
     <ClCompile Include="DX9\MappingsDX9.cpp" />
+    <ClCompile Include="DX9\ProfilerDX9.cpp" />
     <ClCompile Include="DX9\RenderStateDX9.cpp" />
     <ClCompile Include="DX9\RenderTargetDX9.cpp" />
     <ClCompile Include="DX9\ResourceManagerDX9.cpp" />

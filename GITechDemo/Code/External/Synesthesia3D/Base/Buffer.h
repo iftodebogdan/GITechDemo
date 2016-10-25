@@ -58,7 +58,7 @@ namespace Synesthesia3D
 		/**
 		 * @brief	Returns a pointer to the beginning of the buffer.
 		 */
-		SYNESTHESIA3D_DLL		byte*			GetData() const;
+		SYNESTHESIA3D_DLL		s3dByte*			GetData() const;
 
 	protected:
 
@@ -92,7 +92,7 @@ namespace Synesthesia3D
 		unsigned int	m_nElementSize;		/**< @brief	Holds the size in bytes of an element. */
 		BufferUsage		m_eBufferUsage;		/**< @brief	Holds the type of usage of the buffer. */
 		unsigned int	m_nSize;			/**< @brief	Holds the total size in bytes of the buffer. */
-		byte*			m_pData;			/**< @brief	Pointer to the beginning of the buffer. */
+		s3dByte*			m_pData;			/**< @brief	Pointer to the beginning of the buffer. */
 
 
 

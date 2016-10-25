@@ -26,6 +26,7 @@
 #include <ResourceManager.h>
 #include <Texture.h>
 #include <RenderTarget.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "Poisson.h"
@@ -40,9 +41,9 @@ namespace GITechDemoApp
 	bool INDIRECT_LIGHT_ENABLED = true;
 	bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
 
-	extern const unsigned int RSM_SIZE = 512;
-	const unsigned int RSM_NUM_PASSES = 1;
-	const unsigned int RSM_SAMPLES_PER_PASS = 64;
+	extern const unsigned int RSM_SIZE = 1024;
+	const unsigned int RSM_NUM_PASSES = 4;
+	const unsigned int RSM_SAMPLES_PER_PASS = 16;
 	const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
 }
 

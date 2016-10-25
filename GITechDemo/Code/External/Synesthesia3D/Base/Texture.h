@@ -47,7 +47,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Pointer to the texture data.
 		 */
-				byte* GetData()		const { assert(false); return Buffer::GetData(); }
+				s3dByte* GetData()		const { assert(false); return Buffer::GetData(); }
 
 		/**
 		 * @brief	Retrieves the format of the texture.
@@ -192,7 +192,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Pointer to the specified mip level data.
 		 */
-				SYNESTHESIA3D_DLL 		byte*	const	GetMipData(const unsigned int mipmapLevel = 0);
+				SYNESTHESIA3D_DLL 		s3dByte*	const	GetMipData(const unsigned int mipmapLevel = 0);
 
 		/**
 		 * @brief	Retrieves a pointer to the start of the specified face and mip level in the memory buffer in which a cube texture is stored.
@@ -202,7 +202,7 @@ namespace Synesthesia3D
 		 *
 		 * @return	Pointer to the specified mip level data of the specified cube face.
 		 */
-				SYNESTHESIA3D_DLL 		byte*	const	GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel = 0) const;
+				SYNESTHESIA3D_DLL 		s3dByte*	const	GetMipData(const CubeFace cubeFace, const unsigned int mipmapLevel = 0) const;
 
 
 

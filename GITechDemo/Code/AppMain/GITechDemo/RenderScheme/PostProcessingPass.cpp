@@ -24,6 +24,7 @@
 #include <Renderer.h>
 #include <RenderState.h>
 #include <RenderTarget.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "PostProcessingPass.h"

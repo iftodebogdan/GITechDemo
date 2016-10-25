@@ -26,8 +26,8 @@
 #include "ResourceManager.h"
 #include "RenderState.h"
 #include "SamplerState.h"
-
-#include "Utility/Mutex.h"
+#include "Profiler.h"
+using namespace Synesthesia3D;
 
 #ifdef _WINDOWS
 #include "RendererDX9.h"
@@ -39,23 +39,15 @@ using namespace Synesthesia3D;
 
 Renderer* Renderer::ms_pInstance = nullptr;
 API Renderer::ms_eAPI = API_NONE;
-int Renderer::ms_nProfileMarkerCounter = 0;
-static bool bCounterMutexInit = false;
-
-// A mutex to guarantee thread-safety for ms_nProfileMarkerCounter
-static MUTEX gCounterMutex;
 
 Renderer::Renderer()
 	: m_vBackBufferOffset(0, 0)
 	, m_pResourceManager(nullptr)
 	, m_pRenderStateManager(nullptr)
 	, m_pSamplerStateManager(nullptr)
+	, m_pProfiler(nullptr)
 {
-	if (!bCounterMutexInit)
-	{
-		bCounterMutexInit = true;
-		MUTEX_INIT(gCounterMutex);
-	}
+
 }
 
 Renderer::~Renderer()
@@ -69,11 +61,8 @@ Renderer::~Renderer()
 	if (m_pSamplerStateManager)
 		delete m_pSamplerStateManager;
 
-	if (bCounterMutexInit)
-	{
-		bCounterMutexInit = false;
-		MUTEX_DESTROY(gCounterMutex);
-	}
+	if (m_pProfiler)
+		delete m_pProfiler;
 }
 
 void Renderer::CreateInstance(API api)
@@ -101,9 +90,6 @@ void Renderer::DestroyInstance()
 {
 	if (ms_pInstance)
 	{
-	#if ENABLE_PROFILE_MARKERS
-		assert(ms_nProfileMarkerCounter == 0);
-	#endif
 		ms_pInstance->GetResourceManager()->ReleaseAll();
 		Renderer* tmp = ms_pInstance;
 		ms_pInstance = nullptr;
@@ -192,6 +178,11 @@ SamplerState* const Renderer::GetSamplerStateManager() const
 	return m_pSamplerStateManager;
 }
 
+Profiler* const Renderer::GetProfiler() const
+{
+	return m_pProfiler;
+}
+
 const DeviceCaps& Renderer::GetDeviceCaps() const
 {
 	return m_tDeviceCaps;
@@ -201,19 +192,4 @@ void Renderer::DrawVertexBuffer(VertexBuffer* const vb)
 {
 	GetSamplerStateManager()->Flush();
 	GetRenderStateManager()->Flush();
-}
-
-void Renderer::PushProfileMarker(const char* const /*label*/)
-{
-	MUTEX_LOCK(gCounterMutex);
-	ms_nProfileMarkerCounter++;
-	MUTEX_UNLOCK(gCounterMutex);
-}
-
-void Renderer::PopProfileMarker()
-{
-	MUTEX_LOCK(gCounterMutex);
-	ms_nProfileMarkerCounter--;
-	assert(ms_nProfileMarkerCounter >= 0);
-	MUTEX_UNLOCK(gCounterMutex);
 }

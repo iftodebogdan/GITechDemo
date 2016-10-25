@@ -47,13 +47,3 @@ void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, const float left
 {
 	gmtl::setOrtho(matProj, left, top, right, bottom, zNear, zFar);
 }
-
-void RendererNULL::PushProfileMarker(const char* const label)
-{
-	Renderer::PushProfileMarker(label);
-}
-
-void RendererNULL::PopProfileMarker()
-{
-	Renderer::PopProfileMarker();
-}

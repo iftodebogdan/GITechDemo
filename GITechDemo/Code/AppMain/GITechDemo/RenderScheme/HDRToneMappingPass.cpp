@@ -26,6 +26,7 @@
 #include <ResourceManager.h>
 #include <Texture.h>
 #include <RenderTarget.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "HDRToneMappingPass.h"

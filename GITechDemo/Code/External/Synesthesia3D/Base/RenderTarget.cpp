@@ -26,6 +26,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "ResourceManager.h"
+#include "Profiler.h"
 using namespace Synesthesia3D;
 
 std::vector<RenderTarget*> RenderTarget::ms_pActiveRenderTarget;
@@ -44,8 +45,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 	, m_pColorBuffer(nullptr)
 	, m_pDepthBuffer(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
@@ -75,8 +74,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 			depthStencilFormat, TT_2D, width, height, 1, 1, BU_DEPTHSTENCIL);
 		m_pDepthBuffer = Renderer::GetInstance()->GetResourceManager()->GetTexture(m_nDepthBufferTexIdx);
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
@@ -93,8 +90,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 	, m_pColorBuffer(nullptr)
 	, m_pDepthBuffer(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//assert(targetCount > 0);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
 		|| Renderer::GetAPI() == API_NULL);
@@ -126,8 +121,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
 		m_pDepthBuffer = Renderer::GetInstance()->GetResourceManager()->GetTexture(m_nDepthBufferTexIdx);
 		m_pDepthBuffer->SetDynamicSizeRatios(widthRatio, heightRatio);
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTarget::RenderTarget(const unsigned int targetCount,
@@ -145,8 +138,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 	, m_pColorBuffer(nullptr)
 	, m_pDepthBuffer(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//assert(targetCount > 0);
 	assert(targetCount <= 4);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
@@ -195,8 +186,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 			depthStencilFormat, TT_2D, width, height, 1, 1, BU_DEPTHSTENCIL);
 		m_pDepthBuffer = Renderer::GetInstance()->GetResourceManager()->GetTexture(m_nDepthBufferTexIdx);
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTarget::RenderTarget(const unsigned int targetCount,
@@ -214,8 +203,6 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 	, m_pColorBuffer(nullptr)
 	, m_pDepthBuffer(nullptr)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	//assert(targetCount > 0);
 	assert(targetCount <= 4);
 	assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
@@ -266,14 +253,10 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 		m_pDepthBuffer = Renderer::GetInstance()->GetResourceManager()->GetTexture(m_nDepthBufferTexIdx);
 		m_pDepthBuffer->SetDynamicSizeRatios(widthRatio, heightRatio);
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 RenderTarget::~RenderTarget()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Unbind();
 
 	if (m_pColorBuffer)
@@ -281,35 +264,25 @@ RenderTarget::~RenderTarget()
 
 	if (m_nColorBufferTexIdx)
 		delete[] m_nColorBufferTexIdx;
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTarget::Bind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 		m_pColorBuffer[i]->Bind();
 
 	if (m_bHasDepthStencil)
 		m_pDepthBuffer->Bind();
-
-	POP_PROFILE_MARKER();
 }
 
 void RenderTarget::Unbind()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 		if (m_pColorBuffer && m_pColorBuffer[i])
 			m_pColorBuffer[i]->Unbind();
 
 	if (m_pDepthBuffer)
 		m_pDepthBuffer->Unbind();
-
-	POP_PROFILE_MARKER();
 }
 
 const unsigned int RenderTarget::GetTargetCount() const

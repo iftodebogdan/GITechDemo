@@ -25,17 +25,14 @@
 #include "SamplerStateDX9.h"
 #include "RendererDX9.h"
 #include "MappingsDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 #include "d3d9.h"
 
 SamplerStateDX9::SamplerStateDX9()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Reset();
-
-	POP_PROFILE_MARKER();
 }
 
 SamplerStateDX9::~SamplerStateDX9()
@@ -43,8 +40,6 @@ SamplerStateDX9::~SamplerStateDX9()
 
 void SamplerStateDX9::Reset()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr;
 
@@ -95,14 +90,10 @@ void SamplerStateDX9::Reset()
 	}
 
 	SamplerState::Reset();
-
-	POP_PROFILE_MARKER();
 }
 
 const bool SamplerStateDX9::Flush()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 	HRESULT hr = E_FAIL;
 
@@ -236,8 +227,6 @@ const bool SamplerStateDX9::Flush()
 				return false;
 		}
 	}
-
-	POP_PROFILE_MARKER();
 
 	return true;
 }

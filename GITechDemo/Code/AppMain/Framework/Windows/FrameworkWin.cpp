@@ -161,7 +161,7 @@ int FrameworkWin::Run()
 			}
 		}
 
-		// Reduce this thread's priority since it isn't doing anything important
+		// Reduce this thread's priority since it isn't doing anything important right now
 		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	}
 	else
@@ -244,16 +244,17 @@ int FrameworkWin::Run()
 					}
 				}
 
-				// Restore thread priority if resources are loaded
+				// Restore thread priority after resources are loaded
 				if (bAppRdy)
 				{
 					cout << endl << "Resources successfully loaded in " << (float)(GetTicks() - startLoadingTicks) / 1000000.f << " seconds." << endl;
 					SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-				#if !(_DEBUG)
+				#ifndef _DEBUG
 					Sleep(2000);
 					// Free the console
 					FreeConsole();
 				#endif
+					ShowWindow(m_hWnd, SW_MAXIMIZE);
 					BringWindowToTop(m_hWnd);
 					SetFocus(m_hWnd);
 					SetActiveWindow(m_hWnd);
@@ -344,7 +345,7 @@ BOOL FrameworkWin::InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
-	ShowWindow(m_hWnd, nCmdShow);
+	//ShowWindow(m_hWnd, nCmdShow);
 	UpdateWindow(m_hWnd);
 
 	return TRUE;
@@ -576,16 +577,12 @@ void FrameworkWin::ErrorExit(LPTSTR lpszFunction)
 	ExitProcess(dw);
 }
 
-//HMENU g_menuBkp = NULL;
-
 void FrameworkWin::OnSwitchToFullscreenMode()
 {
 	Framework::OnSwitchToFullscreenMode();
 
 	OutputDebugString("[FrameworkWin] Setting fullscreen mode window style\n");
 	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-	//g_menuBkp = GetMenu(m_hWnd);
-	//SetMenu(m_hWnd, NULL);
 	OnSetFullscreenCursor();
 }
 
@@ -595,8 +592,8 @@ void FrameworkWin::OnSwitchToWindowedMode()
 
 	OutputDebugString("[FrameworkWin] Setting windowed mode window style\n");
 	SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_GROUP | WS_TABSTOP);
-	//SetMenu(m_hWnd, g_menuBkp);
-	ShowWindow(m_hWnd, SW_SHOWNORMAL);
+	ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+	SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	OnSetWindowedCursor();
 }
 

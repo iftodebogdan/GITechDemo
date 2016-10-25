@@ -53,8 +53,8 @@ const float4x4 f44ViewToRSMViewMat;
 // from the center of the kernel. In other words, the sample density
 // is higher towards the edges of the kernel, but the weights do not
 // vary linearly with the samples' offsets.
-#define RSM_NUM_PASSES (1)			// The number of passes
-#define RSM_SAMPLES_PER_PASS (64)	// The number of samples from the RSM in each pass
+#define RSM_NUM_PASSES (4)			// The number of passes
+#define RSM_SAMPLES_PER_PASS (16)	// The number of samples from the RSM in each pass
 
 // The kernel for sampling the RSM
 #if RSM_APPLY_PASS
@@ -105,7 +105,12 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 	#error Either RSM_APPLY_PASS or RSM_UPSCALE_PASS must be defined!
 #endif
 
-	UNROLL for (unsigned int i = 0; i < nEndIdx; i++)
+#if RSM_APPLY_PASS
+	UNROLL
+#elif RSM_UPSCALE_PASS
+	LOOP
+#endif
+	for (unsigned int i = 0; i < nEndIdx; i++)
 	{
 		// Add a bias to the texture coordinate calculated above
 		const float2 f2RSMSampleTexCoord = f2RSMTexCoord + f3RSMKernel[i].xy * fRSMKernelScale;

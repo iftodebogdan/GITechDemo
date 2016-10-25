@@ -30,6 +30,7 @@
 #include <VertexBuffer.h>
 #include <VertexFormat.h>
 #include <RenderTarget.h>
+#include <Profiler.h>
 using namespace Synesthesia3D;
 
 #include "ShadowMapDirectionalLightPass.h"
@@ -42,6 +43,7 @@ namespace GITechDemoApp
 	bool DEBUG_CSM_CAMERA = false;
 
 	extern bool DIRECTIONAL_LIGHT_ENABLED;
+	extern bool DIR_LIGHT_VOLUME_ENABLE;
 
 	// Cascaded Shadow Maps (CSM) and directional light related variables
 	float CASCADE_SPLIT_FACTOR = 0.7f;
@@ -330,7 +332,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
 void ShadowMapDirectionalLightPass::Draw()
 {
-	if (!DIRECTIONAL_LIGHT_ENABLED)
+	if (!DIRECTIONAL_LIGHT_ENABLED && !DIR_LIGHT_VOLUME_ENABLE)
 		return;
 
 	Renderer* RenderContext = Renderer::GetInstance();

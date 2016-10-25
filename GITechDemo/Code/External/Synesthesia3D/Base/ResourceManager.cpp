@@ -31,6 +31,7 @@
 #include "RenderTarget.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "Profiler.h"
 using namespace Synesthesia3D;
 
 #include <fstream>
@@ -68,8 +69,6 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	// Resources should already be released by the time
 	// we get here, but just as a precaution, check if
 	// there is anything that should be released
@@ -96,14 +95,10 @@ ResourceManager::~ResourceManager()
 
 		bMutexesInitialized = false;
 	}
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseAll()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		delete m_arrModel[i];
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
@@ -129,14 +124,10 @@ void ResourceManager::ReleaseAll()
 	m_arrShaderProgram.clear();
 	m_arrTexture.clear();
 	m_arrRenderTarget.clear();
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::BindAll()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
 		if (m_arrVertexFormat[i])
 			m_arrVertexFormat[i]->Bind();
@@ -155,14 +146,10 @@ void ResourceManager::BindAll()
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		if (m_arrRenderTarget[i])
 			m_arrRenderTarget[i]->Bind();
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::UnbindAll()
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
 		if (m_arrVertexFormat[i])
 			m_arrVertexFormat[i]->Unbind();
@@ -181,8 +168,6 @@ void ResourceManager::UnbindAll()
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		if (m_arrRenderTarget[i])
 			m_arrRenderTarget[i]->Unbind();
-
-	POP_PROFILE_MARKER();
 }
 
 const unsigned int ResourceManager::CreateShaderInput(ShaderProgram* const shaderProgram)
@@ -197,8 +182,6 @@ const unsigned int ResourceManager::CreateShaderInput(ShaderProgram* const shade
 
 const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	unsigned int texIdx = ~0u;
 	std::ifstream texFile;
 	texFile.open(pathToFile, std::ios::binary);
@@ -212,15 +195,11 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 		texFile.close();
 	}
 
-	POP_PROFILE_MARKER();
-
 	return texIdx;
 }
 
 const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	std::ifstream modelFile;
 	modelFile.open(pathToFile, std::ios::binary);
 	unsigned int modelIdx = ~0u;
@@ -235,8 +214,6 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 		modelFile >> *mdl;
 		modelFile.close();
 	}
-
-	POP_PROFILE_MARKER();
 
 	return modelIdx;
 }
@@ -391,44 +368,32 @@ const unsigned int ResourceManager::GetModelCount() const
 
 void ResourceManager::ReleaseVertexFormat(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrVertexFormat.size());
 	if (idx >= m_arrVertexFormat.size())
 		return;
 
 	delete m_arrVertexFormat[idx];
 	m_arrVertexFormat[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrIndexBuffer.size());
 	if (idx >= m_arrIndexBuffer.size())
 		return;
 
 	delete m_arrIndexBuffer[idx];
 	m_arrIndexBuffer[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrVertexBuffer.size());
 	if (idx >= m_arrVertexBuffer.size())
 		return;
 
 	delete m_arrVertexBuffer[idx];
 	m_arrVertexBuffer[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseShaderInput(const unsigned int idx)
@@ -443,56 +408,40 @@ void ResourceManager::ReleaseShaderInput(const unsigned int idx)
 
 void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrShaderProgram.size());
 	if (idx >= m_arrShaderProgram.size())
 		return;
 
 	delete m_arrShaderProgram[idx];
 	m_arrShaderProgram[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseTexture(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrTexture.size());
 	if (idx >= m_arrTexture.size())
 		return;
 
 	delete m_arrTexture[idx];
 	m_arrTexture[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrRenderTarget.size());
 	if (idx >= m_arrRenderTarget.size())
 		return;
 
 	delete m_arrRenderTarget[idx];
 	m_arrRenderTarget[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }
 
 void ResourceManager::ReleaseModel(const unsigned int idx)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	assert(idx < m_arrRenderTarget.size());
 	if (idx > m_arrRenderTarget.size())
 		return;
 
 	delete m_arrModel[idx];
 	m_arrModel[idx] = nullptr;
-
-	POP_PROFILE_MARKER();
 }

@@ -191,7 +191,7 @@ namespace Synesthesia3D
 		s_in.read((char*)&buf_out.m_eBufferUsage, sizeof(BufferUsage));
 		s_in.read((char*)&buf_out.m_nSize, sizeof(unsigned int));
 		delete[] buf_out.m_pData;
-		buf_out.m_pData = new byte[buf_out.m_nSize];
+		buf_out.m_pData = new s3dByte[buf_out.m_nSize];
 		s_in.read((char*)buf_out.m_pData, buf_out.m_nSize);
 
 		return s_in;

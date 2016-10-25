@@ -56,17 +56,17 @@ namespace Synesthesia3D
 {
 	// DATA TYPES //////////////////////////////////
 
-	typedef HalfFloat			half;	/**< @brief 16 bit floating-point value. */
-	typedef unsigned char		byte;	/**< @brief Byte (8 bits) value. */
-	typedef unsigned short		word;	/**< @brief Word (16 bits) value. */
-	typedef unsigned long		dword;	/**< @brief Double word (32 bits) value. */
-	typedef unsigned long long	qword;	/**< @brief Quadword (64 bits) value. */
+	typedef HalfFloat			s3dHalf;	/**< @brief 16 bit floating-point value. */
+	typedef unsigned char		s3dByte;	/**< @brief Byte (8 bits) value. */
+	typedef unsigned short		s3dWord;	/**< @brief Word (16 bits) value. */
+	typedef unsigned long		s3dDword;	/**< @brief Double word (32 bits) value. */
+	typedef unsigned long long	s3dQword;	/**< @brief Quadword (64 bits) value. */
 
-	typedef unsigned int		sampler;		/**< General texture resource ID */
-	typedef sampler				sampler1D;		/**< 1D texture resource ID */
-	typedef sampler				sampler2D;		/**< 2D texture resource ID */
-	typedef sampler				sampler3D;		/**< 3D texture resource ID */
-	typedef sampler				samplerCUBE;	/**< Cube texture resource ID */
+	typedef unsigned int		s3dSampler;		/**< General texture resource ID */
+	typedef s3dSampler			s3dSampler1D;	/**< 1D texture resource ID */
+	typedef s3dSampler			s3dSampler2D;	/**< 2D texture resource ID */
+	typedef s3dSampler			s3dSampler3D;	/**< 3D texture resource ID */
+	typedef s3dSampler			s3dSamplerCUBE;	/**< Cube texture resource ID */
 
 	////////////////////////////////////////////////
 

@@ -36,7 +36,11 @@ namespace AppFramework
 		virtual int Run() = 0;
 		static Framework* const GetInstance() { return m_pInstance; }
 
+#if defined(_DEBUG) || defined(_PROFILE)
+		const bool	IsRenderingPaused() { return false; }
+#else
 		const bool	IsRenderingPaused() { return m_bPauseRendering; }
+#endif
 		const bool	IsFullscreen() { return m_bIsFullscreen; }
 
 		// Low level, platform specific functionality required by the application

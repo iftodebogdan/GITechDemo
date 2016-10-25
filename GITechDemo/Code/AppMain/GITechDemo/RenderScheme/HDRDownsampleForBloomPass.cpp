@@ -2,7 +2,7 @@
  *	This file is part of the "GITechDemo" application
  *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *		File:	HDRDownsamplePass.cpp
+ *		File:	HDRDownsampleForBloomPass.cpp
  *		Author:	Bogdan Iftode
  *
  *	This program is free software: you can redistribute it and/or modify
@@ -28,24 +28,24 @@
 #include <RenderTarget.h>
 using namespace Synesthesia3D;
 
-#include "HDRDownsamplePass.h"
+#include "HDRDownsampleForBloomPass.h"
 using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
 namespace GITechDemoApp
 {
-	extern bool HDR_TONE_MAPPING_ENABLED;
+	extern bool BLOOM_ENABLED;
 }
 
-HDRDownsamplePass::HDRDownsamplePass(const char* const passName, RenderPass* const parentPass)
+HDRDownsampleForBloomPass::HDRDownsampleForBloomPass(const char* const passName, RenderPass* const parentPass)
 	: RenderPass(passName, parentPass)
 {}
 
-HDRDownsamplePass::~HDRDownsamplePass()
+HDRDownsampleForBloomPass::~HDRDownsampleForBloomPass()
 {}
 
-void HDRDownsamplePass::Update(const float fDeltaTime)
+void HDRDownsampleForBloomPass::Update(const float fDeltaTime)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
@@ -55,18 +55,21 @@ void HDRDownsamplePass::Update(const float fDeltaTime)
 	if (!ResourceMgr)
 		return;
 
-	ResourceMgr->GetTexture(HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-	ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-	nDownsampleFactor = 4;
+	nDownsampleFactor = 16;
 	bApplyBrightnessFilter = false;
 }
 
-void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
+void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
 {
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;
+
+	RenderState* RenderStateManager = RenderContext->GetRenderStateManager();
+	const bool blendEnabled = RenderStateManager->GetColorBlendEnabled();
+	RenderStateManager->SetColorBlendEnabled(false);
 
 	pDest->Enable();
 
@@ -88,17 +91,18 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
 	DownsampleShader.Disable();
 
 	pDest->Disable();
+
+	RenderStateManager->SetColorBlendEnabled(blendEnabled);
 }
 
-void HDRDownsamplePass::Draw()
+void HDRDownsampleForBloomPass::Draw()
 {
-	if (!HDR_TONE_MAPPING_ENABLED)
+	if (!BLOOM_ENABLED)
 		return;
 
 	Renderer* RenderContext = Renderer::GetInstance();
 	if (!RenderContext)
 		return;
 
-	DownsamplePass(&LightAccumulationBuffer, HDRDownsampleBuffer[QUARTER]);
-	DownsamplePass(HDRDownsampleBuffer[QUARTER], HDRDownsampleBuffer[SIXTEENTH]);
+	DownsampleForBloomPass(&LightAccumulationBuffer, &HDRDownsampleForBloomBuffer);
 }

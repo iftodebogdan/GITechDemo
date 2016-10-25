@@ -29,6 +29,7 @@ namespace Synesthesia3D
 {
 	class RenderState;
 	class SamplerState;
+	class Profiler;
 
 	/**
 	 * @brief	Render context interface.
@@ -247,22 +248,6 @@ namespace Synesthesia3D
 		virtual	SYNESTHESIA3D_DLL			void		DrawVertexBuffer(VertexBuffer* const vb);
 
 		/**
-		 * @brief	Marks the beginning of a user-defined event, viewable in graphical analysis tools.
-		 *
-		 * @note	Must be paried with a corresponding @ref PopProfileMarker().
-		 *
-		 * @param[in]	label	A name for the event.
-		 */
-		virtual	SYNESTHESIA3D_DLL			void		PushProfileMarker(const char* const label);
-
-		/**
-		 * @brief	Marks the end of a user-defined event.
-		 *
-		 * @note	Must be paried with a corresponding @ref PushProfileMarker().
-		 */
-		virtual	SYNESTHESIA3D_DLL			void		PopProfileMarker();
-
-		/**
 		 * @brief	Retrieves a pointer to the resource manager.
 		 */
 				SYNESTHESIA3D_DLL	ResourceManager* const	GetResourceManager() const;
@@ -276,6 +261,11 @@ namespace Synesthesia3D
 		 * @brief	Retrieves a pointer to the texture sampler state manager.
 		 */
 				SYNESTHESIA3D_DLL	SamplerState* const		GetSamplerStateManager() const;
+				
+		/**
+		 * @brief	Retrieves a pointer to the profiler, which allows for managing profile markers.
+		 */
+				SYNESTHESIA3D_DLL	Profiler* const			GetProfiler() const;
 
 		/**
 		 * @brief	Retrieves the device's capabilities.
@@ -302,11 +292,11 @@ namespace Synesthesia3D
 			ResourceManager*	m_pResourceManager;			/**< @brief Pointer to the resource manage.r */
 			RenderState*		m_pRenderStateManager;		/**< @brief Pointer to the render state manager. */
 			SamplerState*		m_pSamplerStateManager;		/**< @brief Pointer to the texture sampler state manager. */
+			Profiler*			m_pProfiler;				/**< @brief Pointer to the profiler instance. */
 			DeviceCaps			m_tDeviceCaps;				/**< @brief Pointer to the device capabilities. */
 
 		static	Renderer*		ms_pInstance;				/**< @brief Holds the current instance of the rendering class. */
 		static	API				ms_eAPI;					/**< @brief Holds the currently instanced rendering API. */
-		static	int				ms_nProfileMarkerCounter;	/**< @brief Keeps track of profiler marker start/end pairs. */
 	};
 }
 

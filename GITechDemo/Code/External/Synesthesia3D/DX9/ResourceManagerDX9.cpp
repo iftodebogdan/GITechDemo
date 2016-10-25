@@ -30,6 +30,7 @@
 #include "RenderTargetDX9.h"
 #include "Renderer.h"
 #include "ResourceManagerDX9.h"
+#include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
 #include <Utility/Mutex.h>
@@ -58,8 +59,6 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
 	const unsigned int attributeCount, const VertexAttributeSemantic semantic,
 	const VertexAttributeType type, const unsigned int semanticIdx, ...)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	VertexFormat* vf = new VertexFormatDX9(attributeCount);
 	unsigned int offset = 0;
 
@@ -86,8 +85,6 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
 	const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
 	MUTEX_UNLOCK(VFMutex);
 
-	POP_PROFILE_MARKER();
-
 	return ret;
 }
 
@@ -95,15 +92,11 @@ const unsigned int ResourceManagerDX9::CreateIndexBuffer(
 	const unsigned int indexCount, const IndexBufferFormat indexFormat,
 	const BufferUsage usage)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	IndexBuffer* ib = new IndexBufferDX9(indexCount, indexFormat, usage);
 	MUTEX_LOCK(IBMutex);
 	m_arrIndexBuffer.push_back(ib);
 	const unsigned int ret = (unsigned int)m_arrIndexBuffer.size() - 1;
 	MUTEX_UNLOCK(IBMutex);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
@@ -112,31 +105,23 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
 	VertexFormat* const vertexFormat, const unsigned int vertexCount,
 	IndexBuffer* const indexBuffer, const BufferUsage usage)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	VertexBuffer* vb = new VertexBufferDX9((VertexFormatDX9*)vertexFormat, vertexCount, (IndexBufferDX9*)indexBuffer, usage);
 	MUTEX_LOCK(VBMutex);
 	m_arrVertexBuffer.push_back(vb);
 	const unsigned int ret = (unsigned int)m_arrVertexBuffer.size() - 1;
 	MUTEX_UNLOCK(VBMutex);
 
-	POP_PROFILE_MARKER();
-
 	return ret;
 }
 
 const unsigned int ResourceManagerDX9::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	ShaderProgramDX9* sp = new ShaderProgramDX9(programType);
 	MUTEX_LOCK(ShdProgMutex);
 	m_arrShaderProgram.push_back(sp);
 	const unsigned int ret = (unsigned int)m_arrShaderProgram.size() - 1;
 	MUTEX_UNLOCK(ShdProgMutex);
 	sp->Compile(filePath, entryPoint);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
@@ -146,15 +131,11 @@ const unsigned int ResourceManagerDX9::CreateTexture(
 	const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
 	const unsigned int mipCount, const BufferUsage usage)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	Texture* tex = new TextureDX9(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
 	MUTEX_LOCK(TexMutex);
 	m_arrTexture.push_back(tex);
 	const unsigned int ret = (unsigned int)m_arrTexture.size() - 1;
 	MUTEX_UNLOCK(TexMutex);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
@@ -162,15 +143,11 @@ const unsigned int ResourceManagerDX9::CreateTexture(
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
 	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
 	MUTEX_UNLOCK(RTMutex);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
@@ -178,15 +155,11 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
 	MUTEX_LOCK(RTMutex);
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
 	MUTEX_UNLOCK(RTMutex);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
@@ -195,8 +168,6 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	RenderTarget* rt = new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
 		width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
@@ -205,8 +176,6 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
 	MUTEX_UNLOCK(RTMutex);
 
-	POP_PROFILE_MARKER();
-
 	return ret;
 }
 
@@ -214,8 +183,6 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 	const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-	PUSH_PROFILE_MARKER(__FUNCSIG__);
-
 	RenderTarget* rt = new RenderTargetDX9(targetCount,
 		pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
 		widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
@@ -223,8 +190,6 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 	m_arrRenderTarget.push_back(rt);
 	const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
 	MUTEX_UNLOCK(RTMutex);
-
-	POP_PROFILE_MARKER();
 
 	return ret;
 }
