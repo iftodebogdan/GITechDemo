@@ -105,6 +105,6 @@ void psmain(VSOut input, out PSOut output)
 	output.f4Diffuse = f4DiffuseColor;
 	output.f4Normal = EncodeNormal(f3Normal);
 	output.f4Material = float4(fMatType, fRoughness, 0.f, 0.f);
-	output.f4SmoothNormal = EncodeNormal(input.f3Normal); // smooth per-vertex normals required to reduce noise from indirect lighting
+	output.f4VertexNormal = EncodeNormal(input.f3Normal); // low frequency vertex normals required to reduce noise from indirect lighting
 }
 ////////////////////////////////////////////////////////////////////

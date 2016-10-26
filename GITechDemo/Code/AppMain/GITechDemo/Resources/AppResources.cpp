@@ -556,7 +556,7 @@ namespace GITechDemoApp
 	// G-Buffer
 	CREATE_ARTIST_PARAMETER_OBJECT("Z-prepass",					"Populate the scene's depth buffer before generating the G-Buffer",		"G-Buffer",					GBUFFER_Z_PREPASS,							1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Diffuse anisotropic level",	"Anisotropic filtering level for diffuse textures",						"G-Buffer",					DIFFUSE_ANISOTROPY,							1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Use normal maps",			"Toggles the use of normal maps or per-vertex normals",					"G-Buffer",					GBUFFER_USE_NORMAL_MAPS,					1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Use normal maps",			"Toggles the use of normal maps or vertex normals",						"G-Buffer",					GBUFFER_USE_NORMAL_MAPS,					1.f);
 	
 	// Directional light
 	CREATE_ARTIST_PARAMETER_OBJECT("Directional lights enable",	"Toggle the rendering of directional lights",							"Directional light",		DIRECTIONAL_LIGHT_ENABLED,					1.f);
