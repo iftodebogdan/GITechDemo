@@ -25,7 +25,7 @@
 
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
-const float2 f2TexSize;	// Size, in texels, of destination texture
+const float4 f4TexSize;	// xy: size, in texels, of destination texture; zw : normalized texel size
 
 struct VSOut
 {
@@ -40,7 +40,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 	output.f4Position	= f4Position;
 	output.f2TexCoord	= f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
 	output.f2ScreenPos	= f4Position.xy;
-	output.f2TexelIdx	= f2TexSize * (f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f));
+	output.f2TexelIdx	= f4TexSize.xy * (f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f));
 }
 ////////////////////////////////////////////////////////////////////
 
@@ -63,21 +63,10 @@ const float		fFogVerticalFalloff;	// Vertical fallof factor for the volumetric f
 const float		fDiffuseFactor;			// Scale value for diffuse light
 ////////////////////////
 
-// These must match dither map (Bayer matrix) texture dimensions
-#define INTERLEAVED_GRID_SIZE			(8.f)
-#define INTERLEAVED_GRID_SIZE_RCP		(0.125f)
-#define INTERLEAVED_GRID_SIZE_SQR		(64.f)
-#define INTERLEAVED_GRID_SIZE_SQR_RCP	(0.015625f)
-
 // Radiative transport equation terms (http://sirkan.iit.bme.hu/~szirmay/lightshaft.pdf)
 #define TAU		(0.0001f)	// Probability of collision
 //#define PHI		(1.f)		// Source power of the light
 #define PHI fDiffuseFactor
-
-#ifdef USE_BAYER_MATRIX
-// INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
-const sampler2D	texDitherMap;
-#endif
 
 #ifdef FOG_DENSITY_MAP
 // Noise texture (for fog)
@@ -104,7 +93,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Intersect ray with scene
 	const float fSceneDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
 	const float4 f4RayPosLightVS = mul(f44ScreenToLightViewMat, float4(input.f2ScreenPos, fSceneDepth, 1.f));
-	float3 f3RayPosLightVS = f4RayPosLightVS.xyz * rcp(f4RayPosLightVS.w);
+	float3 f3RayPosLightVS = f4RayPosLightVS.xyz / f4RayPosLightVS.w;
 
 	// Reduce noisiness by truncating the starting position
 	const float3 f3RayLightVS = f3CameraPositionLightVS - f3RayPosLightVS;
@@ -112,12 +101,12 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float fRaymarchDistance = /*trunc*/(clamp(length(f3RayLightVS), 0.f, fRaymarchDistanceLimit));
 
 	// Calculate the size of each step
-	const float fStepLen = fRaymarchDistance * rcp((float)nSampleCount);
+	const float fStepLen = fRaymarchDistance / (float)nSampleCount;
 
 	// Calculate the offsets on the ray according to the interleaved sampling pattern
 #ifdef OFFSET_RAY_SAMPLES
 #ifdef USE_BAYER_MATRIX
-	const float fRayStartOffset = tex2D(texDitherMap, input.f2TexCoord * f2TexSize * INTERLEAVED_GRID_SIZE_RCP).r * fStepLen;
+	const float fRayStartOffset = GetDitherAmount(input.f2TexCoord, f4TexSize.xy) * fStepLen;
 #else // USE_BAYER_MATRIX
 	const float2 f2InterleavedPos = fmod(ceil(input.f2TexelIdx), INTERLEAVED_GRID_SIZE);
 	const float fRayStartOffset = (f2InterleavedPos.y * INTERLEAVED_GRID_SIZE + f2InterleavedPos.x) * (fStepLen * INTERLEAVED_GRID_SIZE_SQR_RCP);
@@ -134,13 +123,13 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float3 f3FogBoxRcp = rcp(f3FogBox);
 	const float3 f3RayPosWS = mul(f44InvLightViewMat, float4(f3RayPosLightVS, 1.f)).xyz * f3FogBoxRcp;
 	const float3 f3RayDirWS = normalize(mul(f44InvLightViewMat, float4(f3RayDirLightVS, 0.f)).xyz) * f3FogBoxRcp;
-	const float3 f3FogSampleOffset = fElapsedTime * f3FogSpeed * rcp(f3FogBox);
+	const float3 f3FogSampleOffset = fElapsedTime * f3FogSpeed * f3FogBoxRcp;
 
 	// Ray marching (could be optimized with a hardcoded sample count value and unrolling this 'for')
 	LOOP for (int i = 0; i < nSampleCount; i++)
 	{
 		// warning X3571: pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them
-		const float fSampleDist = pow(abs((fStepLen * i) * rcp(fRaymarchDistance)), fSampleDistrib) * fRaymarchDistance;
+		const float fSampleDist = pow(abs((fStepLen * i) / fRaymarchDistance), fSampleDistrib) * fRaymarchDistance;
 		const float3 f3SamplePosLightVS = f3RayPosLightVS + f3RayDirLightVS * fSampleDist;
 		const float3 f3SamplePosWS = f3RayPosWS + f3RayDirWS * fSampleDist;
 

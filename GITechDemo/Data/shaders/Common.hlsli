@@ -66,3 +66,11 @@
 // the threshold, then the pixel is clipped.			//
 //////////////////////////////////////////////////////////
 #define ALPHA_TEST(alpha, threshold) clip(-step(alpha, threshold))
+
+
+
+//////////////////////////////////////////////////
+// Mip count for texture bound to texEnvMap.	//
+// Used in multiple shaders, so defined here.	//
+//////////////////////////////////////////////////
+#define ENVIRONMENT_MAP_MIP_COUNT	(9)

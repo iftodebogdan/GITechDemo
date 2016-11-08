@@ -38,11 +38,11 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D	texSource;		// The texture to be upsampled
-const sampler2D	texDepthBuffer;	// Scene depth values
+const sampler2D	texSource;				// The texture to be upsampled
+const sampler2D	texDepthBuffer;			// Scene depth values
+const sampler2D	texQuarterDepthBuffer;	// Quarter resolution scene depth values
 
-const float2 f2TexelSize;	// Normalized size of source texel
-const float2 f2TexSize;		// Size of source texture
+const float4 f4TexSize;	// xy: size of source texture; zw: normalized texel size
 
 // Set a threshold which controls the level of sensitivity of the edge detection.
 const float fUpsampleDepthThreshold;
@@ -79,7 +79,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	UNROLL for (int i = 0; i < 4; i++)
 	{
 		// Fetch the downsampled depth of the i-th bilinear sample corresponding to the current fragment
-		const float fSampleDepth = GetDownsampledDepth(texDepthBuffer, GetBilinearSampleCoords(input.f2TexCoord, i)).r;
+		const float fSampleDepth = tex2D(texQuarterDepthBuffer, GetBilinearSampleCoords(input.f2TexCoord, i)).r;
 
 		// Calculate the difference to the reference depth value
 		const float fCurrentDepthDiff = abs(fSampleDepth - fRefDepth);
@@ -117,10 +117,10 @@ const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx)
 	// Calculate the offset for the center of the 4 bilinear samples
 	// from the low-resolution texture corresponding to the high-resolution
 	// fragment, relative to the current high-resolution fragment's coordinates
-	const float2 f2CenterOffset = (step(float2(0.5f, 0.5f), frac(f2TexCoord * f2TexSize)) * 2.f - 1.f) * f2HalfTexelOffset;
+	const float2 f2CenterOffset = (step(float2(0.5f, 0.5f), frac(f2TexCoord * f4TexSize.xy)) * 2.f - 1.f) * f2HalfTexelOffset;
 
 	// Offset the current coordinates to the center of the 4 bilinear samples, then offset
 	// it again to the center of the bilinear sample corresponding to the provided index
-	return f2TexCoord + f2CenterOffset + f2TexelSize * 0.5f * f2SampleOffset[nIdx];
+	return f2TexCoord + f2CenterOffset + f4TexSize.zw * 0.5f * f2SampleOffset[nIdx];
 }
 ////////////////////////////////////////////////////////////////////

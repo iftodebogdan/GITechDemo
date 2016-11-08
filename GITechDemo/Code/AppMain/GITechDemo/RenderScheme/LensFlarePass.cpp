@@ -76,6 +76,7 @@ void LensFlarePass::Update(const float fDeltaTime)
 	texLensFlareStarBurst = LensFlareStarBurst.GetTextureIndex();
 
 	nDownsampleFactor = 1;
+	bDepthDownsample = false;
 	bApplyBrightnessFilter = true;
 	bAdjustIntensity = false;
 
@@ -154,9 +155,11 @@ void LensFlarePass::ApplyBrightnessFilter()
 			0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
 			0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
-			1.f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
+			(float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight(),
+			1.f / (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
+			1.f / (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
 			);
 		texSource = HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0);
 	}
@@ -166,9 +169,11 @@ void LensFlarePass::ApplyBrightnessFilter()
 			0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
 			0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
-			1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+			(float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight(),
+			1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+			1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
 			);
 		texSource = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
 	}
@@ -234,9 +239,11 @@ void LensFlarePass::GenerateFeatures()
 			0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
 			0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
-			1.f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
+			(float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight(),
+			1.f / (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
+			1.f / (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
 			);
 		texSource = CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
@@ -250,9 +257,11 @@ void LensFlarePass::GenerateFeatures()
 			0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
 			0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
-			1.f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
+			(float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight(),
+			1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
+			1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
 			);
 		texSource = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
 
@@ -309,9 +318,11 @@ void LensFlarePass::Blur()
 			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
 			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
-			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			(float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
+			1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
 			);
 		texSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
 		nKernel = LENS_FLARE_BLUR_KERNEL[i];
@@ -372,9 +383,11 @@ void LensFlarePass::AnamorphicBlur()
 			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
 			0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
 			);
-		f2TexelSize = Vec2f(
-			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
-			1.f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			(float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
+			1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
+			1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
 			);
 		texSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
 		nKernel = i;

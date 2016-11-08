@@ -61,7 +61,7 @@ namespace Synesthesia3D
 		 *
 		 * @note	Not of much interest to the average user. Mainly used in the device reset mechanic.
 		 */
-				SYNESTHESIA3D_DLL	void	UnbindAll();
+		virtual	SYNESTHESIA3D_DLL	void	UnbindAll();
 
 		/**
 		 * @brief	Describes a vertex format.

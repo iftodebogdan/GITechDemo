@@ -60,6 +60,7 @@ void HDRDownsamplePass::Update(const float fDeltaTime)
 
 	nDownsampleFactor = 4;
 	bApplyBrightnessFilter = false;
+	bDepthDownsample = false;
 }
 
 void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
@@ -77,9 +78,11 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
 		0.5f / pDest->GetRenderTarget()->GetWidth(),
 		0.5f / pDest->GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / pSource->GetRenderTarget()->GetWidth(),
-		1.f / pSource->GetRenderTarget()->GetHeight()
+	f4TexSize = Vec4f(
+		(float)pSource->GetRenderTarget()->GetWidth(),
+		(float)pSource->GetRenderTarget()->GetHeight(),
+		1.f / (float)pSource->GetRenderTarget()->GetWidth(),
+		1.f / (float)pSource->GetRenderTarget()->GetHeight()
 		);
 	texSource = pSource->GetRenderTarget()->GetColorBuffer(0);
 

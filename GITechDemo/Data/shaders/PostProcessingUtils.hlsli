@@ -43,7 +43,7 @@ const float fZFar;
 const float2 f2LinearDepthEquation;
 float ReconstructDepth(float fHyperbolicDepth)
 {
-	return f2LinearDepthEquation.x * rcp(fHyperbolicDepth - f2LinearDepthEquation.y);
+	return f2LinearDepthEquation.x / (fHyperbolicDepth - f2LinearDepthEquation.y);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -51,6 +51,7 @@ float ReconstructDepth(float fHyperbolicDepth)
 // NB: f2TexCoord must be at the center of the quarter resolution texel	//
 // (i.e. right at the middle of the 4 full resolution samples)			//
 //////////////////////////////////////////////////////////////////////////
+#define DEPTH_DOWNSAMPLE_FUNC(x, y) (max(x, y))
 const float f2DepthHalfTexelOffset;	// Half texel offset of depth buffer
 const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2TexCoord)
 {
@@ -63,12 +64,12 @@ const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2T
 	};
 
 	return
-		max(
-			max(
+		DEPTH_DOWNSAMPLE_FUNC(
+			DEPTH_DOWNSAMPLE_FUNC(
 				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[0]).r,
 				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[1]).r
 				),
-			max(
+			DEPTH_DOWNSAMPLE_FUNC(
 				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[2]).r,
 				tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[3]).r
 				)
@@ -141,3 +142,25 @@ float4 Downsample2x2(sampler2D tex, float2 texCoord, float2 texelSize)
 #define CCIR601_LUMA_VEC (float3(0.299f, 0.587f, 0.114f))
 #define LUMINANCE_VECTOR CCIR601_LUMA_VEC
 ////////////////////////////////////////////////////////////////
+
+
+
+/////////////////////////////////////////////////////
+// Bayer matrix stored in a texture, for dithering //
+/////////////////////////////////////////////////////
+// These must match dither map (Bayer matrix) texture dimensions
+#define INTERLEAVED_GRID_SIZE			(8.f)
+#define INTERLEAVED_GRID_SIZE_RCP		(0.125f)
+#define INTERLEAVED_GRID_SIZE_SQR		(64.f)
+#define INTERLEAVED_GRID_SIZE_SQR_RCP	(0.015625f)
+const sampler2D	texDitherMap;	// INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
+
+float GetDitherAmount(float2 texCoord, float2 texSize)
+{
+	return tex2D(texDitherMap, texCoord * texSize * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+}
+
+float GetDitherAmount(float2 texelIdx)
+{
+	return tex2D(texDitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+}

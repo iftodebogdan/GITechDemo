@@ -67,13 +67,13 @@ float AOCalc(const float2 f2TexCoord, const float2 f2Offset, const float3 f3Posi
 	const float fSampleDepth			= tex2D(texDepthBuffer, f2SampleTexCoord).r;
 	const float4 f4SampleProjPosition	= float4(f2SampleScreenPos, fSampleDepth, 1.f);
 	const float4 f4SamplePositionPreW	= mul(f44InvProjMat, f4SampleProjPosition);
-	const float3 f3SamplePosition		= f4SamplePositionPreW.xyz * rcp(f4SamplePositionPreW.w);
+	const float3 f3SamplePosition		= f4SamplePositionPreW.xyz / f4SamplePositionPreW.w;
 
 	const float3 f3PosDiff = f3SamplePosition - f3Position;
 	const float3 f3Dir = normalize(f3PosDiff);
 	const float f3Dist = length(f3PosDiff) * fSSAOScale;
 
-	return max(0.f, dot(f3Normal, f3Dir) - fSSAOBias) * rcp(1.f + f3Dist) * fSSAOIntensity;
+	return max(0.f, dot(f3Normal, f3Dir) - fSSAOBias) / (1.f + f3Dist) * fSSAOIntensity;
 }
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
@@ -91,12 +91,12 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 	const float4 f4ProjPosition = float4(input.f2ScreenPos, fDepth, 1.f);
 	const float4 f4PositionPreW = mul(f44InvProjMat, f4ProjPosition);
-	const float3 f3Position = f4PositionPreW.xyz * rcp(f4PositionPreW.w);
+	const float3 f3Position = f4PositionPreW.xyz / f4PositionPreW.w;
 	const float3 f3Normal = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
 	//const float2 f2Rand = float2(GenerateRandomNumber(input.f2TexCoord.xy), GenerateRandomNumber(input.f2TexCoord.yx));
 
 	float fAO = 0.0f;
-	const float fRad = fSSAOSampleRadius * rcp(f3Position.z);
+	const float fRad = fSSAOSampleRadius / f3Position.z;
 
 	UNROLL for (int i = 0; i < 4; i++)
 	{

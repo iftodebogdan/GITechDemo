@@ -61,7 +61,12 @@ void FXAAPass::Update(const float fDeltaTime)
 
 	const Synesthesia3D::RenderTarget* const srcRT = HDR_TONE_MAPPING_ENABLED ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
 	f2HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
-	f2TexelSize = Vec2f(1.f / srcRT->GetWidth(), 1.f / srcRT->GetHeight());
+	f4TexSize = Vec4f(
+		(float)srcRT->GetWidth(),
+		(float)srcRT->GetHeight(),
+		1.f / (float)srcRT->GetWidth(),
+		1.f / (float)srcRT->GetHeight()
+	);
 	texSource = srcRT->GetColorBuffer(0);
 	ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 	ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);

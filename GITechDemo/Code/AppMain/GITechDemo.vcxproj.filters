@@ -142,6 +142,9 @@
     <ClInclude Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -238,6 +241,9 @@
       <Filter>App\Resources</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.cpp">
       <Filter>App\Render Schemes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -379,6 +385,9 @@
       <Filter>Shaders</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\AnamorphicLensFlareBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\ScreenSpaceReflection.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -61,7 +61,11 @@ namespace GITechDemoApp
 	int FULLSCREEN_REFRESH_RATE = 0;
 	bool VSYNC_ENABLED = false;
 
+#if ENABLE_PROFILE_MARKERS
+	bool GPU_PROFILE_SCREEN = true;
+#else
 	bool GPU_PROFILE_SCREEN = false;
+#endif
 }
 
 namespace GITechDemoApp

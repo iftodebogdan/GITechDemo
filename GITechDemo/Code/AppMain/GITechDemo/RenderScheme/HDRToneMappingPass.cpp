@@ -114,14 +114,24 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
 
 		if (i == 0)
 		{
-			f2TexelSize = Vec2f(1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(), 1.f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight());
+			f4TexSize = Vec4f(
+				(float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+				(float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight(),
+				1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
+				1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
+			);
 			texLumaInput = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
 			bInitialLumaPass = true;
 			bFinalLumaPass = false;
 		}
 		else
 		{
-			f2TexelSize = Vec2f(1.f / AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(), 1.f / AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight());
+			f4TexSize = Vec4f(
+				(float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(),
+				(float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight(),
+				1.f / (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(),
+				1.f / (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight()
+			);
 			texLumaInput = AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetColorBuffer(0);
 			bInitialLumaPass = false;
 

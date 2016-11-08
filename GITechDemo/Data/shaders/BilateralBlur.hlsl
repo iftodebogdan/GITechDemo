@@ -42,7 +42,7 @@ const sampler2D	texSource;		// The texture to be blurred
 const sampler2D	texDepthBuffer;	// Scene depth
 
 const float2 f2BlurDir;				// Horizontal or vertical blur
-const float2 f2TexelSize;			// Normalized size of a texel
+const float4 f4TexSize;				// zw: normalized size of a texel
 
 // Depth threshold for edge detection
 const float fBlurDepthFalloff;
@@ -64,18 +64,18 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float fTotalWeight = 0.f;
 
 	// Get reference downsampled depth (center of kernel)
-	const float fRefDepth = ReconstructDepth(GetDownsampledDepth(texDepthBuffer, input.f2TexCoord));
+	const float fRefDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
 
 	UNROLL for (int i = -NUM_SAMPLES_HALF; i <= NUM_SAMPLES_HALF; i++)
 	{
 		// Calculate coordinates for sampling source texture
-		const float2 f2Offset = i * f2BlurDir * f2TexelSize;
+		const float2 f2Offset = i * f2BlurDir * f4TexSize.zw;
 		const float2 f2SampleTexCoord = input.f2TexCoord + f2Offset;
 
 		// Sample source color
 		const float3 f3SampleColor = tex2D(texSource, f2SampleTexCoord).rgb;
 		// Calculate downsampled depth for the above sample
-		const float fSampleDepth = ReconstructDepth(GetDownsampledDepth(texDepthBuffer, f2SampleTexCoord).r);
+		const float fSampleDepth = tex2D(texDepthBuffer, f2SampleTexCoord).r;
 
 		// Simple depth-aware filtering
 		const float fDepthDiff = fBlurDepthFalloff * abs(fSampleDepth - fRefDepth);
@@ -85,7 +85,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		fTotalWeight += fWeight;
 	}
 
-	f4Color.rgb *= rcp(fTotalWeight);
+	f4Color.rgb /= fTotalWeight;
 
 	// Attempt to save some bandwidth
 	clip(-!any(f4Color.rgb));

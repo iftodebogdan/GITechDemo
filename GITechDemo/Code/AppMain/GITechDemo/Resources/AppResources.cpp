@@ -106,6 +106,10 @@ namespace GITechDemoApp
 	// Post-processing
 	extern bool POST_PROCESSING_ENABLED;
 
+	// SSR
+	extern bool SSR_ENABLED;
+	extern bool SSR_MANUAL_MAX_STEPS;
+
 	// SSAO
 	extern bool SSAO_ENABLED;
 	extern bool SSAO_USE_QUARTER_RESOLUTION_BUFFER;
@@ -160,6 +164,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_OBJECT(DirectionalLightVolumeShader,		"shaders/DirectionalLightVolume.hlsl");
 	CREATE_SHADER_OBJECT(RSMUpscaleShader,					"shaders/RSMUpscale.hlsl");
 	CREATE_SHADER_OBJECT(RSMApplyShader,					"shaders/RSMApply.hlsl");
+	CREATE_SHADER_OBJECT(ScreenSpaceReflectionShader,		"shaders/ScreenSpaceReflection.hlsl");
 	CREATE_SHADER_OBJECT(DirectionalLightShader,			"shaders/DirectionalLight.hlsl");
 	CREATE_SHADER_OBJECT(SphericalLensFlareFeaturesShader,	"shaders/SphericalLensFlareFeatures.hlsl");
 	CREATE_SHADER_OBJECT(SsaoShader,						"shaders/SSAO.hlsl");
@@ -220,6 +225,11 @@ namespace GITechDemoApp
 	//	RT3:	G16R16F with vertex normals, which are innately low frequency, required to reduce noise from indirect lighting
 	//	DS:		INTZ (for sampling as a regular texture later)
 	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(GBuffer, PF_A8R8G8B8, PF_G16R16F, PF_G16R16, PF_G16R16F, 1.f, 1.f, PF_INTZ);
+
+	// Utility depth buffers: hyperbolic and camera space, full and quarter resolution depth buffers
+	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(HyperbolicQuarterDepthBuffer, PF_R32F, 0.5f, 0.5f, PF_NONE);
+	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LinearFullDepthBuffer, PF_R32F, 1.f, 1.f, PF_NONE);
+	CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LinearQuarterDepthBuffer, PF_R32F, 0.5f, 0.5f, PF_NONE);
 
 	// Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
 	CREATE_STATIC_RENDER_TARGET_OBJECT(ShadowMapDir, PF_NONE, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], PF_INTZ);
@@ -361,7 +371,7 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,				float,			25.f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,			float,			0.25f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,		float,			1.f						);
-	CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,		float,			1.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,		float,			0.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,				int,			COOK_TORRANCE_BECKMANN	);
 
 	/* Volumetric directional light parameters */
@@ -393,6 +403,14 @@ namespace GITechDemoApp
 	CREATE_SHADER_CONSTANT_OBJECT(fSSAOIntensity,			float,			5.f						);
 	CREATE_SHADER_CONSTANT_OBJECT(fSSAOScale,				float,			0.05f					);
 	CREATE_SHADER_CONSTANT_OBJECT(fSSAOBias,				float,			0.25f					);
+
+	/* Screen Space Reflection */
+	CREATE_SHADER_CONSTANT_OBJECT(fReflectionIntensity,		float,			2.f						);
+	CREATE_SHADER_CONSTANT_OBJECT(fThickness,				float,			100.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fSampleStride,			float,			25.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fMaxSteps,				float,			200.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(fMaxRayDist,				float,			3000.f					);
+	CREATE_SHADER_CONSTANT_OBJECT(bUseDither,				bool,			true					);
 
 	/* Post-processing parameters */
 	// Tone mapping
@@ -457,83 +475,90 @@ namespace GITechDemoApp
 	// Shader constants - code driven	//
 	//////////////////////////////////////
 
-	CREATE_SHADER_CONSTANT_OBJECT(f44WorldMat,					Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44ProjMat,					Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44ViewProjMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewProjMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewMat,				Matrix44f	);
+	CREATE_SHADER_CONSTANT_OBJECT(f44WorldMat,					Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ProjMat,					Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ViewProjMat,				Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewProjMat,			Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewMat,				Matrix44f		);
 	CREATE_SHADER_CONSTANT_OBJECT(texDiffuse,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texNormal,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(bHasNormalMap,				bool		);
+	CREATE_SHADER_CONSTANT_OBJECT(bHasNormalMap,				bool			);
 	CREATE_SHADER_CONSTANT_OBJECT(texSpec,						s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(bHasSpecMap,					bool		);
+	CREATE_SHADER_CONSTANT_OBJECT(bHasSpecMap,					bool			);
 	CREATE_SHADER_CONSTANT_OBJECT(texMatType,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texRoughness,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(fSpecIntensity,				float		);
-	CREATE_SHADER_CONSTANT_OBJECT(f2HalfTexelOffset,			Vec2f		);
+	CREATE_SHADER_CONSTANT_OBJECT(fSpecIntensity,				float			);
+	CREATE_SHADER_CONSTANT_OBJECT(f2HalfTexelOffset,			Vec2f			);
 	CREATE_SHADER_CONSTANT_OBJECT(texDepthBuffer,				s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texHypDepthBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texLinDepthBuffer,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(texQuarterDepthBuffer,		s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texMaterialBuffer,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texIrradianceMap,				s3dSamplerCUBE	);
 	CREATE_SHADER_CONSTANT_OBJECT(texEnvMap,					s3dSamplerCUBE	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44SkyViewProjMat,			Matrix44f	);
+	CREATE_SHADER_CONSTANT_OBJECT(f44SkyViewProjMat,			Matrix44f		);
 	CREATE_SHADER_CONSTANT_OBJECT(texSkyCube,					s3dSamplerCUBE	);
 	CREATE_SHADER_CONSTANT_OBJECT(texDiffuseBuffer,				s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44InvProjMat,				Matrix44f	);
+	CREATE_SHADER_CONSTANT_OBJECT(f44InvProjMat,				Matrix44f		);
 	CREATE_SHADER_CONSTANT_OBJECT(texNormalBuffer,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texShadowMap,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f2OneOverShadowMapSize,		Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(f44ViewMat,					Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44InvViewMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44InvViewProjMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44ScreenToLightViewMat,		Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f3LightDir,					Vec3f		);
-	CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMin,			Vec2f*		);
-	CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMax,			Vec2f*		);
-	CREATE_SHADER_CONSTANT_OBJECT(f44CascadeProjMat,			Matrix44f*	);
-	CREATE_SHADER_CONSTANT_OBJECT(f2PoissonDisk,				Vec2f*		);
-	CREATE_SHADER_CONSTANT_OBJECT(f44LightViewMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44InvLightViewMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewProjMat,		Matrix44f*	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44RSMWorldViewProjMat,		Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewMat,			Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44LightViewProjMat,			Matrix44f*	);
+	CREATE_SHADER_CONSTANT_OBJECT(f2OneOverShadowMapSize,		Vec2f			);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ViewMat,					Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44InvViewMat,				Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44InvViewProjMat,			Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ScreenToLightViewMat,		Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f3LightDir,					Vec3f			);
+	CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMin,			Vec2f*			);
+	CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMax,			Vec2f*			);
+	CREATE_SHADER_CONSTANT_OBJECT(f44CascadeProjMat,			Matrix44f*		);
+	CREATE_SHADER_CONSTANT_OBJECT(f2PoissonDisk,				Vec2f*			);
+	CREATE_SHADER_CONSTANT_OBJECT(f44LightViewMat,				Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44InvLightViewMat,			Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewProjMat,		Matrix44f*		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44RSMWorldViewProjMat,		Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewMat,			Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44LightViewProjMat,			Matrix44f*		);
 	CREATE_SHADER_CONSTANT_OBJECT(texRSMFluxBuffer,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texRSMNormalBuffer,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texRSMDepthBuffer,			s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f3RSMKernel,					Vec3f*		);
-	CREATE_SHADER_CONSTANT_OBJECT(f44RSMProjMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44RSMInvProjMat,				Matrix44f	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRSMViewMat,			Matrix44f	);
+	CREATE_SHADER_CONSTANT_OBJECT(f3RSMKernel,					Vec3f*			);
+	CREATE_SHADER_CONSTANT_OBJECT(f44RSMProjMat,				Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44RSMInvProjMat,				Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRSMViewMat,			Matrix44f		);
 	CREATE_SHADER_CONSTANT_OBJECT(texLumaInput,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(bInitialLumaPass,				bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(bFinalLumaPass,				bool		);
+	CREATE_SHADER_CONSTANT_OBJECT(bInitialLumaPass,				bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(bFinalLumaPass,				bool			);
 	CREATE_SHADER_CONSTANT_OBJECT(texAvgLuma,					s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texSource,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f2TexelSize,					Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(fFrameTime,					float		);
+	CREATE_SHADER_CONSTANT_OBJECT(fFrameTime,					float			);
 	CREATE_SHADER_CONSTANT_OBJECT(texLumaTarget,				s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(bApplyBrightnessFilter,		bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(nKernel,						int			);
-	CREATE_SHADER_CONSTANT_OBJECT(nDownsampleFactor,			int			);
-	CREATE_SHADER_CONSTANT_OBJECT(f2TexSize,					Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(bAdjustIntensity,				bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(f2LinearDepthEquation,		Vec2f		);
+	CREATE_SHADER_CONSTANT_OBJECT(bApplyBrightnessFilter,		bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(nKernel,						int				);
+	CREATE_SHADER_CONSTANT_OBJECT(nDownsampleFactor,			int				);
+	CREATE_SHADER_CONSTANT_OBJECT(bDepthDownsample,				bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(bReconstructDepth,			bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(f4TexSize,					Vec4f			);
+	CREATE_SHADER_CONSTANT_OBJECT(bAdjustIntensity,				bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(f2LinearDepthEquation,		Vec2f			);
 	CREATE_SHADER_CONSTANT_OBJECT(texTargetFocus,				s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f44PrevViewProjMat,			Matrix44f	);
+	CREATE_SHADER_CONSTANT_OBJECT(f44PrevViewProjMat,			Matrix44f		);
 	CREATE_SHADER_CONSTANT_OBJECT(texGhostColorLUT,				s3dSampler1D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareFeatures,			s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareDirt,				s3dSampler2D	);
 	CREATE_SHADER_CONSTANT_OBJECT(texLensFlareStarBurst,		s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f33LensFlareStarBurstMat,		Matrix33f	);
-	CREATE_SHADER_CONSTANT_OBJECT(bSingleChannelCopy,			bool		);
-	CREATE_SHADER_CONSTANT_OBJECT(f3CameraPositionLightVS,		Vec3f		);
-	CREATE_SHADER_CONSTANT_OBJECT(fRaymarchDistanceLimit,		float		);
+	CREATE_SHADER_CONSTANT_OBJECT(f33LensFlareStarBurstMat,		Matrix33f		);
+	CREATE_SHADER_CONSTANT_OBJECT(bSingleChannelCopy,			bool			);
+	CREATE_SHADER_CONSTANT_OBJECT(f3CameraPositionLightVS,		Vec3f			);
+	CREATE_SHADER_CONSTANT_OBJECT(fRaymarchDistanceLimit,		float			);
 	CREATE_SHADER_CONSTANT_OBJECT(texDitherMap,					s3dSampler2D	);
-	CREATE_SHADER_CONSTANT_OBJECT(f2BlurDir,					Vec2f		);
-	CREATE_SHADER_CONSTANT_OBJECT(f2DepthHalfTexelOffset,		Vec2f		);
+	CREATE_SHADER_CONSTANT_OBJECT(f2BlurDir,					Vec2f			);
+	CREATE_SHADER_CONSTANT_OBJECT(f2DepthHalfTexelOffset,		Vec2f			);
 	CREATE_SHADER_CONSTANT_OBJECT(texNoise,						s3dSampler3D	);
-	CREATE_SHADER_CONSTANT_OBJECT(fElapsedTime,					float		);
-	CREATE_SHADER_CONSTANT_OBJECT(f3FogBox,						Vec3f		);
+	CREATE_SHADER_CONSTANT_OBJECT(fElapsedTime,					float			);
+	CREATE_SHADER_CONSTANT_OBJECT(f3FogBox,						Vec3f			);
+	CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,			s3dSampler2D	);
+	CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,			Matrix44f		);
+	CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,					int				);
 	//--------------------------------------------------------------------------
 
 
@@ -557,7 +582,7 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Z-prepass",					"Populate the scene's depth buffer before generating the G-Buffer",		"G-Buffer",					GBUFFER_Z_PREPASS,							1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Diffuse anisotropic level",	"Anisotropic filtering level for diffuse textures",						"G-Buffer",					DIFFUSE_ANISOTROPY,							1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Use normal maps",			"Toggles the use of normal maps or vertex normals",						"G-Buffer",					GBUFFER_USE_NORMAL_MAPS,					1.f);
-	
+
 	// Directional light
 	CREATE_ARTIST_PARAMETER_OBJECT("Directional lights enable",	"Toggle the rendering of directional lights",							"Directional light",		DIRECTIONAL_LIGHT_ENABLED,					1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("BRDF model",				"0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann",	"Directional light",		nBRDFModel.GetCurrentValue(),				1.f);
@@ -584,7 +609,19 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 4",				"Depth bias for cascade 4",												"Cascaded shadow map",		DEPTH_BIAS[3],								0.0001f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 4",	"Slope scaled depth bias for cascade 4",								"Cascaded shadow map",		SLOPE_SCALED_DEPTH_BIAS[3],					0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Debug CSM camera",			"Draw the cascaded shadow map on-screen",								"Cascaded shadow map",		DEBUG_CSM_CAMERA,							1.f);
-	
+
+	// SSAO
+	CREATE_ARTIST_PARAMETER_OBJECT("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						SSAO_ENABLED,								1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Sample radius",				"Radius in which occluders are searched for",							"SSAO",						fSSAOSampleRadius.GetCurrentValue(),		1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Intensity",					"Intensity of SSAO effect",												"SSAO",						fSSAOIntensity.GetCurrentValue(),			1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Scale",						"Scale for the occlusion attenuation with distance",					"SSAO",						fSSAOScale.GetCurrentValue(),				0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Bias",						"Bias for the occlusion attenuation with normal differences",			"SSAO",						fSSAOBias.GetCurrentValue(),				0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"SSAO",						SSAO_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
+
+	// Sky
+	CREATE_ARTIST_PARAMETER_OBJECT("Sun radius", "Affects the radius of the sun", "Sky", fSunRadius.GetCurrentValue(), 10.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness", "Affects the brightness of the sun", "Sky", fSunBrightness.GetCurrentValue(), 10.f);
+
 	// RSM
 	CREATE_ARTIST_PARAMETER_OBJECT("Indirect lights enable",	"Toggle the rendering of indirect lights",								"Reflective shadow map",	INDIRECT_LIGHT_ENABLED,						1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Intensity",					"The intensity of the indirect light",									"Reflective shadow map",	fRSMIntensity.GetCurrentValue(),			1.f);
@@ -593,6 +630,16 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Debug upscale pass",		"Draws rejected pixels with a red color",								"Reflective shadow map",	bDebugUpscalePass.GetCurrentValue(),		1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"Reflective shadow map",	RSM_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Debug RSM camera",			"Draw the reflective shadow map on-screen",								"Reflective shadow map",	DEBUG_RSM_CAMERA,							1.f);
+
+	// Screen space reflections
+	CREATE_ARTIST_PARAMETER_OBJECT("SSR enable",				"Toggle the rendering of screen space reflections",						"Screen space reflections",	SSR_ENABLED,								1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Reflection intensity",		"Scale value for the intensity of reflections",							"Screen space reflections",	fReflectionIntensity.GetCurrentValue(),		0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Object thickness",			"Used to determine if ray hits are valid",								"Screen space reflections",	fThickness.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Sample stride",				"Number of pixels to jump between each ray march iteration",			"Screen space reflections",	fSampleStride.GetCurrentValue(),			10.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Manual maximum steps",		"Manually adjust maximum number of steps, or calculate it dynamically",	"Screen space reflections",	SSR_MANUAL_MAX_STEPS,						1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Maximum step count",		"Maximum number of ray march iterations before returning a miss",		"Screen space reflections",	fMaxSteps.GetCurrentValue(),				10.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Maximum ray distance",		"Maximum distance to ray march before returning a miss",				"Screen space reflections",	fMaxRayDist.GetCurrentValue(),				100.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Use dithering",				"Use a bayer matrix to offset the starting positions of rays",			"Screen space reflections",	bUseDither.GetCurrentValue(),				1.f);
 
 	// Volumetric lights
 	CREATE_ARTIST_PARAMETER_OBJECT("Volumetric lights enable",	"Toggle the rendering of the volumetric lighting effect (directional)",	"Volumetric lights",		DIR_LIGHT_VOLUME_ENABLE,					1.f);
@@ -610,38 +657,28 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Depth-aware upscaling",		"Make the upscale pass depth-aware so as not to cause artifacts",		"Volumetric lights",		DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE,		1.f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Upsample depth threshold",	"A threshold for edge detection used to reduce upscaling artifacts",	"Volumetric lights",		fUpsampleDepthThreshold.GetCurrentValue(),	0.0001f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Quarter resolution",		"Toggle the use of an intermediary quarter resolution target",			"Volumetric lights",		DIR_LIGHT_VOLUME_QUARTER_RES,				1.f);
-	
-	// Sky
-	CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",				"Affects the radius of the sun",										"Sky",						fSunRadius.GetCurrentValue(),				10.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",			"Affects the brightness of the sun",									"Sky",						fSunBrightness.GetCurrentValue(),			10.f);
-	
+
 	// Post-processing
 	CREATE_ARTIST_PARAMETER_OBJECT("Post-processing enable",	"Toggle post-processing effects",										"Post-processing effects",	POST_PROCESSING_ENABLED,					1.f);
 
-	// SSAO
-	CREATE_ARTIST_PARAMETER_OBJECT("SSAO enable",				"Toggle the rendering of screen space ambient occlusion",				"SSAO",						SSAO_ENABLED,								1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Sample radius",				"Radius in which occluders are searched for",							"SSAO",						fSSAOSampleRadius.GetCurrentValue(),		1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Intensity",					"Intensity of SSAO effect",												"SSAO",						fSSAOIntensity.GetCurrentValue(),			1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Scale",						"Scale for the occlusion attenuation with distance",					"SSAO",						fSSAOScale.GetCurrentValue(),				0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Bias",						"Bias for the occlusion attenuation with normal differences",			"SSAO",						fSSAOBias.GetCurrentValue(),				0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Quarter resolution",		"Toggle rendering into a quarter resolution buffer",					"SSAO",						SSAO_USE_QUARTER_RESOLUTION_BUFFER,			1.f);
-	
 	// Bokeh DoF
-	CREATE_ARTIST_PARAMETER_OBJECT("DoF enable",				"Toggle the rendering of the depth of field effect",					"Bokeh DoF",				DOF_ENABLED,								1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Focal depth",				"Focal distance value in meters (overridden by autofocus)",				"Bokeh DoF",				fFocalDepth.GetCurrentValue(),				1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Focal length",				"Focal length in mm",													"Bokeh DoF",				fFocalLength.GetCurrentValue(),				1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("F-stop",					"F-stop value",															"Bokeh DoF",				fFStop.GetCurrentValue(),					1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Circle of confusion",		"Circle of confusion size in mm (35mm film = 0.03mm)",					"Bokeh DoF",				fCoC.GetCurrentValue(),						0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Aperture size",				"Affects size of bokeh",												"Bokeh DoF",				fApertureSize.GetCurrentValue(),			0.001f);
-	CREATE_ARTIST_PARAMETER_OBJECT("DoF pass count",			"The number of times to apply the DoF shader",							"Bokeh DoF",				DOF_NUM_PASSES,								1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Highlight threshold",		"Brightness-pass filter threshold (higher = sparser bokeh)",			"Bokeh DoF",				fHighlightThreshold.GetCurrentValue(),		0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Highlight gain",			"Brightness gain (higher = more prominent bokeh)",						"Bokeh DoF",				fHighlightGain.GetCurrentValue(),			0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Autofocus",					"Use autofocus",														"Bokeh DoF",				bAutofocus.GetCurrentValue(),				1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Autofocus time",			"Autofocus animation duration in seconds",								"Bokeh DoF",				DOF_AUTOFOCUS_TIME,							1.f);;
-	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting",				"Optical lens vignetting effect",										"Bokeh DoF",				bVignetting.GetCurrentValue(),				1.f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting out",			"Vignetting outer border",												"Bokeh DoF",				fVignOut.GetCurrentValue(),					0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting in",				"Vignetting inner border",												"Bokeh DoF",				fVignIn.GetCurrentValue(),					0.1f);
-	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting fade",			"F-stops until vignette fades",											"Bokeh DoF",				fVignFade.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("DoF enable",				"Toggle the rendering of the depth of field effect",					"Depth of field",			DOF_ENABLED,								1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Focal depth",				"Focal distance value in meters (overridden by autofocus)",				"Depth of field",			fFocalDepth.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Focal length",				"Focal length in mm",													"Depth of field",			fFocalLength.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("F-stop",					"F-stop value",															"Depth of field",			fFStop.GetCurrentValue(),					1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Circle of confusion",		"Circle of confusion size in mm (35mm film = 0.03mm)",					"Depth of field",			fCoC.GetCurrentValue(),						0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Aperture size",				"Affects size of bokeh",												"Depth of field",			fApertureSize.GetCurrentValue(),			0.001f);
+	CREATE_ARTIST_PARAMETER_OBJECT("DoF pass count",			"The number of times to apply the DoF shader",							"Depth of field",			DOF_NUM_PASSES,								1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Highlight threshold",		"Brightness-pass filter threshold (higher = sparser bokeh)",			"Depth of field",			fHighlightThreshold.GetCurrentValue(),		0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Highlight gain",			"Brightness gain (higher = more prominent bokeh)",						"Depth of field",			fHighlightGain.GetCurrentValue(),			0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Autofocus",					"Use autofocus",														"Depth of field",			bAutofocus.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Autofocus time",			"Autofocus animation duration in seconds",								"Depth of field",			DOF_AUTOFOCUS_TIME,							1.f);;
+
+	// Vignetting (part of DoF shader)
+	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting",				"Optical lens vignetting effect",										"Vignetting",				bVignetting.GetCurrentValue(),				1.f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting out",			"Vignetting outer border",												"Vignetting",				fVignOut.GetCurrentValue(),					0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting in",				"Vignetting inner border",												"Vignetting",				fVignIn.GetCurrentValue(),					0.1f);
+	CREATE_ARTIST_PARAMETER_OBJECT("Vignetting fade",			"F-stops until vignette fades",											"Vignetting",				fVignFade.GetCurrentValue(),				1.f);
 
 	// Chromatic aberration (part of DoF shader)
 	CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift amount",		"The amount of chromatic separation",									"Chromatic aberration",		fChromaShiftAmount.GetCurrentValue(),		0.1f);
@@ -690,7 +727,7 @@ namespace GITechDemoApp
 	CREATE_ARTIST_PARAMETER_OBJECT("Toe denominator",			"Denominator of the toe part of the filmic tone mapping curve",			"HDR tone mapping",			fToeDenominator.GetCurrentValue(),			0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Linear white",				"Reference linear white value of the filmic tone mapping curve",		"HDR tone mapping",			fLinearWhite.GetCurrentValue(),				0.1f);
 	CREATE_ARTIST_PARAMETER_OBJECT("Exposure adapt speed",		"Seconds in which the exposure adapts to scene brightness",				"HDR tone mapping",			fLumaAdaptSpeed.GetCurrentValue(),			0.1f);
-	
+
 	// Film grain (part of HDR tonemapping shader)
 	CREATE_ARTIST_PARAMETER_OBJECT("Film grain amount",			"Amount of film grain applied to the image",							"Film grain",				fFilmGrainAmount.GetCurrentValue(),			0.001f);
 

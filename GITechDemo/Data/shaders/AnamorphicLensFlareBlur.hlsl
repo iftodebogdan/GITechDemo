@@ -40,7 +40,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texSource;	// The texture to be blurred
-const float2 f2TexelSize;	// Size of a texel
+const float4 f4TexSize;		// zw: normalized size of texel
 const int nKernel;			// Kernel size for current pass
 
 float4 KawaseBlurAnamorphic(const sampler2D texSource, const float2 f2TexelSize, const float2 f2TexCoord, const int nKernel)
@@ -67,6 +67,6 @@ float4 KawaseBlurAnamorphic(const sampler2D texSource, const float2 f2TexelSize,
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-	f4Color = KawaseBlurAnamorphic(texSource, f2TexelSize, input.f2TexCoord, nKernel);
+	f4Color = KawaseBlurAnamorphic(texSource, f4TexSize.zw, input.f2TexCoord, nKernel);
 }
 ////////////////////////////////////////////////////////////////////

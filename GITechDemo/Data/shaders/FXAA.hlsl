@@ -2150,7 +2150,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texSource;			// The texture to be antialiased
-const float2 f2TexelSize;			// The size of a texel
+const float4 f4TexSize;				// zw: the size of a texel
 const float	fFxaaSubpix;			// Amount of sub-pixel aliasing removal (default: 0.75f)
 const float fFxaaEdgeThreshold;		// Minimum amount of local contrast to apply algorithm (default: 0.166f)
 const float fFxaaEdgeThresholdMin;	// Trims the algorithm from processing darks (default: 0.0833f)
@@ -2163,9 +2163,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	const float4 f4PosPos = float4(input.f2TexCoord - f2HalfTexelOffset, input.f2TexCoord + f2HalfTexelOffset);
 	
 	const float fSharpness = 0.5f;
-	const float4 f4RcpFrameOpt = float4(-fSharpness * f2TexelSize, fSharpness * f2TexelSize);
-	const float4 f4RcpFrameOpt2 = float4(-2.f * f2TexelSize, 2.f * f2TexelSize);
-	const float4 f4360RcpFrameOpt2 = float4(8.f * f2TexelSize, -4.f * f2TexelSize);
+	const float4 f4RcpFrameOpt = float4(-fSharpness * f4TexSize.zw, fSharpness * f4TexSize.zw);
+	const float4 f4RcpFrameOpt2 = float4(-2.f * f4TexSize.zw, 2.f * f4TexSize.zw);
+	const float4 f4360RcpFrameOpt2 = float4(8.f * f4TexSize.zw, -4.f * f4TexSize.zw);
 	
 	const float fFxaaEdgeSharpness = 8.0f;
 	//const float fFxaaEdgeThreshold = 0.125f;
@@ -2179,7 +2179,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 		texSource,				// FxaaTex tex
 		texSource,				// FxaaTex fxaaConsole360TexExpBiasNegOne
 		texSource,				// FxaaTex fxaaConsole360TexExpBiasNegTwo
-		f2TexelSize,			// FxaaFloat2 fxaaQualityRcpFrame
+		f4TexSize.zw,			// FxaaFloat2 fxaaQualityRcpFrame
 		f4RcpFrameOpt,			// FxaaFloat4 fxaaConsoleRcpFrameOpt
 		f4RcpFrameOpt2,			// FxaaFloat4 fxaaConsoleRcpFrameOpt2
 		f4360RcpFrameOpt2,		// fxaaConsole360RcpFrameOpt2

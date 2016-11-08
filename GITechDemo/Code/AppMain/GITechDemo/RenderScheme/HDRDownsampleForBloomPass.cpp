@@ -59,6 +59,7 @@ void HDRDownsampleForBloomPass::Update(const float fDeltaTime)
 
 	nDownsampleFactor = 16;
 	bApplyBrightnessFilter = false;
+	bDepthDownsample = false;
 }
 
 void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
@@ -80,9 +81,11 @@ void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarg
 		0.5f / pDest->GetRenderTarget()->GetWidth(),
 		0.5f / pDest->GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / pSource->GetRenderTarget()->GetWidth(),
-		1.f / pSource->GetRenderTarget()->GetHeight()
+	f4TexSize = Vec4f(
+		(float)pSource->GetRenderTarget()->GetWidth(),
+		(float)pSource->GetRenderTarget()->GetHeight(),
+		1.f / (float)pSource->GetRenderTarget()->GetWidth(),
+		1.f / (float)pSource->GetRenderTarget()->GetHeight()
 		);
 	texSource = pSource->GetRenderTarget()->GetColorBuffer(0);
 

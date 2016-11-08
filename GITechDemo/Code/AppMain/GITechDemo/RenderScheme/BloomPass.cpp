@@ -68,6 +68,7 @@ void BloomPass::Update(const float fDeltaTime)
 	nDownsampleFactor = 1;
 	bApplyBrightnessFilter = true;
 	bSingleChannelCopy = false;
+	bDepthDownsample = false;
 }
 
 // Apply a brightness filter to the downsampled HDR scene color buffer
@@ -92,12 +93,14 @@ void BloomPass::BloomBrightnessFilter()
 	ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 
 	f2HalfTexelOffset = Vec2f(
-		0.5f / BloomBuffer[0]->GetRenderTarget()->GetWidth(),
-		0.5f / BloomBuffer[0]->GetRenderTarget()->GetHeight()
+		0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetWidth(),
+		0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
-		1.f / HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight()
+	f4TexSize = Vec4f(
+		(float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
+		(float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight(),
+		1.f / (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
+		1.f / (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight()
 		);
 	texSource = HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0);
 
@@ -139,16 +142,18 @@ void BloomPass::BloomBlur()
 		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
 		f2HalfTexelOffset = Vec2f(
-			0.5f / BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			0.5f / BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
+			0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		ResourceMgr->GetTexture(
 			BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
 			)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 		texSource = BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
-		f2TexelSize = Vec2f(
-			1.f / BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			1.f / BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			(float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight(),
+			1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		nKernel = BLOOM_BLUR_KERNEL[i];
 		if (i == BLOOM_BLUR_KERNEL_COUNT - 1)

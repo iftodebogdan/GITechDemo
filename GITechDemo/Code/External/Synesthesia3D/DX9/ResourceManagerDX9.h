@@ -43,8 +43,6 @@ namespace Synesthesia3D
 			VertexFormat* const vertexFormat, const unsigned int vertexCount,
 			IndexBuffer* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC);
 
-		const unsigned int CreateShaderInput(ShaderProgram* const shaderProgram);
-
 		const unsigned int CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint = "");
 
 		const unsigned int CreateTexture(
@@ -62,6 +60,8 @@ namespace Synesthesia3D
 		const unsigned int CreateRenderTarget(const unsigned int targetCount,
 			PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
 			const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
+
+		void	UnbindAll();
 
 	private:
 		ResourceManagerDX9() {}

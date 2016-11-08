@@ -40,30 +40,53 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texSource;	// Source texture for downsampling
-const float2 f2TexelSize;	// Size of source texture texel
+const float4 f4TexSize;		// zw: size of source texture texel
+
+// Color downsampling options
 const int nDownsampleFactor;		// Switch for 2x2 or 4x4 downsampling
 const bool bApplyBrightnessFilter;	// Switch for whether to apply a brightness pass filter
 const float fBrightnessThreshold;	// Threshold for the brightness pass filter
+
+// Depth downsampling options
+const bool bDepthDownsample;	// Downsample depth values instead of colors
+const bool bReconstructDepth;	// Reconstruct camera space depth from hyperbolic depth
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
 	f4Color = float4(0.f, 0.f, 0.f, 0.f);
 
-	if (nDownsampleFactor == 16)
-		f4Color = Downsample4x4(texSource, input.f2TexCoord, f2TexelSize);
-
-	if (nDownsampleFactor == 4)
-		f4Color = Downsample2x2(texSource, input.f2TexCoord, f2TexelSize);
-
-	if (nDownsampleFactor == 1)
-		f4Color = tex2D(texSource, input.f2TexCoord);
-
-	if (bApplyBrightnessFilter)
+	if (bDepthDownsample)
 	{
-		const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
-		f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
-		//f4Color.rgb *= rcp(fBrightness);
-		f4Color.rgb *= rcp(1.f + fBrightness);
+		float fSampleDepth;
+		
+		if (nDownsampleFactor == 4)
+			fSampleDepth = GetDownsampledDepth(texSource, input.f2TexCoord).r;
+		else
+			fSampleDepth = tex2D(texSource, input.f2TexCoord).r;
+		
+		if (bReconstructDepth)
+			f4Color = ReconstructDepth(fSampleDepth);
+		else
+			f4Color = fSampleDepth;
+	}
+	else
+	{
+		if (nDownsampleFactor == 16)
+			f4Color = Downsample4x4(texSource, input.f2TexCoord, f4TexSize.zw);
+
+		if (nDownsampleFactor == 4)
+			f4Color = Downsample2x2(texSource, input.f2TexCoord, f4TexSize.zw);
+
+		if (nDownsampleFactor == 1)
+			f4Color = tex2D(texSource, input.f2TexCoord);
+
+		if (bApplyBrightnessFilter)
+		{
+			const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
+			f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
+			//f4Color.rgb /= fBrightness;
+			f4Color.rgb /= 1.f + fBrightness;
+		}
 	}
 }
 ////////////////////////////////////////////////////////////////////

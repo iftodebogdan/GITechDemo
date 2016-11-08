@@ -74,7 +74,7 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 		DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
 	)->SetAddressingMode(SAM_CLAMP);
 
-	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+	texDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
 
 	ResourceMgr->GetTexture(AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 	ResourceMgr->GetTexture(AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -140,13 +140,11 @@ void DepthOfFieldPass::AccumulateDoFEffect()
 		0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
 		0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
-		1.f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
-	);
-	f2TexSize = Vec2f(
+	f4TexSize = Vec4f(
 		(float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
-		(float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
+		(float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight(),
+		1.f / (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
+		1.f / (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
 	);
 	texSource = DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
 
@@ -182,13 +180,11 @@ void DepthOfFieldPass::CalculateBlurFactor()
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 	);
-	f2TexelSize = Vec2f(
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-	);
-	f2TexSize = Vec2f(
+	f4TexSize = Vec4f(
 		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
+		1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 	);
 	texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 
@@ -230,13 +226,11 @@ void DepthOfFieldPass::ApplyDoF()
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		1.f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-	);
-	f2TexSize = Vec2f(
+	f4TexSize = Vec4f(
 		(float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+		(float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
+		1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+		1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 	);
 	texSource = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
 

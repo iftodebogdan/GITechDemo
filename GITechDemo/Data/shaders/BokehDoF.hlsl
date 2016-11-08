@@ -46,8 +46,7 @@ const sampler2D texSource;		// Source texture to be blurred
 const sampler2D texDepthBuffer;	// Source depth buffer
 const sampler2D texTargetFocus;	// Used for autofocus
 
-const float2 f2TexSize;		// Size, in texels, of source image
-const float2 f2TexelSize;	// Size of a single texel of source image
+const float4 f4TexSize;	// xy: size, in texels, of source image; zw: normalized size of a texel
 //------------------------------------------
 
 //------------------------------------------
@@ -92,7 +91,7 @@ void ApplyLensDistortion(in out float2 f2TexCoord)
 {
 	if (fQuarticDistortionCoef != 0 || fCubicDistortionModifier != 0 || fDistortionScale != 0)
 	{
-		const float fAspectRatioScale = f2TexSize.y / f2TexSize.x;
+		const float fAspectRatioScale = f4TexSize.y * f4TexSize.z; // y / (1 / x)
 		f2TexCoord -= 0.5f;
 		const float r2 = fAspectRatioScale * fAspectRatioScale * f2TexCoord.x * f2TexCoord.x + f2TexCoord.y * f2TexCoord.y;
 		const float f = 1.f + r2 * (fQuarticDistortionCoef + fCubicDistortionModifier * sqrt(r2));
@@ -129,7 +128,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	if (fApertureSize > 0.f)
 	{
 		// Fix aspect ratio of blur kernel
-		const float fAspectRatioScale = f2TexSize.y / f2TexSize.x;
+		const float fAspectRatioScale = f4TexSize.y * f4TexSize.z;
 
 		for (int i = 0; i < APERTURE_BLADE_COUNT; i++)
 		{
@@ -152,7 +151,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	else
 	{
 		// Calculate the scene depth in world space coordinates
-		const float fLinearDepth = ReconstructDepth(tex2D(texDepthBuffer, input.f2TexCoord).r);
+		const float fLinearDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
 
 		// Calculate focal plane
 		const float fFocalPoint = bAutofocus ? ReconstructDepth(tex2D(texTargetFocus, float2(0.5f, 0.5f)).r) : fFocalDepth;
@@ -176,15 +175,15 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 			const float fChromaShiftFactor = smoothstep(0.f, 1.f, distance(input.f2TexCoord, float2(0.5f, 0.5f)) * 1.414213562f);
 
 			// Apply chromatic aberration effect
-			f3AccumSamples.r = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.f, 1.f)		* f2TexelSize * fChromaShiftAmount * fDofBlurFactor).r;
-			f3AccumSamples.g = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(-0.866f, -0.5f)	* f2TexelSize * fChromaShiftAmount * fDofBlurFactor).g;
-			f3AccumSamples.b = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.866f, -0.5f)	* f2TexelSize * fChromaShiftAmount * fDofBlurFactor).b;
+			f3AccumSamples.r = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.f, 1.f)		* f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).r;
+			f3AccumSamples.g = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(-0.866f, -0.5f)	* f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).g;
+			f3AccumSamples.b = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.866f, -0.5f)	* f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).b;
 		}
 
 		// Apply vignetting
 		if (bVignetting)
 		{
-			const float fFadeFactor = fFStop * rcp(fVignFade);
+			const float fFadeFactor = fFStop / fVignFade;
 			f3AccumSamples *= smoothstep(fVignOut + fFadeFactor, fVignIn + fFadeFactor, distance(input.f2TexCoord, float2(0.5f, 0.5f)));
 		}
 	}

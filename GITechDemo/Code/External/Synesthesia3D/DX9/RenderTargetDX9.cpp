@@ -330,19 +330,6 @@ void RenderTargetDX9::Bind()
 void RenderTargetDX9::Unbind()
 {
 	unsigned int refCount = 0;
-
-	if (ms_pBBColorSurfBkp)
-	{
-		ms_pBBColorSurfBkp->Release();
-		ms_pBBColorSurfBkp = nullptr;
-	}
-
-	if (ms_pBBDepthSurfBkp)
-	{
-		ms_pBBDepthSurfBkp->Release();
-		ms_pBBDepthSurfBkp = nullptr;
-	}
-
 	for (unsigned int i = 0; i < m_nTargetCount; i++)
 	{
 		if (m_pColorSurface && m_pColorSurface[i])

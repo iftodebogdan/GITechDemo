@@ -155,6 +155,7 @@ namespace Synesthesia3D
 		static	int				ms_nProfileMarkerCounter;	/**< @brief Keeps track of profiler marker start/end pairs. */
 
 		friend class Renderer;
+		friend class ResourceManager;
 	};
 }
 

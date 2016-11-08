@@ -226,6 +226,13 @@ void TextureDX9::Bind()
 			// automatic mipmap generation for RTs
 			usageFlags |= D3DUSAGE_AUTOGENMIPMAP;
 			mipCount = 0;
+		#ifdef _DEBUG
+			hr = RendererDX9::GetInstance()->GetDriver()->CheckDeviceFormat(
+				D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, PixelFormatDX9[RendererDX9::GetInstance()->GetBackBufferFormat()],
+				usageFlags, D3DRTYPE_TEXTURE, PixelFormatDX9[m_ePixelFormat]);
+			S3D_VALIDATE_HRESULT(hr);
+			assert(Renderer::GetInstance()->GetDeviceCaps().bCanAutoGenMipmaps);
+		#endif
 		}
 		hr = device->CreateTexture(
 			GetWidth(), GetHeight(), mipCount,

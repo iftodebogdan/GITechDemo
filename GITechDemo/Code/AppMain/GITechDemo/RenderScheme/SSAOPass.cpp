@@ -145,9 +145,11 @@ void SSAOPass::BlurSSAO()
 			SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
 			)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 		texSource = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
-		f2TexelSize = Vec2f(
-			1.f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			1.f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
+		f4TexSize = Vec4f(
+			(float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			(float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight(),
+			1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+			1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
 			);
 		nKernel = SSAO_BLUR_KERNEL[i];
 		bAdjustIntensity = false;

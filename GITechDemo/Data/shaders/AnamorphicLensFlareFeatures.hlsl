@@ -42,7 +42,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D	texSource;	// Source texture
-const float2 f2TexelSize;	// Size of source texture texel
+const float4 f4TexSize;		// zw: size of source texture texel
 
 const float fAnamorphicIntensity;
 
@@ -62,7 +62,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	UNROLL for (int i = -16; i <= 16; i++)
 	{
 		// Calculate coordinates for sampling source texture
-		const float2 f2Offset = float2(i * f2TexelSize.x, 0.f);
+		const float2 f2Offset = float2(i * f4TexSize.z, 0.f);
 		const float2 f2SampleTexCoord = input.f2TexCoord + f2Offset;
 
 		// Sample the texture and give it a bluish tint

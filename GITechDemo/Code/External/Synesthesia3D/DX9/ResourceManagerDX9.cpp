@@ -193,3 +193,20 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
 
 	return ret;
 }
+
+void ResourceManagerDX9::UnbindAll()
+{
+	ResourceManager::UnbindAll();
+
+	if (RenderTargetDX9::ms_pBBColorSurfBkp)
+	{
+		RenderTargetDX9::ms_pBBColorSurfBkp->Release();
+		RenderTargetDX9::ms_pBBColorSurfBkp = nullptr;
+	}
+
+	if (RenderTargetDX9::ms_pBBDepthSurfBkp)
+	{
+		RenderTargetDX9::ms_pBBDepthSurfBkp->Release();
+		RenderTargetDX9::ms_pBBDepthSurfBkp = nullptr;
+	}
+}

@@ -79,7 +79,7 @@ const float3 GetCascadeSpacePos(const float3 f3LightViewPos, const unsigned int 
 	f3CascadeTexCoord.xy =
 		(f3CascadeTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
 		fCascadeNormSize +
-		float2(fCascadeNormSize * fmod(nValidCascade, nCascadesPerRow), fCascadeNormSize * floor(nValidCascade * rcp(nCascadesPerRow)));
+		float2(fCascadeNormSize * fmod(nValidCascade, nCascadesPerRow), fCascadeNormSize * floor(nValidCascade * fCascadeNormSize));
 
 	return f3CascadeTexCoord;
 }

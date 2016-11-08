@@ -57,13 +57,13 @@ const float fFilmGrainAmount;
 
 float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 {
-	return f3Color * rcp(1.f + fAvgLuma);
+	return f3Color / (1.f + fAvgLuma);
 }
 
 float3 DuikerOptimizedTonemap(const float3 f3Color)
 {
 	float3 x = max(0, f3Color - 0.004f);
-	return (x * (6.2f * x + 0.5f)) * rcp(x * (6.2f * x + 1.7f) + 0.06f);
+	return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ float3 FilmicTonemap(const float3 f3Color)
 				f3Color * (fShoulderStrength * f3Color + fLinearStrength)
 				+ fToeStrength * fToeDenominator
 			)
-		) - fToeNumerator * rcp(fToeDenominator);
+		) - fToeNumerator / fToeDenominator;
 }
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
@@ -97,7 +97,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	float3 f3Color = tex2D(texSource, input.f2TexCoord).rgb;
 
 	float fAvgLuma = tex2D(texAvgLuma, float2(0.5f, 0.5f)).r;
-	f3Color *= rcp(fAvgLuma);
+	f3Color /= fAvgLuma;
 
 	//////////////////////////////////////////
 	// Apply tone mapping operator			//
@@ -117,9 +117,9 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 	// Convert back to gamma space (not required for Duiker tonemap)
 	// NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()
-	//f4Color = float4(pow(abs(f3FinalColor), rcp(2.2f)), 1);
+	//f4Color = float4(pow(abs(f3FinalColor), 1.f / 2.2f), 1);
 	// Encode gamma-corrected luma in the alpha channel for FXAA
-	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), rcp(2.2f)));
+	f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), 1.f / 2.2f));
 
 	// Film grain needs to be applied after tonemapping, so as not to be affected by exposure variance
 	if(fFilmGrainAmount > 0.f)

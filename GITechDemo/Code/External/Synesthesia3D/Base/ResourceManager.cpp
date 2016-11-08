@@ -99,6 +99,8 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::ReleaseAll()
 {
+	UnbindAll();
+
 	for (unsigned int i = 0; i < m_arrModel.size(); i++)
 		delete m_arrModel[i];
 	for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
@@ -168,6 +170,9 @@ void ResourceManager::UnbindAll()
 	for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
 		if (m_arrRenderTarget[i])
 			m_arrRenderTarget[i]->Unbind();
+
+	if(Renderer::GetInstance()->GetProfiler())
+		Renderer::GetInstance()->GetProfiler()->ReleaseGPUProfileMarkerResults();
 }
 
 const unsigned int ResourceManager::CreateShaderInput(ShaderProgram* const shaderProgram)

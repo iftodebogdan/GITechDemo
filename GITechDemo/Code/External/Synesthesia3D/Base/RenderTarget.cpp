@@ -337,19 +337,23 @@ RenderTarget* RenderTarget::GetActiveRenderTarget()
 
 void RenderTarget::Enable()
 {
-	if(ms_pActiveRenderTarget.size() == 0 || ms_pActiveRenderTarget.back() != this)
-		ms_pActiveRenderTarget.push_back(this);
+	//if(ms_pActiveRenderTarget.size() == 0 || ms_pActiveRenderTarget.back() != this)
+	ms_pActiveRenderTarget.push_back(this);
 }
 
 void RenderTarget::Disable()
 {
 	assert(GetActiveRenderTarget() == this);
-	if (GetActiveRenderTarget())
-		ms_pActiveRenderTarget.pop_back();
+	ms_pActiveRenderTarget.pop_back();
 	
 	// Set the last active render target
-	if(GetActiveRenderTarget())
+	if (GetActiveRenderTarget())
+	{
+		// Enable() will push a duplicate of the
+		// this RT on the stack, so remove it.
 		GetActiveRenderTarget()->Enable();
+		ms_pActiveRenderTarget.pop_back();
+	}
 }
 
 const Vec2i RenderTarget::GetSize() const

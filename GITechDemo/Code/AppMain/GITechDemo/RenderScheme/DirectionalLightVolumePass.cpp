@@ -66,10 +66,12 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
 	v4CamPosLightVS /= v4CamPosLightVS[3];
 	f3CameraPositionLightVS = Vec3f(v4CamPosLightVS[0], v4CamPosLightVS[1], v4CamPosLightVS[2]);
 	fRaymarchDistanceLimit = CASCADE_MAX_VIEW_DEPTH;
-	f2TexSize = Vec2f(
+	f4TexSize = Vec4f(
 		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
-		);
+		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
+		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+	);
 	bSingleChannelCopy = true;
 	BayerMatrix.GetTexture()->SetAddressingMode(SAM_WRAP);
 	BayerMatrix.GetTexture()->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -128,12 +130,16 @@ void DirectionalLightVolumePass::GatherSamples()
 	if (!DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE)
 		fBlurDepthFalloff = 0.f;
 
+	texDepthBuffer = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
+
 	PUSH_PROFILE_MARKER("Horizontal");
 
 	VolumetricLightAccumulationBuffer[1]->Enable();
 
 	f2HalfTexelOffset = Vec2f(0.5f / VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
-	f2TexelSize = Vec2f(
+	f4TexSize = Vec4f(
+		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
 		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
 		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
 		);
@@ -163,7 +169,9 @@ void DirectionalLightVolumePass::GatherSamples()
 	VolumetricLightAccumulationBuffer[0]->Enable();
 
 	f2HalfTexelOffset = Vec2f(0.5f / VolumetricLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
-	f2TexelSize = Vec2f(
+	f4TexSize = Vec4f(
+		(float)VolumetricLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
+		(float)VolumetricLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight(),
 		1.f / (float)VolumetricLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
 		1.f / (float)VolumetricLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight()
 		);
@@ -214,18 +222,16 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
-	f2TexelSize = Vec2f(
-		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
-		);
 	f2DepthHalfTexelOffset = Vec2f(
 		0.5f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
 		0.5f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
 		);
-	f2TexSize = Vec2f(
+	f4TexSize = Vec4f(
 		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
-		);
+		(float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
+		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+		1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+	);
 	ResourceMgr->GetTexture(
 		VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
 		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
@@ -234,6 +240,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 		)->SetAddressingMode(SAM_CLAMP);
 	texSource = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
 	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+	texQuarterDepthBuffer = HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
 
 	if (DIR_LIGHT_VOLUME_QUARTER_RES && DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
 	{

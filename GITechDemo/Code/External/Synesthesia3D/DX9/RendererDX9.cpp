@@ -49,8 +49,6 @@ RendererDX9::~RendererDX9()
 {
 	ULONG refCount = 0;
 
-	GetProfiler()->ReleaseGPUProfileMarkerResults();
-
 	if (m_pd3dDevice)
 		refCount = m_pd3dDevice->Release();
 	assert(refCount == 0);
@@ -469,7 +467,6 @@ const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offse
 
 	// Unbind resources
 	GetResourceManager()->UnbindAll();
-	GetProfiler()->ReleaseGPUProfileMarkerResults();
 
 	// Reset the device
 	if (ResetDevice(pp))

@@ -63,6 +63,8 @@ void GBufferPass::Update(const float fDeltaTime)
 
 	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetAddressingMode(SAM_CLAMP);
 	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(1))->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(2))->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(3))->SetAddressingMode(SAM_CLAMP);
 	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetDepthBuffer())->SetAddressingMode(SAM_CLAMP);
 
 	f44WorldViewMat = f44ViewMat * f44WorldMat;
@@ -75,6 +77,26 @@ void GBufferPass::Update(const float fDeltaTime)
 	// up until the tone mapping pass, where we output a LDR sRGB texture.
 	// Kudos to VladC of FUN labs for pointing this out!
 	ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
+
+	texSource = GBuffer.GetRenderTarget()->GetDepthBuffer();
+	f4TexSize = Vec4f(
+		(float)GBuffer.GetRenderTarget()->GetWidth(),
+		(float)GBuffer.GetRenderTarget()->GetHeight(),
+		1.f / (float)GBuffer.GetRenderTarget()->GetWidth(),
+		1.f / (float)GBuffer.GetRenderTarget()->GetHeight()
+	);
+	bDepthDownsample = true;
+	f2DepthHalfTexelOffset = Vec2f(
+		0.5f / (float)GBuffer.GetRenderTarget()->GetWidth(),
+		0.5f / (float)GBuffer.GetRenderTarget()->GetHeight()
+	);
+
+	ResourceMgr->GetTexture(LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
+	ResourceMgr->GetTexture(LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+	ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 }
 
 void GBufferPass::Draw()
@@ -162,4 +184,34 @@ void GBufferPass::Draw()
 	}
 
 	GBuffer.Disable();
+
+	// Generate linear depth buffer and quarter-resolution versions of the hyperbolic and linear depth buffers
+	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+
+	bReconstructDepth = false;
+	nDownsampleFactor = 4;
+	DownsampleShader.Enable();
+	HyperbolicQuarterDepthBuffer.Enable();
+	RenderContext->DrawVertexBuffer(FullScreenTri);
+	HyperbolicQuarterDepthBuffer.Disable();
+	DownsampleShader.Disable();
+
+	bReconstructDepth = true;
+	nDownsampleFactor = 1;
+	DownsampleShader.Enable();
+	LinearFullDepthBuffer.Enable();
+	RenderContext->DrawVertexBuffer(FullScreenTri);
+	LinearFullDepthBuffer.Disable();
+	DownsampleShader.Disable();
+
+	bReconstructDepth = true;
+	nDownsampleFactor = 4;
+	DownsampleShader.Enable();
+	LinearQuarterDepthBuffer.Enable();
+	RenderContext->DrawVertexBuffer(FullScreenTri);
+	LinearQuarterDepthBuffer.Disable();
+	DownsampleShader.Disable();
+
+	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 }

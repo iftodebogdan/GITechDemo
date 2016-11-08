@@ -39,7 +39,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 {
 	output.f4Position	=	f4Position;
 	output.f2TexCoord	=	f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
-	output.f3ViewVec	=	mul(f44InvProjMat, float4(f4Position.xy, 1.f, 1.f)).xyz;
+	output.f3ViewVec	=	mul(f44InvProjMat, float4(f4Position.xy, 0.f, 1.f)).xyz;
 	output.f2ScreenPos	=	f4Position.xy;
 }
 ////////////////////////////////////////////////////////////////////
@@ -50,7 +50,6 @@ const sampler2D	texNormalBuffer;	// View-space normals
 const sampler2D	texDepthBuffer;		// Depth values
 const sampler2D	texMaterialBuffer;	// Roughness and material type (metallic/dielectric)
 
-#define ENVIRONMENT_MAP_MIP_COUNT	(9)
 const samplerCUBE	texIrradianceMap;	// Irradiance map for Cook-Torrance BRDF
 const samplerCUBE	texEnvMap;		// Environment map for Cook-Torrance BRDF
 
@@ -120,7 +119,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	//////////////////////////////////////////////////////////////////////////////////////////
 	// Step 1: Calculate light-view space position of current pixel
 	float4 f4LightViewPos = mul(f44ScreenToLightViewMat, float4(input.f2ScreenPos, fDepth, 1.f));
-	f4LightViewPos *= rcp(f4LightViewPos.w);
+	f4LightViewPos /= f4LightViewPos.w;
 
 	// Step 2: Find the best valid cascade
 	unsigned int nValidCascade = GetCascadeIdx(f4LightViewPos.xy);
@@ -214,7 +213,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 						f4BlendAmount.z,
 						f4BlendAmount.w
 						)
-					) * rcp(fScaledBlendSize);
+					) / fScaledBlendSize;
 
 			// If our point is inside the blend band, we can continue with blending
 			if (fBlendAmount > 0.f)
@@ -224,7 +223,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 				f3LQCascadeTexCoord.xy =
 					(f3LQCascadeTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
 					fCascadeNormSize +
-					float2(fCascadeNormSize * fmod(nValidCascade + 1, nCascadesPerRow), fCascadeNormSize * floor((nValidCascade + 1) * rcp(nCascadesPerRow)));
+					float2(fCascadeNormSize * fmod(nValidCascade + 1, nCascadesPerRow), fCascadeNormSize * floor((nValidCascade + 1) * fCascadeNormSize));
 
 				// Sample from the lower quality cascade and blend between samples appropriately
 			#if USE_CONDITIONAL_PCF
@@ -323,7 +322,7 @@ float3 FresnelTerm(const float3 f3SpecularAlbedo, const float3 f3HalfVec, const 
 // GGX visibility term
 float GGXVisibilityTerm(const float fRoughness2, const float fNdotX)
 {
-	return rcp((fNdotX + sqrt(fRoughness2 + (1.f - fRoughness2) * fNdotX * fNdotX)));
+	return rcp(fNdotX + sqrt(fRoughness2 + (1.f - fRoughness2) * fNdotX * fNdotX));
 }
 
 // Cook-Torrance BRDF using a GGX microfacet distribution
@@ -343,7 +342,7 @@ float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, 
 
 	// Distribution term
 	const float fP = fNdotH * fNdotH * (fRoughness2 - 1.f) + 1.f;
-	const float fDistrib = fRoughness2 * rcp(PI * fP * fP);
+	const float fDistrib = fRoughness2 / (PI * fP * fP);
 
 	// Calculate the matching visibility term
 	const float fV1i = GGXVisibilityTerm(fRoughness2, fNdotL);
@@ -354,7 +353,7 @@ float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, 
 	const float3 f3Fresnel = FresnelTerm(f3SpecularAlbedo, f3H, -f3LightDirView);
 
 	// Color components
-	const float3 f3DiffuseColor = f3DiffuseAlbedo * rcp(PI * (1.f - f3Fresnel));
+	const float3 f3DiffuseColor = f3DiffuseAlbedo / (PI * (1.f - f3Fresnel));
 	const float3 f3SpecularColor = fDistrib * f3Fresnel * fVis;
 
 	const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
@@ -371,12 +370,12 @@ float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, 
 float BeckmannGeometricTerm(const float fRoughness, const float fNdotX)
 {
 	float fNdotX2 = fNdotX * fNdotX;
-	float fTanTheta = sqrt((1.f - fNdotX2) * rcp(fNdotX2));
+	float fTanTheta = sqrt((1.f - fNdotX2) / fNdotX2);
 	float fAlpha = rcp((fRoughness * fTanTheta));
 	float fAlpha2 = fAlpha * fAlpha;
 	float fGeom = 1.f;
 	if (fAlpha < 1.6f)
-		fGeom *= (3.535f * fAlpha + 2.181f * fAlpha2) * rcp(1.f + 2.276f * fAlpha + 2.577f * fAlpha2);
+		fGeom *= (3.535f * fAlpha + 2.181f * fAlpha2) / (1.f + 2.276f * fAlpha + 2.577f * fAlpha2);
 	return fGeom;
 }
 
@@ -397,9 +396,9 @@ float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialT
 	const float fRoughness2 = fRoughness * fRoughness;
 
 	// Distribution term
-	const float fTanTheta2 = (1.f - fNdotH2) * rcp(fNdotH2);
-	const float fExpTerm = exp(-fTanTheta2 * rcp(fRoughness2));
-	const float fDistrib = fExpTerm * rcp(PI * fRoughness2 * fNdotH4);
+	const float fTanTheta2 = (1.f - fNdotH2) / fNdotH2;
+	const float fExpTerm = exp(-fTanTheta2 / fRoughness2);
+	const float fDistrib = fExpTerm / (PI * fRoughness2 * fNdotH4);
 
 	// Geometric term
 	const float fG1i = BeckmannGeometricTerm(fRoughness, fNdotL);
@@ -410,8 +409,8 @@ float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialT
 	const float3 f3Fresnel = FresnelTerm(f3SpecularAlbedo, f3H, -f3LightDirView);
 	
 	// Color components
-	const float3 f3DiffuseColor = f3DiffuseAlbedo * rcp(PI * (1.f - f3Fresnel));
-	const float3 f3SpecularColor = fDistrib * fGeom * f3Fresnel * rcp(4.f * fNdotL * fNdotV);
+	const float3 f3DiffuseColor = f3DiffuseAlbedo / (PI * (1.f - f3Fresnel));
+	const float3 f3SpecularColor = fDistrib * fGeom * f3Fresnel / (4.f * fNdotL * fNdotV);
 
 	const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
 	const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness2, f3Normal, -f3ViewVec);

@@ -65,19 +65,19 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
 	// Compute world space position
 	const float4 f4WorldPosPreW = mul(f44InvViewProjMat, f4NDCPos);
-	const float4 f4WorldPos = f4WorldPosPreW * rcp(f4WorldPosPreW.w);
+	const float4 f4WorldPos = f4WorldPosPreW / f4WorldPosPreW.w;
 
 	// Compute last frame NDC space position
 	const float4 f4PrevNDCPosPreW = mul(f44PrevViewProjMat, f4WorldPos);
-	const float4 f4PrevNDCPos = f4PrevNDCPosPreW * rcp(f4PrevNDCPosPreW.w);
+	const float4 f4PrevNDCPos = f4PrevNDCPosPreW / f4PrevNDCPosPreW.w;
 
 	// Compute pixel velocity
-	const float2 f2NDCSpeed = (f4NDCPos.xy - f4PrevNDCPos.xy) * rcp(fFrameTime);	// Speed (NDC units / s)
+	const float2 f2NDCSpeed = (f4NDCPos.xy - f4PrevNDCPos.xy) / fFrameTime;	// Speed (NDC units / s)
 
 	float2 f2Velocity = f2NDCSpeed
-		* fMotionBlurIntensity	// Scale velocity by intensity value
-		* rcp(nMotionBlurNumSamples);	// Divide by the number of samples (so that there would be no
-										// change in perceived intensity if sample count varies)
+		* fMotionBlurIntensity		// Scale velocity by intensity value
+		/ nMotionBlurNumSamples;	// Divide by the number of samples (so that there would be no
+									// change in perceived intensity if sample count varies)
 	
 	// Clamp it so as not to ruin the effect at high speed
 	f2Velocity = normalize(f2Velocity) * clamp(length(f2Velocity), 0.f, 0.01f);
@@ -85,6 +85,6 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 	// Sample along the velocity vector and average the result
 	for (int i = 0; i < nMotionBlurNumSamples; i++)
 		f4Color.rgb += tex2D(texSource, input.f2TexCoord + f2Velocity * i).rgb;
-	f4Color.rgb *= rcp(nMotionBlurNumSamples);
+	f4Color.rgb /= nMotionBlurNumSamples;
 }
 ////////////////////////////////////////////////////////////////////
