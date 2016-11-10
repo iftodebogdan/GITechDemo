@@ -1,9 +1,9 @@
 /**
- *	@file		ProfilingDX9.h
+ *	@file		ProfilerDX9.h
  *
  *	@note		This file is part of the "Synesthesia3D" graphics engine
  *
- *	@copyright	Copyright (C) 2014-2016 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	@copyright	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *	@copyright
  *	This program is free software: you can redistribute it and/or modify

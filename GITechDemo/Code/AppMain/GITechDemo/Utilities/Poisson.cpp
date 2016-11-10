@@ -1,6 +1,6 @@
 /*=============================================================================
  *	This file is part of the "GITechDemo" application
- *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *		File:	Poisson.cpp
  *		Author:	Bogdan Iftode
@@ -18,10 +18,6 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
-/*
-	To compile:
-		gcc Poisson.cpp -std=c++11 -lstdc++
-*/
 
 // Fast Poisson Disk Sampling in Arbitrary Dimensions
 // http://people.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf

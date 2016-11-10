@@ -1,6 +1,6 @@
 ﻿#=============================================================================
 #	This file is part of the "GITechDemo" application
-#	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+#	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
 #		File:	compile_sponza_model.py
 #		Author:	Bogdan Iftode

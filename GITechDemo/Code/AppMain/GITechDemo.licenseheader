@@ -1,7 +1,7 @@
 ﻿extensions: .cpp .h .inl .hlsl .hlsli
 /*=============================================================================
  *	This file is part of the "%Project%" application
- *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *		File:	%FileName%
  *		Author:	%UserDisplayName%
@@ -23,7 +23,7 @@
 extensions: .py
 #=============================================================================
 #	This file is part of the "%Project%" application
-#	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+#	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
 #		File:	%FileName%
 #		Author:	%UserDisplayName%

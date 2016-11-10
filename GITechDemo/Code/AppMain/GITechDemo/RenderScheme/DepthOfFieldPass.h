@@ -1,6 +1,6 @@
 /*=============================================================================
  *	This file is part of the "GITechDemo" application
- *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *		File:	DepthOfFieldPass.h
  *		Author:	Bogdan Iftode

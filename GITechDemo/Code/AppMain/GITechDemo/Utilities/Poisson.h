@@ -1,6 +1,6 @@
 /*=============================================================================
  *	This file is part of the "GITechDemo" application
- *	Copyright (C) 2015 Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
  *		File:	Poisson.h
  *		Author:	Bogdan Iftode
@@ -18,6 +18,7 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
+
 #ifndef POISSON_H
 #define POISSON_H
 
