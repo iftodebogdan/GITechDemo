@@ -1,22 +1,22 @@
 /*=============================================================================
- *	This file is part of the "GITechDemo" application
- *	Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ * This file is part of the "GITechDemo" application
+ * Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *		File:	SSAOPass.cpp
- *		Author:	Bogdan Iftode
+ *      File:   SSAOPass.cpp
+ *      Author: Bogdan Iftode
  *
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 3 of the License, or
- *	(at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *	GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- *	You should have received a copy of the GNU General Public License
- *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
 #include "stdafx.h"
@@ -36,17 +36,17 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-	bool SSAO_ENABLED = true;
-	bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
+    bool SSAO_ENABLED = true;
+    bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
 
-	const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
-	const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
+    const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
+    const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
 }
 
 SSAOPass::SSAOPass(const char* const passName, RenderPass* const parentPass)
-	: RenderPass(passName, parentPass)
-	, SSAOBuffer(SSAOFullBuffer)
-	, BlurKernelCount(SSAO_BLUR_KERNEL_COUNT)
+    : RenderPass(passName, parentPass)
+    , SSAOBuffer(SSAOFullBuffer)
+    , BlurKernelCount(SSAO_BLUR_KERNEL_COUNT)
 {}
 
 SSAOPass::~SSAOPass()
@@ -54,181 +54,181 @@ SSAOPass::~SSAOPass()
 
 void SSAOPass::Update(const float fDeltaTime)
 {
-	Renderer* RenderContext = Renderer::GetInstance();
-	if (!RenderContext)
-		return;
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
 
-	texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
-	texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
+    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-	if (SSAO_USE_QUARTER_RESOLUTION_BUFFER)
-	{
-		SSAOBuffer = SSAOQuarterBuffer;
-		BlurKernelCount = SSAO_BLUR_KERNEL_COUNT - 1;
-	}
-	else
-	{
-		SSAOBuffer = SSAOFullBuffer;
-		BlurKernelCount = SSAO_BLUR_KERNEL_COUNT;
-	}
+    if (SSAO_USE_QUARTER_RESOLUTION_BUFFER)
+    {
+        SSAOBuffer = SSAOQuarterBuffer;
+        BlurKernelCount = SSAO_BLUR_KERNEL_COUNT - 1;
+    }
+    else
+    {
+        SSAOBuffer = SSAOFullBuffer;
+        BlurKernelCount = SSAO_BLUR_KERNEL_COUNT;
+    }
 
-	bSingleChannelCopy = true;
+    bSingleChannelCopy = true;
 }
 
 // Generate ambient occlusion buffer
 void SSAOPass::CalculateSSAO()
 {
-	Renderer* RenderContext = Renderer::GetInstance();
-	if (!RenderContext)
-		return;
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
 
-	PUSH_PROFILE_MARKER("Calculate");
+    PUSH_PROFILE_MARKER("Calculate");
 
-	SSAOBuffer[0]->Enable();
+    SSAOBuffer[0]->Enable();
 
-	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
-	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+    const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-	// Not necesarry
-	//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+    // Not necesarry
+    //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-	f2HalfTexelOffset = Vec2f(
-		0.5f / GBuffer.GetRenderTarget()->GetWidth(),
-		0.5f / GBuffer.GetRenderTarget()->GetHeight()
-		);
+    f2HalfTexelOffset = Vec2f(
+        0.5f / GBuffer.GetRenderTarget()->GetWidth(),
+        0.5f / GBuffer.GetRenderTarget()->GetHeight()
+        );
 
-	SsaoShader.Enable();
-	RenderContext->DrawVertexBuffer(FullScreenTri);
-	SsaoShader.Disable();
+    SsaoShader.Enable();
+    RenderContext->DrawVertexBuffer(FullScreenTri);
+    SsaoShader.Disable();
 
-	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 
-	SSAOBuffer[0]->Disable();
+    SSAOBuffer[0]->Disable();
 
-	POP_PROFILE_MARKER();
+    POP_PROFILE_MARKER();
 }
 
 // Blur ambient occlusion buffer
 void SSAOPass::BlurSSAO()
 {
-	Renderer* RenderContext = Renderer::GetInstance();
-	if (!RenderContext)
-		return;
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
 
-	ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
-	if (!ResourceMgr)
-		return;
+    ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+    if (!ResourceMgr)
+        return;
 
-	PUSH_PROFILE_MARKER("Blur");
+    PUSH_PROFILE_MARKER("Blur");
 
-	for (unsigned int i = 0; i < BlurKernelCount; i++)
-	{
+    for (unsigned int i = 0; i < BlurKernelCount; i++)
+    {
 #if ENABLE_PROFILE_MARKERS
-		char label[10];
-		sprintf_s(label, "Kernel %d", SSAO_BLUR_KERNEL[i]);
+        char label[10];
+        sprintf_s(label, "Kernel %d", SSAO_BLUR_KERNEL[i]);
 #endif
-		PUSH_PROFILE_MARKER(label);
+        PUSH_PROFILE_MARKER(label);
 
-		SSAOBuffer[(i + 1) % 2]->Enable();
+        SSAOBuffer[(i + 1) % 2]->Enable();
 
-		const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
-		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+        const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+        RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-		// Not necesarry
-		//RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+        // Not necesarry
+        //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-		f2HalfTexelOffset = Vec2f(
-			0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
-			);
-		ResourceMgr->GetTexture(
-			SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
-			)->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-		texSource = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
-		f4TexSize = Vec4f(
-			(float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			(float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight(),
-			1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-			1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
-			);
-		nKernel = SSAO_BLUR_KERNEL[i];
-		bAdjustIntensity = false;
+        f2HalfTexelOffset = Vec2f(
+            0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+            0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
+            );
+        ResourceMgr->GetTexture(
+            SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
+            )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+        texSource = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
+        f4TexSize = Vec4f(
+            (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+            (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight(),
+            1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
+            1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
+            );
+        nKernel = SSAO_BLUR_KERNEL[i];
+        bAdjustIntensity = false;
 
-		// Reuse the bloom shader for blurring the ambient occlusion render target
-		BloomShader.Enable();
-		RenderContext->DrawVertexBuffer(FullScreenTri);
-		BloomShader.Disable();
+        // Reuse the bloom shader for blurring the ambient occlusion render target
+        BloomShader.Enable();
+        RenderContext->DrawVertexBuffer(FullScreenTri);
+        BloomShader.Disable();
 
-		RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+        RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 
-		SSAOBuffer[(i + 1) % 2]->Disable();
+        SSAOBuffer[(i + 1) % 2]->Disable();
 
-		POP_PROFILE_MARKER();
-	}
+        POP_PROFILE_MARKER();
+    }
 
-	POP_PROFILE_MARKER();
+    POP_PROFILE_MARKER();
 }
 
 // Apply ambient occlusion to the light accumulation buffer
 void SSAOPass::ApplySSAO()
 {
-	Renderer* RenderContext = Renderer::GetInstance();
-	if (!RenderContext)
-		return;
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
 
-	ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
-	if (!ResourceMgr)
-		return;
+    ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+    if (!ResourceMgr)
+        return;
 
-	PUSH_PROFILE_MARKER("Apply");
+    PUSH_PROFILE_MARKER("Apply");
 
-	//LightAccumulationBuffer.Enable();
+    //LightAccumulationBuffer.Enable();
 
-	const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
-	const Blend dstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
-	const Blend srcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
-	const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
+    const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+    const Blend dstBlend = RenderContext->GetRenderStateManager()->GetColorDstBlend();
+    const Blend srcBlend = RenderContext->GetRenderStateManager()->GetColorSrcBlend();
+    const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 
-	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
-	RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_INVSRCCOLOR);
-	RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ZERO);
-	RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
+    RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_INVSRCCOLOR);
+    RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ZERO);
+    RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-	f2HalfTexelOffset = Vec2f(
-		0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
-		0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
-		);
-	ResourceMgr->GetTexture(
-		SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
-		)->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-	texSource = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
+    f2HalfTexelOffset = Vec2f(
+        0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
+        0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
+        );
+    ResourceMgr->GetTexture(
+        SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
+        )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+    texSource = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
 
-	ColorCopyShader.Enable();
-	RenderContext->DrawVertexBuffer(FullScreenTri);
-	ColorCopyShader.Disable();
+    ColorCopyShader.Enable();
+    RenderContext->DrawVertexBuffer(FullScreenTri);
+    ColorCopyShader.Disable();
 
-	RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
-	RenderContext->GetRenderStateManager()->SetColorDstBlend(dstBlend);
-	RenderContext->GetRenderStateManager()->SetColorSrcBlend(srcBlend);
-	RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+    RenderContext->GetRenderStateManager()->SetColorDstBlend(dstBlend);
+    RenderContext->GetRenderStateManager()->SetColorSrcBlend(srcBlend);
+    RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
 
-	//LightAccumulationBuffer.Disable();
+    //LightAccumulationBuffer.Disable();
 
-	POP_PROFILE_MARKER();
+    POP_PROFILE_MARKER();
 }
 
 void SSAOPass::Draw()
 {
-	if (!SSAO_ENABLED)
-		return;
+    if (!SSAO_ENABLED)
+        return;
 
-	//Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
-	//if (pCurrRT)
-	//	pCurrRT->Disable();
+    //Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
+    //if (pCurrRT)
+    //  pCurrRT->Disable();
 
-	CalculateSSAO();
-	BlurSSAO();
-	ApplySSAO();
+    CalculateSSAO();
+    BlurSSAO();
+    ApplySSAO();
 
-	//pCurrRT->Enable();
+    //pCurrRT->Enable();
 }
