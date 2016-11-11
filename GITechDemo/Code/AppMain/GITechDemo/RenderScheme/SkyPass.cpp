@@ -58,7 +58,7 @@ void SkyPass::CreateSkyBoxVB()
 
     // Create a cube VB for sky
     // The cube is aligned with world axes so that the camera can rotate freely,
-    // giving the impressiong that the sky is stationary. Also, the center of the
+    // giving the impression that the sky is stationary. Also, the center of the
     // cube is positioned at the camera's location so as not to break the illusion
     // that the sky "hemisphere" is actually a giant cube.
     // NB: in the pixel shader responsible for drawing the sky, the visible face(s)

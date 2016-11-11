@@ -619,8 +619,8 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Quarter resolution",        "Toggle rendering into a quarter resolution buffer",                    "SSAO",                     SSAO_USE_QUARTER_RESOLUTION_BUFFER,         1.f);
 
     // Sky
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius", "Affects the radius of the sun", "Sky", fSunRadius.GetCurrentValue(), 10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness", "Affects the brightness of the sun", "Sky", fSunBrightness.GetCurrentValue(), 10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",                "Affects the radius of the sun",                                        "Sky",                      fSunRadius.GetCurrentValue(),               10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",            "Affects the brightness of the sun",                                    "Sky",                      fSunBrightness.GetCurrentValue(),           10.f);
 
     // RSM
     CREATE_ARTIST_PARAMETER_OBJECT("Indirect lights enable",    "Toggle the rendering of indirect lights",                              "Reflective shadow map",    INDIRECT_LIGHT_ENABLED,                     1.f);

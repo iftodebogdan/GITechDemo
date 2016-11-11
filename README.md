@@ -12,6 +12,7 @@ GITechDemo is a global illumination technical demo application developed using a
 - Ray marched volumetric lighting
 - Reflective shadow maps for indirect illumination
 - Screen space ambient occlusion
+- Screen space reflections
 - Depth of field with bokeh
 - Camera motion blur
 - Bloom
