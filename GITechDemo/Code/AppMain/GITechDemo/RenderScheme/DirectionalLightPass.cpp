@@ -93,8 +93,6 @@ void DirectionalLightPass::Update(const float fDeltaTime)
 
     texIrradianceMap = IrradianceTexture.GetTextureIndex();
     texEnvMap = EnvironmentTexture.GetTextureIndex();
-
-    nBRDFModel = gmtl::Math::clamp(nBRDFModel.GetCurrentValue(), (int)BLINN_PHONG, (int)BRDF_MODEL_MAX - 1);
 }
 
 void DirectionalLightPass::Draw()
