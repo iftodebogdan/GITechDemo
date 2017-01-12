@@ -373,7 +373,8 @@ namespace GITechDemoApp
     {
         BLINN_PHONG = 0,
         COOK_TORRANCE_GGX,
-        COOK_TORRANCE_BECKMANN
+        COOK_TORRANCE_BECKMANN,
+        BRDF_MODEL_MAX
     };
 }
 

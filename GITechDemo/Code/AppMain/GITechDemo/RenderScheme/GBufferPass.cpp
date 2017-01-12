@@ -97,6 +97,8 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+
+    DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
 }
 
 void GBufferPass::Draw()
@@ -151,27 +153,33 @@ void GBufferPass::Draw()
     {
         PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
 
-        DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
-        RenderContext->GetResourceManager()->GetTexture(
-            SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx)
-            )->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
+        const unsigned int diffuseTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+        const unsigned int normalTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_HEIGHT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+        const unsigned int specTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SPECULAR, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+        const unsigned int matTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+        const unsigned int roughnessTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
-        texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        texNormal = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_HEIGHT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
+        if (diffuseTexIdx != ~0u && ((texMatType != ~0u && texRoughness != ~0u) || nBRDFModel == BLINN_PHONG))
+        {
+            RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
 
-        // For Blinn-Phong BRDF
-        texSpec = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SPECULAR, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        bHasSpecMap = (texSpec != -1);
-        fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
+            texDiffuse = diffuseTexIdx;
+            texNormal = normalTexIdx;
+            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
-        // For Cook-Torrance BRDF
-        texMatType = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        texRoughness = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+            // For Blinn-Phong BRDF
+            texSpec = (nBRDFModel == BLINN_PHONG ? specTexIdx : ~0u);
+            bHasSpecMap = (texSpec != -1);
+            fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
 
-        GBufferGenerationShader.Enable();
-        RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-        GBufferGenerationShader.Disable();
+            // For Cook-Torrance BRDF
+            texMatType = (nBRDFModel == COOK_TORRANCE_GGX || nBRDFModel == COOK_TORRANCE_BECKMANN ? matTexIdx : ~0u);
+            texRoughness = (nBRDFModel == COOK_TORRANCE_GGX || nBRDFModel == COOK_TORRANCE_BECKMANN ? roughnessTexIdx : ~0u);
+
+            GBufferGenerationShader.Enable();
+            RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
+            GBufferGenerationShader.Disable();
+        }
 
         POP_PROFILE_MARKER();
     }

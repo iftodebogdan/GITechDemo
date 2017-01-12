@@ -63,10 +63,6 @@ CREATE_ROOT_PASS()
         // Screen space ambient occlusion (done here so as not to affect indirect and volumetric lights)
         #include "SSAOPass.h"
         ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO", LIGHTING_PASS)
-    
-        // Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky)
-        #include "SkyPass.h"
-        ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky", LIGHTING_PASS)
 
         // Compute indirect light contribution from the directional light (1 unoccluded bounce)
         #include "DirectionalIndirectLightPass.h"
@@ -75,6 +71,10 @@ CREATE_ROOT_PASS()
         // Screen space reflection
         #include "ScreenSpaceReflectionPass.h"
         ADD_RENDER_PASS(SCREEN_SPACE_REFLECTION_PASS, ScreenSpaceReflectionPass, "Screen Space Reflection", LIGHTING_PASS)
+    
+        // Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky; moved after SSR to avoid reflecting sun or sky)
+        #include "SkyPass.h"
+        ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky", LIGHTING_PASS)
 
         // Downsample the light accumulation buffer here, because we don't want the volumetric light to be bloomed
         #include "HDRDownsampleForBloomPass.h"

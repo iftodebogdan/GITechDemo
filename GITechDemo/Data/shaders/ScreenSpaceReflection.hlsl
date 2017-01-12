@@ -71,8 +71,10 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     float2 f2HitTexelCoord; float3 f3HitPoint; f4Color = 0;
 
+    const float     fDepth = tex2D(texLinDepthBuffer, input.f2TexCoord).r;
+    DEPTH_KILL(fDepth, fZFar * 0.999f);
+
     const float3    f3ViewDir           = normalize(input.f3ViewVec);
-    const float     fDepth              = tex2D(texLinDepthBuffer, input.f2TexCoord).r;
     const float3    f3Normal            = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
     const float3    f3RayStartPosVS     = input.f3ViewVec * fDepth + f3Normal * max(0.01f * fDepth, 0.001f);
     const float3    f3ReflectedRayDir   = reflect(f3ViewDir, f3Normal);

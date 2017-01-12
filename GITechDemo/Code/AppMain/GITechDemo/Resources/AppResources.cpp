@@ -447,8 +447,8 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fVignIn,                  float,          0.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fVignFade,                float,          22.f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,       float,          3.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fQuarticDistortionCoef,   float,          -0.02f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(fCubicDistortionModifier, float,          -0.03f                  );
+    CREATE_SHADER_CONSTANT_OBJECT(fQuarticDistortionCoef,   float,          0.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(fCubicDistortionModifier, float,          0.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fDistortionScale,         float,          1.f                     );
     // Motion blur
     CREATE_SHADER_CONSTANT_OBJECT(fMotionBlurIntensity,     float,          0.01f                   );
