@@ -43,6 +43,19 @@ void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYR
     gmtl::setPerspective(matProj, gmtl::Math::rad2Deg(fovYRad), aspectRatio, zNear, zFar);
 }
 
+void RendererNULL::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
+{
+    const float focalLength = 1.f / tan(fovYRad * 0.5f);
+    const float epsilon = 2.4e-7f;
+
+    matProj.set(
+        focalLength, 0.f, 0.f, 0.f,
+        0.f, focalLength / aspectRatio, 0.f, 0.f,
+        0.f, 0.f, epsilon - 1.f, -1.f,
+        0.f, 0.f, (epsilon - 2.f) * zNear, 0.f
+    );
+}
+
 void RendererNULL::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
 {
     gmtl::setOrtho(matProj, left, top, right, bottom, zNear, zFar);

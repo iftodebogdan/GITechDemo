@@ -42,6 +42,7 @@ namespace Synesthesia3D
         void    Initialize(void* hWnd);
         void    SetViewport(const Vec2i /*size*/, const Vec2i /*offset = Vec2i(0, 0)*/) {}
         void    CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
+        void    CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const;
         void    CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
         
         const bool          SetDisplayResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true) { m_vScreenSize = size; return true; }

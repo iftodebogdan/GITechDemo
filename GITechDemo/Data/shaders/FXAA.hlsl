@@ -2132,6 +2132,8 @@ return FxaaPixelShader(
 }
 */
 
+#include "PostProcessingUtils.hlsli"
+
 // Vertex shader /////////////////////////////////////////////////
 const float2 f2HalfTexelOffset;
 
@@ -2149,11 +2151,15 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;          // The texture to be antialiased
-const float4 f4TexSize;             // zw: the size of a texel
-const float fFxaaSubpix;            // Amount of sub-pixel aliasing removal (default: 0.75f)
-const float fFxaaEdgeThreshold;     // Minimum amount of local contrast to apply algorithm (default: 0.166f)
-const float fFxaaEdgeThresholdMin;  // Trims the algorithm from processing darks (default: 0.0833f)
+const sampler2D texSource;              // The texture to be antialiased
+const sampler2D texDepthBuffer;         // Scene depth values
+const float4 f4TexSize;                 // zw: the size of a texel
+const float fFxaaSubpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
+const float fFxaaEdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
+const float fFxaaEdgeThresholdMin;      // Trims the algorithm from processing darks (default: 0.0833f)
+const float fFxaaEdgeDepthThreshold;    // Threshold for depth based edge detection
+const bool bFxaaUseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
+const bool bFxaaDebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
@@ -2173,23 +2179,63 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     const float4 f4Fxaa360ConstDir = float4(1.0f, -1.0f, 0.25f, -0.25f);
     //////////////////////////////////////////////////////////////////////////////////////
 
-    f4Color = FxaaPixelShader(
-        input.f2TexCoord,       // FxaaFloat2 pos
-        f4PosPos,               // FxaaFloat4 fxaaConsolePosPos
-        texSource,              // FxaaTex tex
-        texSource,              // FxaaTex fxaaConsole360TexExpBiasNegOne
-        texSource,              // FxaaTex fxaaConsole360TexExpBiasNegTwo
-        f4TexSize.zw,           // FxaaFloat2 fxaaQualityRcpFrame
-        f4RcpFrameOpt,          // FxaaFloat4 fxaaConsoleRcpFrameOpt
-        f4RcpFrameOpt2,         // FxaaFloat4 fxaaConsoleRcpFrameOpt2
-        f4360RcpFrameOpt2,      // fxaaConsole360RcpFrameOpt2
-        fFxaaSubpix,            // FxaaFloat fxaaQualitySubpix
-        fFxaaEdgeThreshold,     // FxaaFloat fxaaQualityEdgeThreshold
-        fFxaaEdgeThresholdMin,  // FxaaFloat fxaaQualityEdgeThresholdMin
-        fFxaaEdgeSharpness,     // FxaaFloat fxaaConsoleEdgeSharpness
-        fFxaaEdgeThreshold,     // FxaaFloat fxaaConsoleEdgeThreshold
-        fFxaaEdgeThresholdMin,  // FxaaFloat fxaaConsoleEdgeThresholdMin
-        f4Fxaa360ConstDir       // FxaaFloat4 fxaaConsole360ConstDir
-    );
+    //////////////////////////////
+    // Edge detection algorithm //
+    //////////////////////////////
+    bool bIsEdge = !bFxaaUseEdgeDetection;
+
+    if (bFxaaUseEdgeDetection)
+    {
+        const float2 f2SampleOffset[] =
+        {
+            float2(0.f, 0.f),
+            float2(0.f, 1.f),
+            float2(1.f,  0.f),
+            float2(1.f,  1.f),
+            float2(-1.f, 0.f),
+            float2(0.f, -1.f),
+            float2(-1.f, -1.f)
+        };
+
+        // Fetch the reference depth
+        const float fRefDepth = tex2D(texDepthBuffer, input.f2TexCoord + f2SampleOffset[0] * f4TexSize.zw).r;
+
+        UNROLL for (int i = 1; i < 7; i++)
+        {
+            const float fSampleDepth = tex2D(texDepthBuffer, input.f2TexCoord + f2SampleOffset[i] * f4TexSize.zw).r;
+
+            // Calculate the difference to the reference depth value
+            const float fCurrentDepthDiff = abs(fSampleDepth - fRefDepth);
+
+            // Mark as edge, if it's the case
+            bIsEdge = bIsEdge || (fCurrentDepthDiff > fFxaaEdgeDepthThreshold);
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    if (bIsEdge)
+        f4Color = FxaaPixelShader(
+            input.f2TexCoord,       // FxaaFloat2 pos
+            f4PosPos,               // FxaaFloat4 fxaaConsolePosPos
+            texSource,              // FxaaTex tex
+            texSource,              // FxaaTex fxaaConsole360TexExpBiasNegOne
+            texSource,              // FxaaTex fxaaConsole360TexExpBiasNegTwo
+            f4TexSize.zw,           // FxaaFloat2 fxaaQualityRcpFrame
+            f4RcpFrameOpt,          // FxaaFloat4 fxaaConsoleRcpFrameOpt
+            f4RcpFrameOpt2,         // FxaaFloat4 fxaaConsoleRcpFrameOpt2
+            f4360RcpFrameOpt2,      // fxaaConsole360RcpFrameOpt2
+            fFxaaSubpix,            // FxaaFloat fxaaQualitySubpix
+            fFxaaEdgeThreshold,     // FxaaFloat fxaaQualityEdgeThreshold
+            fFxaaEdgeThresholdMin,  // FxaaFloat fxaaQualityEdgeThresholdMin
+            fFxaaEdgeSharpness,     // FxaaFloat fxaaConsoleEdgeSharpness
+            fFxaaEdgeThreshold,     // FxaaFloat fxaaConsoleEdgeThreshold
+            fFxaaEdgeThresholdMin,  // FxaaFloat fxaaConsoleEdgeThresholdMin
+            f4Fxaa360ConstDir       // FxaaFloat4 fxaaConsole360ConstDir
+        );
+    else
+        f4Color = tex2D(texSource, input.f2TexCoord);
+
+    if (bFxaaDebugEdgeDetection && bFxaaUseEdgeDetection && bIsEdge)
+        f4Color += float4(1.f, 0.f, 0.f, 0.f);
 }
 ////////////////////////////////////////////////////////////////////

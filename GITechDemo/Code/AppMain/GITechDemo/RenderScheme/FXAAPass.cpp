@@ -70,6 +70,9 @@ void FXAAPass::Update(const float fDeltaTime)
     texSource = srcRT->GetColorBuffer(0);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
+
+    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    //texDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
 }
 
 void FXAAPass::Draw()

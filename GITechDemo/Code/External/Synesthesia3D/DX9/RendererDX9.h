@@ -77,6 +77,7 @@ namespace Synesthesia3D
         const bool  IsFullscreen() const { return !m_ePresentParameters.Windowed; }
 
         void        CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
+        void        CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const;
         void        CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
 
         const bool  BeginFrame();

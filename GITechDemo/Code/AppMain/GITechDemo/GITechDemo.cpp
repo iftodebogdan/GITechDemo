@@ -56,6 +56,7 @@ namespace GITechDemoApp
     extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
 
     bool FULLSCREEN_ENABLED = false;
+    bool BORDERLESS_ENABLED = false;
     int FULLSCREEN_RESOLUTION_X = 0;
     int FULLSCREEN_RESOLUTION_Y = 0;
     int FULLSCREEN_REFRESH_RATE = 0;
@@ -79,12 +80,12 @@ namespace GITechDemoApp
 
     extern AABoxf SceneAABB;
 
+    bool CAMERA_INFINITE_PROJ = true;
     float CAMERA_FOV = 60.f;
     float CAMERA_MOVE_SPEED = 250.f;
     float CAMERA_SPEED_UP_FACTOR = 5.f;
     float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
     float CAMERA_ROTATE_SPEED = 75.f;
-
 }
 
 template <typename T> string tostr(const T& t) {
@@ -198,6 +199,7 @@ bool GITechDemo::Init(void* hWnd)
     m_vLastFrameViewport = Vec2i(-1, -1);
     m_nLastFrameRefreshRate = -1;
     m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
+    m_bLastFrameBorderless = BORDERLESS_ENABLED;
     m_bLastFrameVSync = VSYNC_ENABLED;
 
     return true;
@@ -460,11 +462,21 @@ void GITechDemo::Update(const float fDeltaTime)
         m_nLastFrameRefreshRate != FULLSCREEN_REFRESH_RATE ||
         (m_vLastFrameViewport != viewportSize && !FULLSCREEN_ENABLED) ||
         m_bLastFrameFullscreen != FULLSCREEN_ENABLED ||
+        m_bLastFrameBorderless != BORDERLESS_ENABLED ||
         m_bLastFrameVSync != VSYNC_ENABLED))
     {
         if (!m_bLastFrameFullscreen && FULLSCREEN_ENABLED)
             pFW->OnSwitchToFullscreenMode();
-        else if(m_bLastFrameFullscreen && !FULLSCREEN_ENABLED)
+        else if (m_bLastFrameFullscreen && !FULLSCREEN_ENABLED)
+        {
+            if (BORDERLESS_ENABLED)
+                pFW->OnSwitchToBorderlessWindowedMode();
+            else
+                pFW->OnSwitchToWindowedMode();
+        }
+        else if (!m_bLastFrameBorderless && BORDERLESS_ENABLED && !FULLSCREEN_ENABLED)
+            pFW->OnSwitchToBorderlessWindowedMode();
+        else if (m_bLastFrameBorderless && !BORDERLESS_ENABLED && !FULLSCREEN_ENABLED)
             pFW->OnSwitchToWindowedMode();
 
         RenderContext->SetDisplayResolution(
@@ -479,6 +491,7 @@ void GITechDemo::Update(const float fDeltaTime)
         m_nLastFrameRefreshRate = FULLSCREEN_REFRESH_RATE;
         m_vLastFrameViewport = viewportSize;
         m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
+        m_bLastFrameBorderless = BORDERLESS_ENABLED;
         m_bLastFrameVSync = VSYNC_ENABLED;
     }
 
@@ -668,7 +681,10 @@ void GITechDemo::Update(const float fDeltaTime)
     f44ViewMat = m_tCamera.mRot * makeTrans(m_tCamera.vPos, Type2Type<Matrix44f>());
 
     // Calculate projection matrix
-    RenderContext->CreatePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear, fZFar);
+    if(CAMERA_INFINITE_PROJ)
+        RenderContext->CreateInfinitePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear);
+    else
+        RenderContext->CreatePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear, fZFar);
     gmtl::invertFull((Matrix44f&)f44InvProjMat, (Matrix44f&)f44ProjMat);
 
     // Calculate some composite matrices

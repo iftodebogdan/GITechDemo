@@ -51,7 +51,7 @@ void vsmain(float4 f4Position : POSITION, out VSOut output)
 ////////////////////////
 #define         OFFSET_RAY_SAMPLES      // If defined, scatter multiple ray samples across grid of INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE pixels
 #define         USE_BAYER_MATRIX        // If defined, sample grid offsets from texture, else use procedurally generated values
-//#define           FOG_DENSITY_MAP         // If defined, use 3D noise texture as a fog density map
+#define         FOG_DENSITY_MAP         // If defined, use 3D noise texture as a fog density map
 
 const int       nSampleCount;           // Number of samples along ray
 const float     fSampleDistrib;         // Distribution of samples along ray

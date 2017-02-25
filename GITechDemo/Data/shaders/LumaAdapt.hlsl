@@ -60,7 +60,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     // to slowly adjust the exposure of the HDR image when tone mapping.
     const float fCurrLuma = tex2D(texLumaInput, float2(0.5f, 0.5f)).r;
     const float fTargetLuma = tex2D(texLumaTarget, float2(0.5f, 0.5f)).r;
-    float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (fFrameTime / clamp(fLumaAdaptSpeed, 0.01f, 3.402823466e+38f));
+    float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (fFrameTime / max(fLumaAdaptSpeed, 0.01f));
 
     if (fCurrLuma < fTargetLuma)
         fNewLuma = clamp(fNewLuma, fCurrLuma, fTargetLuma);

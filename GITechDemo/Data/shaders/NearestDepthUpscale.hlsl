@@ -53,6 +53,9 @@ const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx);
 // True if volumetric light accumulation buffer has a single channel
 const bool bSingleChannelCopy;
 
+// Used to color the volumetric fog
+const float4 f4CustomColorModulator;
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +105,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
     if (bSingleChannelCopy)
         f4Color.rgb = f4Color.r;
+
+    f4Color *= f4CustomColorModulator;
 }
 
 const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx)

@@ -39,8 +39,8 @@ using namespace GITechDemoApp;
 namespace GITechDemoApp
 {
     bool DOF_ENABLED = true;
-    float DOF_AUTOFOCUS_TIME = 0.25f;
-    int DOF_NUM_PASSES = 4;
+    float DOF_AUTOFOCUS_TIME = 0.5f;
+    int DOF_NUM_PASSES = 3;
 }
 
 DepthOfFieldPass::DepthOfFieldPass(const char* const passName, RenderPass* const parentPass)
@@ -86,6 +86,7 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
     texTargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
     bSingleChannelCopy = false;
+    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
 }
 
 void DepthOfFieldPass::AutofocusPass()

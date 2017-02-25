@@ -109,6 +109,7 @@ void PostProcessingPass::CopyResultToBackBuffer(Synesthesia3D::RenderTarget* con
     f2HalfTexelOffset = Vec2f(0.5f / rt->GetWidth(), 0.5f / rt->GetHeight());
     texSource = rt->GetColorBuffer(0);
     bSingleChannelCopy = false;
+    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

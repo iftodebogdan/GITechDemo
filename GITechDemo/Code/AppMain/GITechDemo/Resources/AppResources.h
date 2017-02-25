@@ -178,6 +178,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f3LightDir,               Vec3f           );
     CREATE_SHADER_CONSTANT_HANDLE(nKernel,                  int             );
     CREATE_SHADER_CONSTANT_HANDLE(bSingleChannelCopy,       bool            );
+    CREATE_SHADER_CONSTANT_HANDLE(f4CustomColorModulator,   Vec4f           );
     CREATE_SHADER_CONSTANT_HANDLE(nTexMipCount,             int             );
 
     //  - GBufferGeneration.hlsl
@@ -288,6 +289,9 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fFxaaSubpix,              float           );
     CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeThreshold,       float           );
     CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeThresholdMin,    float           );
+    CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeDepthThreshold,  float           );
+    CREATE_SHADER_CONSTANT_HANDLE(bFxaaUseEdgeDetection,    bool            );
+    CREATE_SHADER_CONSTANT_HANDLE(bFxaaDebugEdgeDetection,  bool            );
 
     //  - SSAO.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(fSSAOSampleRadius,        float           );

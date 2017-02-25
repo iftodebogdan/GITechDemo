@@ -41,6 +41,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 const sampler2D texSource; // The texture to be copied
 
 const bool bSingleChannelCopy;
+const float4 f4CustomColorModulator;
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
@@ -50,5 +51,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         f4Color = tex2D(texSource, input.f2TexCoord).rrrr;
     else
         f4Color = tex2D(texSource, input.f2TexCoord);
+
+    f4Color *= f4CustomColorModulator;
 }
 ////////////////////////////////////////////////////////////////////

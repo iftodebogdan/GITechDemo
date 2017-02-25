@@ -153,16 +153,16 @@ int FrameworkWin::Run()
             else
             {
                 // Set the loading threads' priorities to above normal
-                if (!SetThreadPriority(hThread[i], THREAD_PRIORITY_ABOVE_NORMAL))
-                {
-                    ErrorExit(TEXT("SetThreadPriority()"));
-                    bExit = true;
-                }
+                //if (!SetThreadPriority(hThread[i], THREAD_PRIORITY_ABOVE_NORMAL))
+                //{
+                //    ErrorExit(TEXT("SetThreadPriority()"));
+                //    bExit = true;
+                //}
             }
         }
 
         // Reduce this thread's priority since it isn't doing anything important right now
-        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+        //SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
     }
     else
     {
@@ -248,13 +248,14 @@ int FrameworkWin::Run()
                 if (bAppRdy)
                 {
                     cout << endl << "Resources successfully loaded in " << (float)(GetTicks() - startLoadingTicks) / 1000000.f << " seconds." << endl;
-                    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+                    //SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
                 #ifndef _DEBUG
                     Sleep(2000);
                     // Free the console
                     FreeConsole();
                 #endif
-                    ShowWindow(m_hWnd, SW_MAXIMIZE);
+                    //ShowWindow(m_hWnd, SW_MAXIMIZE);
+                    OnSwitchToWindowedMode();
                     BringWindowToTop(m_hWnd);
                     SetFocus(m_hWnd);
                     SetActiveWindow(m_hWnd);
@@ -592,6 +593,17 @@ void FrameworkWin::OnSwitchToWindowedMode()
 
     OutputDebugString("[FrameworkWin] Setting windowed mode window style\n");
     SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_GROUP | WS_TABSTOP);
+    ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
+    SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    OnSetWindowedCursor();
+}
+
+void FrameworkWin::OnSwitchToBorderlessWindowedMode()
+{
+    Framework::OnSwitchToBorderlessWindowedMode();
+
+    OutputDebugString("[FrameworkWin] Setting windowed mode window style\n");
+    SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
     ShowWindow(m_hWnd, SW_SHOWMAXIMIZED);
     SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     OnSetWindowedCursor();

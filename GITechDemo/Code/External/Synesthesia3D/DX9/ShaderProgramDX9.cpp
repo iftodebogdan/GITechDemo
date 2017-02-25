@@ -109,7 +109,7 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
 {
     IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
-    const char* profile;
+    const char* profile = "";
     switch (m_eProgramType)
     {
     case SPT_VERTEX:

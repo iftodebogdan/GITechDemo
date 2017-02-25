@@ -44,6 +44,7 @@ namespace GITechDemoApp
     bool DIR_LIGHT_VOLUME_BLUR_SAMPLES = true;
     bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE = true;
     bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE = true;
+    Vec4f DIR_LIGHT_VOLUME_COLOR = Vec4f(1.f, 0.9f, 0.75f, 1.f);
 }
 
 DirectionalLightVolumePass::DirectionalLightVolumePass(const char* const passName, RenderPass* const parentPass)
@@ -73,6 +74,11 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
         1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
     bSingleChannelCopy = true;
+    DIR_LIGHT_VOLUME_COLOR[0] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[0], 0.f, 1.f);
+    DIR_LIGHT_VOLUME_COLOR[1] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[1], 0.f, 1.f);
+    DIR_LIGHT_VOLUME_COLOR[2] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[2], 0.f, 1.f);
+    DIR_LIGHT_VOLUME_COLOR[3] = 1.f;
+    f4CustomColorModulator = DIR_LIGHT_VOLUME_COLOR;
     BayerMatrix.GetTexture()->SetAddressingMode(SAM_WRAP);
     BayerMatrix.GetTexture()->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     texDitherMap = BayerMatrix.GetTextureIndex();

@@ -46,16 +46,16 @@ def Run():
     #################
     # Configuration #
     #################
-    
+
     # Path to folder with data build scripts (relative to this script's folder)
     dataSrcDir = "/../DataSrc/"
-    
+
     # List of scripts to run for building data
     dataBuildScript = [
         "compile_sponza_model.py",
         "compile_utility_textures.py"
         ]
-    
+
     #################
 
 
@@ -80,14 +80,14 @@ def Run():
                 logging.info(line.replace('\n', '').replace('\r', ''))
             if proc.wait() != 0:
                 logging.info(script + " has failed!")
-                exit()
+                return 1
             logging.info("")
 
 
 
     # Done! Print some info.
     logging.info("Done compiling data in " + str(time.clock() - start) + " seconds.")
-    
+
     return 0
 
 ########
@@ -100,4 +100,4 @@ def Run():
 
 if __name__ == "__main__":
     utils.SetupLogging("DataBuild")
-    Run()
+    sys.exit(Run())

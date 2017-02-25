@@ -44,21 +44,21 @@ def Run():
     #################
     # Configuration #
     #################
-    
+
     # List of .sln files for tools that are required for building data
     toolsName = [
         "Synesthesia3DTools"
         ]
-    
+
     defaultForceRebuild = False
     defaultArchitecture = "x64"
     defaultVSBuildTools = "VS100COMNTOOLS"
     defaultPlatformToolset = "v100"
-    
+
     #################
-    
-    
-    
+
+
+
     ########
     # Main #
     ########
@@ -110,7 +110,7 @@ def Run():
     #   envSetupBat = "vsvars32.bat"
     else:
         logging.error("No compatible version of Visual Studio found!")
-        exit()
+        return 1
 
 
 
@@ -124,7 +124,7 @@ def Run():
         startPerTool = time.clock()
         if utils.BuildSLN(dep, pathToTools, defaultPlatformToolset, envSetupBat, defaultArchitecture, "Release", defaultForceRebuild) != 0:
             logging.error("Could not complete tool build process")
-            exit()
+            return 1
         # Done! Print some info.
         infoStr = "Done building"
         infoStr += " " + dep
@@ -132,7 +132,7 @@ def Run():
         logging.info("")
 
     logging.info("Done building tools in " + str(time.clock() - start) + " seconds.")
-    
+
     return 0
 
 ########
@@ -145,4 +145,4 @@ def Run():
 
 if __name__ == "__main__":
     utils.SetupLogging("ToolsBuild")
-    Run()
+    sys.exit(Run())

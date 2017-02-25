@@ -68,6 +68,7 @@ void BloomPass::Update(const float fDeltaTime)
     nDownsampleFactor = 1;
     bApplyBrightnessFilter = true;
     bSingleChannelCopy = false;
+    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     bDepthDownsample = false;
 }
 

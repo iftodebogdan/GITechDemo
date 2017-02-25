@@ -172,6 +172,16 @@ namespace Synesthesia3D
          * @param[in]   zFar        The distance to the far clipping plane.
          */
         virtual SYNESTHESIA3D_DLL           void        CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const PURE_VIRTUAL;
+        
+        /**
+         * @brief   Creates a perspective projection matrix with an infinite far plane.
+         *
+         * @param[out]  matProj     The calculated projection matrix.
+         * @param[in]   fovYRad     The field of view angle in radians on the Y axis.
+         * @param[in]   aspectRatio The display's aspect ratio (width/height).
+         * @param[in]   zNear       The distance to the near clipping plane.
+         */
+        virtual SYNESTHESIA3D_DLL           void        CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const PURE_VIRTUAL;
 
         /**
          * @brief   Creates an orthographic projection matrix fit for the current platform standards.

@@ -28,6 +28,7 @@
 #include <IndexBuffer.h>
 #include <VertexBuffer.h>
 #include <VertexFormat.h>
+#include <RenderTarget.h>
 using namespace Synesthesia3D;
 
 #include "GITechDemo.h"
@@ -36,6 +37,12 @@ using namespace Synesthesia3D;
 using namespace GITechDemoApp;
 
 #include "AppResources.h"
+
+namespace GITechDemoApp
+{
+    extern bool CAMERA_INFINITE_PROJ;
+    extern float CAMERA_FOV;
+}
 
 SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
@@ -117,7 +124,21 @@ void SkyPass::Update(const float fDeltaTime)
     if (!AppMain)
         return;
 
-    f44SkyViewProjMat = f44ViewProjMat * makeTrans(-((GITechDemo*)AppMain)->GetCamera().vPos, Type2Type<Matrix44f>());
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    // Don't use the infinite projection matrix so as not to cause artifacts due to the sky
+    // being placed at depth 1, which is a singularity for the respective projection equation.
+    if (CAMERA_INFINITE_PROJ)
+        RenderContext->CreatePerspectiveMatrix(f44SkyViewProjMat, Math::deg2Rad(CAMERA_FOV), (float)GBuffer.GetRenderTarget()->GetWidth() / (float)GBuffer.GetRenderTarget()->GetHeight(), fZNear, fZFar);
+    else
+        f44SkyViewProjMat = f44ProjMat;
+
+    Matrix44f viewRotMat = f44ViewMat;
+    viewRotMat[0][3] = viewRotMat[1][3] = viewRotMat[2][3] = 0.f; // Remove translation from view matrix
+
+    f44SkyViewProjMat = f44SkyViewProjMat * viewRotMat; // Final sky projection matrix
 
     SkyTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     SkyTexture.GetTexture()->SetSRGBEnabled(true);

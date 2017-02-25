@@ -52,6 +52,7 @@ namespace AppFramework
 
         void OnSwitchToFullscreenMode();
         void OnSwitchToWindowedMode();
+        void OnSwitchToBorderlessWindowedMode();
 
     private:
         // Windows specific stuff

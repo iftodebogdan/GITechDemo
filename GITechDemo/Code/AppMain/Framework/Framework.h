@@ -29,7 +29,7 @@ namespace AppFramework
     public:
         Framework()
             : m_bPauseRendering(false)
-            , m_bIsFullscreen(false)
+            , m_eWindowMode(WM_WINDOWED)
         { m_pInstance = this; };
         virtual ~Framework() { m_pInstance = nullptr; };
 
@@ -41,7 +41,9 @@ namespace AppFramework
 #else
         const bool  IsRenderingPaused() { return m_bPauseRendering; }
 #endif
-        const bool  IsFullscreen() { return m_bIsFullscreen; }
+        const bool  IsFullscreen() { return m_eWindowMode == WM_FULLSCREEN; }
+        const bool  IsWindowed() { return m_eWindowMode == WM_WINDOWED; }
+        const bool  IsBorderlessWindow() { return m_eWindowMode == WM_BORDERLESS; }
 
         // Low level, platform specific functionality required by the application
         virtual void ShowCursor(const bool bShow) = 0;
@@ -53,16 +55,24 @@ namespace AppFramework
         virtual unsigned int    GetTicks() = 0; // in microseconds
         virtual void            Sleep(const unsigned int miliseconds) = 0;
 
-        virtual void OnSwitchToFullscreenMode() { m_bIsFullscreen = true; }
-        virtual void OnSwitchToWindowedMode() { m_bIsFullscreen = false; }
+        virtual void OnSwitchToFullscreenMode() { m_eWindowMode = WM_FULLSCREEN; }
+        virtual void OnSwitchToWindowedMode() { m_eWindowMode = WM_WINDOWED; }
+        virtual void OnSwitchToBorderlessWindowedMode() { m_eWindowMode = WM_BORDERLESS; }
 
     protected:
+        enum WindowMode
+        {
+            WM_WINDOWED,
+            WM_BORDERLESS,
+            WM_FULLSCREEN,
+            WM_MAX
+        } m_eWindowMode;
+
         // Rendering pause
         void    PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
         virtual float   CalculateDeltaTime() = 0; // in miliseconds
         // Pause rendering when not in focus
         bool    m_bPauseRendering;
-        bool    m_bIsFullscreen;
         static Framework*   m_pInstance;
     };
 }

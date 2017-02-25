@@ -51,7 +51,7 @@ def Run():
     #################
     # Configuration #
     #################
-    
+
     # Name of .sln file for the current project
     projectName = "GITechDemo"
     
@@ -60,7 +60,7 @@ def Run():
     defaultArchitecture = "x64"
     defaultVSBuildTools = "VS100COMNTOOLS"
     defaultPlatformToolset = "v100"
-    
+
     #################
 
 
@@ -72,10 +72,10 @@ def Run():
     #os.system('reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7"')
     #os.system('reg delete "HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7" /v "12.0"')
     #os.system("reg add \"HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7\" /v \"12.0\" /t REG_SZ /d \"C:\Program Files (x86)\Microsoft Visual Studio 12.0\\\\\"")
-    
+
     # Start timer
     start = time.clock()
-    
+
     # Process command arguments
     for opt in sys.argv:
         if(opt.lower() == "rebuild"):
@@ -106,9 +106,9 @@ def Run():
         if(opt.lower() == "vs2015"):
             defaultVSBuildTools = "VS140COMNTOOLS"
             defaultPlatformToolset = "vs140"
-    
-    
-    
+
+
+
     # Setup build tools
     envSetupBat = "VsDevCmd.bat"
     if(os.getenv(defaultVSBuildTools)):
@@ -142,10 +142,10 @@ def Run():
     #   envSetupBat = "vsvars32.bat"
     else:
         logging.error("No compatible version of Visual Studio found!")
-        exit()
-    
-    
-    
+        return 1
+
+
+
     # Compile tools, if required
     build_tools_win.Run()
     logging.info("")
@@ -155,8 +155,8 @@ def Run():
     # Compile data, if required
     build_data_win.Run()
     logging.info("")
-    
-    
+
+
     # Compile project
     logging.info("Starting project build process...")
     logging.info("Force rebuild: " + str(defaultForceRebuild))
@@ -164,11 +164,11 @@ def Run():
     logging.info("Architecture: " + defaultArchitecture)
     logging.info("Platform toolset: " + defaultPlatformToolset)
     logging.info("")
-    
+
     startProjectBuild = time.clock()
     if utils.BuildSLN(projectName, pathToTools, defaultPlatformToolset, envSetupBat, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
         logging.error("Could not complete project build process")
-        exit()
+        return 1
     else:
         logging.info( \
             "Done building " + projectName + \
@@ -180,7 +180,7 @@ def Run():
 
     # Copy and organize build files
     logging.info("Configuring build:")
-    
+
     # Create directory structure
     logging.info("Creating directory structure...")
     rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
@@ -200,11 +200,11 @@ def Run():
         ]
     utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.exe")
     utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.dll")
-    
+
     # Copy data
     logging.info("Copying data...")
     utils.CopyTree(utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir + "/data")
-    
+
     # Create batch file
     logging.info("Creating batch file...")
     startBat = open(
@@ -212,7 +212,7 @@ def Run():
         ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration.lower() + "_")) +
         defaultArchitecture.lower() + ".bat", "w"
     )
-    
+
     startBat.write("\
     @echo off\n\
     :A\n\
@@ -225,18 +225,18 @@ def Run():
     exit"
     )
     startBat.close()
-    
+
     logging.info("")
-    
-    
-    
+
+
+
     # Done! Print some info.
     logging.info(
         "Done building project " + projectName +
         " (" + defaultBuildConfiguration + "|" + defaultArchitecture + ") in " +
         str(time.clock() - start) + " seconds."
     )
-    
+
     return 0
 
 ########
@@ -249,4 +249,4 @@ def Run():
 
 if __name__ == "__main__":
     utils.SetupLogging("ProjectBuild")
-    Run()
+    sys.exit(Run())

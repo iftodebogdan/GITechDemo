@@ -93,6 +93,9 @@ float3 BlinnPhong(const float3 f3DiffuseColor, const float fSpecularPower, const
 float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit);
 
+// This is safer than the previously used saturate(dot(x, y)) because it avoids divisions by zero
+#define safe_saturate_dot(x, y) (clamp(dot(x, y), 0.0001f, 1.f))
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     // Sample the depth buffer
@@ -310,7 +313,7 @@ float3 BlinnPhong(const float3 f3DiffuseColor, const float fSpecularPower, const
 float3 FresnelRoughnessTerm(float3 f3SpecularAlbedo, float fRoughness, float3 f3HalfVec, float3 f3LightDir)
 {
     // Sclick's approximation using roughness to attenuate fresnel.
-    const float fLdotH = saturate(dot(f3LightDir, f3HalfVec));
+    const float fLdotH = safe_saturate_dot(f3LightDir, f3HalfVec);
     return f3SpecularAlbedo + (max(1.f - fRoughness, f3SpecularAlbedo) - f3SpecularAlbedo) * pow(1.f - fLdotH, 5.f);
 }
 
@@ -329,13 +332,13 @@ float GGXVisibilityTerm(const float fRoughness2, const float fNdotX)
 float3 CookTorranceGGX(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit)
 {
     const float3 f3LightDirView = normalize(mul((float3x3)f44ViewMat, f3LightDir));
-    const float fNdotL = saturate(dot(f3Normal, -f3LightDirView));
+    const float fNdotL = safe_saturate_dot(f3Normal, -f3LightDirView);
 
     const float3 f3DiffuseAlbedo = lerp(f3MaterialColor, 0.f, fMaterialType);
     const float3 f3SpecularAlbedo = lerp(0.03f, f3MaterialColor, fMaterialType);
 
     const float3 f3H = normalize(normalize(-f3ViewVec) - f3LightDirView);
-    const float fNdotH = saturate(dot(f3Normal, f3H));
+    const float fNdotH = safe_saturate_dot(f3Normal, f3H);
     const float fNdotV = max(dot(f3Normal, f3ViewVec), 0.0001f);
     const float fNdotH2 = fNdotH * fNdotH;
     const float fRoughness2 = fRoughness * fRoughness;
@@ -383,13 +386,13 @@ float BeckmannGeometricTerm(const float fRoughness, const float fNdotX)
 float3 CookTorranceBeckmann(const float3 f3MaterialColor, const float fMaterialType, const float fRoughness, const float3 f3Normal, const float3 f3ViewVec, const float fPercentLit)
 {
     const float3 f3LightDirView = normalize(mul((float3x3)f44ViewMat, f3LightDir));
-    const float fNdotL = saturate(dot(f3Normal, -f3LightDirView));
+    const float fNdotL = safe_saturate_dot(f3Normal, -f3LightDirView);
 
     const float3 f3DiffuseAlbedo = f3MaterialColor - f3MaterialColor * fMaterialType;
     const float3 f3SpecularAlbedo = lerp(0.03f, f3MaterialColor, fMaterialType);
 
     const float3 f3H = normalize(normalize(-f3ViewVec) - f3LightDirView);
-    const float fNdotH = saturate(dot(f3Normal, f3H));
+    const float fNdotH = safe_saturate_dot(f3Normal, f3H);
     const float fNdotV = max(dot(f3Normal, f3ViewVec), 0.0001f);
     const float fNdotH2 = fNdotH * fNdotH;
     const float fNdotH4 = fNdotH2 * fNdotH2;

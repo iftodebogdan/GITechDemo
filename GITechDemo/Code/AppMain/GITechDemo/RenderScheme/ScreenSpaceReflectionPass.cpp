@@ -89,6 +89,7 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     f2HalfTexelOffset = Vec2f(0.5f / m_pLightAccumulationBufferCopyRT->GetWidth(), 0.5f / m_pLightAccumulationBufferCopyRT->GetHeight());
     texSource = ltAccBuf->GetColorBuffer();
     bSingleChannelCopy = false;
+    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
 
     texHDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
     texLinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
