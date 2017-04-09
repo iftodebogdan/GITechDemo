@@ -28,7 +28,7 @@ using namespace std;
 #include <gmtl\gmtl.h>
 using namespace gmtl;
 
-//#include <ResourceData.h>
+#include <ResourceData.h>
 namespace Synesthesia3D
 {
     class ShaderProgram;

@@ -50,6 +50,7 @@ void MotionBlurPass::Update(const float fDeltaTime)
 {
     bSingleChannelCopy = false;
     f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    bApplyTonemap = false;
 }
 
 void MotionBlurPass::Draw()

@@ -87,6 +87,7 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     texNoise = NoiseTexture.GetTextureIndex();
     fElapsedTime += fDeltaTime;
     f3FogBox = Vec3f(CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH);
+    bApplyTonemap = false;
 }
 
 void DirectionalLightVolumePass::CalculateLightVolume()

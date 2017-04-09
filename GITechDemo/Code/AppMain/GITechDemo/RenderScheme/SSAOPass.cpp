@@ -74,6 +74,7 @@ void SSAOPass::Update(const float fDeltaTime)
 
     bSingleChannelCopy = true;
     f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    bApplyTonemap = false;
 }
 
 // Generate ambient occlusion buffer

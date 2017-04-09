@@ -67,6 +67,8 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(3))->SetAddressingMode(SAM_CLAMP);
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetDepthBuffer())->SetAddressingMode(SAM_CLAMP);
 
+    // Update matrices
+    f44WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
     f44WorldViewMat = f44ViewMat * f44WorldMat;
     f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
 
@@ -169,13 +171,13 @@ void GBufferPass::Draw()
             bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
             // For Blinn-Phong BRDF
-            texSpec = (nBRDFModel == BLINN_PHONG ? specTexIdx : ~0u);
+            texSpec = specTexIdx;
             bHasSpecMap = (texSpec != -1);
             fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
 
             // For Cook-Torrance BRDF
-            texMatType = (nBRDFModel == COOK_TORRANCE_GGX || nBRDFModel == COOK_TORRANCE_BECKMANN ? matTexIdx : ~0u);
-            texRoughness = (nBRDFModel == COOK_TORRANCE_GGX || nBRDFModel == COOK_TORRANCE_BECKMANN ? roughnessTexIdx : ~0u);
+            texMatType = matTexIdx;
+            texRoughness = roughnessTexIdx;
 
             GBufferGenerationShader.Enable();
             RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
@@ -193,6 +195,9 @@ void GBufferPass::Draw()
     }
 
     GBuffer.Disable();
+
+    // Draw child render passes (in this case, the PBR material test spheres)
+    DrawChildren();
 
     // Generate linear depth buffer and quarter-resolution versions of the hyperbolic and linear depth buffers
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();

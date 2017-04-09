@@ -37,6 +37,7 @@ using namespace Synesthesia3D;
 using namespace GITechDemoApp;
 
 #include "AppResources.h"
+#include "PBRMaterialTestPass.h"
 
 namespace GITechDemoApp
 {
@@ -74,6 +75,9 @@ namespace GITechDemoApp
         Vec4f( 1.f, -1.f,   0.f,    1.f)
     };
     ////////////////////////////////////
+
+    extern PBRMaterialDescription g_arrPBRMaterialDescription[];
+    extern unsigned int g_nPBRMaterialDescriptionCount;
 }
 
 ShadowMapDirectionalLightPass::ShadowMapDirectionalLightPass(const char* const passName, RenderPass* const parentPass)
@@ -383,6 +387,23 @@ void ShadowMapDirectionalLightPass::Draw()
         }
 
         DepthPassShader.Disable();
+
+        for (unsigned int idx = 0; idx < g_nPBRMaterialDescriptionCount; idx++)
+        {
+            PUSH_PROFILE_MARKER(g_arrPBRMaterialDescription[idx].szMaterialName.c_str());
+
+            f44WorldViewProjMat = f44LightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(idx);
+
+            DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
+
+            // It should have only one mesh, but in case we ever change that...
+            for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+                RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+
+            DepthPassShader.Disable();
+
+            POP_PROFILE_MARKER();
+        }
 
         POP_PROFILE_MARKER();
     }

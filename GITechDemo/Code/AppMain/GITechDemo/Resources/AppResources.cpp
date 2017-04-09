@@ -23,6 +23,7 @@
 
 #include "AppResources.h"
 #include "ArtistParameter.h"
+#include "PBRMaterialTestPass.h"
 using namespace GITechDemoApp;
 using namespace Synesthesia3D;
 
@@ -59,6 +60,9 @@ vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from Art
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
 #define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
 #define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f)
+#define START_PBR_MATERIAL_TEST_TEXTURES() unsigned int g_nPBRMaterialDescriptionCount = 0; PBRMaterialDescription g_arrPBRMaterialDescription[] = {
+#define CREATE_PBR_MATERIAL_TEST_TEXTURE(Name, Folder) PBRMaterialDescription(Name, Folder),
+#define END_PBR_MATERIAL_TEST_TEXTURES() };
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
@@ -200,6 +204,7 @@ namespace GITechDemoApp
     // Models   //
     //////////////
     CREATE_MODEL_OBJECT(SponzaScene,    "models/sponza/sponza.s3dmdl");
+    CREATE_MODEL_OBJECT(SphereModel,    "models/pbr-test/sphere.s3dmdl");
     //------------------------------------------------------
 
 
@@ -215,6 +220,35 @@ namespace GITechDemoApp
     CREATE_TEXTURE_OBJECT(LensFlareStarBurst,       "textures/LensFlareStarBurst.s3dtex");
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
+    //------------------------------------------------------
+
+
+
+    ////////////////////////////////
+    // PBR Material Test Textures //
+    ////////////////////////////////
+    START_PBR_MATERIAL_TEST_TEXTURES()
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Bamboo wood", "bamboo_wood")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Cratered rock", "cratered_rock")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Dirty slightly pitted concrete", "dirty_slightly_pitted_concrete")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Dry brown dirt", "dry_brown_dirt")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Greasy worn metal", "greasy_worn_metal")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Octogon stone cobble", "octogon_stone_cobble")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Paint peeling concrete", "paint_peeling_concrete")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Polished granite", "polished_granite")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Polished speckled marble", "polished_speckled_marble")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rock infused with copper", "rock_infused_with_copper")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rusted streaked iron", "rusted_streaked_iron")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rusted iron", "rusted_iron")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed aluminum", "scuffed_aluminum")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed copper", "scuffed_copper")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed gold", "scuffed_gold")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed iron", "scuffed_iron")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed titanium", "scuffed_titanium")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn out old brick wall", "worn_out_old_brick_wall")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn painted cement", "worn_painted_cement")
+        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn scuffed plastic", "worn_scuffed_plastic")
+    END_PBR_MATERIAL_TEST_TEXTURES()
     //------------------------------------------------------
 
 
@@ -371,12 +405,12 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fZFar,                    float,          5000.f                  );
 
     /* Directional light parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,           float,          20.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,              float,          25.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.25f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,           float,          10.f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,              float,          15.f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.15f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,        float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,        float,          0.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            COOK_TORRANCE_BECKMANN  );
+    CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,        float,          1.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            COOK_TORRANCE_GGX       );
 
     /* Volumetric directional light parameters */
     CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,             int,            32                      );
@@ -397,7 +431,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fCascadeBlendSize,        float,          50.f                    );
 
     /* Reflective Shadow Map parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,            float,          150.f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,            float,          100.f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,          float,          0.025f                  );
     CREATE_SHADER_CONSTANT_OBJECT(fWeightThreshold,         float,          0.002f                  );
     CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,        bool,           false                   );
@@ -409,7 +443,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fSSAOBias,                float,          0.25f                   );
 
     /* Screen Space Reflection */
-    CREATE_SHADER_CONSTANT_OBJECT(fReflectionIntensity,     float,          2.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(fReflectionIntensity,     float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fThickness,               float,          100.f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fSampleStride,            float,          25.f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fMaxSteps,                float,          200.f                   );
@@ -418,7 +452,7 @@ namespace GITechDemoApp
 
     /* Post-processing parameters */
     // Tone mapping
-    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.3f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp,           Vec2f,          Vec2f(0.00001f, 0.75f)  );
     CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,        float,          0.15f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fLinearStrength,          float,          0.5f                    );
@@ -430,7 +464,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed,          float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fFilmGrainAmount,         float,          0.003f                  );
     // Bloom
-    CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.5f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.2f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,              float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,           float,          1.f                     );
     // FXAA
@@ -556,6 +590,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(f33LensFlareStarBurstMat,     Matrix33f       );
     CREATE_SHADER_CONSTANT_OBJECT(bSingleChannelCopy,           bool            );
     CREATE_SHADER_CONSTANT_OBJECT(f4CustomColorModulator,       Vec4f           );
+    CREATE_SHADER_CONSTANT_OBJECT(bApplyTonemap,                bool            );
     CREATE_SHADER_CONSTANT_OBJECT(f3CameraPositionLightVS,      Vec3f           );
     CREATE_SHADER_CONSTANT_OBJECT(fRaymarchDistanceLimit,       float           );
     CREATE_SHADER_CONSTANT_OBJECT(texDitherMap,                 s3dSampler2D    );
@@ -594,7 +629,7 @@ namespace GITechDemoApp
 
     // Directional light
     CREATE_ARTIST_BOOLPARAM_OBJECT("Directional lights enable", "Toggle the rendering of directional lights",                           "Directional light",        DIRECTIONAL_LIGHT_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("BRDF model",                "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann",   "Directional light",        nBRDFModel.GetCurrentValue(),               1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("BRDF model", "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann; 3 - Ashikhmin-Shirley; 4 - Ward", "Directional light", nBRDFModel.GetCurrentValue(),      1.f);
     CREATE_ARTIST_PARAMETER_OBJECT("Diffuse factor",            "Scale value for diffuse light equation",                               "Directional light",        fDiffuseFactor.GetCurrentValue(),           0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Specular factor",           "Scale value for specular light equation (Blinn-Phong only)",           "Directional light",        fSpecFactor.GetCurrentValue(),              0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Ambient factor",            "Scale value for ambient light equation",                               "Directional light",        fAmbientFactor.GetCurrentValue(),           0.1f);

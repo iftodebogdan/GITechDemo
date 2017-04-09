@@ -52,6 +52,10 @@ CREATE_ROOT_PASS()
     #include "GBufferPass.h"
     ADD_RENDER_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer", ROOT_PASS)
 
+        // Draw PBR material test spheres into the geometry buffer
+        #include "PBRMaterialTestPass.h"
+        ADD_RENDER_PASS(PBR_MATERIAL_TEST_PASS, PBRMaterialTestPass, "PBR Material Test Spheres", GBUFFER_PASS)
+
     // Compute scene lighting
     #include "LightingPass.h"
     ADD_RENDER_PASS(LIGHTING_PASS, LightingPass, "Lighting", ROOT_PASS)

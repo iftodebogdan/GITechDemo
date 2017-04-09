@@ -348,6 +348,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <ClInclude Include="Framework\Windows\FrameworkWin.h" />
     <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\PBRMaterialTestPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\SSAOPass.h" />
     <ClInclude Include="GITechDemo\RenderScheme\BloomPass.h" />
@@ -384,6 +385,7 @@ xcopy /y /d "$(SolutionDir)..\External\Synesthesia3D\External\DX9\utils\$(Platfo
     <ClCompile Include="Framework\Windows\FrameworkWin.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\PBRMaterialTestPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\SSAOPass.cpp" />
     <ClCompile Include="GITechDemo\RenderScheme\BloomPass.cpp" />

@@ -71,6 +71,7 @@ namespace GITechDemoApp
 
     // Models (manage their own textures, no need to declare them)
     CREATE_MODEL_HANDLE(SponzaScene);
+    CREATE_MODEL_HANDLE(SphereModel);
     //------------------------------------------------------
 
     // Textures (not referenced by models, i.e. custom/utility textures, etc.)
@@ -180,6 +181,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(bSingleChannelCopy,       bool            );
     CREATE_SHADER_CONSTANT_HANDLE(f4CustomColorModulator,   Vec4f           );
     CREATE_SHADER_CONSTANT_HANDLE(nTexMipCount,             int             );
+    CREATE_SHADER_CONSTANT_HANDLE(bApplyTonemap,            bool            );
 
     //  - GBufferGeneration.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(texNormal,                s3dSampler2D    );
@@ -378,6 +380,8 @@ namespace GITechDemoApp
         BLINN_PHONG = 0,
         COOK_TORRANCE_GGX,
         COOK_TORRANCE_BECKMANN,
+        ASHIKHMIN_SHIRLEY,
+        WARD,
         BRDF_MODEL_MAX
     };
 }

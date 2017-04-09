@@ -42,6 +42,7 @@ const sampler2D texSource; // The texture to be copied
 
 const bool bSingleChannelCopy;
 const float4 f4CustomColorModulator;
+const bool bApplyTonemap;
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
@@ -53,5 +54,13 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         f4Color = tex2D(texSource, input.f2TexCoord);
 
     f4Color *= f4CustomColorModulator;
+
+    // Tonemapping, mainly used by SSR to prevent specular highlights
+    // from ruining mip chain of light accumulation buffer.
+    if (bApplyTonemap)
+    {
+        f4Color.rgb /= (1.f + dot(LUMINANCE_VECTOR, f4Color.rgb));
+        f4Color.rgb = saturate(f4Color.rgb);
+    }
 }
 ////////////////////////////////////////////////////////////////////

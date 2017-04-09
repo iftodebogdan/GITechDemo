@@ -311,4 +311,9 @@ float PCF8x8(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, 
     
     return percentLit * 0.015625f;
 }
+
+
+// This is safer than the previously used saturate(dot(x, y)) because it avoids divisions by zero
+#define safe_saturate_dot(x, y) (clamp(dot(x, y), 0.0001f, 0.9999f))
+
 ////////////////////////////////////////////////////////////////

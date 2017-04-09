@@ -670,6 +670,34 @@ void GITechDemo::Update(const float fDeltaTime)
     }
     gmtl::normalize((Vec3f&)f3LightDir);
 
+#if 0
+    // NaN at this position!
+    f3LightDir.GetCurrentValue()[0] = 9.41706021e-05;
+    f3LightDir.GetCurrentValue()[1] = -1.00000000;
+    f3LightDir.GetCurrentValue()[2] = -0.000278121064;
+
+    m_tCamera.vPos[0] = 545.252686;
+    m_tCamera.vPos[1] = -1660.33801;
+    m_tCamera.vPos[2] = -81.6245651;
+
+    m_tCamera.mRot.mData[0] = -0.0230895355;
+    m_tCamera.mRot.mData[1] = 0.260565788;
+    m_tCamera.mRot.mData[2] = 0.965138495;
+    m_tCamera.mRot.mData[3] = 0.000000000;
+    m_tCamera.mRot.mData[4] = 0.0582327023;
+    m_tCamera.mRot.mData[5] = 0.964119077;
+    m_tCamera.mRot.mData[6] = -0.258897275;
+    m_tCamera.mRot.mData[7] = 0.000000000;
+    m_tCamera.mRot.mData[8] = -0.998014688;
+    m_tCamera.mRot.mData[9] = 0.0502296351;
+    m_tCamera.mRot.mData[10] = -0.0374352485;
+    m_tCamera.mRot.mData[11] = 0.000000000;
+    m_tCamera.mRot.mData[12] = 0.000000000;
+    m_tCamera.mRot.mData[13] = 0.000000000;
+    m_tCamera.mRot.mData[14] = 0.000000000;
+    m_tCamera.mRot.mData[15] = 1.00000000;
+#endif
+
     // Precalculate some parts of the equation for reconstructing
     // linear depth from hyperbolic depth
     f2LinearDepthEquation = Vec2f(fZNear * fZFar / (fZNear - fZFar), fZFar / (fZFar - fZNear));

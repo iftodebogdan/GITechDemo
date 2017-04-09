@@ -44,6 +44,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D     texHDRSceneTexture; // Scene color buffer
 const samplerCUBE   texEnvMap;          // Reflection cubemap
+const sampler2D     texDiffuseBuffer;   // Diffuse color
 const sampler2D     texMaterialBuffer;  // Roughness and material type (metallic/dielectric)
 const float4x4      f44InvViewMat;      // Inverse view matrix
 const float4x4      f44ViewToRasterMat; // Projection matrix that maps to pixel coordinates
@@ -51,6 +52,7 @@ const sampler2D     texLinDepthBuffer;  // View space linear Z buffer
 const sampler2D     texNormalBuffer;    // View space normal buffer
 const float4        f4TexSize;          // xy: dimensions of scene/depth texture; zw: normalized texel size (1/xy)
 const int           nTexMipCount;       // Number of mips the scene texture has
+const float         fReflectionFactor;  // Scale value for reflected light from cubemap
 
 /*
     Screen Space Reflection shader.
@@ -58,7 +60,7 @@ const int           nTexMipCount;       // Number of mips the scene texture has
     http://jcgt.org/published/0003/04/04/
 */
 
-const float fReflectionIntensity;   // Scale value for reflected color.
+const float fReflectionIntensity;   // Scale value for reflected color from raymarching.
 const float fThickness;             // Camera space thickness to ascribe to each pixel in the depth buffer.
 const float fSampleStride;          // Step in horizontal or vertical pixels between samples. This is a float because integer math is slow on GPUs, but should be set to an integer >= 1.
 const float fMaxSteps;              // Maximum number of iterations. Higher gives better images but may be slow.
@@ -67,6 +69,13 @@ const bool bUseDither;              // Use dithering on ray starting positions.
 
 bool CastSSRRay(float3 f3RayOrigin, float3 f3RayDir, float fJitterAmount, out float2 f2HitTexelCoord, out float3 f3HitPoint);
 
+// Sclick's approximation using roughness to attenuate fresnel.
+float3 FresnelRoughnessTerm(float3 f3F0, float fRoughness, float3 f3Normal, float3 f3ViewDir)
+{
+    const float fVdotN = safe_saturate_dot(-f3ViewDir, f3Normal);
+    return f3F0 + (max(1.f - fRoughness, f3F0) - f3F0) * pow(1.f - fVdotN, 5.f);
+}
+
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     float2 f2HitTexelCoord; float3 f3HitPoint; f4Color = 0;
@@ -74,17 +83,21 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     const float     fDepth = tex2D(texLinDepthBuffer, input.f2TexCoord).r;
     DEPTH_KILL(fDepth, fZFar * 0.999f);
 
+    const float3    f3MaterialColor     = tex2D(texDiffuseBuffer, input.f2TexCoord).rgb;
+    const float2    f2Material          = tex2D(texMaterialBuffer, input.f2TexCoord).rg;
+    const float     fMaterialType       = f2Material.r;
+    const float     fRoughness          = f2Material.g;
+    const float     fRoughness2         = fRoughness * fRoughness;
+
     const float3    f3ViewDir           = normalize(input.f3ViewVec);
     const float3    f3Normal            = DecodeNormal(tex2D(texNormalBuffer, input.f2TexCoord));
     const float3    f3RayStartPosVS     = input.f3ViewVec * fDepth + f3Normal * max(0.01f * fDepth, 0.001f);
     const float3    f3ReflectedRayDir   = reflect(f3ViewDir, f3Normal);
-    const float     fRoughness          = tex2D(texMaterialBuffer, input.f2TexCoord).g;
-    const float     fRoughness2         = fRoughness * fRoughness;
-    const float     fLdotH              = 1.f - saturate(dot(-f3ViewDir, f3Normal));
-    const float     fFresnel            = (1.f - fRoughness) * pow(fLdotH, 5.f);
     const float     fDitherAmount       = bUseDither ? GetDitherAmount(input.f2TexCoord, f4TexSize.xy) : 0.f;
 
-    f4Color = texCUBElod(texEnvMap, float4(mul((float3x3)f44InvViewMat, f3ReflectedRayDir), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT));
+    // Sample the environment map
+    float3 f3EnvAlbedo = texCUBElod(texEnvMap, float4(mul((float3x3)f44InvViewMat, f3ReflectedRayDir), fRoughness2 * ENVIRONMENT_MAP_MIP_COUNT)).rgb * fReflectionFactor;
+
     if (CastSSRRay(f3RayStartPosVS, f3ReflectedRayDir, fDitherAmount, f2HitTexelCoord, f3HitPoint))
     {
         const float fDistFromRayOrigin = length(f3HitPoint - f3RayStartPosVS);
@@ -92,15 +105,19 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         const float fDistanceFadeFactor = 1.f - fNormalizedDistance * fNormalizedDistance;
         const float2 f2HitTexCoord = float2(f2HitTexelCoord * f4TexSize.zw);
         const float fScreenEdgeFactor = saturate((0.5f - max(abs(0.5f - f2HitTexCoord.x), abs(0.5f - f2HitTexCoord.y))) * 10.f);
-        const float4 f4SSRColor = tex2Dlod(texHDRSceneTexture, float4(f2HitTexCoord, 0.f, (fRoughness2) * float(nTexMipCount)));
+        const float3 f3SSRColor = tex2Dlod(texHDRSceneTexture, float4(f2HitTexCoord, 0.f, fRoughness2 * float(nTexMipCount))).rgb;
 
-        f4Color = lerp(
-            f4Color,
-            fDistanceFadeFactor * f4SSRColor,
-            fScreenEdgeFactor);
+        // Mix reflection with environment map sample
+        f3EnvAlbedo = lerp(
+            f3EnvAlbedo,
+            f3SSRColor * fReflectionIntensity,
+            fDistanceFadeFactor * fScreenEdgeFactor);
     }
 
-    f4Color *= fFresnel * fReflectionIntensity;
+    const float3 f3SpecularAlbedo = lerp(0.03f, f3MaterialColor, fMaterialType);
+    const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness, f3Normal, f3ViewDir);
+
+    f4Color = float4(f3EnvFresnel * f3EnvAlbedo, 1.f);
 }
 ////////////////////////////////////////////////////////////////////
 
@@ -252,5 +269,5 @@ bool CastSSRRay(float3 f3RayOrigin, float3 f3RayDir, float fJitterAmount, out fl
     f3HitPoint = Q * (1.0 / k);
 
     // Matches the new loop condition:
-    return (rayZMax <= sceneZMax + fThickness) && (rayZMin >= sceneZMax);
+    return (rayZMax <= sceneZMax + fThickness) && (rayZMin >= sceneZMax) && length(f3HitPoint - f3RayOrigin) <= rayLength;
 }
