@@ -4,9 +4,10 @@
 ![GITechDemo v1.6.1 screenshot](https://cloud.githubusercontent.com/assets/3004291/15302439/a855f494-1bbb-11e6-85fa-7af9e1429357.png)
 
 GITechDemo is a global illumination technical demo application developed using a proprietary rendering engine and incorporates the following rendering techniques:
+- Physically based rendering pipeline implementation
 - High-dynamic-range rendering
 - Deferred shading
-- Cook-Torrance and Blinn-Phong BRDFs
+- Cook-Torrance, Blinn-Phong, Ashikhmin-Shirley and Ward BRDFs
 - Cascaded shadow maps
 - Percentage-closer filtering for soft shadows
 - Ray marched volumetric lighting
