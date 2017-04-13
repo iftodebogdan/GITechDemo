@@ -40,7 +40,7 @@ namespace GITechDemoApp
 {
     bool DOF_ENABLED = true;
     float DOF_AUTOFOCUS_TIME = 0.5f;
-    int DOF_NUM_PASSES = 3;
+    int DOF_NUM_PASSES = 4;
 }
 
 DepthOfFieldPass::DepthOfFieldPass(const char* const passName, RenderPass* const parentPass)
