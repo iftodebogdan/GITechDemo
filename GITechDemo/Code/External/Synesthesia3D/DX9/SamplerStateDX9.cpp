@@ -206,7 +206,7 @@ const bool SamplerStateDX9::Flush()
                 return false;
         }
 
-        if (m_tCurrentStateDX9[slot].eAddressingMode[2] == GetAddressingModeW(slot))
+        if (m_tCurrentStateDX9[slot].eAddressingMode[2] != GetAddressingModeW(slot))
         {
             hr = device->SetSamplerState(slot, D3DSAMP_ADDRESSW, TextureAddressingModeDX9[GetAddressingModeW(slot)]);
             assert(SUCCEEDED(hr));

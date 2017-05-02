@@ -20,6 +20,8 @@ bld/
 !/*/[Bb]uild/**
 /*/[Bb]uild/**/
 /*/[Bb]in/
+/*/[Dd]ata/[Mm]odels/
+/*/[Dd]ata/[Tt]extures/
 [Oo]bj/
 [Bb]in[Tt]emp/
 [Ll]ogs/

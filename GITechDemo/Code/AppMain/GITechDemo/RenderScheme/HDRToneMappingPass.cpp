@@ -37,6 +37,7 @@ using namespace GITechDemoApp;
 namespace GITechDemoApp
 {
     bool HDR_TONE_MAPPING_ENABLED = true;
+    bool SRGB_COLOR_CORRECTION = false;
 }
 
 HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* const parentPass)
@@ -66,7 +67,11 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     ResourceMgr->GetTexture(LDRToneMappedImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ResourceMgr->GetTexture(LDRToneMappedImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
-    
+
+    ColorCorrectionTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+    ColorCorrectionTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
+    ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(SRGB_COLOR_CORRECTION);
+
     GITechDemoApp::RenderTarget* const rtBkp = AdaptedLuminance[0];
     AdaptedLuminance[0] = AdaptedLuminance[1];
     AdaptedLuminance[1] = rtBkp;
@@ -74,6 +79,7 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
     fFrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
 
     texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
+    texColorCorrection = ColorCorrectionTexture.GetTextureIndex();
 }
 
 // Measure average luminance level of scene

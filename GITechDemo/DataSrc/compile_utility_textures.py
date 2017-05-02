@@ -56,11 +56,12 @@ textureCompilerExe = scriptAbsPath + "/../Bin/" + defaultArchitecture + "/Releas
 # Set custom arguments for individual files
 customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
 {
-    "sky.dds"                   : "-q -f A16B16G16R16F",
-    "LensFlareDirt.png"         : "-q -f A8R8G8B8 -mip 1",
-    "LensFlareStarBurst.png"    : "-q -f A8R8G8B8 -mip 1",
-    "bayer_matrix.dds"          : "-q -f L8 -mip 1",
-    "noise.dds"                 : "-q -f L8 -mip 1"
+    "sky.dds"                           : "-q -f A16B16G16R16F",
+    #"LensFlareDirt.png"                 : "-q -f A8R8G8B8 -mip 1",
+    #"LensFlareStarBurst.png"            : "-q -f A8R8G8B8 -mip 1",
+    "ContrastEnhance.dds"               : "-q -f A8R8G8B8 -mip 1",
+    "bayer_matrix.dds"                  : "-q -f L8 -mip 1",
+    "noise.dds"                         : "-q -f L8 -mip 1"
 })
 
 # Detect modification of texture compiler executable

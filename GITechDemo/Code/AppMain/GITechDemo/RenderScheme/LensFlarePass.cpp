@@ -68,11 +68,11 @@ void LensFlarePass::Update(const float fDeltaTime)
     texGhostColorLUT = LensFlareGhostColorLUT.GetTextureIndex();
 
     LensFlareDirt.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    LensFlareDirt.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+    LensFlareDirt.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     texLensFlareDirt = LensFlareDirt.GetTextureIndex();
 
     LensFlareStarBurst.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    LensFlareStarBurst.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+    LensFlareStarBurst.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     texLensFlareStarBurst = LensFlareStarBurst.GetTextureIndex();
 
     nDownsampleFactor = 1;

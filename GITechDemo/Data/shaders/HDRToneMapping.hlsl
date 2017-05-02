@@ -41,6 +41,7 @@ void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOu
 // Pixel shader ///////////////////////////////////////////////////
 const sampler2D texSource;  // Source HDR texture
 const sampler2D texAvgLuma; // 1x1 average luma texture
+const sampler3D texColorCorrection; // Color correction texture
 
 const float fExposureBias;  // Exposure amount
 
@@ -54,6 +55,8 @@ const float fLinearWhite;       // = 11.2;
 
 const float fFrameTime;
 const float fFilmGrainAmount;
+
+const bool bApplyColorCorrection;
 
 float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
 {
@@ -114,6 +117,10 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     float3 f3FinalColor = FilmicTonemap(f3Color * fExposureBias);
     const float3 f3WhiteScale = rcp(FilmicTonemap(fLinearWhite));
     f3FinalColor *= f3WhiteScale;
+
+    // Color correction
+    if(bApplyColorCorrection)
+        f3FinalColor = tex3D(texColorCorrection, saturate(f3FinalColor)).rgb;
 
     // Convert back to gamma space (not required for Duiker tonemap)
     // NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()

@@ -83,6 +83,7 @@ namespace GITechDemoApp
     CREATE_TEXTURE_HANDLE(LensFlareStarBurst);
     CREATE_TEXTURE_HANDLE(BayerMatrix);
     CREATE_TEXTURE_HANDLE(NoiseTexture);
+    CREATE_TEXTURE_HANDLE(ColorCorrectionTexture);
     //------------------------------------------------------
 
     // Render targets
@@ -261,6 +262,8 @@ namespace GITechDemoApp
     
     //  - HDRToneMapping.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(texAvgLuma,               s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_HANDLE(texColorCorrection,       s3dSampler3D    );
+    CREATE_SHADER_CONSTANT_HANDLE(bApplyColorCorrection,    bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fExposureBias,            float           );
     CREATE_SHADER_CONSTANT_HANDLE(fShoulderStrength,        float           );
     CREATE_SHADER_CONSTANT_HANDLE(fLinearStrength,          float           );
@@ -311,6 +314,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fApertureSize,            float           );
     CREATE_SHADER_CONSTANT_HANDLE(fHighlightThreshold,      float           );
     CREATE_SHADER_CONSTANT_HANDLE(fHighlightGain,           float           );
+    CREATE_SHADER_CONSTANT_HANDLE(bAnamorphicBokeh,         bool            );
     CREATE_SHADER_CONSTANT_HANDLE(bVignetting,              bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fVignOut,                 float           );
     CREATE_SHADER_CONSTANT_HANDLE(fVignIn,                  float           );

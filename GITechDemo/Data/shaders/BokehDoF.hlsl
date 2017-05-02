@@ -62,12 +62,13 @@ const float4 f4TexSize; // xy: size, in texels, of source image; zw: normalized 
 
 // Camera properties
 #define APERTURE_BLADE_COUNT (6)
-const float fFocalDepth;    // Focal distance value in meters (overridden by 'bAutofocus')
-const float fFocalLength;   // Focal length in mm
-const float fFStop;         // F-stop value
-const float fCoC;           // Circle of confusion size in mm (35mm film = 0.03mm)
-const float fApertureSize;  // Determines size of bokeh
-const bool  bAutofocus;     // Overrides fFocalDepth value with value taken from depth buffer
+const float fFocalDepth;        // Focal distance value in meters (overridden by 'bAutofocus')
+const float fFocalLength;       // Focal length in mm
+const float fFStop;             // F-stop value
+const float fCoC;               // Circle of confusion size in mm (35mm film = 0.03mm)
+const float fApertureSize;      // Determines size of bokeh
+const bool  bAutofocus;         // Overrides fFocalDepth value with value taken from depth buffer
+const bool  bAnamorphicBokeh;   // Stretch bokeh effect like on an anamorphic lens
 
 // Brightness filter (directly affects bokeh abundance and prominence)
 const float fHighlightThreshold;    // Brightness-pass filter threshold (higher = sparser bokeh)
@@ -133,7 +134,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         for (int i = 0; i < APERTURE_BLADE_COUNT; i++)
         {
             // Retrieve sample color and CoC value
-            const float4 f4Sample = tex2D(texSource, input.f2TexCoord + f2KernelOffset[i] * fApertureSize * fDofBlurFactor * float2(fAspectRatioScale, 1.f));
+            const float4 f4Sample = tex2D(texSource, input.f2TexCoord + f2KernelOffset[i] * float2(bAnamorphicBokeh ? 1.f / 2.40f : 1.f, 1.f) * fApertureSize * fDofBlurFactor * float2(fAspectRatioScale, 1.f));
             const float fSampleDofBlurFactor = f4Sample.a * 2.f - 1.f;
 
             // Calculate sample weight

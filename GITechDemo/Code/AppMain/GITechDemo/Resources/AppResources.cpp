@@ -139,6 +139,7 @@ namespace GITechDemoApp
 
     // Tone mapping
     extern bool HDR_TONE_MAPPING_ENABLED;
+    extern bool SRGB_COLOR_CORRECTION;
 
     // FXAA
     extern bool FXAA_ENABLED;
@@ -220,6 +221,7 @@ namespace GITechDemoApp
     CREATE_TEXTURE_OBJECT(LensFlareStarBurst,       "textures/LensFlareStarBurst.s3dtex");
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
+    CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
     //------------------------------------------------------
 
 
@@ -452,17 +454,18 @@ namespace GITechDemoApp
 
     /* Post-processing parameters */
     // Tone mapping
-    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp,           Vec2f,          Vec2f(0.00001f, 0.75f)  );
-    CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,        float,          0.15f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fLinearStrength,          float,          0.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fLinearAngle,             float,          0.07f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fToeStrength,             float,          3.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fToeNumerator,            float,          0.02f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fToeDenominator,          float,          0.25f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fLinearWhite,             float,          11.2f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.2f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp,           Vec2f,          Vec2f(0.0001f, 0.75f)   );
+    CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,        float,          0.5f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fLinearStrength,          float,          0.58f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fLinearAngle,             float,          0.35f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fToeStrength,             float,          0.48f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fToeNumerator,            float,          0.12f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fToeDenominator,          float,          0.58f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fLinearWhite,             float,          3.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed,          float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fFilmGrainAmount,         float,          0.003f                  );
+    CREATE_SHADER_CONSTANT_OBJECT(bApplyColorCorrection,    bool,           true                    );
     // Bloom
     CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.2f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,              float,          1.f                     );
@@ -483,6 +486,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fHighlightThreshold,      float,          3.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fHighlightGain,           float,          15.f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,            float,          0.01f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(bAnamorphicBokeh,         bool,           false                   );
     CREATE_SHADER_CONSTANT_OBJECT(bVignetting,              bool,           true                    );
     CREATE_SHADER_CONSTANT_OBJECT(fVignOut,                 float,          0.75f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fVignIn,                  float,          0.25f                   );
@@ -570,6 +574,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(bInitialLumaPass,             bool            );
     CREATE_SHADER_CONSTANT_OBJECT(bFinalLumaPass,               bool            );
     CREATE_SHADER_CONSTANT_OBJECT(texAvgLuma,                   s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_OBJECT(texColorCorrection,           s3dSampler3D    );
     CREATE_SHADER_CONSTANT_OBJECT(texSource,                    s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(fFrameTime,                   float           );
     CREATE_SHADER_CONSTANT_OBJECT(texLumaTarget,                s3dSampler2D    );
@@ -718,6 +723,7 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("DoF pass count",            "The number of times to apply the DoF shader",                          "Depth of field",           DOF_NUM_PASSES,                             1.f);
     CREATE_ARTIST_PARAMETER_OBJECT("Highlight threshold",       "Brightness-pass filter threshold (higher = sparser bokeh)",            "Depth of field",           fHighlightThreshold.GetCurrentValue(),      0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Highlight gain",            "Brightness gain (higher = more prominent bokeh)",                      "Depth of field",           fHighlightGain.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Anamorphic bokeh",          "Stretch bokeh effect like on an anamorphic lens",                      "Depth of field",           bAnamorphicBokeh.GetCurrentValue());
     CREATE_ARTIST_BOOLPARAM_OBJECT("Autofocus",                 "Use autofocus",                                                        "Depth of field",           bAutofocus.GetCurrentValue());
     CREATE_ARTIST_PARAMETER_OBJECT("Autofocus time",            "Autofocus animation duration in seconds",                              "Depth of field",           DOF_AUTOFOCUS_TIME,                         1.f);;
 
@@ -774,6 +780,10 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Toe denominator",           "Denominator of the toe part of the filmic tone mapping curve",         "HDR tone mapping",         fToeDenominator.GetCurrentValue(),          0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Linear white",              "Reference linear white value of the filmic tone mapping curve",        "HDR tone mapping",         fLinearWhite.GetCurrentValue(),             0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Exposure adapt speed",      "Seconds in which the exposure adapts to scene brightness",             "HDR tone mapping",         fLumaAdaptSpeed.GetCurrentValue(),          0.1f);
+
+    // Color correction (part of HDR tonemapping shader)
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Apply color correction",    "Use the provided 3D color lookup table to do color correction",        "Color correction",         bApplyColorCorrection.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("sRGB color lookup table",   "Apply gamma correction when sampling the 3D color lookup table",       "Color correction",         SRGB_COLOR_CORRECTION);
 
     // Film grain (part of HDR tonemapping shader)
     CREATE_ARTIST_PARAMETER_OBJECT("Film grain amount",         "Amount of film grain applied to the image",                            "Film grain",               fFilmGrainAmount.GetCurrentValue(),         0.001f);
