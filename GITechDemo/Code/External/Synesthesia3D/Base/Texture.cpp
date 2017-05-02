@@ -865,7 +865,7 @@ void Texture::ValidatePixelFormat(PixelFormat& pixelFormat, const TextureType te
     if (Renderer::GetAPI() == API_NULL)
         return;
 
-    const std::vector<const DeviceCaps::SupportedPixelFormat>& arrValidPF = Renderer::GetInstance()->GetDeviceCaps().arrSupportedPixelFormats;
+    const std::vector<DeviceCaps::SupportedPixelFormat>& arrValidPF = Renderer::GetInstance()->GetDeviceCaps().arrSupportedPixelFormats;
 
     // Check if we have a valid pixel format
     for (unsigned int idx = 0; idx < arrValidPF.size(); idx++)

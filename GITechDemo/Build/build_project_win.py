@@ -42,7 +42,6 @@ import build_data_win
 #   'profile' to build on the Profile configuration                         #
 #   'win32' to build for 32 bit architecture                                #
 #   'x64' to build for 64 bit architecture (default)                        #
-#   'vs20XX' to build against Visual Studio 20XX toolset (default: vs2010)  #
 #############################################################################
 
 
@@ -58,8 +57,6 @@ def Run():
     defaultForceRebuild = False
     defaultBuildConfiguration = "Release"
     defaultArchitecture = "x64"
-    defaultVSBuildTools = "VS100COMNTOOLS"
-    defaultPlatformToolset = "v100"
 
     #################
 
@@ -68,10 +65,6 @@ def Run():
     ########
     # Main #
     ########
-
-    #os.system('reg query "HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7"')
-    #os.system('reg delete "HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7" /v "12.0"')
-    #os.system("reg add \"HKLM\SOFTWARE\Microsoft\VisualStudio\SxS\VS7\" /v \"12.0\" /t REG_SZ /d \"C:\Program Files (x86)\Microsoft Visual Studio 12.0\\\\\"")
 
     # Start timer
     start = time.clock()
@@ -86,63 +79,8 @@ def Run():
             defaultBuildConfiguration = "Profile"
         if(opt.lower() == "x64"):
             defaultArchitecture = "x64"
-        if(opt.lower() == "win32"):
+        if(opt.lower() == "win32" or opt.lower() == "x86"):
             defaultArchitecture = "Win32"
-        #if(opt.lower() == "vs2005"):
-        #   defaultVSBuildTools = "VS80COMNTOOLS"
-        #   defaultPlatformToolset = "vs80"
-        #if(opt.lower() == "vs2008"):
-        #   defaultVSBuildTools = "VS90COMNTOOLS"
-        #   defaultPlatformToolset = "vs90"
-        if(opt.lower() == "vs2010"):
-            defaultVSBuildTools = "VS100COMNTOOLS"
-            defaultPlatformToolset = "vs100"
-        if(opt.lower() == "vs2012"):
-            defaultVSBuildTools = "VS110COMNTOOLS"
-            defaultPlatformToolset = "vs110"
-        if(opt.lower() == "vs2013"):
-            defaultVSBuildTools = "VS120COMNTOOLS"
-            defaultPlatformToolset = "vs120"
-        if(opt.lower() == "vs2015"):
-            defaultVSBuildTools = "VS140COMNTOOLS"
-            defaultPlatformToolset = "vs140"
-
-
-
-    # Setup build tools
-    envSetupBat = "VsDevCmd.bat"
-    if(os.getenv(defaultVSBuildTools)):
-        pathToTools = os.getenv(defaultVSBuildTools)
-        if(
-            defaultVSBuildTools == "VS100COMNTOOLS" or
-            defaultVSBuildTools == "VS90COMNTOOLS" or
-            defaultVSBuildTools == "VS80COMNTOOLS"
-        ):
-            envSetupBat = "vsvars32.bat"
-    elif(os.getenv("VS140COMNTOOLS")):  # Visual Studio 2015
-        pathToTools = os.getenv("VS140COMNTOOLS")
-        defaultPlatformToolset = "vs140"
-    elif(os.getenv("VS120COMNTOOLS")):  # Visual Studio 2013
-        pathToTools = os.getenv("VS120COMNTOOLS")
-        defaultPlatformToolset = "vs120"
-    elif(os.getenv("VS110COMNTOOLS")):  # Visual Studio 2012
-        pathToTools = os.getenv("VS110COMNTOOLS")
-        defaultPlatformToolset = "vs110"
-    elif(os.getenv("VS100COMNTOOLS")):  # Visual Studio 2010
-        pathToTools = os.getenv("VS100COMNTOOLS")
-        defaultPlatformToolset = "vs100"
-        envSetupBat = "vsvars32.bat"
-    #elif(os.getenv("VS90COMNTOOLS")):  # Visual Studio 2008
-    #   pathToTools = os.getenv("VS90COMNTOOLS")
-    #   defaultPlatformToolset = "vs90"
-    #   envSetupBat = "vsvars32.bat"
-    #elif(os.getenv("VS80COMNTOOLS")):  # Visual Studio 2005
-    #   pathToTools = os.getenv("VS80COMNTOOLS")
-    #   defaultPlatformToolset = "vs80"
-    #   envSetupBat = "vsvars32.bat"
-    else:
-        logging.error("No compatible version of Visual Studio found!")
-        return 1
 
 
 
@@ -157,16 +95,24 @@ def Run():
     logging.info("")
 
 
+
+    # Setup build tools
+    buildEnvPath = utils.FindBuildEnvironment()
+    if buildEnvPath == "":
+        logging.error("No compatible version of Visual Studio found!")
+        return 1
+
+
+
     # Compile project
     logging.info("Starting project build process...")
     logging.info("Force rebuild: " + str(defaultForceRebuild))
     logging.info("Build configuration: " + defaultBuildConfiguration)
     logging.info("Architecture: " + defaultArchitecture)
-    logging.info("Platform toolset: " + defaultPlatformToolset)
     logging.info("")
 
     startProjectBuild = time.clock()
-    if utils.BuildSLN(projectName, pathToTools, defaultPlatformToolset, envSetupBat, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
+    if utils.BuildSLN(projectName, buildEnvPath, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
         logging.error("Could not complete project build process")
         return 1
     else:

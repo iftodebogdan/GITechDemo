@@ -843,7 +843,7 @@ namespace Synesthesia3D
             unsigned int    nHeight;        /**< @brief Supported height. */
             unsigned int    nRefreshRate;   /**< @brief Supported refresh rate. */
         };
-        std::vector<const SupportedScreenFormat> arrSupportedScreenFormats; /**< Array with supported display formats. */
+        std::vector<SupportedScreenFormat> arrSupportedScreenFormats; /**< Array with supported display formats. */
 
         /**
          * @brief   Supported pixel formats for textures.
@@ -854,7 +854,7 @@ namespace Synesthesia3D
             PixelFormat ePixelFormat;   /**< @brief Supported pixel format. */
             BufferUsage eResourceUsage; /**< @brief Supported usage mode. */
         };
-        std::vector<const SupportedPixelFormat> arrSupportedPixelFormats;   /**< Array with supported texture formats. */
+        std::vector<SupportedPixelFormat> arrSupportedPixelFormats;   /**< Array with supported texture formats. */
     };
 
     //////////////////////////////////////////////////////////////////

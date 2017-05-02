@@ -87,13 +87,24 @@ def GetScriptAbsolutePath():
 
 
 
-def BuildSLN(slnName, pathToTools, platformToolset, envSetupBat, platform, buildConfig, forceRebuild):
+def FindBuildEnvironment():
+    proc = subprocess.Popen( \
+        "..\\Tools\\vswhere\\vswhere.exe", \
+        stdout = subprocess.PIPE, \
+        stderr = subprocess.STDOUT)
+    for line in iter(proc.stdout.readline, ""):
+        result = line.strip().split(": ", 1)
+        if result[0] == "installationPath":
+            return result[1] + "\\Common7\\Tools"
+    return ""
+
+
+def BuildSLN(slnName, pathToTools, platform, buildConfig, forceRebuild):
     os.environ["PATH"] += os.pathsep + pathToTools
     cmd = \
-        envSetupBat + \
+        "VsDevCmd.bat" + \
         " && MSBuild.exe /maxcpucount /p:Configuration=" + buildConfig + \
-        " /p:Platform=" + platform + \
-        " /p:PlatformToolset=" + platformToolset
+        " /p:Platform=" + platform
     if forceRebuild:
         cmd += " /t:rebuild "
     else:

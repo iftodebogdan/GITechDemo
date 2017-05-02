@@ -87,19 +87,10 @@ int FrameworkWin::Run()
 #if (1) //_DEBUG
     // Allocate the console
     AllocConsole();
-
-    // Connect I/O streams
-    HANDLE handle_out = GetStdHandle(STD_OUTPUT_HANDLE);
-    int hCrt = _open_osfhandle((intptr_t)handle_out, _O_TEXT);
-    FILE* hf_out = _fdopen(hCrt, "w");
-    setvbuf(hf_out, NULL, _IONBF, 1);
-    *stdout = *hf_out;
-
-    HANDLE handle_in = GetStdHandle(STD_INPUT_HANDLE);
-    hCrt = _open_osfhandle((intptr_t)handle_in, _O_TEXT);
-    FILE* hf_in = _fdopen(hCrt, "r");
-    setvbuf(hf_in, NULL, _IONBF, 128);
-    *stdin = *hf_in;
+    FILE* streamOut = nullptr;
+    FILE* streamIn = nullptr;
+    freopen_s(&streamOut, "CONOUT$", "w", stdout);
+    freopen_s(&streamIn, "CONIN$", "r", stdin);
 #endif
 
     hAccelTable = LoadAccelerators(m_hInstance, MAKEINTRESOURCE(IDC_FRAMEWORK));
@@ -253,6 +244,10 @@ int FrameworkWin::Run()
                     Sleep(2000);
                     // Free the console
                     FreeConsole();
+                    if (streamIn)
+                        fclose(streamIn);
+                    if (streamOut)
+                        fclose(streamOut);
                 #endif
                     //ShowWindow(m_hWnd, SW_MAXIMIZE);
                     OnSwitchToWindowedMode();
@@ -293,6 +288,10 @@ int FrameworkWin::Run()
 #if _DEBUG
     // Free the console
     FreeConsole();
+    if (streamIn)
+        fclose(streamIn);
+    if (streamOut)
+        fclose(streamOut);
 #endif
 
     return (int)msg.wParam;

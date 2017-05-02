@@ -170,7 +170,7 @@ bool GITechDemo::Init(void* hWnd)
 
     RenderResource::SetResourceManager(ResourceMgr);
 
-    const std::vector<const Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+    const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
     // Set the highest available fullscreen resolution
     for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
@@ -307,7 +307,7 @@ void GITechDemo::Update(const float fDeltaTime)
     pFW->GetClientArea(cLeft, cTop, cRight, cBottom);
     const Vec2i viewportSize = Vec2i(cRight - cLeft, cBottom - cTop);
     
-    const std::vector<const Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+    const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
     // Update fullscreen resolution setting
     if (m_nLastFrameResX != -1 ||

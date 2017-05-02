@@ -315,15 +315,21 @@ void RenderTargetDX9::Bind()
     for (unsigned int i = 0; i < m_nTargetCount; i++)
     {
         IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
-        assert(SUCCEEDED(hr));
+        if (dxTex)
+        {
+            hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
+            assert(SUCCEEDED(hr));
+        }
     }
 
     if (m_bHasDepthStencil)
     {
         IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
-        assert(SUCCEEDED(hr));
+        if (dxTex)
+        {
+            hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
+            assert(SUCCEEDED(hr));
+        }
     }
 }
 
