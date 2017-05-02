@@ -7,7 +7,7 @@ using namespace Synesthesia3D;
 
 #include <IL/il.h>
 #include <IL/ilu.h>
-#include <IL/ilut.h>
+//#include <IL/ilut.h>
 
 #include "../Common/Logging.h"
 #include "TextureCompiler.h"
@@ -470,8 +470,8 @@ void TextureCompiler::Run(int argc, char* argv[])
 	const unsigned long long startTick = GetTickCount64();
 
 	if (ilGetInteger(IL_VERSION_NUM) != IL_VERSION ||
-		iluGetInteger(ILU_VERSION_NUM) != ILU_VERSION ||
-		ilutGetInteger(ILUT_VERSION_NUM) != ILUT_VERSION)
+		iluGetInteger(ILU_VERSION_NUM) != ILU_VERSION /*||
+		ilutGetInteger(ILUT_VERSION_NUM) != ILUT_VERSION*/)
 	{
 		Log << "[ERROR] Mismatch between DevIL binaries version and expected version\n";
 		return;
@@ -481,7 +481,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 
 	ilInit();
 	iluInit();
-	ilutInit();
+	//ilutInit();
 
 	//ilEnable(IL_ORIGIN_SET);
 	//ilSetInteger(IL_ORIGIN_MODE, IL_ORIGIN_UPPER_LEFT);

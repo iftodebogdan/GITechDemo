@@ -106,7 +106,8 @@
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\DevIL.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\ILU.dll" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -114,8 +115,7 @@
     <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\DevIL.dll"
-DEL /F /Q "$(OutDir)\ILU.dll"
-DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
+DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
@@ -135,7 +135,8 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\DevIL.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\ILU.dll" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -143,8 +144,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
     <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\DevIL.dll"
-DEL /F /Q "$(OutDir)\ILU.dll"
-DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
+DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
@@ -168,7 +168,8 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\DevIL.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\ILU.dll" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -176,8 +177,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
     <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\DevIL.dll"
-DEL /F /Q "$(OutDir)\ILU.dll"
-DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
+DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>
@@ -201,7 +201,8 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\*.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\DevIL.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\DevIL\bin\$(Platform)\ILU.dll" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -209,8 +210,7 @@ DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
     <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\DevIL.dll"
-DEL /F /Q "$(OutDir)\ILU.dll"
-DEL /F /Q "$(OutDir)\ILUT.dll"</Command>
+DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <Message>Deleting DLL dependencies</Message>
       <Outputs>dummy</Outputs>
     </CustomBuildStep>

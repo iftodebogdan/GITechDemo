@@ -145,7 +145,6 @@
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
@@ -181,7 +180,6 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
@@ -223,7 +221,6 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
@@ -263,7 +260,6 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
@@ -304,7 +300,6 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
@@ -345,7 +340,6 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data_win.py" $(Platform)</Command>
