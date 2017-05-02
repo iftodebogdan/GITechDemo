@@ -47,9 +47,17 @@ namespace GITechDemoApp
 
 HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-    , m_pHUDTexture(nullptr)
-    , m_nHUDTextureIdx(-1)
+    , m_nCurrUpdateTexIdx(0)
+    , m_nCurrRenderTexIdx(0)
 {
+    assert(HUD_TEXTURE_BUFFER_COUNT > 0);
+
+    for (unsigned int idx = 0; idx < HUD_TEXTURE_BUFFER_COUNT; idx++)
+    {
+        m_pHUDTexture[idx] = nullptr;
+        m_nHUDTextureIdx[idx] = -1;
+    }
+
     FT_Library      fontLibrary = nullptr;
     FT_Face         face = nullptr;
     FT_GlyphSlot    slot = nullptr;
@@ -115,25 +123,33 @@ void HUDPass::Update(const float fDeltaTime)
     if (!ResourceMgr)
         return;
 
-    if (!m_pHUDTexture ||
-        RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO != m_pHUDTexture->GetWidth() ||
-        RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO != m_pHUDTexture->GetHeight())
+    for (unsigned int idx = 0; idx < HUD_TEXTURE_BUFFER_COUNT; idx++)
     {
-        if (m_pHUDTexture)
+        if (!m_pHUDTexture[idx] ||
+            RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO != m_pHUDTexture[idx]->GetWidth() ||
+            RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO != m_pHUDTexture[idx]->GetHeight())
         {
-            ResourceMgr->ReleaseTexture(m_nHUDTextureIdx);
-            m_pHUDTexture = nullptr;
-        }
+            if (m_pHUDTexture[idx])
+            {
+                ResourceMgr->ReleaseTexture(m_nHUDTextureIdx[idx]);
+                m_pHUDTexture[idx] = nullptr;
+            }
 
-        m_nHUDTextureIdx = ResourceMgr->CreateTexture(PF_L8, TT_2D,
-            (unsigned int)(RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO),
-            (unsigned int)(RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO),
-            1, 1, BU_DYNAMIC);
-        m_pHUDTexture = ResourceMgr->GetTexture(m_nHUDTextureIdx);
+            m_nHUDTextureIdx[idx] = ResourceMgr->CreateTexture(PF_L8, TT_2D,
+                (unsigned int)(RenderContext->GetDisplayResolution()[0] * HUD_TEX_WIDTH_RATIO),
+                (unsigned int)(RenderContext->GetDisplayResolution()[1] * HUD_TEX_HEIGHT_RATIO),
+                1, 1, BU_DYNAMIC);
+            m_pHUDTexture[idx] = ResourceMgr->GetTexture(m_nHUDTextureIdx[idx]);
+        }
     }
 
-    f2HalfTexelOffset = Vec2f(0.5f / m_pHUDTexture->GetWidth(), 0.5f / m_pHUDTexture->GetHeight());
-    texSource = m_nHUDTextureIdx;
+    // Calculate update and render texture indices
+    //m_nCurrRenderTexIdx = m_nCurrUpdateTexIdx;
+    m_nCurrUpdateTexIdx = (m_nCurrUpdateTexIdx + 1) % HUD_TEXTURE_BUFFER_COUNT;
+    m_nCurrRenderTexIdx = (m_nCurrUpdateTexIdx + 1) % HUD_TEXTURE_BUFFER_COUNT;
+
+    f2HalfTexelOffset = Vec2f(0.5f / m_pHUDTexture[m_nCurrRenderTexIdx]->GetWidth(), 0.5f / m_pHUDTexture[m_nCurrRenderTexIdx]->GetHeight());
+    texSource = m_nHUDTextureIdx[m_nCurrRenderTexIdx];
 }
 
 void HUDPass::Draw()
@@ -149,9 +165,9 @@ void HUDPass::Draw()
     if (m_szTextBuf.length() == 0)
         return;
 
-    if (m_pHUDTexture->Lock(0, BL_WRITE_ONLY))
+    if (m_pHUDTexture[m_nCurrUpdateTexIdx]->Lock(0, BL_WRITE_ONLY))
     {
-        memset(m_pHUDTexture->GetMipData(0), 0, m_pHUDTexture->GetMipSizeBytes(0));
+        memset(m_pHUDTexture[m_nCurrUpdateTexIdx]->GetMipData(0), 0, m_pHUDTexture[m_nCurrUpdateTexIdx]->GetMipSizeBytes(0));
 
         int pen_x = HUD_TEXT_LEFT_MARGIN;
         int pen_y = HUD_TEXT_TOP_MARGIN;
@@ -159,7 +175,7 @@ void HUDPass::Draw()
         for (unsigned int n = 0; n < m_szTextBuf.length(); n++)
         {
             char ch = m_szTextBuf[n];
-            if (ch == '\n' || (unsigned int)(pen_x + m_pGlyphCache[ch].left + m_pGlyphCache[ch].width) > m_pHUDTexture->GetWidth())
+            if (ch == '\n' || (unsigned int)(pen_x + m_pGlyphCache[ch].left + m_pGlyphCache[ch].width) > m_pHUDTexture[m_nCurrUpdateTexIdx]->GetWidth())
             {
                 pen_x = HUD_TEXT_LEFT_MARGIN;
                 pen_y += m_pGlyphCache[ch].advance_y >> 6;
@@ -177,12 +193,12 @@ void HUDPass::Draw()
             for (int j = y, q = 0; j < y_max; j++, q++)
             {
                 if (x < 0 || j < 0 ||
-                    x_max >= (FT_Int)m_pHUDTexture->GetWidth() ||
-                    j >= (FT_Int)m_pHUDTexture->GetHeight())
+                    x_max >= (FT_Int)m_pHUDTexture[m_nCurrUpdateTexIdx]->GetWidth() ||
+                    j >= (FT_Int)m_pHUDTexture[m_nCurrUpdateTexIdx]->GetHeight())
                     continue;
 
                 memcpy(
-                    m_pHUDTexture->GetMipData(0) + j * m_pHUDTexture->GetWidth() + x,
+                    m_pHUDTexture[m_nCurrUpdateTexIdx]->GetMipData(0) + j * m_pHUDTexture[m_nCurrUpdateTexIdx]->GetWidth() + x,
                     m_pGlyphCache[ch].buffer + q * m_pGlyphCache[ch].width,
                     m_pGlyphCache[ch].width
                     );
@@ -192,8 +208,8 @@ void HUDPass::Draw()
             pen_x += m_pGlyphCache[ch].advance_x >> 6;
         }
 
-        m_pHUDTexture->Update();
-        m_pHUDTexture->Unlock();
+        m_pHUDTexture[m_nCurrUpdateTexIdx]->Update();
+        m_pHUDTexture[m_nCurrUpdateTexIdx]->Unlock();
     }
 
     const bool sRGBEnabled = RSMgr->GetSRGBWriteEnabled();
@@ -208,8 +224,8 @@ void HUDPass::Draw()
     RSMgr->SetZFunc(CMP_ALWAYS);
     RSMgr->SetScissorEnabled(true);
 
-    RenderContext->SetViewport(Vec2i(m_pHUDTexture->GetWidth(), m_pHUDTexture->GetHeight()));
-    RSMgr->SetScissor(Vec2i(m_pHUDTexture->GetWidth(), m_pHUDTexture->GetHeight()));
+    RenderContext->SetViewport(Vec2i(m_pHUDTexture[m_nCurrRenderTexIdx]->GetWidth(), m_pHUDTexture[m_nCurrRenderTexIdx]->GetHeight()));
+    RSMgr->SetScissor(Vec2i(m_pHUDTexture[m_nCurrRenderTexIdx]->GetWidth(), m_pHUDTexture[m_nCurrRenderTexIdx]->GetHeight()));
 
     HUDTextShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -229,13 +245,17 @@ void HUDPass::Draw()
 void HUDPass::ReleaseHUDTexture()
 {
     Renderer* RenderContext = Renderer::GetInstance();
-    if (RenderContext)
-    {
-        ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
-        if (ResourceMgr && m_nHUDTextureIdx != ~0u)
-            ResourceMgr->ReleaseTexture(m_nHUDTextureIdx);
-    }
 
-    m_nHUDTextureIdx = ~0u;
-    m_pHUDTexture = nullptr;
+    for (unsigned int idx = 0; idx < HUD_TEXTURE_BUFFER_COUNT; idx++)
+    {
+        if (RenderContext)
+        {
+            ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+            if (ResourceMgr && m_nHUDTextureIdx[idx] != ~0u)
+                ResourceMgr->ReleaseTexture(m_nHUDTextureIdx[idx]);
+        }
+
+        m_nHUDTextureIdx[idx] = ~0u;
+        m_pHUDTexture[idx] = nullptr;
+    }
 }

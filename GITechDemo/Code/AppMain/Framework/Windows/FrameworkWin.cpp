@@ -178,6 +178,10 @@ int FrameworkWin::Run()
 
             if (pInputMgr && bAppRdy)
                 pInputMgr->HandleMessage(msg);
+
+            // If the message is WM_QUIT, exit the while loop
+            if (msg.message == WM_QUIT)
+                bExit = true;
         }
 
         // Update input
@@ -191,10 +195,6 @@ int FrameworkWin::Run()
             pInputMgr->SetDisplaySize(viewportSize[0], viewportSize[1]);
             pInputMgr->Update();
         }
-
-        // If the message is WM_QUIT, exit the while loop
-        if (msg.message == WM_QUIT)
-            break;
 
         if (bAppRdy)
         {

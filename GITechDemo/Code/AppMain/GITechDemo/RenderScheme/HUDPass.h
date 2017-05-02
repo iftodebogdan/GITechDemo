@@ -30,6 +30,9 @@ namespace Synesthesia3D
     class Texture;
 }
 
+// Use triple buffering to minimize stalls (one for the application update loop, one for the driver thread and one for the GPU)
+#define HUD_TEXTURE_BUFFER_COUNT (3)
+
 namespace GITechDemoApp
 {
     class HUDPass : public RenderPass
@@ -55,8 +58,10 @@ namespace GITechDemoApp
 
         std::string                 m_szTextBuf;
 
-        Synesthesia3D::Texture*     m_pHUDTexture;
-        unsigned int                m_nHUDTextureIdx;
+        Synesthesia3D::Texture*     m_pHUDTexture[HUD_TEXTURE_BUFFER_COUNT];
+        unsigned int                m_nHUDTextureIdx[HUD_TEXTURE_BUFFER_COUNT];
+        unsigned int                m_nCurrUpdateTexIdx;
+        unsigned int                m_nCurrRenderTexIdx;
 
     public:
         void Clear() { m_szTextBuf.clear(); }
