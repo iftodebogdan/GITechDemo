@@ -144,9 +144,8 @@ void HUDPass::Update(const float fDeltaTime)
     }
 
     // Calculate update and render texture indices
-    //m_nCurrRenderTexIdx = m_nCurrUpdateTexIdx;
+    m_nCurrRenderTexIdx = m_nCurrUpdateTexIdx;
     m_nCurrUpdateTexIdx = (m_nCurrUpdateTexIdx + 1) % HUD_TEXTURE_BUFFER_COUNT;
-    m_nCurrRenderTexIdx = (m_nCurrUpdateTexIdx + 1) % HUD_TEXTURE_BUFFER_COUNT;
 
     f2HalfTexelOffset = Vec2f(0.5f / m_pHUDTexture[m_nCurrRenderTexIdx]->GetWidth(), 0.5f / m_pHUDTexture[m_nCurrRenderTexIdx]->GetHeight());
     texSource = m_nHUDTextureIdx[m_nCurrRenderTexIdx];
