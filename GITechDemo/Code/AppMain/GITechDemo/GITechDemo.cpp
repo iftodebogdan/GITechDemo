@@ -56,7 +56,7 @@ namespace GITechDemoApp
     extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
 
     bool FULLSCREEN_ENABLED = false;
-    bool BORDERLESS_ENABLED = false;
+    bool BORDERLESS_ENABLED = true;
     int FULLSCREEN_RESOLUTION_X = 0;
     int FULLSCREEN_RESOLUTION_Y = 0;
     int FULLSCREEN_REFRESH_RATE = 0;
@@ -111,6 +111,8 @@ GITechDemo::~GITechDemo()
 bool GITechDemo::Init(void* hWnd)
 {
     m_pHWND = hWnd;
+
+    Framework* const pFW = Framework::GetInstance();
 
     // Renderer MUST be initialized on the SAME thread as the target window
     Renderer::CreateInstance(API_DX9);
@@ -198,9 +200,9 @@ bool GITechDemo::Init(void* hWnd)
     m_nLastFrameResY = -1;
     m_vLastFrameViewport = Vec2i(-1, -1);
     m_nLastFrameRefreshRate = -1;
-    m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
-    m_bLastFrameBorderless = BORDERLESS_ENABLED;
-    m_bLastFrameVSync = VSYNC_ENABLED;
+    m_bLastFrameFullscreen = pFW->IsFullscreen();
+    m_bLastFrameBorderless = pFW->IsBorderlessWindow();
+    m_bLastFrameVSync = RenderContext->GetVSyncStatus();
 
     return true;
 }

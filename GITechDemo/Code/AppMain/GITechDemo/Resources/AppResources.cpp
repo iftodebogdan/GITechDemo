@@ -407,7 +407,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fZFar,                    float,          5000.f                  );
 
     /* Directional light parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,           float,          10.f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,           float,          7.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,              float,          15.f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.15f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,        float,          1.f                     );
@@ -454,7 +454,7 @@ namespace GITechDemoApp
 
     /* Post-processing parameters */
     // Tone mapping
-    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.2f                    );
+    CREATE_SHADER_CONSTANT_OBJECT(fExposureBias,            float,          0.25f                   );
     CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp,           Vec2f,          Vec2f(0.0001f, 0.75f)   );
     CREATE_SHADER_CONSTANT_OBJECT(fShoulderStrength,        float,          0.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fLinearStrength,          float,          0.58f                   );
@@ -464,12 +464,12 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fToeDenominator,          float,          0.58f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fLinearWhite,             float,          3.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed,          float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fFilmGrainAmount,         float,          0.003f                  );
+    CREATE_SHADER_CONSTANT_OBJECT(fFilmGrainAmount,         float,          0.001f                  );
     CREATE_SHADER_CONSTANT_OBJECT(bApplyColorCorrection,    bool,           true                    );
     // Bloom
     CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.2f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,              float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,           float,          1.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,           float,          0.75f                   );
     // FXAA
     CREATE_SHADER_CONSTANT_OBJECT(fFxaaSubpix,              float,          0.75f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThreshold,       float,          0.166f                  );
