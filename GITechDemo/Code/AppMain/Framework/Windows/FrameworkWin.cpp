@@ -565,7 +565,7 @@ void FrameworkWin::ErrorExit(LPTSTR lpszFunction)
         StringCchPrintf((LPTSTR)lpDisplayBuf,
             LocalSize(lpDisplayBuf) / sizeof(TCHAR),
             TEXT("%s failed with error %d: %s"),
-            lpszFunction, dw, lpMsgBuf);
+            lpszFunction, dw, (LPCTSTR)lpMsgBuf);
         MessageBox(m_hWnd, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL | MB_SETFOREGROUND);
     }
 

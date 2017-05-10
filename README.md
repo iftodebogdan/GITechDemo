@@ -1,4 +1,4 @@
-## GITechDemo
+## GITechDemo [![Build status](https://ci.appveyor.com/api/projects/status/bk64sfjj2s51t19k?svg=true)](https://ci.appveyor.com/project/iftodebogdan/gitechdemo)
 ###### Global illumination technical demo
 
 ![GITechDemo v1.6.1 screenshot](https://cloud.githubusercontent.com/assets/3004291/15302439/a855f494-1bbb-11e6-85fa-7af9e1429357.png)

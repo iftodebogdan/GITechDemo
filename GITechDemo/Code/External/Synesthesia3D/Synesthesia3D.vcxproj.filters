@@ -76,6 +76,9 @@
     <Filter Include="Base">
       <UniqueIdentifier>{9cb18e15-1cfa-4fb7-a3e8-7562102017bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\lz4">
+      <UniqueIdentifier>{735f3d14-a711-4a93-bc80-8562b1df0d5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX9\RendererDX9.h">
@@ -405,6 +408,15 @@
     <ClInclude Include="DX9\ProfilerDX9.h">
       <Filter>DX9</Filter>
     </ClInclude>
+    <ClInclude Include="External\lz4\lz4.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="External\lz4\lz4hc.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="External\lz4\lz4opt.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -527,6 +539,12 @@
     </ClCompile>
     <ClCompile Include="DX9\ProfilerDX9.cpp">
       <Filter>DX9</Filter>
+    </ClCompile>
+    <ClCompile Include="External\lz4\lz4.c">
+      <Filter>External\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="External\lz4\lz4hc.c">
+      <Filter>External\lz4</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

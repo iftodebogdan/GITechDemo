@@ -53,7 +53,7 @@ def Run():
     # List of scripts to run for building data
     dataBuildScript = [
         "compile_sponza_model.py",
-		"compile_pbr_materials.py",
+        "compile_pbr_materials.py",
         "compile_utility_textures.py"
         ]
 

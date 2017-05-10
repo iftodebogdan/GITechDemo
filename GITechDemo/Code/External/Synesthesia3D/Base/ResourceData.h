@@ -389,6 +389,10 @@ namespace Synesthesia3D
 
     // TEXTURES /////////////////////////////////////////////
 
+    #define S3D_TEXTURE_FILE_VERSION (1)
+    #define S3D_TEXTURE_FILE_HEADER "\x89S3DTEX\x0d\x0a\x1a\x0a"
+    #define S3D_TEXTURE_FILE_HEADER_SIZE (ARRAYSIZE(S3D_TEXTURE_FILE_HEADER) - 1)
+
     /**
      * @brief   Specifies the format of the pixel.
      */
@@ -552,7 +556,11 @@ namespace Synesthesia3D
     //////////////////////////////////////////////////////////////////
 
     // MODELS ////////////////////////////////////////////////////////
-    
+
+    #define S3D_MODEL_FILE_VERSION (1)
+    #define S3D_MODEL_FILE_HEADER "\x89S3DMDL\x0d\x0a\x1a\x0a"
+    #define S3D_MODEL_FILE_HEADER_SIZE (ARRAYSIZE(S3D_MODEL_FILE_HEADER) - 1)
+
     class VertexFormat;
     class VertexBuffer;
     class IndexBuffer;

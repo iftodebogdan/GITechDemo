@@ -46,14 +46,19 @@
         /* Depending on the size of the format string, allocate space on the stack or the heap. */
         szDebugString = (STRSAFE_LPSTR)_malloca(cbFormatString);
     
-        /* Populate the buffer with the contents of the format string. */
-        StringCbPrintf(szDebugString, cbFormatString, DBGPRINT_HEADER, szFile, nLineNumber);
-        StringCbLength(szDebugString, cbFormatString, &st_Offset);
-        StringCbVPrintf(&szDebugString[st_Offset], cbFormatString - st_Offset, szDebugFormatString, args);
-    
-        OutputDebugString(szDebugString);
-    
-        _freea(szDebugString);
+        if (szDebugString)
+        {
+            /* Populate the buffer with the contents of the format string. */
+            StringCbPrintf(szDebugString, cbFormatString, DBGPRINT_HEADER, szFile, nLineNumber);
+            HRESULT hr = StringCbLength(szDebugString, cbFormatString, &st_Offset);
+            assert(hr == S_OK);
+            StringCbVPrintf(&szDebugString[st_Offset], cbFormatString - st_Offset, szDebugFormatString, args);
+
+            OutputDebugString(szDebugString);
+
+            _freea(szDebugString);
+        }
+
         va_end(args);
     #endif
     }

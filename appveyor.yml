@@ -1,0 +1,19 @@
+version: '{build}'
+branches:
+  only:
+  - master
+image: Visual Studio 2017
+configuration:
+  - Debug
+  - Profile
+  - Release
+platform:
+  - Win32
+  - x64
+shallow_clone: true
+build:
+  project: GITechDemo/Code/Solutions/GITechDemo.sln
+  parallel: true
+  verbosity: minimal
+test: off
+deploy: off

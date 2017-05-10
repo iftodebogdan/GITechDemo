@@ -6,18 +6,18 @@ using namespace Synesthesia3D;
 
 namespace Synesthesia3DTools
 {
-	class ModelCompiler
-	{
-		static const char* GetEnumString(Model::Material::ShadingModel val);
-		static const char* GetEnumString(Model::Material::BlendMode val);
-		static const char* GetEnumString(Model::TextureDesc::TextureType val);
-		static const char* GetEnumString(Model::TextureDesc::TextureOp val);
-		static const char* GetEnumString(Model::TextureDesc::TextureMapping val);
-		static const char* GetEnumString(Model::TextureDesc::TextureMappingMode val);
+    class ModelCompiler
+    {
+        static const char* GetEnumString(Model::Material::ShadingModel val);
+        static const char* GetEnumString(Model::Material::BlendMode val);
+        static const char* GetEnumString(Model::TextureDesc::TextureType val);
+        static const char* GetEnumString(Model::TextureDesc::TextureOp val);
+        static const char* GetEnumString(Model::TextureDesc::TextureMapping val);
+        static const char* GetEnumString(Model::TextureDesc::TextureMappingMode val);
 
-	public:
-		void Run(int argc, char* argv[]);
-	};
+    public:
+        void Run(int argc, char* argv[]);
+    };
 }
 
 #endif // MODELCOMPILER_H

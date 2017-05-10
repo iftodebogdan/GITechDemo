@@ -38,6 +38,8 @@ using namespace Synesthesia3D;
 
 #include <Utility/Mutex.h>
 
+#include <lz4/lz4hc.h>
+
 // Mutexes for each resource pool
 MUTEX   VFMutex;
 MUTEX   IBMutex;
@@ -49,6 +51,20 @@ MUTEX   RTMutex;
 MUTEX   ModelMutex;
 
 bool    bMutexesInitialized = false;
+
+struct membuf : std::streambuf {
+    membuf(char const* base, size_t size) {
+        char* p(const_cast<char*>(base));
+        this->setg(p, p, p + size);
+    }
+};
+
+struct imemstream : virtual membuf, std::istream {
+    imemstream(char const* base, size_t size)
+        : membuf(base, size)
+        , std::istream(static_cast<std::streambuf*>(this)) {
+    }
+};
 
 ResourceManager::ResourceManager()
 {
@@ -190,13 +206,67 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
     unsigned int texIdx = ~0u;
     std::ifstream texFile;
     texFile.open(pathToFile, std::ios::binary);
+
     if (texFile.is_open())
     {
-        //MUTEX_LOCK(TexMutex);
-        texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
-        GetTexture(texIdx)->m_szSourceFile = pathToFile;
-        //MUTEX_UNLOCK(TexMutex);
-        texFile >> *GetTexture(texIdx);
+        char fileSignature[S3D_TEXTURE_FILE_HEADER_SIZE];
+        texFile.read(fileSignature, S3D_TEXTURE_FILE_HEADER_SIZE);
+
+        if (memcmp(S3D_TEXTURE_FILE_HEADER, fileSignature, S3D_TEXTURE_FILE_HEADER_SIZE) == 0)
+        {
+            unsigned int fileVersion = 0;
+            texFile.read((char*)&fileVersion, sizeof(unsigned int));
+
+            if (fileVersion == S3D_TEXTURE_FILE_VERSION)
+            {
+                unsigned int compressedBufferSize = 0, decompressedBufferSize = 0;
+                texFile.read((char*)&compressedBufferSize, sizeof(unsigned int));
+                texFile.read((char*)&decompressedBufferSize, sizeof(unsigned int));
+
+                if (compressedBufferSize > 0 && compressedBufferSize <= LZ4_COMPRESSBOUND(LZ4_MAX_INPUT_SIZE) &&
+                    decompressedBufferSize > 0 && decompressedBufferSize <= LZ4_MAX_INPUT_SIZE)
+                {
+                    char* const compressedBuffer = new char[compressedBufferSize];
+                    char* const decompressedBuffer = new char[decompressedBufferSize];
+                    texFile.read(compressedBuffer, compressedBufferSize);
+                    const int readBytes = LZ4_decompress_fast(compressedBuffer, decompressedBuffer, decompressedBufferSize);
+
+                    if (readBytes == compressedBufferSize)
+                    {
+                        imemstream  texBuffer(decompressedBuffer, decompressedBufferSize);
+                        //MUTEX_LOCK(TexMutex);
+                        texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
+                        GetTexture(texIdx)->m_szSourceFile = pathToFile;
+                        //MUTEX_UNLOCK(TexMutex);
+                        texBuffer >> *GetTexture(texIdx);
+                    }
+                    else
+                    {
+                        S3D_DBGPRINT("Error: Texture %s could not be decompressed", pathToFile);
+                        assert(0);
+                    }
+
+                    delete[] compressedBuffer;
+                    delete[] decompressedBuffer;
+                }
+                else
+                {
+                    S3D_DBGPRINT("Error: Texture %s has invalid data size", pathToFile);
+                    assert(0);
+                }
+            }
+            else
+            {
+                S3D_DBGPRINT("Error: Texture %s is version %u but version %u was expected", pathToFile, fileVersion, S3D_TEXTURE_FILE_VERSION);
+                assert(0);
+            }
+        }
+        else
+        {
+            S3D_DBGPRINT("Error: File %s is not a Synesthesia3D texture file", pathToFile);
+            assert(0);
+        }
+
         texFile.close();
     }
 
@@ -205,18 +275,72 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
 
 const unsigned int ResourceManager::CreateModel(const char* pathToFile)
 {
+    unsigned int modelIdx = ~0u;
     std::ifstream modelFile;
     modelFile.open(pathToFile, std::ios::binary);
-    unsigned int modelIdx = ~0u;
+
     if (modelFile.is_open())
     {
-        Model* const mdl = new Model;
-        mdl->szSourceFile = pathToFile;
-        MUTEX_LOCK(ModelMutex);
-        m_arrModel.push_back(mdl);
-        modelIdx = (unsigned int)m_arrModel.size() - 1;
-        MUTEX_UNLOCK(ModelMutex);
-        modelFile >> *mdl;
+        char fileSignature[S3D_MODEL_FILE_HEADER_SIZE];
+        modelFile.read(fileSignature, S3D_MODEL_FILE_HEADER_SIZE);
+
+        if (memcmp(S3D_MODEL_FILE_HEADER, fileSignature, S3D_MODEL_FILE_HEADER_SIZE) == 0)
+        {
+            unsigned int fileVersion = 0;
+            modelFile.read((char*)&fileVersion, sizeof(unsigned int));
+
+            if (fileVersion == S3D_MODEL_FILE_VERSION)
+            {
+                unsigned int compressedBufferSize = 0, decompressedBufferSize = 0;
+                modelFile.read((char*)&compressedBufferSize, sizeof(unsigned int));
+                modelFile.read((char*)&decompressedBufferSize, sizeof(unsigned int));
+
+                if (compressedBufferSize > 0 && compressedBufferSize <= LZ4_COMPRESSBOUND(LZ4_MAX_INPUT_SIZE) &&
+                    decompressedBufferSize > 0 && decompressedBufferSize <= LZ4_MAX_INPUT_SIZE)
+                {
+                    char* const compressedBuffer = new char[compressedBufferSize];
+                    char* const decompressedBuffer = new char[decompressedBufferSize];
+                    modelFile.read(compressedBuffer, compressedBufferSize);
+                    const int readBytes = LZ4_decompress_fast(compressedBuffer, decompressedBuffer, decompressedBufferSize);
+
+                    if (readBytes == compressedBufferSize)
+                    {
+                        imemstream  modelBuffer(decompressedBuffer, decompressedBufferSize);
+                        Model* const mdl = new Model;
+                        mdl->szSourceFile = pathToFile;
+                        MUTEX_LOCK(ModelMutex);
+                        m_arrModel.push_back(mdl);
+                        modelIdx = (unsigned int)m_arrModel.size() - 1;
+                        MUTEX_UNLOCK(ModelMutex);
+                        modelBuffer >> *mdl;
+                    }
+                    else
+                    {
+                        S3D_DBGPRINT("Error: Model %s could not be decompressed", pathToFile);
+                        assert(0);
+                    }
+
+                    delete[] compressedBuffer;
+                    delete[] decompressedBuffer;
+                }
+                else
+                {
+                    S3D_DBGPRINT("Error: Model %s has invalid data size", pathToFile);
+                    assert(0);
+                }
+            }
+            else
+            {
+                S3D_DBGPRINT("Error: Model %s is version %u but version %u was expected", pathToFile, fileVersion, S3D_MODEL_FILE_VERSION);
+                assert(0);
+            }
+        }
+        else
+        {
+            S3D_DBGPRINT("Error: File %s is not a Synesthesia3D model file", pathToFile);
+            assert(0);
+        }
+
         modelFile.close();
     }
 
