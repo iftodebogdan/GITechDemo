@@ -431,17 +431,18 @@ float3 CookTorrance(const float3 f3MaterialColor, const float fMaterialType, con
 
     // Color components
     const float3 f3DiffuseColor = f3DiffuseAlbedo / (PI * (1.f - f3Fresnel));
-    float3 f3SpecularColor = fDistrib * fGeom * f3Fresnel / (4.f * fNdotL * fNdotV);
+    const float3 f3SpecularColor = fDistrib * fGeom * f3Fresnel / (4.f * fNdotL * fNdotV);
 
-    // Handled in ScreenSpaceReflection.hlsl
-    //const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fAlpha * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
-    //const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness, f3Normal, f3ViewVec);
+    // Handled in ScreenSpaceReflection.hlsl as well, so be careful not to have them both active at the same time
+    // (i.e. set fReflectionFactor to 0 for this shader when SSR is active and restore it when rendering with SSR shader)
+    const float3 f3EnvAlbedo = texCUBEbias(texEnvMap, float4(mul((float3x3)f44InvViewMat, reflect(f3ViewVec, f3Normal)), fRoughness * fRoughness * ENVIRONMENT_MAP_MIP_COUNT)).rgb;
+    const float3 f3EnvFresnel = FresnelRoughnessTerm(f3SpecularAlbedo, fRoughness, f3Normal, f3ViewVec);
 
     const float3 f3Irradiance = texCUBE(texIrradianceMap, mul((float3x3)f44InvViewMat, f3Normal)).rgb;
 
     // Final color
     return fNdotL * (f3DiffuseColor * (1.f - f3SpecularColor) + f3SpecularColor) * fDiffuseFactor * fPercentLit +
-        /*f3EnvFresnel * f3EnvAlbedo * fReflectionFactor +*/ f3DiffuseAlbedo * f3Irradiance * fIrradianceFactor;
+        f3EnvFresnel * f3EnvAlbedo * fReflectionFactor + f3DiffuseAlbedo * f3Irradiance * fIrradianceFactor;
 }
 
 //////////////////////////////////////////////////////////

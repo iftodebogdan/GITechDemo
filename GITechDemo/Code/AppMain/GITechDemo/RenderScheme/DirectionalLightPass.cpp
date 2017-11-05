@@ -40,6 +40,7 @@ namespace GITechDemoApp
 
     extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
     extern const unsigned int PCF_MAX_SAMPLE_COUNT;
+    extern bool SSR_ENABLED;
 }
 
 DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPass* const parentPass)
@@ -104,9 +105,15 @@ void DirectionalLightPass::Draw()
     if (!RenderContext)
         return;
 
+    // Disable environment map reflections if
+    // screen space reflections are active.
+    float reflectionFactorBkp = fReflectionFactor;
+    if (SSR_ENABLED)
+        fReflectionFactor = 0.f;
+
     DirectionalLightShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     DirectionalLightShader.Disable();
 
-    DrawChildren();
+    fReflectionFactor = reflectionFactorBkp;
 }

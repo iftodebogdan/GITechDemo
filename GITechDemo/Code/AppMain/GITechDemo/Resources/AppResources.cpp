@@ -484,14 +484,14 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fCoC,                     float,          0.03f                   );
     CREATE_SHADER_CONSTANT_OBJECT(bAutofocus,               bool,           true                    );
     CREATE_SHADER_CONSTANT_OBJECT(fHighlightThreshold,      float,          3.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fHighlightGain,           float,          15.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,            float,          0.01f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fHighlightGain,           float,          1.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,            float,          0.0075f                 );
     CREATE_SHADER_CONSTANT_OBJECT(bAnamorphicBokeh,         bool,           false                   );
     CREATE_SHADER_CONSTANT_OBJECT(bVignetting,              bool,           true                    );
     CREATE_SHADER_CONSTANT_OBJECT(fVignOut,                 float,          0.75f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fVignIn,                  float,          0.25f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fVignFade,                float,          15.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,       float,          3.f                     );
+    CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,       float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fQuarticDistortionCoef,   float,          0.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fCubicDistortionModifier, float,          0.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fDistortionScale,         float,          1.f                     );
