@@ -28,8 +28,8 @@ namespace AppFramework
     {
     public:
         Framework()
-            : m_bPauseRendering(false)
-            , m_eWindowMode(WM_WINDOWED)
+            : m_eWindowMode(WM_WINDOWED)
+            , m_bPauseRendering(false)
         { m_pInstance = this; };
         virtual ~Framework() { m_pInstance = nullptr; };
 

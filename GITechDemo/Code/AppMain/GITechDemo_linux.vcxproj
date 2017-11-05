@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x86">
+      <Configuration>Profile</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{f043aa36-ff55-41ca-95f9-4fa97de6ca4c}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>GITechDemo_linux</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{FC1A4D80-50E9-41DA-9192-61C0DBAA00D2}</LinuxProjectType>
+    <ProjectName>GITechDemo</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="PropertySheets">
+    <Import Project="..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/AppMain</RemoteCleanCommandLine>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <NMakeIncludeSearchPath>.;Framework;Framework/Linux;GITechDemo;GITechDemo/Resources;GITechDemo/RenderScheme;GITechDemo/Utilities;../External/freetype-2.6/include;../External/gainput-0.10.0-beta/include;../External/Synesthesia3D;../External/Synesthesia3D/Base;../External/Synesthesia3D/External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).elf</RemoteBuildOutputs>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\Linux\FrameworkLinux.cpp" />
+    <ClCompile Include="Framework\main.cpp" />
+    <ClCompile Include="Framework\stdafx.cpp" />
+    <ClCompile Include="Framework\Timestamp.cpp" />
+    <ClCompile Include="GITechDemo\GITechDemo.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\BloomPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DepthOfFieldPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\FXAAPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\GBufferPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HDRToneMappingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\HUDPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\LensFlarePass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\LightingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\MotionBlurPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\PBRMaterialTestPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\PostProcessingPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RenderPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RenderScheme.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\SkyPass.cpp" />
+    <ClCompile Include="GITechDemo\RenderScheme\SSAOPass.cpp" />
+    <ClCompile Include="GITechDemo\Resources\AppResources.cpp" />
+    <ClCompile Include="GITechDemo\Resources\ArtistParameter.cpp" />
+    <ClCompile Include="GITechDemo\Resources\RenderResource.cpp" />
+    <ClCompile Include="GITechDemo\Utilities\GaussianFilter.cpp" />
+    <ClCompile Include="GITechDemo\Utilities\PerlinNoise.cpp" />
+    <ClCompile Include="GITechDemo\Utilities\Poisson.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\App.h" />
+    <ClInclude Include="Framework\Framework.h" />
+    <ClInclude Include="Framework\Linux\FrameworkLinux.h" />
+    <ClInclude Include="Framework\stdafx.h" />
+    <ClInclude Include="Framework\Timestamp.h" />
+    <ClInclude Include="GITechDemo\GITechDemo.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\BloomPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DepthOfFieldPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\FXAAPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\GBufferPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HDRToneMappingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\HUDPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\LensFlarePass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\LightingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\MotionBlurPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\PBRMaterialTestPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\PostProcessingPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RenderPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RenderScheme.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\SkyPass.h" />
+    <ClInclude Include="GITechDemo\RenderScheme\SSAOPass.h" />
+    <ClInclude Include="GITechDemo\Resources\AppResources.h" />
+    <ClInclude Include="GITechDemo\Resources\ArtistParameter.h" />
+    <ClInclude Include="GITechDemo\Resources\RenderResource.h" />
+    <ClInclude Include="GITechDemo\Utilities\GaussianFilter.h" />
+    <ClInclude Include="GITechDemo\Utilities\PerlinNoise.h" />
+    <ClInclude Include="GITechDemo\Utilities\Poisson.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Build\build_pipeline_linux.makefile" />
+    <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\freetype-2.6\freetype_linux.vcxproj">
+      <Project>{9b74aad0-1af5-4283-be8b-87021c77f861}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\External\gainput-0.10.0-beta\gainput_linux.vcxproj">
+      <Project>{17b76e99-c300-4c53-8851-1238f3f562b1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\External\Synesthesia3D\Synesthesia3D_linux.vcxproj">
+      <Project>{7b15d0fd-2c9a-49fd-a9da-88c4e08c284d}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemDefinitionGroup />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

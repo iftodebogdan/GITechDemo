@@ -27,7 +27,7 @@ import logging
 # Prevent compiling imported .py into .pyc
 sys.dont_write_bytecode = True
 
-import utils
+import build_utils
 
 
 
@@ -76,7 +76,7 @@ def Run():
 
 
     # Setup build tools
-    buildEnvPath = utils.FindBuildEnvironment()
+    buildEnvPath = build_utils.FindBuildEnvironment()
     if buildEnvPath == "":
         logging.error("No compatible version of Visual Studio found!")
         return 1
@@ -90,7 +90,7 @@ def Run():
     logging.info("")
     for dep in toolsName:
         startPerTool = time.clock()
-        if utils.BuildSLN(dep, buildEnvPath, defaultArchitecture, "Release", defaultForceRebuild) != 0:
+        if build_utils.BuildSLN(dep, buildEnvPath, defaultArchitecture, "Release", defaultForceRebuild) != 0:
             logging.error("Could not complete tool build process")
             return 1
         # Done! Print some info.
@@ -112,5 +112,5 @@ def Run():
 ##############
 
 if __name__ == "__main__":
-    utils.SetupLogging("ToolsBuild")
+    build_utils.SetupLogging("ToolsBuild")
     sys.exit(Run())

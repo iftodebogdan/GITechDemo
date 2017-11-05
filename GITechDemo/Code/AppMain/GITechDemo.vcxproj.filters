@@ -29,11 +29,11 @@
     <Filter Include="App\Resources">
       <UniqueIdentifier>{65c60b90-aae2-4399-9fee-c58343936ec0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Framework\Windows\Precompiled Headers">
-      <UniqueIdentifier>{8433ffc2-3fbc-4741-a134-1233de8fe1ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders\Include">
       <UniqueIdentifier>{fd0b29d0-9f3f-43c0-b8b8-a8c3041fdaf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Precompiled Headers">
+      <UniqueIdentifier>{8433ffc2-3fbc-4741-a134-1233de8fe1ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +130,6 @@
     <ClInclude Include="GITechDemo\GITechDemo.h">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="Framework\Windows\stdafx.h">
-      <Filter>Framework\Windows\Precompiled Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\Timestamp.h">
       <Filter>Framework</Filter>
     </ClInclude>
@@ -147,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\PBRMaterialTestPass.h">
       <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\stdafx.h">
+      <Filter>Framework\Precompiled Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -234,9 +234,6 @@
     <ClCompile Include="GITechDemo\GITechDemo.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="Framework\Windows\stdafx.cpp">
-      <Filter>Framework\Windows\Precompiled Headers</Filter>
-    </ClCompile>
     <ClCompile Include="Framework\Timestamp.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
@@ -251,6 +248,9 @@
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\PBRMaterialTestPass.cpp">
       <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\stdafx.cpp">
+      <Filter>Framework\Precompiled Headers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,9 +283,6 @@
     <None Include="..\..\Build\build_tools_win.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="..\..\Build\utils.py">
-      <Filter>Build</Filter>
-    </None>
     <None Include="..\..\Build\build_data_win.py">
       <Filter>Build</Filter>
     </None>
@@ -305,7 +302,20 @@
     <None Include="..\..\Data\shaders\Utils.hlsli">
       <Filter>Shaders\Include</Filter>
     </None>
-    <None Include="..\..\Build\build_all.bat">
+    <None Include="..\..\Build\build_all_win.bat">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_utils.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_pipeline_linux.makefile">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="Makefile" />
+    <None Include="..\..\DataSrc\compile_pbr_materials.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\Makefile">
       <Filter>Build</Filter>
     </None>
   </ItemGroup>

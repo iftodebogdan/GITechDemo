@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{aa044efe-89b8-488f-92df-3a37f844c253}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Linux">
+      <UniqueIdentifier>{29afc972-f06c-4ce4-9cfd-7d5b6dd2f116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{2c395f27-d937-4be4-bb02-b055a757455a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\RenderScheme">
+      <UniqueIdentifier>{8d30edd0-d2f3-451b-8d82-2d796fb3017b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Resources">
+      <UniqueIdentifier>{f63b79e5-1dec-478f-943e-f961b3c9e39c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Utilities">
+      <UniqueIdentifier>{5e1b8610-8386-4b36-b322-8e7e775d6ce4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\Linux\FrameworkLinux.cpp">
+      <Filter>Framework\Linux</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\main.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\stdafx.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Timestamp.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\GITechDemo.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Utilities\GaussianFilter.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Utilities\PerlinNoise.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Utilities\Poisson.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\AppResources.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\ArtistParameter.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\Resources\RenderResource.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\BloomPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\DepthOfFieldPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\FXAAPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\GBufferPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\HDRDownsamplePass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\HDRToneMappingPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\HUDPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\LensFlarePass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\LightingPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\MotionBlurPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\PBRMaterialTestPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\PostProcessingPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\RenderPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\RenderScheme.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\SkyPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\SSAOPass.cpp">
+      <Filter>App\RenderScheme</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\Linux\FrameworkLinux.h">
+      <Filter>Framework\Linux</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\App.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Framework.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\stdafx.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Timestamp.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\GITechDemo.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Utilities\GaussianFilter.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Utilities\PerlinNoise.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Utilities\Poisson.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\AppResources.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\ArtistParameter.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\RenderResource.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\BloomPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\DepthOfFieldPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalIndirectLightPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\DirectionalLightVolumePass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\FXAAPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\GBufferPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\HDRDownsamplePass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\HDRToneMappingPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\HUDPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\LensFlarePass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\LightingPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\MotionBlurPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\PBRMaterialTestPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\PostProcessingPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\RenderPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\RenderScheme.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\RSMDirectionalLightPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\ScreenSpaceReflectionPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\SkyPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\SSAOPass.h">
+      <Filter>App\RenderScheme</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+    <None Include="..\..\Build\build_pipeline_linux.makefile" />
+  </ItemGroup>
+</Project>

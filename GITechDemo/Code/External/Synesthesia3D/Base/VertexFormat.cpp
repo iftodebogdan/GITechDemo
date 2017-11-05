@@ -68,8 +68,8 @@ void VertexFormat::Initialize(const VertexAttributeSemantic semantic, const Vert
     va_start(args, semanticIdx);
     for (unsigned int i = 1; i < m_nAttributeCount; i++)
     {
-        VertexAttributeSemantic tempSemantic = va_arg(args, VertexAttributeSemantic);
-        VertexAttributeType tempType = va_arg(args, VertexAttributeType);
+        VertexAttributeSemantic tempSemantic = (VertexAttributeSemantic)va_arg(args, int);
+        VertexAttributeType tempType = (VertexAttributeType)va_arg(args, int);
         unsigned int tempSemanticIdx = va_arg(args, unsigned int);
         SetAttribute(i, offset, tempSemantic, tempType, tempSemanticIdx);
         offset += VertexAttributeTypeSize[tempType];

@@ -2,7 +2,7 @@
 # This file is part of the "GITechDemo" application
 # Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
-#       File:   utils.py
+#       File:   build_utils.py
 #       Author: Bogdan Iftode
 #
 # This program is free software: you can redistribute it and/or modify

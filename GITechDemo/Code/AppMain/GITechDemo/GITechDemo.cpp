@@ -21,9 +21,6 @@
 
 #include "stdafx.h"
 
-#include <time.h>
-#include <sstream>
-
 #include <Renderer.h>
 #include <ResourceManager.h>
 #include <Texture.h>
@@ -96,8 +93,8 @@ template <typename T> string tostr(const T& t) {
 
 GITechDemo::GITechDemo()
     : App()
-    , m_fDeltaTime(0.f)
     , m_pHWND(nullptr)
+    , m_fDeltaTime(0.f)
     , m_pInputMap(nullptr)
 {
     MUTEX_INIT(mResInitMutex);
@@ -115,8 +112,12 @@ bool GITechDemo::Init(void* hWnd)
     Framework* const pFW = Framework::GetInstance();
 
     // Renderer MUST be initialized on the SAME thread as the target window
+#if defined(WIN32)
     Renderer::CreateInstance(API_DX9);
     //Renderer::CreateInstance(API_NULL);
+#elif defined(__linux__)
+    Renderer::CreateInstance(API_NULL);
+#endif
 
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
@@ -780,8 +781,9 @@ void GITechDemo::DrawGPUProfileScreen(const RenderPass* pass, const unsigned int
 
         if (result >= 0)
         {
-            char szTempBuffer[256];
-            sprintf_s(szTempBuffer, "%s: %g ms", pass->GetPassName(), result);
+            const unsigned int bufferSize = 256;
+            char szTempBuffer[bufferSize];
+            snprintf(szTempBuffer, bufferSize, "%s: %g ms", pass->GetPassName(), result);
             for (unsigned int j = 0; j < level; j++)
                 HUD_PASS.Print("  ");
             HUD_PASS.PrintLn(szTempBuffer);

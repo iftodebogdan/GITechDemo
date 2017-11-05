@@ -28,7 +28,7 @@ import sys
 # Prevent compiling imported .py into .pyc
 sys.dont_write_bytecode = True
 
-import utils
+import build_utils
 
 
 
@@ -66,7 +66,7 @@ def Run():
 
     # Compile data
     if(dataBuildScript):
-        absDataSrcDir = os.path.realpath(utils.GetScriptAbsolutePath() + dataSrcDir)
+        absDataSrcDir = os.path.realpath(build_utils.GetScriptAbsolutePath() + dataSrcDir)
         logging.info("Starting data build process...")
         logging.info("Data source directory: " + absDataSrcDir)
         logging.info("")
@@ -100,5 +100,5 @@ def Run():
 ##############
 
 if __name__ == "__main__":
-    utils.SetupLogging("DataBuild")
+    build_utils.SetupLogging("DataBuild")
     sys.exit(Run())

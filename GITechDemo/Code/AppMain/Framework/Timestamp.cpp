@@ -21,8 +21,6 @@
 
 #include "stdafx.h"
 
-#include "Timestamp.h"
-
 namespace AppFramework
 {
     const char* const GetBuildDate()

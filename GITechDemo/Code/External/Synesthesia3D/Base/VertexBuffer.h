@@ -24,11 +24,11 @@
 #define VERTEXBUFFER_H
 
 #include "Buffer.h"
+#include "VertexFormat.h"
 
 namespace Synesthesia3D
 {
     class IndexBuffer;
-    class VertexFormat;
 
     /**
      * @brief   Allows the creation and manipulation of a vertex buffer.

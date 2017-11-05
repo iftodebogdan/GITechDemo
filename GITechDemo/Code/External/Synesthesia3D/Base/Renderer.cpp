@@ -74,8 +74,14 @@ void Renderer::CreateInstance(API api)
     switch (api)
     {
         case API_DX9:
+        #if defined(WIN32)
             ms_pInstance = new RendererDX9;
             ms_eAPI = API_DX9;
+        #else
+            assert(false);
+            ms_pInstance = new RendererNULL;
+            ms_eAPI = API_NULL;
+        #endif
             break;
         case API_NULL:
             ms_pInstance = new RendererNULL;

@@ -28,7 +28,7 @@ import subprocess
 # Prevent compiling imported .py into .pyc
 sys.dont_write_bytecode = True
 
-import utils
+import build_utils
 import build_tools_win
 import build_data_win
 
@@ -97,7 +97,7 @@ def Run():
 
 
     # Setup build tools
-    buildEnvPath = utils.FindBuildEnvironment()
+    buildEnvPath = build_utils.FindBuildEnvironment()
     if buildEnvPath == "":
         logging.error("No compatible version of Visual Studio found!")
         return 1
@@ -112,7 +112,7 @@ def Run():
     logging.info("")
 
     startProjectBuild = time.clock()
-    if utils.BuildSLN(projectName, buildEnvPath, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
+    if build_utils.BuildSLN(projectName, buildEnvPath, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
         logging.error("Could not complete project build process")
         return 1
     else:
@@ -129,27 +129,27 @@ def Run():
 
     # Create directory structure
     logging.info("Creating directory structure...")
-    rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
-    utils.MakeDir(rootBuildDir + "/bin/" +
+    rootBuildDir = os.path.realpath(build_utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
+    build_utils.MakeDir(rootBuildDir + "/bin/" +
         ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
         defaultArchitecture)
-    utils.MakeDir(rootBuildDir + "/data")
+    build_utils.MakeDir(rootBuildDir + "/data")
 
     # Copy binaries
     logging.info("Copying binaries...")
     pathToBinaries = [
-        utils.GetScriptAbsolutePath() +
+        build_utils.GetScriptAbsolutePath() +
         "/../Bin/" + defaultArchitecture + "/" + defaultBuildConfiguration + "/" + projectName + "/",
         rootBuildDir + "/bin/" +
         ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
         defaultArchitecture
         ]
-    utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.exe")
-    utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.dll")
+    build_utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.exe")
+    build_utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.dll")
 
     # Copy data
     logging.info("Copying data...")
-    utils.CopyTree(utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir + "/data")
+    build_utils.CopyTree(build_utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir + "/data")
 
     # Create batch file
     logging.info("Creating batch file...")
@@ -194,5 +194,5 @@ def Run():
 ##############
 
 if __name__ == "__main__":
-    utils.SetupLogging("ProjectBuild")
+    build_utils.SetupLogging("ProjectBuild")
     sys.exit(Run())

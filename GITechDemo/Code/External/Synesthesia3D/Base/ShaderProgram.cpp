@@ -114,7 +114,7 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
             if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
             {
                 const unsigned int texIdx = *(unsigned int*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
-                const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
+                const Texture* const tex = texIdx != ~0u ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
 
                 if (tex)
                 {
@@ -153,7 +153,7 @@ void ShaderProgram::Disable()
         if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
         {
             const unsigned int texIdx = *(unsigned int*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
-            const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
+            const Texture* const tex = texIdx != ~0u ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
             if (tex)
                 tex->Disable(m_arrInputDesc[i].nRegisterIndex);
         }
@@ -185,6 +185,8 @@ void ShaderProgram::SetValue(const RegisterType registerType, const unsigned int
     case RT_FLOAT4:
         SetFloat(registerIndex, (const float* const)data, registerCount);
         break;
+    default:
+        assert(false);
     }
 }
 

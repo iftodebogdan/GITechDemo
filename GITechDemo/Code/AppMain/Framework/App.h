@@ -24,7 +24,7 @@
 
 #include <gainput/gainput.h>
 
-#include <gmtl\gmtl.h>
+#include <gmtl/gmtl.h>
 using namespace gmtl;
 
 #define CREATE_APP(CLASS) \

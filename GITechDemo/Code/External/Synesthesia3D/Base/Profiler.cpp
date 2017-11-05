@@ -147,9 +147,9 @@ void Profiler::UpdateGPUProfileMarkerResults()
 // GPUProfileMarkerResult class //
 //////////////////////////////////
 GPUProfileMarkerResult::GPUProfileMarkerResult(const char* const label)
-    : m_fTime(-1.f)
+    : m_szLabel(nullptr)
+    , m_fTime(-1.f)
     , m_eStatus(GPMRS_ISSUED)
-    , m_szLabel(nullptr)
 {
 #if ENABLE_PROFILE_MARKERS
     const unsigned int size = (unsigned int)strlen(label) + 1;

@@ -231,7 +231,7 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
                     texFile.read(compressedBuffer, compressedBufferSize);
                     const int readBytes = LZ4_decompress_fast(compressedBuffer, decompressedBuffer, decompressedBufferSize);
 
-                    if (readBytes == compressedBufferSize)
+                    if (readBytes >= 0 && (unsigned int)readBytes == compressedBufferSize)
                     {
                         imemstream  texBuffer(decompressedBuffer, decompressedBufferSize);
                         //MUTEX_LOCK(TexMutex);
@@ -303,7 +303,7 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
                     modelFile.read(compressedBuffer, compressedBufferSize);
                     const int readBytes = LZ4_decompress_fast(compressedBuffer, decompressedBuffer, decompressedBufferSize);
 
-                    if (readBytes == compressedBufferSize)
+                    if (readBytes >= 0 && (unsigned int)readBytes == compressedBufferSize)
                     {
                         imemstream  modelBuffer(decompressedBuffer, decompressedBufferSize);
                         Model* const mdl = new Model;

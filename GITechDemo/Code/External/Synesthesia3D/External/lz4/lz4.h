@@ -71,11 +71,13 @@ extern "C" {
 *****************************************************************/
 
 // Export/import LZ4 functions alongside Synesthesia3D ones
+#ifdef WIN32
 #ifdef SYNESTHESIA3D_EXPORTS
 #define LZ4_DLL_EXPORT (1)
 #else
 #define LZ4_DLL_IMPORT (1)
 #endif // SYNESTHESIA3D_EXPORTS
+#endif
 
 /*
 *  LZ4_DLL_EXPORT :
@@ -83,6 +85,7 @@ extern "C" {
 *  LZ4LIB_API :
 *  Control library symbols visibility.
 */
+#ifndef LZ4LIB_API
 #if defined(LZ4_DLL_EXPORT) && (LZ4_DLL_EXPORT==1)
 #  define LZ4LIB_API __declspec(dllexport)
 #elif defined(LZ4_DLL_IMPORT) && (LZ4_DLL_IMPORT==1)
@@ -91,6 +94,7 @@ extern "C" {
 #  define LZ4LIB_API __attribute__ ((__visibility__ ("default")))
 #else
 #  define LZ4LIB_API
+#endif
 #endif
 
 

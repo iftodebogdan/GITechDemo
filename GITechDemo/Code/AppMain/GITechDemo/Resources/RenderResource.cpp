@@ -160,12 +160,12 @@ namespace GITechDemoApp
     Shader::Shader(const char* filePath)
         : RenderResource(filePath, RES_SHADER)
         , pVertexShaderProg(nullptr)
-        , pPixelShaderProg(nullptr)
-        , pVertexShaderInput(nullptr)
-        , pPixelShaderInput(nullptr)
         , nVertexShaderProgIdx(~0u)
+        , pPixelShaderProg(nullptr)
         , nPixelShaderProgIdx(~0u)
+        , pVertexShaderInput(nullptr)
         , nVertexShaderInputIdx(~0u)
+        , pPixelShaderInput(nullptr)
         , nPixelShaderInputIdx(~0u)
     {}
 
@@ -601,7 +601,7 @@ namespace GITechDemoApp
             pModel = ResMgr->GetModel(nModelIdx);
 
             for (unsigned int tt = Synesthesia3D::Model::TextureDesc::TT_NONE; tt < Synesthesia3D::Model::TextureDesc::TT_UNKNOWN; tt++)
-                TextureLUT[tt].resize(pModel->arrMaterial.size(), -1);
+                TextureLUT[tt].resize(pModel->arrMaterial.size(), ~0u);
 
             // Populate the TextureList
             for (unsigned int i = 0; i < pModel->arrMaterial.size(); i++)
@@ -615,9 +615,9 @@ namespace GITechDemoApp
                     if (offset != string::npos)
                         filePath.replace(offset, UINT_MAX, ".s3dtex");
 
-                    unsigned int texIdx = -1;
+                    unsigned int texIdx = ~0u;
                     texIdx = ResMgr->FindTexture(filePath.c_str());
-                    if (texIdx == -1)
+                    if (texIdx == ~0u)
                     {
                         bool bDuplicateFound = false;
                         for (unsigned int k = 0; k < TextureList.size(); k++)
@@ -657,7 +657,7 @@ namespace GITechDemoApp
                     if (offset != string::npos)
                         filePath.replace(offset, UINT_MAX, ".s3dtex");
 
-                    unsigned int texIdx = -1;
+                    unsigned int texIdx = ~0u;
                     //texIdx = ResMgr->FindTexture(filePath.c_str());
                     for (unsigned int k = 0; k < TextureList.size(); k++)
                     {
@@ -692,9 +692,9 @@ namespace GITechDemoApp
                             break;
                         }
                     }
-                    assert(texIdx != -1);
+                    assert(texIdx != ~0u);
 
-                    if (texIdx != -1)
+                    if (texIdx != ~0u)
                     {
                         Synesthesia3D::Texture* tex = ResMgr->GetTexture(texIdx);
 
@@ -737,10 +737,10 @@ namespace GITechDemoApp
                         }
                     }
 
-                    assert(TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] == -1 ||
+                    assert(TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] == ~0u ||
                         TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] == texIdx);
 
-                    if (TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] == -1)
+                    if (TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] == ~0u)
                         TextureLUT[pModel->arrMaterial[i]->arrTexture[j]->eTexType][i] = texIdx;
                 }
             }

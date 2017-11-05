@@ -40,11 +40,11 @@ namespace Synesthesia3D
         void    Unbind() {}
 
     private:
-        IndexBufferNULL::IndexBufferNULL(
+        IndexBufferNULL(
             const unsigned int indexCount, const IndexBufferFormat indexFormat,
             const BufferUsage usage = BU_STATIC)
             : IndexBuffer(indexCount, indexFormat, usage) {}
-        IndexBufferNULL::~IndexBufferNULL() {}
+        ~IndexBufferNULL() {}
 
         friend class ResourceManagerNULL;
     };

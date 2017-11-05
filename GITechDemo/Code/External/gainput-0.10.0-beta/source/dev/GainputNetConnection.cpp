@@ -260,7 +260,9 @@ NetConnection::Receive(Stream& stream, size_t maxLength)
 
 #else
 
+#if defined(WIN32)
 namespace { void AvoidWarningLNK4221(){} }
+#endif
 
 #endif
 

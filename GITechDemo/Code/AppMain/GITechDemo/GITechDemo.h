@@ -22,7 +22,7 @@
 #ifndef GITECHDEMO_H_
 #define GITECHDEMO_H_
 
-#include <gmtl\gmtl.h>
+#include <gmtl/gmtl.h>
 
 #include "App.h"
 using namespace AppFramework;

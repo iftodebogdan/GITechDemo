@@ -184,7 +184,9 @@ NetListener::Accept()
 
 #else
 
+#if defined(WIN32)
 namespace { void AvoidWarningLNK4221(){} }
+#endif
 
 #endif
 

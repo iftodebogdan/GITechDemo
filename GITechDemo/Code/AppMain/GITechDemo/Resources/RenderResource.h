@@ -25,10 +25,12 @@
 #include <string>
 using namespace std;
 
-#include <gmtl\gmtl.h>
+#include <gmtl/gmtl.h>
 using namespace gmtl;
 
 #include <ResourceData.h>
+#include <ResourceManager.h>
+
 namespace Synesthesia3D
 {
     class ShaderProgram;
@@ -172,8 +174,8 @@ namespace GITechDemoApp
 
         operator T&() { return currentValue; }
 
-        template<class T>
-        T& operator [] (const int idx) { return currentValue[idx]; }
+		template<class U>
+        U& operator [] (const int idx) { return currentValue[idx]; }
 
         template<class DATA_TYPE, unsigned SIZE>
         Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& rhs) { return currentValue * rhs; }
@@ -181,14 +183,14 @@ namespace GITechDemoApp
     protected:
         T       currentValue;
 
-        template<class T>
-        friend T operator * (const T& lhs, const ShaderConstantTemplate<T>& rhs);
+        template<class U>
+        friend U operator * (const U& lhs, const ShaderConstantTemplate<U>& rhs);
 
-        template<class T>
-        friend T operator * (const ShaderConstantTemplate<T>& lhs, const T& rhs);
+        template<class U>
+        friend U operator * (const ShaderConstantTemplate<U>& lhs, const U& rhs);
 
-        template<class T, class U>
-        friend T operator * (const ShaderConstantTemplate<T>& lhs, const ShaderConstantTemplate<U>& rhs);
+        template<class U, class V>
+        friend U operator * (const ShaderConstantTemplate<U>& lhs, const ShaderConstantTemplate<V>& rhs);
 
         template<class DATA_TYPE, unsigned SIZE>
         friend Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& lhs, ShaderConstantTemplate<T>& rhs);

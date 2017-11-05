@@ -168,11 +168,11 @@ void GBufferPass::Draw()
 
             texDiffuse = diffuseTexIdx;
             texNormal = normalTexIdx;
-            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
+            bHasNormalMap = (texNormal != ~0u) && GBUFFER_USE_NORMAL_MAPS;
 
             // For Blinn-Phong BRDF
             texSpec = specTexIdx;
-            bHasSpecMap = (texSpec != -1);
+            bHasSpecMap = (texSpec != ~0u);
             fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
 
             // For Cook-Torrance BRDF

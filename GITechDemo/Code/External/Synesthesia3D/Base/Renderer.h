@@ -30,6 +30,7 @@ namespace Synesthesia3D
     class RenderState;
     class SamplerState;
     class Profiler;
+    class ResourceManager;
 
     /**
      * @brief   Render context interface.

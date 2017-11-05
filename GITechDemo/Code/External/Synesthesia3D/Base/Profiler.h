@@ -23,15 +23,9 @@
 #ifndef PROFILING_H
 #define PROFILING_H
 
-#ifndef SYNESTHESIA3D_DLL
-#ifdef SYNESTHESIA3D_EXPORTS
-#define SYNESTHESIA3D_DLL __declspec(dllexport) /**< @brief Export/import directive keyword. */
-#else
-#define SYNESTHESIA3D_DLL __declspec(dllimport) /**< @brief Export/import directive keyword. */
-#endif
-#endif // SYNESTHESIA3D_DLL
-
 #include <vector>
+
+#include "ResourceData.h"
 
 #ifndef ENABLE_PROFILE_MARKERS
     #if defined(_DEBUG) || defined(_PROFILE)

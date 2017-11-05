@@ -513,6 +513,7 @@ DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
   </ItemGroup>
   <ItemGroup>
     <None Include="Base\ShaderInput.inl" />
+    <None Include="Makefile" />
     <None Include="Synesthesia3D.licenseheader" />
     <None Include="External\DX9\include\d3dx9math.inl" />
     <None Include="Base\VertexBuffer.inl" />

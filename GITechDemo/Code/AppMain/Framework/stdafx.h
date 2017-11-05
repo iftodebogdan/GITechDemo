@@ -26,18 +26,35 @@
 
 #pragma once
 
-#include "targetver.h"
-
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
-#include <windows.h>
-#include <WindowsX.h>
-
 // C RunTime Header Files
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <tchar.h>
 
+#if defined(WIN32)
+
+    #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+    // Windows Header Files:
+    #include <windows.h>
+    #include <WindowsX.h>
+
+    #include <stdlib.h>
+    #include <malloc.h>
+    #include <memory.h>
+    #include <tchar.h>
+    #include <time.h>
+    #include <sstream>
+
+#elif defined(__linux__)
+
+    #include <stdlib.h>
+    #include <memory>
+    #include <float.h>
+    #include <limits.h>
+    #include <time.h>
+    #include <sstream>
+    #include <limits.h>
+    #include <cstring>
+    
+    using namespace std;
+
+#endif
 
 // TODO: reference additional headers your program requires here

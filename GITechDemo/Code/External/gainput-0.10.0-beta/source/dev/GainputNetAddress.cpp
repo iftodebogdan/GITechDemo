@@ -43,7 +43,9 @@ NetAddress::NetAddress(const struct sockaddr_in& rhs)
 
 #else
 
+#if defined(WIN32)
 namespace { void AvoidWarningLNK4221(){} }
+#endif
 
 #endif
 

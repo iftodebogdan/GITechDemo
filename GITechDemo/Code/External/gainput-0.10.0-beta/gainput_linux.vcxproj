@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x86">
+      <Configuration>Profile</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{17b76e99-c300-4c53-8851-1238f3f562b1}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>gainput_linux</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{FC1A4D80-50E9-41DA-9192-61C0DBAA00D2}</LinuxProjectType>
+    <ProjectName>gainput</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/gainput-0.10.0-beta</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).a</RemoteBuildOutputs>
+    <NMakeIncludeSearchPath>include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Build\build_pipeline_linux.makefile" />
+    <None Include="Makefile" />
+    <None Include="source\builtin\GainputInputDeviceBuiltInIos.mm" />
+    <None Include="source\GainputIos.mm" />
+    <None Include="source\GainputMac.mm" />
+    <None Include="source\keyboard\GainputInputDeviceMouseMac.mm" />
+    <None Include="source\pad\GainputInputDevicePadIos.mm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\gainput\gainput.h" />
+    <ClInclude Include="include\gainput\GainputAllocator.h" />
+    <ClInclude Include="include\gainput\GainputContainers.h" />
+    <ClInclude Include="include\gainput\GainputDebugRenderer.h" />
+    <ClInclude Include="include\gainput\GainputInputDevice.h" />
+    <ClInclude Include="include\gainput\GainputInputDeviceBuiltIn.h" />
+    <ClInclude Include="include\gainput\GainputInputDeviceKeyboard.h" />
+    <ClInclude Include="include\gainput\GainputInputDeviceMouse.h" />
+    <ClInclude Include="include\gainput\GainputInputDevicePad.h" />
+    <ClInclude Include="include\gainput\GainputInputDeviceTouch.h" />
+    <ClInclude Include="include\gainput\GainputInputListener.h" />
+    <ClInclude Include="include\gainput\GainputInputManager.h" />
+    <ClInclude Include="include\gainput\GainputInputMap.h" />
+    <ClInclude Include="include\gainput\GainputInputState.h" />
+    <ClInclude Include="include\gainput\GainputIos.h" />
+    <ClInclude Include="include\gainput\gestures\GainputButtonStickGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputDoubleClickGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputGestures.h" />
+    <ClInclude Include="include\gainput\gestures\GainputHoldGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputPinchGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputRotateGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputSimultaneouslyDownGesture.h" />
+    <ClInclude Include="include\gainput\gestures\GainputTapGesture.h" />
+    <ClInclude Include="include\gainput\recorder\GainputInputPlayer.h" />
+    <ClInclude Include="include\gainput\recorder\GainputInputRecorder.h" />
+    <ClInclude Include="include\gainput\recorder\GainputInputRecording.h" />
+    <ClInclude Include="source\builtin\GainputInputDeviceBuiltInAndroid.h" />
+    <ClInclude Include="source\builtin\GainputInputDeviceBuiltInImpl.h" />
+    <ClInclude Include="source\builtin\GainputInputDeviceBuiltInIos.h" />
+    <ClInclude Include="source\builtin\GainputInputDeviceBuiltInNull.h" />
+    <ClInclude Include="source\dev\GainputDev.h" />
+    <ClInclude Include="source\dev\GainputDevProtocol.h" />
+    <ClInclude Include="source\dev\GainputMemoryStream.h" />
+    <ClInclude Include="source\dev\GainputNetAddress.h" />
+    <ClInclude Include="source\dev\GainputNetConnection.h" />
+    <ClInclude Include="source\dev\GainputNetListener.h" />
+    <ClInclude Include="source\dev\GainputStream.h" />
+    <ClInclude Include="source\GainputHelpers.h" />
+    <ClInclude Include="source\GainputHelpersEvdev.h" />
+    <ClInclude Include="source\GainputInputDeltaState.h" />
+    <ClInclude Include="source\GainputLog.h" />
+    <ClInclude Include="source\GainputWindows.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardAndroid.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardEvdev.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardImpl.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardLinux.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardMac.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardNull.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardWin.h" />
+    <ClInclude Include="source\keyboard\GainputInputDeviceKeyboardWinRaw.h" />
+    <ClInclude Include="source\keyboard\GainputKeyboardKeyNames.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseEvdev.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseImpl.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseLinux.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseMac.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseNull.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseWin.h" />
+    <ClInclude Include="source\mouse\GainputInputDeviceMouseWinRaw.h" />
+    <ClInclude Include="source\mouse\GainputMouseInfo.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadImpl.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadIos.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadLinux.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadMac.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadNull.h" />
+    <ClInclude Include="source\pad\GainputInputDevicePadWin.h" />
+    <ClInclude Include="source\touch\GainputInputDeviceTouchAndroid.h" />
+    <ClInclude Include="source\touch\GainputInputDeviceTouchImpl.h" />
+    <ClInclude Include="source\touch\GainputInputDeviceTouchIos.h" />
+    <ClInclude Include="source\touch\GainputInputDeviceTouchNull.h" />
+    <ClInclude Include="source\touch\GainputTouchInfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\builtin\GainputInputDeviceBuiltIn.cpp" />
+    <ClCompile Include="source\dev\GainputDev.cpp" />
+    <ClCompile Include="source\dev\GainputMemoryStream.cpp" />
+    <ClCompile Include="source\dev\GainputNetAddress.cpp" />
+    <ClCompile Include="source\dev\GainputNetConnection.cpp" />
+    <ClCompile Include="source\dev\GainputNetListener.cpp" />
+    <ClCompile Include="source\gainput.cpp" />
+    <ClCompile Include="source\GainputAllocator.cpp" />
+    <ClCompile Include="source\GainputInputDeltaState.cpp" />
+    <ClCompile Include="source\GainputInputDevice.cpp" />
+    <ClCompile Include="source\GainputInputManager.cpp" />
+    <ClCompile Include="source\GainputInputMap.cpp" />
+    <ClCompile Include="source\GainputInputState.cpp" />
+    <ClCompile Include="source\gestures\GainputButtonStickGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputDoubleClickGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputHoldGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputPinchGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputRotateGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputSimultaneouslyDownGesture.cpp" />
+    <ClCompile Include="source\gestures\GainputTapGesture.cpp" />
+    <ClCompile Include="source\keyboard\GainputInputDeviceKeyboard.cpp" />
+    <ClCompile Include="source\keyboard\GainputInputDeviceKeyboardMac.cpp" />
+    <ClCompile Include="source\mouse\GainputInputDeviceMouse.cpp" />
+    <ClCompile Include="source\pad\GainputInputDevicePad.cpp" />
+    <ClCompile Include="source\pad\GainputInputDevicePadMac.cpp" />
+    <ClCompile Include="source\recorder\GainputInputPlayer.cpp" />
+    <ClCompile Include="source\recorder\GainputInputRecorder.cpp" />
+    <ClCompile Include="source\recorder\GainputInputRecording.cpp" />
+    <ClCompile Include="source\touch\GainputInputDeviceTouch.cpp" />
+  </ItemGroup>
+  <ItemDefinitionGroup />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

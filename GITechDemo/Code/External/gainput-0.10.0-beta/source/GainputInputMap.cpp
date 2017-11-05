@@ -5,8 +5,9 @@
 #include <stdlib.h>
 
 // GITechDemo: warning C4996 'strcpy': This function or variable may be unsafe.Consider using strcpy_s instead.
+#if defined(WIN32)
 #pragma warning (disable: 4996)
-
+#endif
 namespace
 {
 	template<class T> T Min(const T&a, const T& b) { return a < b ? a : b; }

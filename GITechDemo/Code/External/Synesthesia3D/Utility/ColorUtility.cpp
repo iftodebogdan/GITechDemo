@@ -960,11 +960,11 @@ void ColorUtility::ConvertToDXT1(const Vec4f * const inRGBA, s3dByte * const out
                     }
             }
 
-            s3dQword blockData = 0;
-            ((s3dWord*)&blockData)[0] = color0;
-            ((s3dWord*)&blockData)[1] = color1;
-            ((s3dWord*)&blockData)[2] = (((s3dWord)bitmap[1]) << 8) | bitmap[0];
-            ((s3dWord*)&blockData)[3] = (((s3dWord)bitmap[3]) << 8) | bitmap[2];
+            s3dWord blockData[4];
+            blockData[0] = color0;
+            blockData[1] = color1;
+            blockData[2] = (((s3dWord)bitmap[1]) << 8) | bitmap[0];
+            blockData[3] = (((s3dWord)bitmap[3]) << 8) | bitmap[2];
             memcpy(outData + (blockX + blockY * numBlocksX) * sizeof(s3dQword), &blockData, sizeof(s3dQword));
         }
 }

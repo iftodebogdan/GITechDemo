@@ -372,10 +372,16 @@ void Texture::ComputeTextureProperties(const Vec3i dimensions)
         // It's fast, but most likely not cross-platform so when the time comes,
         // a replacement will have to be found.
         unsigned int maxMipmapLevelsX, maxMipmapLevelsY, maxMipmapLevelsZ;
+    #if defined(WIN32)
         _BitScanReverse((unsigned long*)&maxMipmapLevelsX, m_nDimension[0][0]);
         _BitScanReverse((unsigned long*)&maxMipmapLevelsY, m_nDimension[0][1]);
         _BitScanReverse((unsigned long*)&maxMipmapLevelsZ, m_nDimension[0][2]);
-        unsigned int maxMipmapLevels = (unsigned int)Math::Max(maxMipmapLevelsX, maxMipmapLevelsY, maxMipmapLevelsX) + 1;
+    #elif defined(__linux__)
+        maxMipmapLevelsX = sizeof(unsigned int) * 8u - __builtin_clz(m_nDimension[0][0]) - 1u;
+        maxMipmapLevelsY = sizeof(unsigned int) * 8u - __builtin_clz(m_nDimension[0][1]) - 1u;
+        maxMipmapLevelsZ = sizeof(unsigned int) * 8u - __builtin_clz(m_nDimension[0][2]) - 1u;
+    #endif
+        unsigned int maxMipmapLevels = (unsigned int)Math::Max(maxMipmapLevelsX, maxMipmapLevelsY, maxMipmapLevelsZ) + 1;
 
         if (m_nMipCount == 0 || m_nMipCount > maxMipmapLevels || IsRenderTarget())
             m_nMipCount = maxMipmapLevels;

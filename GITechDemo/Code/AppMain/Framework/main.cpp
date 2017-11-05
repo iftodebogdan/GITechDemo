@@ -21,13 +21,20 @@
 
 #include "stdafx.h"
 
+#if defined(WIN32)
 #include "FrameworkWin.h"
+#elif defined(__linux__)
+#include "FrameworkLinux.h"
+#endif
+
 using namespace AppFramework;
 
 namespace AppFramework
 {
     Framework* Framework::m_pInstance = nullptr;
 }
+
+#if defined(WIN32)
 
 int APIENTRY _tWinMain(
     _In_        HINSTANCE   hInstance,
@@ -42,3 +49,13 @@ int APIENTRY _tWinMain(
     fw.Init(hInstance, nCmdShow);
     return fw.Run();
 }
+
+#elif defined(__linux__)
+
+int main(int argc, char **argv)
+{
+    FrameworkLinux fw;
+    return fw.Run();
+}
+
+#endif

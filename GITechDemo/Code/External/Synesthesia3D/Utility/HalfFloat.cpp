@@ -29,7 +29,8 @@ HalfFloat::HalfFloat(const float value)
 {
     assert(sizeof(HalfFloat) == sizeof(unsigned short));
 
-    unsigned int bits = *(unsigned int*)&value;
+    unsigned int* uiValPtr = (unsigned int*)&value;
+    unsigned int bits = *uiValPtr;
     unsigned short biasExp = (unsigned short)((bits & 0x7F800000) >> 23);
     if (biasExp >= 0x0071)
     {
@@ -76,7 +77,8 @@ HalfFloat::operator float() const
         unsigned int mantissa = (unsigned int)(m_hValue & 0x03FF) << 13;
         biasExp = (biasExp + 0x0070) << 23;
         unsigned int result = signBit | biasExp | mantissa;
-        return *(float*)&result;
+        float* fResultPtr = (float*)&result;
+        return *fResultPtr;
     }
     else
     {

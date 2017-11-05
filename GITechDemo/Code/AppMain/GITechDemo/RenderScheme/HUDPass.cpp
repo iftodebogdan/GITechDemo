@@ -62,11 +62,10 @@ HUDPass::HUDPass(const char* const passName, RenderPass* const parentPass)
     FT_Face         face = nullptr;
     FT_GlyphSlot    slot = nullptr;
 
-    FT_Error error = FT_Err_Ok;
-    error = FT_Init_FreeType(&fontLibrary);
+    FT_Error error = FT_Init_FreeType(&fontLibrary);
     assert(error == FT_Err_Ok);
 
-    if (fontLibrary)
+    if (fontLibrary && error == FT_Err_Ok)
     {
         error = FT_New_Face(fontLibrary,
             "fonts/arial.ttf",
@@ -173,7 +172,7 @@ void HUDPass::Draw()
 
         for (unsigned int n = 0; n < m_szTextBuf.length(); n++)
         {
-            char ch = m_szTextBuf[n];
+            int ch = (int)m_szTextBuf[n];
             if (ch == '\n' || (unsigned int)(pen_x + m_pGlyphCache[ch].left + m_pGlyphCache[ch].width) > m_pHUDTexture[m_nCurrUpdateTexIdx]->GetWidth())
             {
                 pen_x = HUD_TEXT_LEFT_MARGIN;

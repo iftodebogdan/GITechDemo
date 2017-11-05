@@ -24,11 +24,19 @@
 #define RESOURCEDATA_H
 
 #ifndef SYNESTHESIA3D_DLL
-#ifdef SYNESTHESIA3D_EXPORTS
-#define SYNESTHESIA3D_DLL __declspec(dllexport) /**< @brief Export/import directive keyword. */
-#else
-#define SYNESTHESIA3D_DLL __declspec(dllimport) /**< @brief Export/import directive keyword. */
-#endif
+    #if defined(WIN32)
+        #ifdef SYNESTHESIA3D_EXPORTS
+            #define SYNESTHESIA3D_DLL __declspec(dllexport) /**< @brief Export/import directive keyword. */
+        #else
+            #define SYNESTHESIA3D_DLL __declspec(dllimport) /**< @brief Export/import directive keyword. */
+        #endif
+    #elif defined(__linux__)
+        #if defined(__GNUC__) && (__GNUC__ >= 4) && defined(SYNESTHESIA3D_EXPORTS)
+            #define SYNESTHESIA3D_DLL __attribute__ ((__visibility__ ("default")))
+        #else
+            #define SYNESTHESIA3D_DLL
+        #endif
+    #endif
 #endif // SYNESTHESIA3D_DLL
 
 #include <string>

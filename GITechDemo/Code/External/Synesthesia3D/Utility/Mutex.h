@@ -25,13 +25,13 @@
 
 #define WIN_USE_CRITICAL_SECTION (1)    /**< @brief Enables the use of critical sections on Windows, instead of regular mutexes. */
 
-#if defined(LINUX)
+#if defined(__linux__)
 
     //Headers
     #include <pthread.h>
 
     //Data types
-    typdef pthread_mutex_t MUTEX;
+    typedef pthread_mutex_t MUTEX;
 
     #ifndef EBUSY
     #define EBUSY 16 // resource busy

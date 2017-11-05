@@ -70,8 +70,8 @@ const unsigned int ResourceManagerNULL::CreateVertexFormat(
     va_start(args, semanticIdx);
     for (unsigned int i = 1, n = vf->GetAttributeCount(); i < n; i++)
     {
-        VertexAttributeSemantic tempSemantic = va_arg(args, VertexAttributeSemantic);
-        VertexAttributeType tempType = va_arg(args, VertexAttributeType);
+        VertexAttributeSemantic tempSemantic = (VertexAttributeSemantic)va_arg(args, int);
+        VertexAttributeType tempType = (VertexAttributeType)va_arg(args, int);
         unsigned int tempSemanticIdx = va_arg(args, unsigned int);
         vf->SetAttribute(i, offset, tempSemantic, tempType, tempSemanticIdx);
         offset += VertexFormat::GetAttributeTypeSize(tempType);

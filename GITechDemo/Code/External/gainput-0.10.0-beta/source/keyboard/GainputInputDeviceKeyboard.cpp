@@ -23,7 +23,9 @@
 #include "GainputInputDeviceKeyboardNull.h"
 
 // GITechDemo: warning C4996 'strncpy': This function or variable may be unsafe.Consider using strncpy_s instead.
+#if defined(WIN32)
 #pragma warning (disable: 4996)
+#endif
 
 namespace gainput
 {

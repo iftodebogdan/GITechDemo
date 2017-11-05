@@ -130,6 +130,7 @@ void ShaderInput::SetBoolArray(const unsigned int handle, const bool* const data
             }
         break;
     case RT_INT4:
+    default:
         assert(false);  // This should not happen
     }
 }
@@ -246,6 +247,7 @@ void ShaderInput::SetIntArray(const unsigned int handle, const int* const data)
             }
         break;
     case RT_BOOL:
+    default:
         assert(false);  // This should not happen
     }
 }
@@ -535,7 +537,7 @@ void ShaderInput::SetTexture(const unsigned int handle, const unsigned int texId
     const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
 
     assert(
-        texIdx == -1 ||
+        texIdx == ~0u ||
         (desc.eInputType == IT_SAMPLER) ||
         (desc.eInputType == IT_SAMPLER1D && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_1D) ||
         (desc.eInputType == IT_SAMPLER2D && Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx)->GetTextureType() == TT_2D) ||

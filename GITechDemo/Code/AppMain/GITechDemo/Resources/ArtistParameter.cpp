@@ -53,8 +53,8 @@ namespace GITechDemoApp
 }
 
 ArtistParameterManager::ArtistParameterManager()
-    : m_nCurrParam(-1)
-    , m_pInputMap(nullptr)
+    : m_pInputMap(nullptr)
+    , m_nCurrParam(-1)
 {
     if (ms_pInstance)
         delete ms_pInstance;
@@ -93,6 +93,7 @@ void ArtistParameterManager::Update()
 
     // Handle input
     if(cmd & APM_CMD_NEXT)
+	{
         if (cmd & APM_CMD_MAX_STEP)
         {
             string szCategory = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam]->szCategory : "";
@@ -104,9 +105,14 @@ void ArtistParameterManager::Update()
             }
         }
         else
-            m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam  = -1;
+        {
+            m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam = -1;
+        }
+	}
     else
+	{
         if(cmd & APM_CMD_PREV)
+		{
             if (cmd & APM_CMD_MAX_STEP)
             {
                 string szCategory = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam]->szCategory : "";
@@ -115,8 +121,11 @@ void ArtistParameterManager::Update()
                 {
                     m_nCurrParam > -1 ? m_nCurrParam-- : m_nCurrParam = (int)ms_arrParams.size() - 1;
                     if (m_nCurrParam == -1 && szCategory2.empty())
+                    {
                         break;
+                    }
                     else
+                    {
                         if (m_nCurrParam == -1 || ms_arrParams[m_nCurrParam]->szCategory != szCategory)
                         {
                             if (szCategory2.empty() && m_nCurrParam != -1)
@@ -124,18 +133,22 @@ void ArtistParameterManager::Update()
                                 szCategory2 = ms_arrParams[m_nCurrParam]->szCategory;
                                 continue;
                             }
-                            
+
                             if (m_nCurrParam == -1 || ms_arrParams[m_nCurrParam]->szCategory != szCategory2)
                             {
                                 m_nCurrParam < (int)ms_arrParams.size() - 1 ? m_nCurrParam++ : m_nCurrParam = -1;
                                 break;
                             }
                         }
-
+                    }
                 }
             }
             else
+            {
                 m_nCurrParam > -1 ? m_nCurrParam-- : m_nCurrParam = (int)ms_arrParams.size() - 1;
+            }
+		}
+	}
 
     ArtistParameter* const pCurrAP = m_nCurrParam != -1 ? ms_arrParams[m_nCurrParam] : nullptr;
 
@@ -152,12 +165,13 @@ void ArtistParameterManager::Update()
         else if (cmd & APM_CMD_MIN_STEP)
             fStep *= MIN_STEP_MULTIPLIER;
 
-        char szTempBuffer[2048];
+        const unsigned int bufferSize = 2048;
+        char szTempBuffer[bufferSize];
         if (IS_FLOAT(pCurrAP))
         {
-            sprintf_s(szTempBuffer, "Current: %g", *(float*)pCurrAP->pParam);
+            snprintf(szTempBuffer, bufferSize, "Current: %g", *(float*)pCurrAP->pParam);
             HUD_PASS.PrintLn(szTempBuffer);
-            sprintf_s(szTempBuffer, "Step:     %g", fStep);
+            snprintf(szTempBuffer, bufferSize, "Step:     %g", fStep);
             HUD_PASS.PrintLn(szTempBuffer);
 
             if (cmd & APM_CMD_STEP_UP)
@@ -167,9 +181,9 @@ void ArtistParameterManager::Update()
         }
         else if (IS_INT(pCurrAP))
         {
-            sprintf_s(szTempBuffer, "Current: %d", *(int*)pCurrAP->pParam);
+            snprintf(szTempBuffer, bufferSize, "Current: %d", *(int*)pCurrAP->pParam);
             HUD_PASS.PrintLn(szTempBuffer);
-            sprintf_s(szTempBuffer, "Step:     %d", (int)fStep);
+            snprintf(szTempBuffer, bufferSize, "Step:     %d", (int)fStep);
             HUD_PASS.PrintLn(szTempBuffer);
 
             if (cmd & APM_CMD_STEP_UP)
@@ -179,9 +193,9 @@ void ArtistParameterManager::Update()
         }
         else if (IS_UINT(pCurrAP))
         {
-            sprintf_s(szTempBuffer, "Current: %u", *(unsigned int*)pCurrAP->pParam);
+            snprintf(szTempBuffer, bufferSize, "Current: %u", *(unsigned int*)pCurrAP->pParam);
             HUD_PASS.PrintLn(szTempBuffer);
-            sprintf_s(szTempBuffer, "Step:     %u", (unsigned int)fStep);
+            snprintf(szTempBuffer, bufferSize, "Step:     %u", (unsigned int)fStep);
             HUD_PASS.PrintLn(szTempBuffer);
 
             if (cmd & APM_CMD_STEP_UP)
@@ -191,9 +205,9 @@ void ArtistParameterManager::Update()
         }
         else if (IS_BOOL(pCurrAP))
         {
-            sprintf_s(szTempBuffer, "Current: %s", *(bool*)pCurrAP->pParam ? "True" : "False");
+            snprintf(szTempBuffer, bufferSize, "Current: %s", *(bool*)pCurrAP->pParam ? "True" : "False");
             HUD_PASS.PrintLn(szTempBuffer);
-            sprintf_s(szTempBuffer, "Step:     Negate");
+            snprintf(szTempBuffer, bufferSize, "Step:     Negate");
             HUD_PASS.PrintLn(szTempBuffer);
 
             if (cmd & (APM_CMD_STEP_UP | APM_CMD_STEP_DOWN))

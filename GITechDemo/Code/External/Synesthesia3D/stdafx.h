@@ -28,22 +28,38 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
-#ifdef WIN32
+// Include common header files
+#if defined(WIN32)
+
     // Exclude rarely-used stuff from Windows headers
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
     #include <WinBase.h>
+
+    // Memory leak guard on debug
+    #ifdef _DEBUG
+        #include <vld.h>
+    #endif
+
+    #include <assert.h>
+    #include <malloc.h>
+
+#elif defined(__linux__)
+
+    #include <assert.h>
+    #include <string.h>
+    #include <limits.h>
+    #include <typeinfo>
+    #include <float.h>
+
+    using namespace std;
+
+    #define ARRAYSIZE(a)                                    \
+        ((sizeof(a) / sizeof(*(a))) /                       \
+        static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
+
 #endif
 
 // TODO: reference additional headers your program requires here
-
-// Memory leak guard on debug
-#ifdef _DEBUG
-    #include <vld.h>
-#endif
-
-// Include common header files
-#include <assert.h>
-#include <malloc.h>
 
 #endif //STDAFX_H

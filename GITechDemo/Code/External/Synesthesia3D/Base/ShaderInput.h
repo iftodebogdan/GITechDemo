@@ -24,11 +24,11 @@
 #define SHADERINPUT_H
 
 #include "Buffer.h"
+#include "ShaderProgram.h"
 
 namespace Synesthesia3D
 {
     class Texture;
-    class ShaderProgram;
 
     /**
      * @brief   Handles data used by the shader during rendering.

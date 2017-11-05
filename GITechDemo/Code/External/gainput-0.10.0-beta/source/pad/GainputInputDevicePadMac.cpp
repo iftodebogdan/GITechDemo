@@ -400,7 +400,9 @@ bool InputDevicePadImplMac::IsValidButton(DeviceButtonId deviceButton) const
 
 #else
 
+#if defined(WIN32)
 namespace { void AvoidWarningLNK4221(){} }
+#endif
 
 #endif
 

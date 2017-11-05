@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x86">
+      <Configuration>Profile</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7b15d0fd-2c9a-49fd-a9da-88c4e08c284d}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>Synesthesia3D_linux</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{FC1A4D80-50E9-41DA-9192-61C0DBAA00D2}</LinuxProjectType>
+    <ProjectName>Synesthesia3D</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>/home/bmiftode/projects</RemoteRootDir>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'" Label="PropertySheets">
+    <Import Project="..\..\Solutions\Linux.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x86'">
+    <RemoteBuildCommandLine>make build PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean PLATFORM=$(PlatformTriplet) CONFIGURATION=$(Configuration) -C $(RemoteProjectDir)/Code/External/Synesthesia3D</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/Bin/$(PlatformTriplet)/$(Configuration)/$(SolutionName)/$(ProjectName.toLower()).so</RemoteBuildOutputs>
+    <BuildCommandLine>rem</BuildCommandLine>
+    <ReBuildCommandLine>rem</ReBuildCommandLine>
+    <CleanCommandLine>rem</CleanCommandLine>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTriplet)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTriplet)\$(Configuration)\</IntDir>
+    <RemoteProjectDir>$(RemoteRootDir)/$(SolutionName)</RemoteProjectDir>
+    <NMakePreprocessorDefinitions>SYNESTHESIA3D_EXPORTS</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>.;Base;NULL;External;External/gmtl/include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ClCompile Include="Base\Buffer.cpp" />
+    <ClCompile Include="Base\IndexBuffer.cpp" />
+    <ClCompile Include="Base\Profiler.cpp" />
+    <ClCompile Include="Base\Renderer.cpp" />
+    <ClCompile Include="Base\RenderState.cpp" />
+    <ClCompile Include="Base\RenderTarget.cpp" />
+    <ClCompile Include="Base\ResourceManager.cpp" />
+    <ClCompile Include="Base\ResourceSerialization.cpp" />
+    <ClCompile Include="Base\SamplerState.cpp" />
+    <ClCompile Include="Base\ShaderInput.cpp" />
+    <ClCompile Include="Base\ShaderProgram.cpp" />
+    <ClCompile Include="Base\Texture.cpp" />
+    <ClCompile Include="Base\VertexBuffer.cpp" />
+    <ClCompile Include="Base\VertexFormat.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="External\lz4\lz4.c" />
+    <ClCompile Include="External\lz4\lz4hc.c" />
+    <ClCompile Include="NULL\IndexBufferNULL.cpp" />
+    <ClCompile Include="NULL\RendererNULL.cpp" />
+    <ClCompile Include="NULL\RenderStateNULL.cpp" />
+    <ClCompile Include="NULL\RenderTargetNULL.cpp" />
+    <ClCompile Include="NULL\ResourceManagerNULL.cpp" />
+    <ClCompile Include="NULL\SamplerStateNULL.cpp" />
+    <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
+    <ClCompile Include="NULL\TextureNULL.cpp" />
+    <ClCompile Include="NULL\VertexBufferNULL.cpp" />
+    <ClCompile Include="NULL\VertexFormatNULL.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Utility\ColorUtility.cpp" />
+    <ClCompile Include="Utility\Debug.cpp" />
+    <ClCompile Include="Utility\HalfFloat.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Build\build_pipeline_linux.makefile" />
+    <None Include="Base\ShaderInput.inl" />
+    <None Include="Base\VertexBuffer.inl" />
+    <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Base\Buffer.h" />
+    <ClInclude Include="Base\IndexBuffer.h" />
+    <ClInclude Include="Base\Profiler.h" />
+    <ClInclude Include="Base\Renderer.h" />
+    <ClInclude Include="Base\RenderState.h" />
+    <ClInclude Include="Base\RenderTarget.h" />
+    <ClInclude Include="Base\ResourceData.h" />
+    <ClInclude Include="Base\ResourceManager.h" />
+    <ClInclude Include="Base\SamplerState.h" />
+    <ClInclude Include="Base\ShaderInput.h" />
+    <ClInclude Include="Base\ShaderProgram.h" />
+    <ClInclude Include="Base\Texture.h" />
+    <ClInclude Include="Base\VertexBuffer.h" />
+    <ClInclude Include="Base\VertexFormat.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\AABox.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\AABoxOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\AxisAngle.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\AxisAngleOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Comparitors.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Config.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Containment.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Coord.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\CoordOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Defines.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\EulerAngle.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\EulerAngleOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\External\OpenSGConvert.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Fit\GaussPointsFit.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Frustum.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\FrustumOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Generate.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\gmtl.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Helpers.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Intersection.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\LineSeg.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\LineSegOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Math.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Matrix.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\MatrixOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Misc\MatrixConvert.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Numerics\Eigen.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\OOBox.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Output.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\ParametricCurve.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Plane.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\PlaneOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Point.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Quat.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\QuatOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Ray.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\RayOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Sphere.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\SphereOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Tri.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\TriOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Util\Assert.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Util\Meta.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Util\StaticAssert.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Vec.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\VecBase.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\VecExprMeta.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\VecOps.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\VecOpsMeta.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Version.h" />
+    <ClInclude Include="External\gmtl\include\gmtl\Xforms.h" />
+    <ClInclude Include="External\lz4\lz4.h" />
+    <ClInclude Include="External\lz4\lz4hc.h" />
+    <ClInclude Include="External\lz4\lz4opt.h" />
+    <ClInclude Include="NULL\IndexBufferNULL.h" />
+    <ClInclude Include="NULL\RendererNULL.h" />
+    <ClInclude Include="NULL\RenderStateNULL.h" />
+    <ClInclude Include="NULL\RenderTargetNULL.h" />
+    <ClInclude Include="NULL\ResourceManagerNULL.h" />
+    <ClInclude Include="NULL\SamplerStateNULL.h" />
+    <ClInclude Include="NULL\ShaderProgramNULL.h" />
+    <ClInclude Include="NULL\TextureNULL.h" />
+    <ClInclude Include="NULL\VertexBufferNULL.h" />
+    <ClInclude Include="NULL\VertexFormatNULL.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Utility\ColorUtility.h" />
+    <ClInclude Include="Utility\Debug.h" />
+    <ClInclude Include="Utility\HalfFloat.h" />
+    <ClInclude Include="Utility\Hash.h" />
+    <ClInclude Include="Utility\Mutex.h" />
+  </ItemGroup>
+  <ItemDefinitionGroup />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

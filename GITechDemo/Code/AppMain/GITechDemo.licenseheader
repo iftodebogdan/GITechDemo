@@ -20,7 +20,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-extensions: .py
+extensions: .py .makefile
 #=============================================================================
 # This file is part of the "%Project%" application
 # Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
@@ -41,3 +41,25 @@ extensions: .py
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #=============================================================================
+
+extensions: .bat
+::=============================================================================
+:: This file is part of the "%Project%" application
+:: Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+::
+::       File:   %FileName%
+::       Author: %UserDisplayName%
+::
+:: This program is free software: you can redistribute it and/or modify
+:: it under the terms of the GNU General Public License as published by
+:: the Free Software Foundation, either version 3 of the License, or
+:: (at your option) any later version.
+::
+:: This program is distributed in the hope that it will be useful,
+:: but WITHOUT ANY WARRANTY; without even the implied warranty of
+:: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+:: GNU General Public License for more details.
+::
+:: You should have received a copy of the GNU General Public License
+:: along with this program. If not, see <http://www.gnu.org/licenses/>.
+::=============================================================================

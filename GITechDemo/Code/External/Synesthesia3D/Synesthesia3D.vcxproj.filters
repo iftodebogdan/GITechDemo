@@ -576,6 +576,7 @@
     <None Include="External\vld\bin\x64\vld_x64.dll">
       <Filter>External\vld\bin\x64</Filter>
     </None>
+    <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="External\DX9\lib\Win32\d3d9.lib">
