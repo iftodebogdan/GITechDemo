@@ -308,6 +308,9 @@
     <None Include="..\..\Build\build_all.bat">
       <Filter>Build</Filter>
     </None>
+    <None Include="..\..\Data\shaders\BRDFUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GITechDemo\GITechDemo.rc">

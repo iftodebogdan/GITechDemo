@@ -8,6 +8,9 @@
 *.VC.opendb
 .vs/
 
+# Dump files
+*.dmp
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

@@ -614,6 +614,22 @@ namespace GITechDemoApp
     //////////////////////////////////////////
     // Start adding artist parameters here  //
     //////////////////////////////////////////
+    
+    // Window properties
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Fullscreen enabled",        "Toggle between window mode and fulscreen mode",                        "Window",                   FULLSCREEN_ENABLED);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Borderless windowed mode",  "Toggle between regular windowed and borderless windowed mode",         "Window",                   BORDERLESS_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Resolution X (width)",      "Set the resolution on the X axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_X,                    1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Resolution Y (height)",     "Set the resolution on the Y axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_Y,                    1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Refresh rate",              "Set the refresh rate of the display (only affects fullscreen mode)",   "Window",                   FULLSCREEN_REFRESH_RATE,                    1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("VSync enabled",             "Synchronizes backbuffer swapping with screen refresh rate",            "Window",                   VSYNC_ENABLED);
+    
+    // Profiling
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Display GPU timings",       "Toggle the display of GPU timings (debug and profile only)",           "Profiler",                 GPU_PROFILE_SCREEN);
+    
+    // HUD
+    CREATE_ARTIST_PARAMETER_OBJECT("Text color R",              "HUD text color - red component",                                       "HUD",                      f3TextColor.GetCurrentValue()[0],           0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Text color G",              "HUD text color - green component",                                     "HUD",                      f3TextColor.GetCurrentValue()[1],           0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Text color B",              "HUD text color - blue component",                                      "HUD",                      f3TextColor.GetCurrentValue()[2],           0.1f);
 
     // Camera
     CREATE_ARTIST_BOOLPARAM_OBJECT("Infinite projection",       "Use a projection matrix with an infinite far plane",                   "Camera",                   CAMERA_INFINITE_PROJ);
@@ -658,6 +674,16 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 4",              "Depth bias for cascade 4",                                             "Cascaded shadow map",      DEPTH_BIAS[3],                              0.0001f);
     CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 4", "Slope scaled depth bias for cascade 4",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[3],                 0.1f);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Debug CSM camera",          "Draw the cascaded shadow map on-screen",                               "Cascaded shadow map",      DEBUG_CSM_CAMERA);
+    
+    // Screen space reflections
+    CREATE_ARTIST_BOOLPARAM_OBJECT("SSR enable",                "Toggle the rendering of screen space reflections",                     "Screen space reflections", SSR_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Reflection intensity",      "Scale value for the intensity of reflections",                         "Screen space reflections", fReflectionIntensity.GetCurrentValue(),     0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Object thickness",          "Used to determine if ray hits are valid",                              "Screen space reflections", fThickness.GetCurrentValue(),               1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sample stride",             "Number of pixels to jump between each ray march iteration",            "Screen space reflections", fSampleStride.GetCurrentValue(),            10.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Manual maximum steps",      "Manually adjust maximum number of steps, or calculate it dynamically", "Screen space reflections", SSR_MANUAL_MAX_STEPS);
+    CREATE_ARTIST_PARAMETER_OBJECT("Maximum step count",        "Maximum number of ray march iterations before returning a miss",       "Screen space reflections", fMaxSteps.GetCurrentValue(),                10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Maximum ray distance",      "Maximum distance to ray march before returning a miss",                "Screen space reflections", fMaxRayDist.GetCurrentValue(),              100.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Use dithering",             "Use a bayer matrix to offset the starting positions of rays",          "Screen space reflections", bUseDither.GetCurrentValue());
 
     // SSAO
     CREATE_ARTIST_BOOLPARAM_OBJECT("SSAO enable",               "Toggle the rendering of screen space ambient occlusion",               "SSAO",                     SSAO_ENABLED);
@@ -666,10 +692,6 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Scale",                     "Scale for the occlusion attenuation with distance",                    "SSAO",                     fSSAOScale.GetCurrentValue(),               0.1f);
     CREATE_ARTIST_PARAMETER_OBJECT("Bias",                      "Bias for the occlusion attenuation with normal differences",           "SSAO",                     fSSAOBias.GetCurrentValue(),                0.1f);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution",        "Toggle rendering into a quarter resolution buffer",                    "SSAO",                     SSAO_USE_QUARTER_RESOLUTION_BUFFER);
-
-    // Sky
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",                "Affects the radius of the sun",                                        "Sky",                      fSunRadius.GetCurrentValue(),               10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",            "Affects the brightness of the sun",                                    "Sky",                      fSunBrightness.GetCurrentValue(),           10.f);
 
     // RSM
     CREATE_ARTIST_BOOLPARAM_OBJECT("Indirect lights enable",    "Toggle the rendering of indirect lights",                              "Reflective shadow map",    INDIRECT_LIGHT_ENABLED);
@@ -680,15 +702,9 @@ namespace GITechDemoApp
     CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution",        "Toggle rendering into a quarter resolution buffer",                    "Reflective shadow map",    RSM_USE_QUARTER_RESOLUTION_BUFFER);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Debug RSM camera",          "Draw the reflective shadow map on-screen",                             "Reflective shadow map",    DEBUG_RSM_CAMERA);
 
-    // Screen space reflections
-    CREATE_ARTIST_BOOLPARAM_OBJECT("SSR enable",                "Toggle the rendering of screen space reflections",                     "Screen space reflections", SSR_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Reflection intensity",      "Scale value for the intensity of reflections",                         "Screen space reflections", fReflectionIntensity.GetCurrentValue(),     0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Object thickness",          "Used to determine if ray hits are valid",                              "Screen space reflections", fThickness.GetCurrentValue(),               1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sample stride",             "Number of pixels to jump between each ray march iteration",            "Screen space reflections", fSampleStride.GetCurrentValue(),            10.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Manual maximum steps",      "Manually adjust maximum number of steps, or calculate it dynamically", "Screen space reflections", SSR_MANUAL_MAX_STEPS);
-    CREATE_ARTIST_PARAMETER_OBJECT("Maximum step count",        "Maximum number of ray march iterations before returning a miss",       "Screen space reflections", fMaxSteps.GetCurrentValue(),                10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Maximum ray distance",      "Maximum distance to ray march before returning a miss",                "Screen space reflections", fMaxRayDist.GetCurrentValue(),              100.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Use dithering",             "Use a bayer matrix to offset the starting positions of rays",          "Screen space reflections", bUseDither.GetCurrentValue());
+    // Sky
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",                "Affects the radius of the sun",                                        "Sky",                      fSunRadius.GetCurrentValue(),               10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",            "Affects the brightness of the sun",                                    "Sky",                      fSunBrightness.GetCurrentValue(),           10.f);
 
     // Volumetric lights
     CREATE_ARTIST_BOOLPARAM_OBJECT("Volumetric lights enable",  "Toggle the rendering of the volumetric lighting effect (directional)", "Volumetric lights",        DIR_LIGHT_VOLUME_ENABLE);
@@ -797,20 +813,5 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Edge detection threshold",  "Adjusts threshold of depth based edge detection algorithm",            "FXAA",                     fFxaaEdgeDepthThreshold.GetCurrentValue(),  0.0001f);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Debug FXAA edge detection", "Highlight pixels that have FXAA applied",                              "FXAA",                     bFxaaDebugEdgeDetection.GetCurrentValue());
 
-    // HUD
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color R",              "HUD text color - red component",                                       "HUD",                      f3TextColor.GetCurrentValue()[0],           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color G",              "HUD text color - green component",                                     "HUD",                      f3TextColor.GetCurrentValue()[1],           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color B",              "HUD text color - blue component",                                      "HUD",                      f3TextColor.GetCurrentValue()[2],           0.1f);
-
-    // Profiling
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Display GPU timings",       "Toggle the display of GPU timings (debug and profile only)",           "Profiler",                 GPU_PROFILE_SCREEN);
-
-    // Window properties
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Fullscreen enabled",        "Toggle between window mode and fulscreen mode",                        "Window",                   FULLSCREEN_ENABLED);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Borderless windowed mode",  "Toggle between regular windowed and borderless windowed mode",         "Window",                   BORDERLESS_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Resolution X (width)",      "Set the resolution on the X axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_X,                    1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Resolution Y (height)",     "Set the resolution on the Y axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_Y,                    1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Refresh rate",              "Set the refresh rate of the display (only affects fullscreen mode)",   "Window",                   FULLSCREEN_REFRESH_RATE,                    1.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("VSync enabled",             "Synchronizes backbuffer swapping with screen refresh rate",            "Window",                   VSYNC_ENABLED);
     //------------------------------------------------------
 }
