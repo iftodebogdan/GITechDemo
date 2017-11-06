@@ -33,6 +33,7 @@ vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from Art
 //////////////////
 // DO NOT USE!  //
 //////////////////
+
 #define CONCAT2(x, y) x##y
 #define CONCAT(x, y) CONCAT2(x, y)
 #define CREATE_UNIQUE_NAME CONCAT(ArtistParam, __COUNTER__)
@@ -47,11 +48,13 @@ vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from Art
 #define RENDER_TARGET_FUNC_THREE(Name, RT0, RT1, RT2, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 3, RT0, RT1, RT2, PF_NONE, (RTType)Width, (RTType)Height, DepthFormat)
 #define RENDER_TARGET_FUNC_FOUR(Name, RT0, RT1, RT2, RT3, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 4, RT0, RT1, RT2, RT3, (RTType)Width, (RTType)Height, DepthFormat)
 #define INFER_RENDER_TARGET_FUNC(_1, _2, _3, _4, _5, _6, _7, _8, Func, ...) Func
+
 ///////////////////////////////////////////////////////////
 
 //////////////////////////
 // Some handy defines   //
 //////////////////////////
+
 #define CREATE_MODEL_OBJECT(Name, Filepath) Model Name(Filepath)
 #define CREATE_TEXTURE_OBJECT(Name, Filepath) Texture Name(Filepath)
 #define CREATE_SHADER_OBJECT(Name, Filepath) Shader Name(Filepath)
@@ -63,6 +66,7 @@ vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from Art
 #define START_PBR_MATERIAL_TEST_TEXTURES() unsigned int g_nPBRMaterialDescriptionCount = 0; PBRMaterialDescription g_arrPBRMaterialDescription[] = {
 #define CREATE_PBR_MATERIAL_TEST_TEXTURE(Name, Folder) PBRMaterialDescription(Name, Folder),
 #define END_PBR_MATERIAL_TEST_TEXTURES() };
+
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
@@ -159,6 +163,7 @@ namespace GITechDemoApp
     extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
     extern const unsigned int RSM_SIZE;
     VertexBuffer*   FullScreenTri = nullptr;
+
     //------------------------------------------------------
 
 
@@ -170,6 +175,7 @@ namespace GITechDemoApp
     //////////////
     // Shaders  //
     //////////////
+
     CREATE_SHADER_OBJECT(DirectionalLightVolumeShader,      "shaders/DirectionalLightVolume.hlsl");
     CREATE_SHADER_OBJECT(RSMUpscaleShader,                  "shaders/RSMUpscale.hlsl");
     CREATE_SHADER_OBJECT(RSMApplyShader,                    "shaders/RSMApply.hlsl");
@@ -197,6 +203,7 @@ namespace GITechDemoApp
     CREATE_SHADER_OBJECT(LensFlareApplyShader,              "shaders/LensFlareApply.hlsl");
     CREATE_SHADER_OBJECT(HUDTextShader,                     "shaders/HUDText.hlsl");
     CREATE_SHADER_OBJECT(DepthCopyShader,                   "shaders/DepthCopy.hlsl");
+
     //------------------------------------------------------
 
 
@@ -204,8 +211,10 @@ namespace GITechDemoApp
     //////////////
     // Models   //
     //////////////
+
     CREATE_MODEL_OBJECT(SponzaScene,    "models/sponza/sponza.s3dmdl");
     CREATE_MODEL_OBJECT(SphereModel,    "models/pbr-test/sphere.s3dmdl");
+
     //------------------------------------------------------
 
 
@@ -213,6 +222,7 @@ namespace GITechDemoApp
     //////////////
     // Textures //
     //////////////
+
     CREATE_TEXTURE_OBJECT(SkyTexture,               "textures/sky.s3dtex");
     CREATE_TEXTURE_OBJECT(IrradianceTexture,        "textures/irradiance.s3dtex");
     CREATE_TEXTURE_OBJECT(EnvironmentTexture,       "textures/envmap.s3dtex");
@@ -222,6 +232,7 @@ namespace GITechDemoApp
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
     CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
+
     //------------------------------------------------------
 
 
@@ -229,6 +240,7 @@ namespace GITechDemoApp
     ////////////////////////////////
     // PBR Material Test Textures //
     ////////////////////////////////
+
     START_PBR_MATERIAL_TEST_TEXTURES()
         CREATE_PBR_MATERIAL_TEST_TEXTURE("Bamboo wood", "bamboo_wood")
         CREATE_PBR_MATERIAL_TEST_TEXTURE("Cratered rock", "cratered_rock")
@@ -251,6 +263,7 @@ namespace GITechDemoApp
         CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn painted cement", "worn_painted_cement")
         CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn scuffed plastic", "worn_scuffed_plastic")
     END_PBR_MATERIAL_TEST_TEXTURES()
+
     //------------------------------------------------------
 
 
@@ -258,6 +271,7 @@ namespace GITechDemoApp
     //////////////////////
     // Render targets   //
     //////////////////////
+
     // Geometry buffer (G-Buffer)
     //  RT0:    A8R8G8B8 with diffuse albedo in RGB and specular power in A
     //  RT1:    G16R16F with compressed normals (stereographic projection)
@@ -355,45 +369,55 @@ namespace GITechDemoApp
         &HDRDownsampleQuarterBuffer,
         &HDRDownsampleSixteenthBuffer
     };
+
     RenderTarget* AverageLuminanceBuffer[4] = {
         &AverageLuminanceBuffer0,
         &AverageLuminanceBuffer1,
         &AverageLuminanceBuffer2,
         &AverageLuminanceBuffer3
     };
+
     RenderTarget* BloomBuffer[2] = {
         &BloomBuffer0,
         &BloomBuffer1
     };
+
     RenderTarget* SSAOFullBuffer[2] = {
         &SSAOFullBuffer0,
         &SSAOFullBuffer1
     };
+
     RenderTarget* SSAOQuarterBuffer[2] = {
         &SSAOQuarterBuffer0,
         &SSAOQuarterBuffer1
     };
+
     RenderTarget* DepthOfFieldBuffer[2] = {
         &DepthOfFieldBuffer0,
         &DepthOfFieldBuffer1
     };
+
     RenderTarget* AdaptedLuminance[2] = {
         &AdaptedLuminance0,
         &AdaptedLuminance1
     };
+
     RenderTarget* AutofocusBuffer[2] = {
         &AutofocusBuffer0,
         &AutofocusBuffer1
     };
+
     RenderTarget* SphericalLensFlareBuffer[2] = {
         &SphericalLensFlareBuffer0,
         &SphericalLensFlareBuffer1
     };
+
     RenderTarget* AnamorphicLensFlareBuffer[3] = {
         &AnamorphicLensFlareBuffer0,
         &AnamorphicLensFlareBuffer1,
         &AnamorphicLensFlareBuffer2
     };
+
     //------------------------------------------------------
 
 
@@ -512,6 +536,7 @@ namespace GITechDemoApp
 
     /* HUD parameters */
     CREATE_SHADER_CONSTANT_OBJECT(f3TextColor,              Vec3f,          Vec3f(1.f, 1.f, 1.f)    );
+
     //------------------------------------------------------
 
 
@@ -607,6 +632,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
+
     //--------------------------------------------------------------------------
 
 
@@ -614,7 +640,7 @@ namespace GITechDemoApp
     //////////////////////////////////////////
     // Start adding artist parameters here  //
     //////////////////////////////////////////
-    
+
     // Window properties
     CREATE_ARTIST_BOOLPARAM_OBJECT("Fullscreen enabled",        "Toggle between window mode and fulscreen mode",                        "Window",                   FULLSCREEN_ENABLED);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Borderless windowed mode",  "Toggle between regular windowed and borderless windowed mode",         "Window",                   BORDERLESS_ENABLED);
@@ -622,7 +648,7 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Resolution Y (height)",     "Set the resolution on the Y axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_Y,                    1.f);
     CREATE_ARTIST_PARAMETER_OBJECT("Refresh rate",              "Set the refresh rate of the display (only affects fullscreen mode)",   "Window",                   FULLSCREEN_REFRESH_RATE,                    1.f);
     CREATE_ARTIST_BOOLPARAM_OBJECT("VSync enabled",             "Synchronizes backbuffer swapping with screen refresh rate",            "Window",                   VSYNC_ENABLED);
-    
+
     // Profiling
     CREATE_ARTIST_BOOLPARAM_OBJECT("Display GPU timings",       "Toggle the display of GPU timings (debug and profile only)",           "Profiler",                 GPU_PROFILE_SCREEN);
     

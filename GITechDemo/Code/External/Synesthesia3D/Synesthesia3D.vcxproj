@@ -104,6 +104,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -113,6 +114,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -121,6 +123,7 @@
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -129,6 +132,7 @@
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -137,6 +141,7 @@
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -145,6 +150,7 @@
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

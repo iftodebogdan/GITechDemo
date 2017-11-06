@@ -130,47 +130,20 @@ def Run():
     # Create directory structure
     logging.info("Creating directory structure...")
     rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
-    utils.MakeDir(rootBuildDir + "/bin/" +
-        ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
-        defaultArchitecture)
-    utils.MakeDir(rootBuildDir + "/data")
 
     # Copy binaries
     logging.info("Copying binaries...")
     pathToBinaries = [
         utils.GetScriptAbsolutePath() +
         "/../Bin/" + defaultArchitecture + "/" + defaultBuildConfiguration + "/" + projectName + "/",
-        rootBuildDir + "/bin/" +
-        ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
-        defaultArchitecture
+        rootBuildDir
         ]
     utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.exe")
     utils.CopyFiles(pathToBinaries[0], pathToBinaries[1], "*.dll")
 
     # Copy data
     logging.info("Copying data...")
-    utils.CopyTree(utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir + "/data")
-
-    # Create batch file
-    logging.info("Creating batch file...")
-    startBat = open(
-        rootBuildDir + "/run_" + 
-        ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration.lower() + "_")) +
-        defaultArchitecture.lower() + ".bat", "w"
-    )
-
-    startBat.write("\
-    @echo off\n\
-    :A\n\
-    cls\n\
-    cd %~dp0/data\n\
-    start %1../bin/" +
-    ("" if (defaultBuildConfiguration == "Release") else (defaultBuildConfiguration + "/")) +
-    defaultArchitecture + "/" +
-    projectName + ".exe\n\
-    exit"
-    )
-    startBat.close()
+    utils.CopyTree(utils.GetScriptAbsolutePath() + "/../Data/", rootBuildDir)
 
     logging.info("")
 
