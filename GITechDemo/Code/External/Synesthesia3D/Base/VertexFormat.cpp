@@ -46,6 +46,9 @@ VertexFormat::VertexFormat(const unsigned int attributeCount)
     : m_nAttributeCount(attributeCount)
     , m_nStride(0)
 {
+    assert(attributeCount <= VF_MAX_ATTRIBUTES);
+
+    m_nAttributeCount = Math::clamp(m_nAttributeCount, 1u, (unsigned int)VF_MAX_ATTRIBUTES);
     m_pElements = new VertexElement[m_nAttributeCount];
 
     for (unsigned int i = 0; i < m_nAttributeCount; i++)
@@ -88,16 +91,15 @@ void VertexFormat::SetAttribute(const unsigned int attrIdx, const unsigned int o
     const VertexAttributeSemantic semantic, const VertexAttributeType type, const unsigned int semanticIdx)
 {
     assert(attrIdx < m_nAttributeCount);
-
-#ifdef _DEBUG
-    if (attrIdx > 0)
-        assert(offset > m_pElements[attrIdx - 1].nOffset);
-#endif //_DEBUG
+    assert(semantic == VAS_TEXCOORD ? semanticIdx < VF_MAX_TCOORD_UNITS : true);
+    assert(semantic == VAS_COLOR ? semanticIdx < VF_MAX_COLOR_UNITS : true);
+    assert((semantic != VAS_TEXCOORD && semantic != VAS_COLOR) ? semanticIdx == 0 : true);
+    assert(attrIdx > 0 ? offset > m_pElements[attrIdx - 1].nOffset : true);
 
     m_pElements[attrIdx].nOffset = offset;
     m_pElements[attrIdx].eType = type;
     m_pElements[attrIdx].eSemantic = semantic;
-    m_pElements[attrIdx].nSemanticIdx = semanticIdx;
+    m_pElements[attrIdx].nSemanticIdx = Math::Min(semanticIdx, semantic == VAS_TEXCOORD ? (VF_MAX_TCOORD_UNITS - 1u) : (semantic == VAS_COLOR ? (VF_MAX_COLOR_UNITS - 1u) : 0u));
 }
 
 const unsigned int VertexFormat::CalculateStride() const

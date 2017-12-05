@@ -33,26 +33,10 @@
 #include "ProfilerDX9.h"
 using namespace Synesthesia3D;
 
-#include <Utility/Mutex.h>
-
-// Mutexes for each resource pool
-extern MUTEX    VFMutex;
-extern MUTEX    IBMutex;
-extern MUTEX    VBMutex;
-extern MUTEX    ShdInMutex;
-extern MUTEX    ShdProgMutex;
-extern MUTEX    TexMutex;
-extern MUTEX    RTMutex;
-extern MUTEX    ModelMutex;
-
 const unsigned int ResourceManagerDX9::CreateVertexFormat(const unsigned int attributeCount)
 {
     VertexFormat* const vf = new VertexFormatDX9(attributeCount);
-    MUTEX_LOCK(VFMutex);
-    m_arrVertexFormat.push_back(vf);
-    const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
-    MUTEX_UNLOCK(VFMutex);
-    return ret;
+    return AddVertexFormat(vf);
 }
 
 const unsigned int ResourceManagerDX9::CreateVertexFormat(
@@ -80,12 +64,7 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
     vf->SetStride(offset);
     vf->Update();
 
-    MUTEX_LOCK(VFMutex);
-    m_arrVertexFormat.push_back(vf);
-    const unsigned int ret = (unsigned int)m_arrVertexFormat.size() - 1;
-    MUTEX_UNLOCK(VFMutex);
-
-    return ret;
+    return AddVertexFormat(vf);
 }
 
 const unsigned int ResourceManagerDX9::CreateIndexBuffer(
@@ -93,12 +72,7 @@ const unsigned int ResourceManagerDX9::CreateIndexBuffer(
     const BufferUsage usage)
 {
     IndexBuffer* ib = new IndexBufferDX9(indexCount, indexFormat, usage);
-    MUTEX_LOCK(IBMutex);
-    m_arrIndexBuffer.push_back(ib);
-    const unsigned int ret = (unsigned int)m_arrIndexBuffer.size() - 1;
-    MUTEX_UNLOCK(IBMutex);
-
-    return ret;
+    return AddIndexBuffer(ib);
 }
 
 const unsigned int ResourceManagerDX9::CreateVertexBuffer(
@@ -106,24 +80,14 @@ const unsigned int ResourceManagerDX9::CreateVertexBuffer(
     IndexBuffer* const indexBuffer, const BufferUsage usage)
 {
     VertexBuffer* vb = new VertexBufferDX9((VertexFormatDX9*)vertexFormat, vertexCount, (IndexBufferDX9*)indexBuffer, usage);
-    MUTEX_LOCK(VBMutex);
-    m_arrVertexBuffer.push_back(vb);
-    const unsigned int ret = (unsigned int)m_arrVertexBuffer.size() - 1;
-    MUTEX_UNLOCK(VBMutex);
-
-    return ret;
+    return AddVertexBuffer(vb);
 }
 
 const unsigned int ResourceManagerDX9::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
 {
     ShaderProgramDX9* sp = new ShaderProgramDX9(programType);
-    MUTEX_LOCK(ShdProgMutex);
-    m_arrShaderProgram.push_back(sp);
-    const unsigned int ret = (unsigned int)m_arrShaderProgram.size() - 1;
-    MUTEX_UNLOCK(ShdProgMutex);
     sp->Compile(filePath, entryPoint);
-
-    return ret;
+    return AddShaderProgram(sp);
 }
 
 const unsigned int ResourceManagerDX9::CreateTexture(
@@ -132,36 +96,21 @@ const unsigned int ResourceManagerDX9::CreateTexture(
     const unsigned int mipCount, const BufferUsage usage)
 {
     Texture* tex = new TextureDX9(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
-    MUTEX_LOCK(TexMutex);
-    m_arrTexture.push_back(tex);
-    const unsigned int ret = (unsigned int)m_arrTexture.size() - 1;
-    MUTEX_UNLOCK(TexMutex);
-
-    return ret;
+    return AddTexture(tex);
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
     RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
-    MUTEX_LOCK(RTMutex);
-    m_arrRenderTarget.push_back(rt);
-    const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-    MUTEX_UNLOCK(RTMutex);
-
-    return ret;
+    return AddRenderTarget(rt);
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
     const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
     RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
-    MUTEX_LOCK(RTMutex);
-    m_arrRenderTarget.push_back(rt);
-    const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-    MUTEX_UNLOCK(RTMutex);
-
-    return ret;
+    return AddRenderTarget(rt);
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount,
@@ -171,12 +120,7 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
     RenderTarget* rt = new RenderTargetDX9(targetCount,
         pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
         width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
-    MUTEX_LOCK(RTMutex);
-    m_arrRenderTarget.push_back(rt);
-    const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-    MUTEX_UNLOCK(RTMutex);
-
-    return ret;
+    return AddRenderTarget(rt);
 }
 
 const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount,
@@ -186,12 +130,7 @@ const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int tar
     RenderTarget* rt = new RenderTargetDX9(targetCount,
         pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
         widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
-    MUTEX_LOCK(RTMutex);
-    m_arrRenderTarget.push_back(rt);
-    const unsigned int ret = (unsigned int)m_arrRenderTarget.size() - 1;
-    MUTEX_UNLOCK(RTMutex);
-
-    return ret;
+    return AddRenderTarget(rt);
 }
 
 void ResourceManagerDX9::UnbindAll()

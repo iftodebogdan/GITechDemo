@@ -124,11 +124,8 @@ void DirectionalIndirectLightPass::Draw()
 
     PUSH_PROFILE_MARKER("Apply");
 
-    //Synesthesia3D::RenderTarget* const rtBkp = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
-    
     if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
     {
-        //rtBkp->Disable();
         IndirectLightAccumulationBuffer.Enable();
         RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
     }
@@ -162,7 +159,6 @@ void DirectionalIndirectLightPass::Draw()
     if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
     {
         IndirectLightAccumulationBuffer.Disable();
-        //rtBkp->Enable();
 
         PUSH_PROFILE_MARKER("Upscale");
 

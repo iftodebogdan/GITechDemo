@@ -79,9 +79,6 @@
     <ClInclude Include="GITechDemo\RenderScheme\HDRToneMappingPass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
-    <ClInclude Include="GITechDemo\RenderScheme\HUDPass.h">
-      <Filter>App\Render Schemes</Filter>
-    </ClInclude>
     <ClInclude Include="GITechDemo\RenderScheme\LensFlarePass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
@@ -148,6 +145,21 @@
     <ClInclude Include="GITechDemo\RenderScheme\PBRMaterialTestPass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\UIPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\CopyToBackBufferPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\ResolveDepthBufferPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\DepthDownsamplePass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\RenderScheme\SceneGeometryPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -181,9 +193,6 @@
       <Filter>App\Render Schemes</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\HDRToneMappingPass.cpp">
-      <Filter>App\Render Schemes</Filter>
-    </ClCompile>
-    <ClCompile Include="GITechDemo\RenderScheme\HUDPass.cpp">
       <Filter>App\Render Schemes</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\LensFlarePass.cpp">
@@ -250,6 +259,21 @@
       <Filter>App\Render Schemes</Filter>
     </ClCompile>
     <ClCompile Include="GITechDemo\RenderScheme\PBRMaterialTestPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\UIPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\CopyToBackBufferPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\ResolveDepthBufferPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\DepthDownsamplePass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="GITechDemo\RenderScheme\SceneGeometryPass.cpp">
       <Filter>App\Render Schemes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -348,9 +372,6 @@
     <CustomBuild Include="..\..\Data\shaders\HDRToneMapping.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Data\shaders\HUDText.hlsl">
-      <Filter>Shaders</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\Data\shaders\RSMApply.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
@@ -402,5 +423,13 @@
     <CustomBuild Include="..\..\Data\shaders\ScreenSpaceReflection.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\UI.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

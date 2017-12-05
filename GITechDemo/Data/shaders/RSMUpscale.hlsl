@@ -66,7 +66,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         ApplyRSM(input.f2TexCoord, fDepth, f4Color);
 
         if (bDebugUpscalePass)
-            f4Color = float4(2.f * length(f4Color), 0.f, 0.f, 0.f);
+            f4Color += float4(1.f, 0.f, 0.f, 0.f);
     }
 }
 

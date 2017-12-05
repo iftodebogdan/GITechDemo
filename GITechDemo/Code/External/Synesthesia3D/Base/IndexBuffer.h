@@ -110,7 +110,7 @@ namespace Synesthesia3D
          *
          * @param[in]   indicesVal  A pointer to an array of unsigned integer, representing index values.
          * @param[in]   idxCount    The number of indices to be copied from the provided array.
-         * @param[in]   offset      The element offset in the provided array at which to start copying.
+         * @param[in]   offset      The element offset in the index buffer at which to start copying.
          *
          * @note    This function is for use with 32 bit index buffers.
          */
@@ -121,7 +121,7 @@ namespace Synesthesia3D
          *
          * @param[in]   indicesVal  A pointer to an array of unsigned integer, representing index values.
          * @param[in]   idxCount    The number of indices to be copied from the provided array.
-         * @param[in]   offset      The element offset in the provided array at which to start copying.
+         * @param[in]   offset      The element offset in the index buffer at which to start copying.
          *
          * @note    This function is for use with 16 bit index buffers.
          */

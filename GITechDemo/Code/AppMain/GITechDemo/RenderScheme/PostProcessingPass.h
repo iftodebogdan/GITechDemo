@@ -24,21 +24,11 @@
 
 #include "RenderPass.h"
 
-namespace Synesthesia3D
-{
-    class RenderTarget;
-}
-
 namespace GITechDemoApp
 {
     class PostProcessingPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(PostProcessingPass)
-
-    private:
-        void CopyResultToBackBuffer(Synesthesia3D::RenderTarget* const rt);
-
-        Synesthesia3D::RenderTarget*    m_pFinalImageBuffer;
     };
 }
 

@@ -35,7 +35,6 @@ namespace GITechDemoApp
         void AccumulateDoFEffect();
         void CalculateBlurFactor();
         void ApplyDoF();
-        void SwapDoFTargets();
     };
 }
 

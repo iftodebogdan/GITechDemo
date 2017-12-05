@@ -64,43 +64,6 @@ void LightingPass::Update(const float fDeltaTime)
         );
 }
 
-// This function copy-resolves the INTZ depth texture we use when generating the
-// G-Buffer (since we can sample it like a regular texture) to the D24S8 depth
-// surface of the light accumulation buffer for depth testing (e.g. when rendering the sky)
-// Having the correct depth allows us to do some more optimizations which also make use of
-// the stencil (e.g. rendering a cone corresponding to the spot light and marking the pixels
-// that pass the depth test, using the stencil buffer, so that we only calculate the light
-// for those pixels and thus reducing pointless shading of pixels which are not lit)
-void LightingPass::CopyDepthBuffer()
-{
-    Renderer* RenderContext = Renderer::GetInstance();
-    if (!RenderContext)
-        return;
-
-    PUSH_PROFILE_MARKER("Copy-resolve Depth Buffer");
-
-    bool red, blue, green, alpha;
-    const bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
-    const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
-    RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
-
-    texSource = GBuffer.GetRenderTarget()->GetDepthBuffer();
-
-    RenderContext->GetRenderStateManager()->SetColorWriteEnabled(false, false, false, false);
-    RenderContext->GetRenderStateManager()->SetZWriteEnabled(true);
-    RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
-
-    DepthCopyShader.Enable();
-    RenderContext->DrawVertexBuffer(FullScreenTri);
-    DepthCopyShader.Disable();
-
-    RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
-    RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWrite);
-    RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
-
-    POP_PROFILE_MARKER();
-}
-
 void LightingPass::Draw()
 {
     Renderer* RenderContext = Renderer::GetInstance();
@@ -111,9 +74,6 @@ void LightingPass::Draw()
 
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    // Copy-resolve the depth buffer for later usage
-    CopyDepthBuffer();
-
     const bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
     const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
     const bool blendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
@@ -123,7 +83,7 @@ void LightingPass::Draw()
     // Disable Z writes, since we already have the correct depth buffer
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
-    
+
     // Additive color blending is required for accumulating light
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(true);
     RenderContext->GetRenderStateManager()->SetColorDstBlend(BLEND_ONE);

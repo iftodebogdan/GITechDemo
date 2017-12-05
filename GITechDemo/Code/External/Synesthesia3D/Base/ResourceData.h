@@ -84,6 +84,21 @@ namespace Synesthesia3D
 
     /////////////////////////////////////////////////////////////////////
 
+    // Device state /////////////////////////////////////////////////////
+
+    /**
+     * @brief   Descriptors for the current state of the device
+     */
+    enum DeviceState
+    {
+        DS_NOT_READY,   /**< @brief The device is in an inoperable state. Calls to @ref Renderer::BeginFrame() will fail. */
+        DS_READY,       /**< @brief The device is in an operable state. Calls to @ref Renderer::BeginFrame() should be successful. */
+        DS_RENDERING,   /**< @brief The device is currently receiving rendering commands. (i.e. between @ref Renderer::BeginFrame() and @red Renderer::EndFrame() calls) */
+        DS_PRESENTING   /**< @brief The device has submitted the rendering commands and is currently awaiting a call to @ref Renderer::SwapBuffers(). */
+    };
+
+    /////////////////////////////////////////////////////////////////////
+
     // BUFFERS /////////////////////////////////////////////////////////
 
     /**

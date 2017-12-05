@@ -221,7 +221,7 @@ namespace Synesthesia3D
          * @note    Do not attempt to issue rendering commands if @ref BeginFrame() fails.
          *          Instead, periodically call @ref BeginFrame() until it succeeds.
          */
-        virtual SYNESTHESIA3D_DLL       const bool      BeginFrame() PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL       const bool      BeginFrame();
 
         /**
          * @brief   Ends the current frame.
@@ -229,7 +229,7 @@ namespace Synesthesia3D
          * @details An application must call @ref BeginFrame() before performing any rendering and must call
          *          @ref EndFrame() when rendering is complete and before calling @ref BeginFrame() again.
          */
-        virtual SYNESTHESIA3D_DLL           void        EndFrame() PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL           void        EndFrame();
 
         /**
          * @brief   Presents the contents of the backbuffer to the display.
@@ -237,7 +237,7 @@ namespace Synesthesia3D
          * @note    @ref SwapBuffers() must be called after @ref EndFrame() and before @ref BeginFrame().
          *          It will also apply the window offset set by @ref SetDisplayResolution() if the application is in windowed mode.
          */
-        virtual SYNESTHESIA3D_DLL           void        SwapBuffers() PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL           void        SwapBuffers();
 
         /**
          * @brief   Clears the currently set render target(s) / stencil buffer / depth buffer.
@@ -253,9 +253,13 @@ namespace Synesthesia3D
          *
          * @note    The vertex buffer is not required to reference an index buffer, in which case it will be rendered without indexing.
          *
-         * @param[in]   vb  A pointer to the vertex buffer resource.
+         * @param[in]   vb          A pointer to the vertex buffer resource.
+         * @param[in]   vtxOffset   Offset from the start of the vertex buffer to the first vertex.
+         * @param[in]   primCount   Number of primitives to render. The number of vertices used is a function of the primitive count and the primitive type.
+         * @param[in]   vtxCount    Number of vertices used during this call. The first vertex is located at @ref vtxOffset
+         * @param[in]   idxOffset   Index of the first index to use when accesssing the vertex buffer.
          */
-        virtual SYNESTHESIA3D_DLL           void        DrawVertexBuffer(VertexBuffer* const vb);
+        virtual SYNESTHESIA3D_DLL           void        DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset = 0, const unsigned int primCount = 0, const unsigned int vtxCount = 0, const unsigned int idxOffset = 0);
 
         /**
          * @brief   Retrieves a pointer to the resource manager.
@@ -282,6 +286,9 @@ namespace Synesthesia3D
          */
                 SYNESTHESIA3D_DLL   const DeviceCaps&       GetDeviceCaps() const;
 
+                SYNESTHESIA3D_DLL   const DeviceState       GetDeviceState() const;
+                SYNESTHESIA3D_DLL           void            SetDeviceState(const DeviceState deviceState);
+
     protected:
 
         /**
@@ -303,7 +310,8 @@ namespace Synesthesia3D
             RenderState*        m_pRenderStateManager;      /**< @brief Pointer to the render state manager. */
             SamplerState*       m_pSamplerStateManager;     /**< @brief Pointer to the texture sampler state manager. */
             Profiler*           m_pProfiler;                /**< @brief Pointer to the profiler instance. */
-            DeviceCaps          m_tDeviceCaps;              /**< @brief Pointer to the device capabilities. */
+            DeviceCaps          m_tDeviceCaps;              /**< @brief Structure describing device capabilities. */
+            DeviceState         m_eDeviceState;             /**< @brief Current device state. @see DeviceState */
 
         static  Renderer*       ms_pInstance;               /**< @brief Holds the current instance of the rendering class. */
         static  API             ms_eAPI;                    /**< @brief Holds the currently instanced rendering API. */

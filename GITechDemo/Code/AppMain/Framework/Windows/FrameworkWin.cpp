@@ -69,12 +69,12 @@ int FrameworkWin::Run()
     MSG msg; memset(&msg, 0, sizeof(msg));
     HACCEL hAccelTable;
 
-    char szTitleSuffix[128];
-    sprintf_s(szTitleSuffix, " (%s|%s - %s %s)", _CONFIGURATION, _PLATFORM, GetBuildDate(), GetBuildTime());
+    char szTitle[MAX_LOADSTRING];
 
     // Initialize global strings
-    LoadString(m_hInstance, IDS_APP_TITLE, m_szTitle, MAX_LOADSTRING);
-    strcat_s(m_szTitle, szTitleSuffix);
+    LoadString(m_hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    m_szTitle = string(szTitle) + " (" + _CONFIGURATION  + "|" + _PLATFORM + " - " + GetBuildDate() + " " + GetBuildTime() + ")";// szTitleSuffix;
+
     LoadString(m_hInstance, IDC_FRAMEWORK, m_szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(m_hInstance);
 
@@ -99,7 +99,6 @@ int FrameworkWin::Run()
     // the display and the system idle timer, respectively
     SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
 
-    bool bExit = false;                 // Exit app
     bool bAppRdy = false;               // App can be updated
     PHANDLE hThread = nullptr;          // Array of thread handles
     unsigned int* nThArgs = nullptr;    // Array of thread arguments
@@ -139,7 +138,7 @@ int FrameworkWin::Run()
             if (!hThread[i])
             {
                 ErrorExit(TEXT("CreateThread()"));
-                bExit = true;
+                m_bQuit = true;
             }
             else
             {
@@ -147,7 +146,7 @@ int FrameworkWin::Run()
                 //if (!SetThreadPriority(hThread[i], THREAD_PRIORITY_ABOVE_NORMAL))
                 //{
                 //    ErrorExit(TEXT("SetThreadPriority()"));
-                //    bExit = true;
+                //    m_bQuit = true;
                 //}
             }
         }
@@ -158,10 +157,10 @@ int FrameworkWin::Run()
     else
     {
         ErrorExit(TEXT("AppMain->Init()"));
-        bExit = true;
+        m_bQuit = true;
     }
 
-    while (!bExit)
+    while (!m_bQuit)
     {
         gainput::InputManager* pInputMgr = nullptr;
         if (AppMain && AppMain->GetInputManager())
@@ -181,7 +180,7 @@ int FrameworkWin::Run()
 
             // If the message is WM_QUIT, exit the while loop
             if (msg.message == WM_QUIT)
-                bExit = true;
+                m_bQuit = true;
         }
 
         // Update input
@@ -198,8 +197,10 @@ int FrameworkWin::Run()
 
         if (bAppRdy)
         {
+            CalculateDeltaTime();
+
             // Calculate delta time and update app
-            AppMain->Update(CalculateDeltaTime() / 1000.f);
+            AppMain->Update(IsUpdatePaused() ? 0.f : GetDeltaTime());
 
             // Draw scene
             if (!IsRenderingPaused())
@@ -229,7 +230,7 @@ int FrameworkWin::Run()
                         else
                         {
                             ErrorExit(TEXT("GetExitCodeThread()"));
-                            bExit = true;
+                            m_bQuit = true;
                             break;
                         }
                     }
@@ -261,7 +262,7 @@ int FrameworkWin::Run()
                 Sleep(1);
             }
             else
-                bExit = true;
+                m_bQuit = true;
         }
     }
 
@@ -337,7 +338,7 @@ ATOM FrameworkWin::MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL FrameworkWin::InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    m_hWnd = CreateWindow(m_szWindowClass, m_szTitle, WS_OVERLAPPEDWINDOW,
+    m_hWnd = CreateWindow(m_szWindowClass, m_szTitle.c_str(), WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
     if (!m_hWnd)
@@ -402,11 +403,26 @@ LRESULT CALLBACK FrameworkWin::WndProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_ACTIVATE:
     {
         bool bOutOfFocus = (message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
+#if !defined(_DEBUG) && !defined(_PROFILE)
         PauseRendering(bOutOfFocus);
+#endif
         if (IsFullscreen() && bOutOfFocus)
             OnSetWindowedCursor();
         else if (IsFullscreen() && !bOutOfFocus)
             OnSetFullscreenCursor();
+
+        // Pass focus messages to input handler so that it resets input state
+        if (AppMain && AppMain->GetInputManager())
+        {
+            MSG msg; memset(&msg, 0, sizeof(msg));
+            msg.hwnd = hWnd;
+            msg.message = message;
+            msg.wParam = wParam;
+            msg.lParam = lParam;
+            AppMain->GetInputManager()->HandleMessage(msg);
+        }
+
+        break;
     }
     //case WM_NCACTIVATE:   // Causes a focus issue with the assert dialog
     case WM_MOUSEACTIVATE:
@@ -442,8 +458,8 @@ INT_PTR CALLBACK FrameworkWin::About(HWND hDlg, UINT message, WPARAM wParam, LPA
 
 void FrameworkWin::ShowCursor(const bool bShow)
 {
-    if (IsFullscreen() && bShow)
-        return;
+    //if (IsFullscreen() && bShow)
+    //    return;
 
     // Loop until counter is reset
     while((::ShowCursor(bShow) < 0) == bShow);
@@ -531,7 +547,8 @@ float FrameworkWin::CalculateDeltaTime()
     if (m_nTicksPrev == 0) m_nTicksPrev = ticksNow;
     const unsigned int deltaTicks = ticksNow - m_nTicksPrev;
     m_nTicksPrev = ticksNow;
-    return (float)deltaTicks / 1000.f;
+    m_fDeltaTime = (float)deltaTicks / 1000000.f;
+    return m_fDeltaTime;
 }
 
 void FrameworkWin::Sleep(const unsigned int miliseconds)
@@ -614,7 +631,7 @@ void FrameworkWin::OnSetFullscreenCursor()
     MONITORINFO mi = { sizeof(MONITORINFO) };
     GetMonitorInfo(MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY), &mi);
 
-    ShowCursor(false);
+    ShowCursor(true);
     ClipCursor(&mi.rcMonitor);
 }
 

@@ -54,18 +54,19 @@ namespace GITechDemoApp
         };
 
         Camera& GetCamera() { return m_tCamera; }
-        const float GetDeltaTime() { return m_fDeltaTime; }
+        const float GetDeltaTime() const { return m_fDeltaTime; }
+        const bool IsUIInFocus() const { return m_bUIHasFocus; }
 
     private:
-        void DrawGPUProfileScreen(const RenderPass* pass = nullptr, const unsigned int level = 0) const;
+        void UpdateUIFocus();
 
         Camera m_tCamera;
-        void* m_pHWND;
         float m_fDeltaTime;
         gainput::InputMap* m_pInputMap;
         int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
         Vec2i m_vLastFrameViewport;
         bool m_bLastFrameFullscreen, m_bLastFrameBorderless, m_bLastFrameVSync;
+        bool m_bUIHasFocus;
 
         MUTEX mResInitMutex;
 

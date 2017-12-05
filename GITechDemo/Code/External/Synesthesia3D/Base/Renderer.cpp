@@ -46,6 +46,7 @@ Renderer::Renderer()
     , m_pRenderStateManager(nullptr)
     , m_pSamplerStateManager(nullptr)
     , m_pProfiler(nullptr)
+    , m_eDeviceState(DS_NOT_READY)
 {
 
 }
@@ -188,8 +189,34 @@ const DeviceCaps& Renderer::GetDeviceCaps() const
     return m_tDeviceCaps;
 }
 
-void Renderer::DrawVertexBuffer(VertexBuffer* const vb)
+void Renderer::DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset, const unsigned int primCount, const unsigned int vtxCount, const unsigned int idxOffset)
 {
     GetSamplerStateManager()->Flush();
     GetRenderStateManager()->Flush();
+}
+
+const bool Renderer::BeginFrame()
+{
+    SetDeviceState(DS_RENDERING);
+    return true;
+}
+
+void Renderer::EndFrame()
+{
+    SetDeviceState(DS_PRESENTING);
+}
+
+void Renderer::SwapBuffers()
+{
+    SetDeviceState(DS_READY);
+}
+
+const DeviceState Renderer::GetDeviceState() const
+{
+    return m_eDeviceState;
+}
+
+void Renderer::SetDeviceState(const DeviceState deviceState)
+{
+    m_eDeviceState = deviceState;
 }

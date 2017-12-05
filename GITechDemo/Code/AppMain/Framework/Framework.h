@@ -22,28 +22,32 @@
 #ifndef FRAMEWORK_H_
 #define FRAMEWORK_H_
 
+#include <string>
+
 namespace AppFramework
 {
     class Framework
     {
     public:
         Framework()
-            : m_bPauseRendering(false)
+            : m_bQuit(false)
+            , m_bPauseRendering(false)
+            , m_bPauseUpdate(false)
+            , m_fDeltaTime(0.f)
             , m_eWindowMode(WM_WINDOWED)
+            , m_szTitle("PLACEHOLDER")
         { m_pInstance = this; };
         virtual ~Framework() { m_pInstance = nullptr; };
 
         virtual int Run() = 0;
         static Framework* const GetInstance() { return m_pInstance; }
 
-#if defined(_DEBUG) || defined(_PROFILE)
-        const bool  IsRenderingPaused() { return false; }
-#else
-        const bool  IsRenderingPaused() { return m_bPauseRendering; }
-#endif
-        const bool  IsFullscreen() { return m_eWindowMode == WM_FULLSCREEN; }
-        const bool  IsWindowed() { return m_eWindowMode == WM_WINDOWED; }
-        const bool  IsBorderlessWindow() { return m_eWindowMode == WM_BORDERLESS; }
+        const bool  IsRenderingPaused() const { return m_bPauseRendering; }
+        const bool  IsUpdatePaused() const { return m_bPauseUpdate; }
+
+        const bool  IsFullscreen() const { return m_eWindowMode == WM_FULLSCREEN; }
+        const bool  IsWindowed() const { return m_eWindowMode == WM_WINDOWED; }
+        const bool  IsBorderlessWindow() const { return m_eWindowMode == WM_BORDERLESS; }
 
         // Low level, platform specific functionality required by the application
         virtual void ShowCursor(const bool bShow) = 0;
@@ -59,6 +63,14 @@ namespace AppFramework
         virtual void OnSwitchToWindowedMode() { m_eWindowMode = WM_WINDOWED; }
         virtual void OnSwitchToBorderlessWindowedMode() { m_eWindowMode = WM_BORDERLESS; }
 
+        void Quit() { m_bQuit = true; }
+        const std::string& GetWindowTitle() { return m_szTitle; }
+
+        void PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
+        void PauseUpdate(const bool pauseEnable) { m_bPauseUpdate = pauseEnable; }
+
+        float GetDeltaTime() const { return m_fDeltaTime; } // in seconds
+
     protected:
         enum WindowMode
         {
@@ -68,12 +80,14 @@ namespace AppFramework
             WM_MAX
         } m_eWindowMode;
 
-        // Rendering pause
-        void    PauseRendering(const bool pauseEnable) { m_bPauseRendering = pauseEnable; }
-        virtual float   CalculateDeltaTime() = 0; // in miliseconds
-        // Pause rendering when not in focus
-        bool    m_bPauseRendering;
-        static Framework*   m_pInstance;
+        virtual float CalculateDeltaTime() = 0; // in seconds
+
+        bool m_bQuit;
+        bool m_bPauseRendering; // Pause rendering when not in focus
+        bool m_bPauseUpdate;
+        float m_fDeltaTime; // in seconds
+        std::string m_szTitle;
+        static Framework* m_pInstance;
     };
 }
 

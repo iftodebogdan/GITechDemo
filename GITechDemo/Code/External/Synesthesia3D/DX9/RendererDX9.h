@@ -60,7 +60,6 @@ namespace Synesthesia3D
         // Our rendering device
         IDirect3DDevice9*       m_pd3dDevice;
         D3DPRESENT_PARAMETERS   m_ePresentParameters;
-        bool                    m_bDeviceLost;
 
     public:
         static  RendererDX9* const  GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
@@ -84,11 +83,10 @@ namespace Synesthesia3D
         void        EndFrame();
         void        SwapBuffers();
         void        Clear(const Vec4f rgba, const float z, const unsigned int stencil);
-        void        DrawVertexBuffer(VertexBuffer* const vb);
+        void        DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset = 0, const unsigned int primCount = 0, const unsigned int vtxCount = 0, const unsigned int idxOffset = 0);
 
         IDirect3DDevice9* const GetDevice() const { return m_pd3dDevice; };
         IDirect3D9* const       GetDriver() const { return m_pD3D; }
-        const bool              IsDeviceLost() const { return m_bDeviceLost; }
 
         ProfilerDX9* const      GetProfiler() const { return (ProfilerDX9*)m_pProfiler; }
 

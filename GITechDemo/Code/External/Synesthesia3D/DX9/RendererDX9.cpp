@@ -42,7 +42,6 @@ D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32
 RendererDX9::RendererDX9()
     : m_pD3D(nullptr)
     , m_pd3dDevice(nullptr)
-    , m_bDeviceLost(false)
 {}
 
 RendererDX9::~RendererDX9()
@@ -408,6 +407,8 @@ void RendererDX9::Initialize(void* hWnd)
     m_pSamplerStateManager = new SamplerStateDX9();
 
     m_pProfiler = new ProfilerDX9();
+
+    SetDeviceState(DS_READY);
 }
 
 const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
@@ -506,9 +507,7 @@ const bool RendererDX9::BeginFrame()
     HRESULT hr = m_pd3dDevice->TestCooperativeLevel();
     if (hr == D3DERR_DEVICELOST)
     {
-        if (!m_bDeviceLost)
-            m_bDeviceLost = true;
-
+        SetDeviceState(DS_NOT_READY);
         Sleep(1);
         return false;
     }
@@ -520,7 +519,10 @@ const bool RendererDX9::BeginFrame()
 
         // Reset the device
         if (!ResetDevice(m_ePresentParameters))
+        {
+            SetDeviceState(DS_NOT_READY);
             return false;
+        }
 
         // Rebind resources
         GetResourceManager()->BindAll();
@@ -531,33 +533,47 @@ const bool RendererDX9::BeginFrame()
         // Reset render states
         GetRenderStateManager()->Reset();
 
-        m_bDeviceLost = false;
+        SetDeviceState(DS_READY);
     }
 
-    if (m_bDeviceLost)
+    if (GetDeviceState() == DS_NOT_READY)
     {
         Sleep(1);
         return false;
     }
+
+    assert(GetDeviceState() == DS_READY);
+    if (GetDeviceState() != DS_READY)
+        return false;
 
     hr = m_pd3dDevice->BeginScene();
     S3D_VALIDATE_HRESULT(hr);
 
     GetProfiler()->IssueDisjointQueryBegin();
 
-    return true;
+    return Renderer::BeginFrame();
 }
 
 void RendererDX9::EndFrame()
 {
+    assert(GetDeviceState() == DS_RENDERING);
+    if (GetDeviceState() != DS_RENDERING)
+        return;
+
     HRESULT hr = m_pd3dDevice->EndScene();
     S3D_VALIDATE_HRESULT(hr);
 
     GetProfiler()->IssueDisjointQueryEnd();
+
+    Renderer::EndFrame();
 }
 
 void RendererDX9::SwapBuffers()
 {
+    assert(GetDeviceState() == DS_PRESENTING);
+    if (GetDeviceState() != DS_PRESENTING)
+        return;
+
     PUSH_PROFILE_MARKER(__FUNCSIG__);
 
     // Present the backbuffer contents to the display
@@ -570,22 +586,28 @@ void RendererDX9::SwapBuffers()
     HRESULT hr = m_pd3dDevice->Present(NULL, IsFullscreen() ? NULL : &dstRect, NULL, NULL);
     assert(SUCCEEDED(hr) || hr == D3DERR_DEVICELOST);
 
+    Renderer::SwapBuffers();
+
     POP_PROFILE_MARKER();
 }
 
-void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb)
+void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset, const unsigned int primCount, const unsigned int vtxCount, const unsigned int idxOffset)
 {
     PUSH_PROFILE_MARKER(__FUNCSIG__);
 
-    Renderer::DrawVertexBuffer(vb);
+    Renderer::DrawVertexBuffer(vb, vtxOffset, primCount, vtxCount, idxOffset);
 
     assert(vb);
     vb->Enable();
 
+    HRESULT hr = E_FAIL;
+
     if (vb->GetIndexBuffer())
-        m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vb->GetElementCount(), 0, vb->GetIndexBuffer()->GetElementCount() / 3);
+        hr = m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, vtxOffset, 0, vtxCount > 0 ? vtxCount : vb->GetElementCount(), idxOffset, primCount > 0 ? primCount : vb->GetIndexBuffer()->GetElementCount() / 3);
     else
-        m_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, vb->GetElementCount() / 3);
+        hr = m_pd3dDevice->DrawPrimitive(D3DPT_TRIANGLELIST, vtxOffset, primCount > 0 ? primCount : vb->GetElementCount() / 3);
+
+    S3D_VALIDATE_HRESULT(hr);
 
     vb->Disable();
 

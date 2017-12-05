@@ -29,27 +29,19 @@ using namespace Synesthesia3D;
 #include "Utility/Mutex.h"
 
 int Profiler::ms_nProfileMarkerCounter = 0;
-static bool bCounterMutexInit = false;
 
 // A mutex to guarantee thread-safety for profile marker operations
 MUTEX gProfileMarkerMutex;
 
 Profiler::Profiler()
 {
-    if (!bCounterMutexInit)
-    {
-        bCounterMutexInit = true;
-        MUTEX_INIT(gProfileMarkerMutex);
-    }
+    MUTEX_INIT(gProfileMarkerMutex);
 }
 
 Profiler::~Profiler()
 {
-    if (bCounterMutexInit)
-    {
-        bCounterMutexInit = false;
-        MUTEX_DESTROY(gProfileMarkerMutex);
-    }
+    MUTEX_DESTROY(gProfileMarkerMutex);
+
 #if ENABLE_PROFILE_MARKERS
     assert(ms_nProfileMarkerCounter == 0);
 #endif
@@ -74,6 +66,44 @@ void Profiler::PopProfileMarker()
 #endif
 }
 
+const float Profiler::RetrieveGPUProfileMarkerStart(const char* const label) const
+{
+    float time = -1.f;
+#if ENABLE_PROFILE_MARKERS
+    MUTEX_LOCK(gProfileMarkerMutex);
+    for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
+    {
+        GPUProfileMarkerResult* marker = m_arrGPUProfileMarkerResult[i];
+        if (marker && marker->m_eStatus == GPUProfileMarkerResult::GPMRS_VALID && strcmp(label, marker->m_szLabel) == 0)
+        {
+            time = marker->m_fStart;
+            break;
+        }
+    }
+    MUTEX_UNLOCK(gProfileMarkerMutex);
+#endif
+    return time;
+}
+
+const float Profiler::RetrieveGPUProfileMarkerEnd(const char* const label) const
+{
+    float time = -1.f;
+#if ENABLE_PROFILE_MARKERS
+    MUTEX_LOCK(gProfileMarkerMutex);
+    for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
+    {
+        GPUProfileMarkerResult* marker = m_arrGPUProfileMarkerResult[i];
+        if (marker && marker->m_eStatus == GPUProfileMarkerResult::GPMRS_VALID && strcmp(label, marker->m_szLabel) == 0)
+        {
+            time = marker->m_fEnd;
+            break;
+        }
+    }
+    MUTEX_UNLOCK(gProfileMarkerMutex);
+#endif
+    return time;
+}
+
 const float Profiler::RetrieveGPUProfileMarkerResult(const char* const label) const
 {
     float time = -1.f;
@@ -93,12 +123,39 @@ const float Profiler::RetrieveGPUProfileMarkerResult(const char* const label) co
     return time;
 }
 
-const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarkerResult(const unsigned int handle) const
+const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarker(const unsigned int handle) const
 {
+    assert(handle < m_arrGPUProfileMarkerResult.size() && handle >= 0);
+
+    const GPUProfileMarkerResult* ret = nullptr;
+#if ENABLE_PROFILE_MARKERS
+    MUTEX_LOCK(gProfileMarkerMutex);
     if (handle < m_arrGPUProfileMarkerResult.size() && handle >= 0 && m_arrGPUProfileMarkerResult[handle]->m_eStatus == GPUProfileMarkerResult::GPMRS_VALID)
-        return m_arrGPUProfileMarkerResult[handle];
-    else
-        return nullptr;
+    {
+        ret = m_arrGPUProfileMarkerResult[handle];
+    }
+    MUTEX_UNLOCK(gProfileMarkerMutex);
+#endif
+    return ret;
+}
+
+const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarker(const char* const label) const
+{
+    const GPUProfileMarkerResult* ret = nullptr;
+#if ENABLE_PROFILE_MARKERS
+    MUTEX_LOCK(gProfileMarkerMutex);
+    for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
+    {
+        const GPUProfileMarkerResult* const marker = m_arrGPUProfileMarkerResult[i];
+        if (marker && marker->m_eStatus == GPUProfileMarkerResult::GPMRS_VALID && strcmp(label, marker->m_szLabel) == 0)
+        {
+            ret = marker;
+            break;
+        }
+    }
+    MUTEX_UNLOCK(gProfileMarkerMutex);
+#endif
+    return ret;
 }
 
 const unsigned int Profiler::GetGPUProfileMarkerCount() const
@@ -148,6 +205,8 @@ void Profiler::UpdateGPUProfileMarkerResults()
 //////////////////////////////////
 GPUProfileMarkerResult::GPUProfileMarkerResult(const char* const label)
     : m_fTime(-1.f)
+    , m_fStart(-1.f)
+    , m_fEnd(-1.f)
     , m_eStatus(GPMRS_ISSUED)
     , m_szLabel(nullptr)
 {
@@ -173,4 +232,14 @@ const char* const GPUProfileMarkerResult::GetLabel() const
 const float GPUProfileMarkerResult::GetTiming() const
 {
     return m_fTime;
+}
+
+const float GPUProfileMarkerResult::GetStart() const
+{
+    return m_fStart;
+}
+
+const float GPUProfileMarkerResult::GetEnd() const
+{
+    return m_fEnd;
 }

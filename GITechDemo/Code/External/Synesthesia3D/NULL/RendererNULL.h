@@ -52,11 +52,11 @@ namespace Synesthesia3D
         const unsigned int  GetDisplayRefreshRate() const { return 0; }
         const PixelFormat   GetBackBufferFormat() const { return PF_NONE; }
 
-        const bool  BeginFrame() { return true; }
-        void        EndFrame() {}
-        void        SwapBuffers() {}
+        const bool  BeginFrame() { return Renderer::BeginFrame(); }
+        void        EndFrame() { Renderer::EndFrame(); }
+        void        SwapBuffers() { Renderer::SwapBuffers(); }
         void        Clear(const Vec4f /*rgba*/, const float /*z*/, const unsigned int /*stencil*/) {}
-        void        DrawVertexBuffer(VertexBuffer* const vb) { Renderer::DrawVertexBuffer(vb); }
+        void        DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset, const unsigned int primCount, const unsigned int vtxCount, const unsigned int idxOffset) { Renderer::DrawVertexBuffer(vb, vtxOffset, primCount, vtxCount, idxOffset); }
 
         friend class Renderer;
     };

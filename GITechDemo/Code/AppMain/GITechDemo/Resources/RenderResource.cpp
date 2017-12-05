@@ -30,17 +30,16 @@
 #include <Profiler.h>
 using namespace Synesthesia3D;
 
+#include <Utility/Hash.h>
+
 #include "Framework.h"
 using namespace AppFramework;
 
 #include "RenderResource.h"
 using namespace GITechDemoApp;
 
-#include "Utility/Hash.h"
-
 // Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
 //vector<RenderResource*> RenderResource::arrResources;
-ResourceManager* RenderResource::ResMgr = nullptr;
 
 namespace GITechDemoApp
 {
@@ -100,11 +99,6 @@ namespace GITechDemoApp
         MUTEX_LOCK(mInitMutex);
         bInitialized = false;
         MUTEX_UNLOCK(mInitMutex);
-    }
-
-    void RenderResource::SetResourceManager(ResourceManager* const resMgr)
-    {
-        ResMgr = resMgr;
     }
 
     void RenderResource::InitAllResources()
@@ -171,7 +165,10 @@ namespace GITechDemoApp
 
     const bool Shader::Init()
     {
-        if (!ResMgr || bInitialized)
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || bInitialized)
             return false;
 
         if (RenderResource::Init())
@@ -276,6 +273,12 @@ namespace GITechDemoApp
 
     void Shader::Free()
     {
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || !bInitialized)
+            return;
+
         RenderResource::Free();
 
         if (ResMgr)
@@ -592,7 +595,10 @@ namespace GITechDemoApp
 
     const bool Model::Init()
     {
-        if (!ResMgr || bInitialized)
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || bInitialized)
             return false;
 
         if (RenderResource::Init())
@@ -753,6 +759,12 @@ namespace GITechDemoApp
 
     void Model::Free()
     {
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || !bInitialized)
+            return;
+
         RenderResource::Free();
 
         if (ResMgr)
@@ -782,7 +794,10 @@ namespace GITechDemoApp
 
     const bool Texture::Init()
     {
-        if (!ResMgr || bInitialized)
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || bInitialized)
             return false;
 
         if (RenderResource::Init())
@@ -799,6 +814,12 @@ namespace GITechDemoApp
 
     void Texture::Free()
     {
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || !bInitialized)
+            return;
+
         RenderResource::Free();
 
         if (ResMgr)
@@ -852,7 +873,10 @@ namespace GITechDemoApp
 
     const bool RenderTarget::Init()
     {
-        if (!ResMgr || bInitialized)
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || bInitialized)
             return false;
 
         if (RenderResource::Init())
@@ -880,6 +904,12 @@ namespace GITechDemoApp
 
     void RenderTarget::Free()
     {
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || !bInitialized)
+            return;
+
         RenderResource::Free();
 
         if (ResMgr)

@@ -21,10 +21,93 @@
 
 #include "Common.hlsli"
 
+//#define NORMAL_RECONSTRUCT_Z
+//#define NORMAL_SPHERICAL_COORDINATES
+//#define NORMAL_SPHEREMAP_TRANSFORM
+#define NORMAL_STEREOGRAPHIC_PROJECTION
+
+//////////////////////////////////////////////////////////////////
+// Normal encoding / decoding using Z coordinate reconstruction //
+//////////////////////////////////////////////////////////////////
+
+#ifdef NORMAL_RECONSTRUCT_Z
+
+float4 EncodeNormal(float3 n)
+{
+    return float4(n.xy * 0.5f + 0.5f, 0.f, 0.f);
+}
+
+float3 DecodeNormal(float4 enc)
+{
+    float3 n;
+    n.xy = enc.xy * 2.f - 1.f;
+    n.z = -sqrt(1.f - dot(n.xy, n.xy));
+    return normalize(n);
+}
+
+#endif
+
+////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////
+// Normal encoding / decoding using spherical coordinates   //
+// http://www.garagegames.com/community/blogs/view/15340    //
+//////////////////////////////////////////////////////////////
+
+#ifdef NORMAL_SPHERICAL_COORDINATES
+
+float4 EncodeNormal(float3 n)
+{
+    return float4((float2(atan2(n.y, n.x) / PI, n.z) + 1.f) * 0.5f, 0.f, 0.f);
+}
+
+float3 DecodeNormal(float4 enc)
+{
+    float2 ang = enc.xy * 2.f - 1.f;
+    float2 scth;
+    sincos(ang.x * PI, scth.x, scth.y);
+    float2 scphi = half2(sqrt(1.0 - ang.y*ang.y), ang.y);
+    return normalize(float3(scth.y*scphi.x, scth.x*scphi.x, scphi.y));
+}
+
+#endif
+
+////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////
+// Normal encoding / decoding using spherical environment mapping           //
+// https://en.wikipedia.org/wiki/Lambert_azimuthal_equal-area_projection    //
+//////////////////////////////////////////////////////////////////////////////
+
+#ifdef NORMAL_SPHEREMAP_TRANSFORM
+
+float4 EncodeNormal(float3 n)
+{
+    float f = sqrt(8.f * n.z + 8.f);
+    return float4(n.xy / f + 0.5f, 0.f, 0.f);
+}
+
+float3 DecodeNormal(float4 enc)
+{
+    float2 fenc = enc.xy * 4.f - 2.f;
+    float f = dot(fenc, fenc);
+    float g = sqrt(1.f - f / 4.f);
+    float3 n;
+    n.xy = fenc * g;
+    n.z = 1.f - f / 2.f;
+    return normalize(n);
+}
+
+#endif
+
+////////////////////////////////////////////////////////////////
+
 //////////////////////////////////////////////////////////////////
 // Normal encoding / decoding using Stereographic Projection    //
 // http://en.wikipedia.org/wiki/Stereographic_projection        //
 //////////////////////////////////////////////////////////////////
+
+#ifdef NORMAL_STEREOGRAPHIC_PROJECTION
 
 float4 EncodeNormal(float3 n)
 {
@@ -44,6 +127,9 @@ float3 DecodeNormal(float4 enc)
     const float3 n = float3(g * nn.xy, g - 1.f);
     return normalize(n);
 }
+
+#endif
+
 ////////////////////////////////////////////////////////////////
 
 

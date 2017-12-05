@@ -79,9 +79,7 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-    GITechDemoApp::RenderTarget* const rtBkp = AutofocusBuffer[0];
-    AutofocusBuffer[0] = AutofocusBuffer[1];
-    AutofocusBuffer[1] = rtBkp;
+    SWAP_RENDER_TARGET_HANDLES(AutofocusBuffer[0], AutofocusBuffer[1]);
 
     texTargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
@@ -253,7 +251,7 @@ void DepthOfFieldPass::Draw()
 {
     if (!DOF_ENABLED)
         return;
-    
+
     AutofocusPass();
 
     CalculateBlurFactor();
@@ -261,7 +259,7 @@ void DepthOfFieldPass::Draw()
     float bkp = fApertureSize;
     for (int i = 0; i < DOF_NUM_PASSES; i++)
     {
-        SwapDoFTargets();
+        SWAP_RENDER_TARGET_HANDLES(DepthOfFieldBuffer[0], DepthOfFieldBuffer[1]);
         AccumulateDoFEffect();
         
         // Vary aperture size per pass so as to have a better sample distribution
@@ -270,12 +268,4 @@ void DepthOfFieldPass::Draw()
     fApertureSize = bkp;
 
     ApplyDoF();
-}
-
-void DepthOfFieldPass::SwapDoFTargets()
-{
-    GITechDemoApp::RenderTarget* rtBkp;
-    rtBkp = DepthOfFieldBuffer[0];
-    DepthOfFieldBuffer[0] = DepthOfFieldBuffer[1];
-    DepthOfFieldBuffer[1] = rtBkp;
 }

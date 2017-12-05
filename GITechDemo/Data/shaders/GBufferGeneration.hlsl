@@ -79,22 +79,22 @@ void psmain(VSOut input, out PSOut output)
 {
     // Sample the diffuse texture
     float4 f4DiffuseColor = tex2D(texDiffuse, input.f2TexCoord);
-    
+
     // Early alpha-test
     ALPHA_TEST(f4DiffuseColor.a, 0.5f);
-    
+
     // Sample the specular texture, if present
     if(bHasSpecMap)
         f4DiffuseColor.a = tex2D(texSpec, input.f2TexCoord).r;
     else
         f4DiffuseColor.a = fSpecIntensity;
-    
+
     // Sample the normal map, if present
     float3 f3NormalMap = float3(0.f, 0.f, 0.f);
     if(bHasNormalMap)
         f3NormalMap = tex2D(texNormal, input.f2TexCoord).rgb * 2.f - 1.f;
     const float3 f3Normal = input.f3Normal + f3NormalMap.x * input.f3Tangent + f3NormalMap.y * input.f3Binormal;
-    
+
     // Sample the material type (metallic/dielectric) texture
     float fMatType = tex2D(texMatType, input.f2TexCoord).r;
 

@@ -35,6 +35,7 @@ namespace GITechDemoApp
     extern unsigned int g_nPBRMaterialDescriptionCount;
     extern int DIFFUSE_ANISOTROPY;
     extern AABoxf SceneAABB;
+    extern bool GBUFFER_USE_NORMAL_MAPS;
 }
 
 PBRMaterialDescription::PBRMaterialDescription(const char* const materialName, const char* const folderName)
@@ -109,7 +110,7 @@ void PBRMaterialTestPass::Draw()
 
             texDiffuse = diffuseTexIdx;
             texNormal = normalTexIdx;
-            bHasNormalMap = true;
+            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
             // For Blinn-Phong BRDF
             texSpec = roughnessTexIdx;

@@ -31,6 +31,8 @@ using namespace Synesthesia3D;
  // From Profiling.cpp
 extern MUTEX gProfileMarkerMutex;
 
+UINT64 ProfilerDX9::ms_nFirstQueryBeginTime = 0;
+
 ProfilerDX9::ProfilerDX9()
 {
 
@@ -57,7 +59,7 @@ void ProfilerDX9::PushProfileMarker(const char* const label, const bool issueGPU
     {
         // Issue GPU begin query for current label
         GPUProfileMarkerResultDX9* marker = nullptr;
-        if (issueGPUQuery && !RendererDX9::GetInstance()->IsDeviceLost())
+        if (issueGPUQuery && RendererDX9::GetInstance()->GetDeviceState() != DS_NOT_READY)
         {
             marker = new GPUProfileMarkerResultDX9(label, m_arrD3DDisjointQuery.back());
             m_arrGPUProfileMarkerResult.push_back(marker);
@@ -188,10 +190,32 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
                             UINT64 begin, end;
                             result->m_pD3DBeginQuery->GetData(&begin, sizeof(begin), 0);
                             result->m_pD3DEndQuery->GetData(&end, sizeof(end), 0);
-                            result->m_fTime = float(end - begin) * 1000.0f / float(freq);
+
+                            if (ms_nFirstQueryBeginTime == 0)
+                                ms_nFirstQueryBeginTime = begin;
+
+                            result->m_fStart =
+                                (
+                                    float((begin - ms_nFirstQueryBeginTime) / (freq / 1000)) +
+                                    float((begin - ms_nFirstQueryBeginTime) % (freq / 1000)) / (float(freq) / 1000.f)
+                                ) * 1000.f;
+
+                            result->m_fEnd =
+                                (
+                                    float((end - ms_nFirstQueryBeginTime) / (freq / 1000)) +
+                                    float((end - ms_nFirstQueryBeginTime) % (freq / 1000)) / (float(freq) / 1000.f)
+                                ) * 1000.f;
+
+                            result->m_fTime = float(end - begin) / (float(freq) / 1000.f);
+
                             if (result->m_fTime < 0.0001f)
                                 result->m_fTime = 0.f;
+
                             result->m_eStatus = GPUProfileMarkerResult::GPMRS_VALID;
+
+                            assert(result->m_fStart >= 0.f);
+                            assert(result->m_fEnd >= 0.f);
+                            assert(result->m_fTime >= 0.f);
                         }
                     }
                 }

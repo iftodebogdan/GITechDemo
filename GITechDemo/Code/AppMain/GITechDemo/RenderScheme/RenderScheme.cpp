@@ -52,13 +52,25 @@ CREATE_ROOT_PASS()
     #include "GBufferPass.h"
     ADD_RENDER_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer", ROOT_PASS)
 
+        // Draw scene
+        #include "SceneGeometryPass.h"
+        ADD_RENDER_PASS(SCENE_GEOMETRY_PASS, SceneGeometryPass, "Scene Geometry", GBUFFER_PASS)
+
         // Draw PBR material test spheres into the geometry buffer
         #include "PBRMaterialTestPass.h"
         ADD_RENDER_PASS(PBR_MATERIAL_TEST_PASS, PBRMaterialTestPass, "PBR Material Test Spheres", GBUFFER_PASS)
 
+        // Generate the linear and hyperbolic, full and quarter resolution depth buffers
+        #include "DepthDownsamplePass.h"
+        ADD_RENDER_PASS(DEPTH_DOWNSAMPLE_PASS, DepthDownsamplePass, "Depth Downsample", GBUFFER_PASS)
+
     // Compute scene lighting
     #include "LightingPass.h"
     ADD_RENDER_PASS(LIGHTING_PASS, LightingPass, "Lighting", ROOT_PASS)
+
+        // Resolve the G-Buffer's INTZ depth buffer to the light accumulation buffer's depth buffer
+        #include "ResolveDepthBufferPass.h"
+        ADD_RENDER_PASS(RESOLVE_DEPTH_BUFFER_PASS, ResolveDepthBufferPass, "Resolve Depth Buffer", LIGHTING_PASS);
 
         // Compute direct light contribution from the directional light
         #include "DirectionalLightPass.h"
@@ -120,6 +132,9 @@ CREATE_ROOT_PASS()
         #include "FXAAPass.h"
         ADD_RENDER_PASS(FXAA_PASS, FXAAPass, "FXAA", POST_PROCESSING_PASS)
 
-    // Head-up display
-    #include "HUDPass.h"
-    ADD_RENDER_PASS(HUD_PASS, HUDPass, "HUD", ROOT_PASS)
+    #include "CopyToBackBufferPass.h"
+    ADD_RENDER_PASS(COPY_TO_BACK_BUFFER_PASS, CopyToBackBufferPass, "Copy to back buffer", ROOT_PASS)
+
+    // User interface
+    #include "UIPass.h"
+    ADD_RENDER_PASS(UI_PASS, UIPass, "UI", ROOT_PASS)

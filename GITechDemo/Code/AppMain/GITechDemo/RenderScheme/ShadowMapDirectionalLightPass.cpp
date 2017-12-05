@@ -41,8 +41,6 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    bool DEBUG_CSM_CAMERA = false;
-
     extern bool DIRECTIONAL_LIGHT_ENABLED;
     extern bool DIR_LIGHT_VOLUME_ENABLE;
 
@@ -317,20 +315,6 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         // Calculate the current shadow map cascade's corresponding composite matrices
         f44LightViewProjMat[cascade] = f44CascadeProjMat[cascade] * f44LightViewMat;
         f44LightWorldViewProjMat[cascade] = f44LightViewProjMat[cascade] * f44WorldMat;
-    }
-
-    // Debug sun camera
-    if (DEBUG_CSM_CAMERA)
-    {
-        f44ViewMat = f44LightViewMat;
-        invertFull((Matrix44f&)f44InvViewMat, (Matrix44f&)f44ViewMat);
-        f44ProjMat = f44CascadeProjMat[NUM_CASCADES - 1];
-        invertFull((Matrix44f&)f44InvProjMat, (Matrix44f&)f44ProjMat);
-        f44WorldViewMat = f44ViewMat * f44WorldMat;
-        f44ViewProjMat = f44ProjMat * f44ViewMat;
-        f44InvViewProjMat = f44InvViewMat * f44InvProjMat;
-        f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
-        f44ScreenToLightViewMat = f44LightViewMat * f44InvViewProjMat;
     }
 }
 

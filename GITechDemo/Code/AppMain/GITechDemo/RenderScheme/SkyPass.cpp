@@ -53,7 +53,7 @@ SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
 SkyPass::~SkyPass()
 {}
 
-void SkyPass::CreateSkyBoxVB()
+void SkyPass::AllocateResources()
 {
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
@@ -105,7 +105,7 @@ void SkyPass::CreateSkyBoxVB()
     m_pSkyBoxCube->Unlock();
 }
 
-void SkyPass::ReleaseSkyBoxVB()
+void SkyPass::ReleaseResources()
 {
     Renderer* RenderContext = Renderer::GetInstance();
     if (RenderContext)

@@ -62,12 +62,11 @@ namespace AppFramework
         INT_PTR CALLBACK    About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
         HINSTANCE   m_hInstance;
-        TCHAR       m_szTitle[MAX_LOADSTRING];
         TCHAR       m_szWindowClass[MAX_LOADSTRING];
         HWND        m_hWnd;
         int         m_nCmdShow;
 
-        float       CalculateDeltaTime(); // in miliseconds
+        float       CalculateDeltaTime(); // in seconds
 
         void OnSetFullscreenCursor();
         void OnSetWindowedCursor();

@@ -187,6 +187,17 @@ public:
 		unsigned winKey;
 		switch (msg.message)
 		{
+		case WM_KILLFOCUS:
+		case WM_ACTIVATE:
+			if (msg.message == WM_KILLFOCUS || (msg.message == WM_ACTIVATE && LOWORD(msg.wParam) == WA_INACTIVE))
+			{
+                // Reset input state when window is out of focus
+				for (unsigned int i = 0; i < KeyCount_; i++)
+				{
+					HandleButton(device_, nextState_, delta_, i, false);
+				}
+			}
+			return;
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 			pressed = true;

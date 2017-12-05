@@ -72,9 +72,7 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
     ColorCorrectionTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
     ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(SRGB_COLOR_CORRECTION);
 
-    GITechDemoApp::RenderTarget* const rtBkp = AdaptedLuminance[0];
-    AdaptedLuminance[0] = AdaptedLuminance[1];
-    AdaptedLuminance[1] = rtBkp;
+    SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
     fFrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
 

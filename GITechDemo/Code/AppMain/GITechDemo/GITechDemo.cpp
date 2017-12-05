@@ -24,6 +24,9 @@
 #include <time.h>
 #include <sstream>
 
+#include <imgui.h>
+#include <imgui_internal.h>
+
 #include <Renderer.h>
 #include <ResourceManager.h>
 #include <Texture.h>
@@ -42,7 +45,7 @@ using namespace AppFramework;
 #include "PerlinNoise.h"
 #include "ArtistParameter.h"
 #include "SkyPass.h"
-#include "HUDPass.h"
+#include "UIPass.h"
 using namespace GITechDemoApp;
 
 CREATE_APP(GITechDemo)
@@ -52,7 +55,7 @@ namespace GITechDemoApp
     static bool bExtraResInit = false;
 
     extern SkyPass SKY_PASS;
-    extern HUDPass HUD_PASS;
+    extern UIPass UI_PASS;
     extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
 
     bool FULLSCREEN_ENABLED = false;
@@ -61,12 +64,6 @@ namespace GITechDemoApp
     int FULLSCREEN_RESOLUTION_Y = 0;
     int FULLSCREEN_REFRESH_RATE = 0;
     bool VSYNC_ENABLED = false;
-
-#if ENABLE_PROFILE_MARKERS
-    bool GPU_PROFILE_SCREEN = true;
-#else
-    bool GPU_PROFILE_SCREEN = false;
-#endif
 }
 
 namespace GITechDemoApp
@@ -97,8 +94,8 @@ template <typename T> string tostr(const T& t) {
 GITechDemo::GITechDemo()
     : App()
     , m_fDeltaTime(0.f)
-    , m_pHWND(nullptr)
     , m_pInputMap(nullptr)
+    , m_bUIHasFocus(false)
 {
     MUTEX_INIT(mResInitMutex);
 }
@@ -110,8 +107,6 @@ GITechDemo::~GITechDemo()
 
 bool GITechDemo::Init(void* hWnd)
 {
-    m_pHWND = hWnd;
-
     Framework* const pFW = Framework::GetInstance();
 
     // Renderer MUST be initialized on the SAME thread as the target window
@@ -137,16 +132,13 @@ bool GITechDemo::Init(void* hWnd)
         0.f, 0.f, 0.f, 1.f
         );
 
-    ArtistParameterManager::CreateInstance();
-
     // Setup Gainput
     if (m_pInputManager)
     {
         gainput::DeviceId mouseId = m_pInputManager->CreateDevice<gainput::InputDeviceMouse>();
-        gainput::DeviceId keyboardId = m_pInputManager->CreateDevice<gainput::InputDeviceKeyboard>(gainput::InputDevice::AutoIndex, gainput::InputDevice::DV_RAW);
+        gainput::DeviceId keyboardId = m_pInputManager->CreateDevice<gainput::InputDeviceKeyboard>();
 
         m_pInputMap = new gainput::InputMap(*m_pInputManager);
-
         if (m_pInputMap && mouseId != gainput::InvalidDeviceId && keyboardId != gainput::InvalidDeviceId)
         {
             // Key bindings
@@ -162,15 +154,11 @@ bool GITechDemo::Init(void* hWnd)
             m_pInputMap->MapBool(APP_CMD_RIGHT, keyboardId, gainput::KeyD);
             m_pInputMap->MapBool(APP_CMD_SPEED_UP, keyboardId, gainput::KeyShiftL);
             m_pInputMap->MapBool(APP_CMD_SLOW_DOWN, keyboardId, gainput::KeyCtrlL);
-
-            // Setup the artist parameter manager key bindings
-            ArtistParameterManager* const pAPM = ArtistParameterManager::GetArtistParameterManager();
-            if (pAPM)
-                pAPM->SetupInput(m_pInputManager);
         }
-    }
 
-    RenderResource::SetResourceManager(ResourceMgr);
+        // Setup UI key bindings
+        UI_PASS.SetupInput(m_pInputManager);
+    }
 
     const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
@@ -217,11 +205,11 @@ void GITechDemo::Release()
 
     bExtraResInit = false;
     FullScreenTri = nullptr;
-    SKY_PASS.ReleaseSkyBoxVB();
-    HUD_PASS.ReleaseHUDTexture();
+
+    SKY_PASS.ReleaseResources();
+    UI_PASS.ReleaseResources();
 
     RenderResource::FreeAll();
-    ArtistParameterManager::DestroyInstance();
     Renderer::DestroyInstance();
 }
 
@@ -262,6 +250,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
                 }
             }
         }
+        pFW->Sleep(1); // sleep 1 ms so as not to hog CPU time
     } while (!bAllInitialized);
 
     // Allow only the first thread to get here to initialize the rest of the resources
@@ -288,7 +277,9 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
             FullScreenTri->Update();
             FullScreenTri->Unlock();
 
-            SKY_PASS.CreateSkyBoxVB();
+            // Misc. resources
+            SKY_PASS.AllocateResources();
+            UI_PASS.AllocateResources();
 
             bExtraResInit = true;
         }
@@ -308,7 +299,7 @@ void GITechDemo::Update(const float fDeltaTime)
     Framework* const pFW = Framework::GetInstance();
     pFW->GetClientArea(cLeft, cTop, cRight, cBottom);
     const Vec2i viewportSize = Vec2i(cRight - cLeft, cBottom - cTop);
-    
+
     const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
     // Update fullscreen resolution setting
@@ -497,9 +488,12 @@ void GITechDemo::Update(const float fDeltaTime)
         m_bLastFrameVSync = VSYNC_ENABLED;
     }
 
+    // Update focus context
+    UpdateUIFocus();
+
     // Handle user input
     unsigned int cmd = APP_CMD_NONE;
-    if (m_pInputManager && m_pInputMap)
+    if (m_pInputManager && m_pInputMap && !IsUIInFocus())
     {
         // Handle user input for camera movement
         if (m_pInputMap->GetBool(APP_CMD_FORWARD))
@@ -522,90 +516,90 @@ void GITechDemo::Update(const float fDeltaTime)
             cmd |= APP_CMD_CTRL_PITCH;
         if (m_pInputMap->GetBool(APP_CMD_CTRL_ROLL))
             cmd |= APP_CMD_CTRL_ROLL;
+    }
 
-        // If any mouse button was just pressed, the mouse is unlikely to be in
-        // the center of the screen and this might result in a "jump" in the
-        // rotation of the camera. Ignore this frame's mouse movement.
-        // This will introduce a one frame lag.
-        Vec3f rotateDelta;
-        if (m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_YAW) ||
-            m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_PITCH) ||
-            m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_ROLL))
-        {
-            rotateDelta *= 0.f;
-        }
-        else
-        {
-            // When we have an even number of pixels on one axis, the center is between
-            // two adjacent pixels. Because of this, the normalized value we obtain
-            // below can never be exactly 0.5f, so we apply a half-pixel offset.
-            const Vec2f halfPixel(
-                0.5f / (float)(viewportSize[0] - 1) * (float)(viewportSize[0] % 2 == 0),
-                0.5f / (float)(viewportSize[1] - 1) * (float)(viewportSize[1] % 2 == 0)
-                );
-            rotateDelta.set(
-                m_pInputMap->GetFloat(APP_CMD_PITCH_AXIS),
-                m_pInputMap->GetFloat(APP_CMD_YAW_AXIS),
-                m_pInputMap->GetFloat(APP_CMD_ROLL_AXIS)
-                );
-            rotateDelta -= Vec3f(0.5f - halfPixel[1], 0.5f - halfPixel[0], 0.5f - halfPixel[0]);
-            rotateDelta *= CAMERA_ROTATE_SPEED;
-        }
+    // If any mouse button was just pressed, the mouse is unlikely to be in
+    // the center of the screen and this might result in a "jump" in the
+    // rotation of the camera. Ignore this frame's mouse movement.
+    // This will introduce a one frame lag.
+    Vec3f rotateDelta;
+    if (m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_YAW) ||
+        m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_PITCH) ||
+        m_pInputMap->GetBoolIsNew(APP_CMD_CTRL_ROLL))
+    {
+        rotateDelta *= 0.f;
+    }
+    else
+    {
+        // When we have an even number of pixels on one axis, the center is between
+        // two adjacent pixels. Because of this, the normalized value we obtain
+        // below can never be exactly 0.5f, so we apply a half-pixel offset.
+        const Vec2f halfPixel(
+            0.5f / (float)(viewportSize[0] - 1) * (float)(viewportSize[0] % 2 == 0),
+            0.5f / (float)(viewportSize[1] - 1) * (float)(viewportSize[1] % 2 == 0)
+            );
+        rotateDelta.set(
+            m_pInputMap->GetFloat(APP_CMD_PITCH_AXIS),
+            m_pInputMap->GetFloat(APP_CMD_YAW_AXIS),
+            m_pInputMap->GetFloat(APP_CMD_ROLL_AXIS)
+            );
+        rotateDelta -= Vec3f(0.5f - halfPixel[1], 0.5f - halfPixel[0], 0.5f - halfPixel[0]);
+        rotateDelta *= CAMERA_ROTATE_SPEED;
+    }
 
-        // Update camera rotation matrix
-        if (cmd & APP_CMD_CTRL_PITCH)
-            m_tCamera.mRot = makeRot(EulerAngleXYZf(Math::deg2Rad(-rotateDelta[0]), 0.f, 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+    // Update camera rotation matrix
+    if (cmd & APP_CMD_CTRL_PITCH)
+        m_tCamera.mRot = makeRot(EulerAngleXYZf(Math::deg2Rad(-rotateDelta[0]), 0.f, 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
 
-        if (cmd & APP_CMD_CTRL_YAW)
-            m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(-rotateDelta[1]), 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+    if (cmd & APP_CMD_CTRL_YAW)
+        m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(-rotateDelta[1]), 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
 
-        if (cmd & APP_CMD_CTRL_ROLL)
-            m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, 0.f, Math::deg2Rad(rotateDelta[2])), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+    if (cmd & APP_CMD_CTRL_ROLL)
+        m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, 0.f, Math::deg2Rad(rotateDelta[2])), Type2Type<Matrix44f>()) * m_tCamera.mRot;
 
-        // Update camera position vector
-        if (cmd & APP_CMD_FORWARD)
-            m_tCamera.vMoveVec[2] = 1.f;
-        else if (cmd & APP_CMD_BACKWARD)
-            m_tCamera.vMoveVec[2] = -1.f;
-        else
-            m_tCamera.vMoveVec[2] = 0.f;
+    // Update camera position vector
+    if (cmd & APP_CMD_FORWARD)
+        m_tCamera.vMoveVec[2] = 1.f;
+    else if (cmd & APP_CMD_BACKWARD)
+        m_tCamera.vMoveVec[2] = -1.f;
+    else
+        m_tCamera.vMoveVec[2] = 0.f;
 
-        if (cmd & APP_CMD_LEFT)
-            m_tCamera.vMoveVec[0] = -1.f;
-        else if (cmd & APP_CMD_RIGHT)
-            m_tCamera.vMoveVec[0] = 1.f;
-        else
-            m_tCamera.vMoveVec[0] = 0.f;
+    if (cmd & APP_CMD_LEFT)
+        m_tCamera.vMoveVec[0] = -1.f;
+    else if (cmd & APP_CMD_RIGHT)
+        m_tCamera.vMoveVec[0] = 1.f;
+    else
+        m_tCamera.vMoveVec[0] = 0.f;
 
-        if (cmd & APP_CMD_SPEED_UP)
-            m_tCamera.fSpeedFactor = CAMERA_SPEED_UP_FACTOR;
-        else if (cmd & APP_CMD_SLOW_DOWN)
-            m_tCamera.fSpeedFactor = CAMERA_SLOW_DOWN_FACTOR;
-        else
-            m_tCamera.fSpeedFactor = 1.f;
+    if (cmd & APP_CMD_SPEED_UP)
+        m_tCamera.fSpeedFactor = CAMERA_SPEED_UP_FACTOR;
+    else if (cmd & APP_CMD_SLOW_DOWN)
+        m_tCamera.fSpeedFactor = CAMERA_SLOW_DOWN_FACTOR;
+    else
+        m_tCamera.fSpeedFactor = 1.f;
 
-        gmtl::normalize(m_tCamera.vMoveVec);
-        m_tCamera.vMoveVec *= CAMERA_MOVE_SPEED * m_tCamera.fSpeedFactor * fDeltaTime;
-        m_tCamera.vPos -=
-            Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][1] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
-            Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
+    gmtl::normalize(m_tCamera.vMoveVec);
+    m_tCamera.vMoveVec *= CAMERA_MOVE_SPEED * m_tCamera.fSpeedFactor * pFW->GetDeltaTime();
+    m_tCamera.vPos -=
+        Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][1] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
+        Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
 
-        // Update mouse cursor
-        if (cmd & (APP_CMD_CTRL_PITCH | APP_CMD_CTRL_YAW | APP_CMD_CTRL_ROLL))
-        {
-            int wLeft, wTop, wRight, wBottom;
-            pFW->GetWindowArea(wLeft, wTop, wRight, wBottom);
-            const int sideBorderSize = (wRight - wLeft) - viewportSize[0];
-            const int topBorderSize = (wBottom - wTop) - viewportSize[1] - sideBorderSize;
-            pFW->SetCursorAtPos((wRight + wLeft - 1) / 2, (wBottom + wTop + topBorderSize - 1) / 2);
-            if (!pFW->IsCursorHidden())
-                pFW->ShowCursor(false);
-        }
-        else
-        {
-            if (pFW->IsCursorHidden())
-                pFW->ShowCursor(true);
-        }
+    // Update mouse cursor
+    if (cmd & (APP_CMD_CTRL_PITCH | APP_CMD_CTRL_YAW | APP_CMD_CTRL_ROLL))
+    {
+        int wLeft, wTop, wRight, wBottom;
+        pFW->GetWindowArea(wLeft, wTop, wRight, wBottom);
+        const int sideBorderSize = (wRight - wLeft) - viewportSize[0];
+        const int topBorderSize = (wBottom - wTop) - viewportSize[1] - sideBorderSize;
+        pFW->SetCursorAtPos((wRight + wLeft - 1) / 2, (wBottom + wTop + topBorderSize - 1) / 2);
+        if (!pFW->IsCursorHidden())
+            pFW->ShowCursor(false);
+    }
+    else
+    {
+        if (pFW->IsCursorHidden())
+            pFW->ShowCursor(true);
     }
 
     // Animate camera
@@ -727,68 +721,57 @@ void GITechDemo::Update(const float fDeltaTime)
     // to the current frame's view-projection matrix
     if (f44PrevViewProjMat.GetCurrentValue() == MAT_IDENTITY44F)
         f44PrevViewProjMat = f44ViewProjMat;
+}
 
-    // Update the artist parameter manager
-    ArtistParameterManager* const pAPM = ArtistParameterManager::GetArtistParameterManager();
-    if (pAPM)
-        pAPM->Update();
-
-    // Draw controls on HUD
-    static bool bDrawControls = true;
-    if(!pAPM->IsDrawingOnHUD())
+void GITechDemo::UpdateUIFocus()
+{
+    if (m_pInputManager && m_pInputMap)
     {
-        if (bDrawControls)
-        {
-            HUD_PASS.PrintLn("Left mouse button (hold) + mouse move: control camera pitch/yaw");
-            HUD_PASS.PrintLn("Right mouse button (hold) + mouse move: control camera roll");
-            HUD_PASS.PrintLn("W/A/S/D: move camera forward/backward/left/right");
-            HUD_PASS.PrintLn("LShift (hold): faster camera movement");
-            HUD_PASS.PrintLn("LCtrl (hold): slower camera movement");
+        const unsigned int maxButtonsDown = 32;
+        gainput::DeviceButtonSpec buttonsDown[maxButtonsDown];
+        const unsigned int reportedNumButtonsDown = (unsigned int)m_pInputManager->GetAnyButtonDown(buttonsDown, maxButtonsDown);
 
-            if (pAPM->GetParameterCount() > 0)
+        // Ignore mouse axes, they're always active
+        unsigned int numButtonsDown = reportedNumButtonsDown;
+        for (unsigned int i = 0; i < reportedNumButtonsDown; i++)
+        {
+            if (m_pInputManager->GetDevice(buttonsDown[i].deviceId)->GetType() == gainput::InputDevice::DT_MOUSE)
             {
-                HUD_PASS.PrintLn("");
-                HUD_PASS.PrintLn("Directional arrows up/down: cycle configurable parameters");
-                HUD_PASS.PrintLn("RShift + Directional arrows up/down: cycle parameter categories");
-                HUD_PASS.PrintLn("Directional arrows left/right: modify currently selected parameter");
+                if (buttonsDown[i].buttonId == gainput::MouseAxisX || buttonsDown[i].buttonId == gainput::MouseAxisY)
+                {
+                    numButtonsDown--;
+                }
+            }
+        }
+
+        if (numButtonsDown == 0)
+        {
+            if (IsUIInFocus())
+            {
+                if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemActive())
+                {
+                    m_bUIHasFocus = false;
+                }
+            }
+            else
+            {
+                if (ImGui::IsAnyWindowHovered() || ImGui::IsAnyItemActive())
+                {
+                    m_bUIHasFocus = true;
+                }
             }
         }
     }
-    if (cmd & (APP_CMD_FORWARD | APP_CMD_BACKWARD | APP_CMD_LEFT | APP_CMD_RIGHT))
-        bDrawControls = false;
 
-    if (GPU_PROFILE_SCREEN)
+    if (const ImGuiWindow* const navWindow = ImGui::GetCurrentContext()->NavWindow)
     {
-        if (pAPM->IsDrawingOnHUD() || bDrawControls)
-            HUD_PASS.PrintLn("");
-        DrawGPUProfileScreen();
-    }
-}
-
-void GITechDemo::DrawGPUProfileScreen(const RenderPass* pass, const unsigned int level) const
-{
-    Renderer* RenderContext = Renderer::GetInstance();
-    if (!RenderContext)
-        return;
-
-    if (pass == nullptr)
-        pass = &RenderScheme::GetRootPass();
-
-    if (pass)
-    {
-        const float result = RenderContext->GetProfiler()->RetrieveGPUProfileMarkerResult(pass->GetPassName());
-
-        if (result >= 0)
+        if (const ImGuiWindow* const focusedRootWindow = navWindow->RootWindow)
         {
-            char szTempBuffer[256];
-            sprintf_s(szTempBuffer, "%s: %g ms", pass->GetPassName(), result);
-            for (unsigned int j = 0; j < level; j++)
-                HUD_PASS.Print("  ");
-            HUD_PASS.PrintLn(szTempBuffer);
+            if (focusedRootWindow->Flags & ImGuiWindowFlags_Modal)
+            {
+                m_bUIHasFocus = true;
+            }
         }
-
-        for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
-            DrawGPUProfileScreen(pass->GetChildren()[i], level + 1);
     }
 }
 
@@ -800,16 +783,14 @@ void GITechDemo::Draw()
 
     // For maximum parallelism, swap buffers at the beginning of the next CPU frame,
     // so as the GPU has as much time as possible to process the last frame.
-    static bool bLastFrameValid = false;
-    if (bLastFrameValid)
+    if (RenderContext->GetDeviceState() == DS_PRESENTING)
+    {
         RenderContext->SwapBuffers();
+    }
 
     if (RenderContext->BeginFrame())
     {
         RenderScheme::Draw();
         RenderContext->EndFrame();
-        bLastFrameValid = true;
     }
-    else
-        bLastFrameValid = false;
 }

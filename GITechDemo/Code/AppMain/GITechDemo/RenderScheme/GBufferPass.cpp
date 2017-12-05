@@ -39,9 +39,10 @@ using namespace GITechDemoApp;
 namespace GITechDemoApp
 {
     /* G-Buffer generation */
-    bool GBUFFER_Z_PREPASS = false;
+    bool GBUFFER_Z_PREPASS = true;
     int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
     bool GBUFFER_USE_NORMAL_MAPS = true;
+    bool DRAW_ALPHA_TEST_GEOMETRY = true;
 }
 
 GBufferPass::GBufferPass(const char* const passName, RenderPass* const parentPass)
@@ -54,11 +55,8 @@ GBufferPass::~GBufferPass()
 void GBufferPass::Update(const float fDeltaTime)
 {
     Renderer* RenderContext = Renderer::GetInstance();
-    if (!RenderContext)
-        return;
-
     ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
-    if (!ResourceMgr)
+    if (!RenderContext || !ResourceMgr)
         return;
 
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetAddressingMode(SAM_CLAMP);
@@ -111,121 +109,7 @@ void GBufferPass::Draw()
         return;
 
     GBuffer.Enable();
-
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
-
-    const bool zWriteEnabled = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
-    const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
-    bool red, blue, green, alpha;
-    RenderContext->GetRenderStateManager()->GetColorWriteEnabled(red, green, blue, alpha);
-
-    // A depth prepass is useful if we have expensive pixel shaders in our
-    // G-Buffer generation process. It allows us to avoid shading pixels
-    // that eventually get overwritten by other pixels that have smaller
-    // depth values. We are not fill-rate bound, so the depth prepass is disabled.
-    if (GBUFFER_Z_PREPASS)
-    {
-        PUSH_PROFILE_MARKER("Z prepass");
-
-        RenderContext->GetRenderStateManager()->SetColorWriteEnabled(false, false, false, false);
-
-        DepthPassShader.Enable();
-
-        for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
-        {
-            PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
-            RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-            POP_PROFILE_MARKER();
-        }
-
-        DepthPassShader.Disable();
-
-        RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
-        RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
-        RenderContext->GetRenderStateManager()->SetZFunc(CMP_EQUAL);
-
-        POP_PROFILE_MARKER();
-
-        PUSH_PROFILE_MARKER("Capture");
-    }
-
-    // A visibility test would be useful if we were CPU bound (or vertex bound).
-    // However, there isn't a reason to do such an optimization for now, since the
-    // scene isn't very big and we are mostly pixel bound.
-    for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
-    {
-        PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
-
-        const unsigned int diffuseTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        const unsigned int normalTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_HEIGHT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        const unsigned int specTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SPECULAR, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        const unsigned int matTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-        const unsigned int roughnessTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-
-        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || nBRDFModel == BLINN_PHONG))
-        {
-            RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
-
-            texDiffuse = diffuseTexIdx;
-            texNormal = normalTexIdx;
-            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
-
-            // For Blinn-Phong BRDF
-            texSpec = specTexIdx;
-            bHasSpecMap = (texSpec != -1);
-            fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
-
-            // For Cook-Torrance BRDF
-            texMatType = matTexIdx;
-            texRoughness = roughnessTexIdx;
-
-            GBufferGenerationShader.Enable();
-            RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-            GBufferGenerationShader.Disable();
-        }
-
-        POP_PROFILE_MARKER();
-    }
-
-    if (GBUFFER_Z_PREPASS)
-    {
-        RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWriteEnabled);
-        RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
-        POP_PROFILE_MARKER();
-    }
-
-    GBuffer.Disable();
-
-    // Draw child render passes (in this case, the PBR material test spheres)
     DrawChildren();
-
-    // Generate linear depth buffer and quarter-resolution versions of the hyperbolic and linear depth buffers
-    const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
-    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
-
-    bReconstructDepth = false;
-    nDownsampleFactor = 4;
-    DownsampleShader.Enable();
-    HyperbolicQuarterDepthBuffer.Enable();
-    RenderContext->DrawVertexBuffer(FullScreenTri);
-    HyperbolicQuarterDepthBuffer.Disable();
-    DownsampleShader.Disable();
-
-    bReconstructDepth = true;
-    nDownsampleFactor = 1;
-    DownsampleShader.Enable();
-    LinearFullDepthBuffer.Enable();
-    RenderContext->DrawVertexBuffer(FullScreenTri);
-    LinearFullDepthBuffer.Disable();
-    DownsampleShader.Disable();
-
-    bReconstructDepth = true;
-    nDownsampleFactor = 4;
-    DownsampleShader.Enable();
-    LinearQuarterDepthBuffer.Enable();
-    RenderContext->DrawVertexBuffer(FullScreenTri);
-    LinearQuarterDepthBuffer.Disable();
-    DownsampleShader.Disable();
-
-    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+    GBuffer.Disable();
 }

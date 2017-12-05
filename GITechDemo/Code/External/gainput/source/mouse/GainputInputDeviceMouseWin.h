@@ -33,8 +33,15 @@ public:
 		delta_ = delta;
 
 		// Reset mouse wheel buttons
-		HandleButton(device_, nextState_, delta_, MouseButton3, false);
-		HandleButton(device_, nextState_, delta_, MouseButton4, false);
+		if (previousState_->GetBool(MouseButton3))
+		{
+			HandleButton(device_, nextState_, delta_, MouseButton3, false);
+		}
+
+		if (previousState_->GetBool(MouseButton4))
+		{
+			HandleButton(device_, nextState_, delta_, MouseButton4, false);
+		}
 
 		*state_ = nextState_;
 	}
@@ -51,6 +58,17 @@ public:
 		int ay = -1;
 		switch (msg.message)
 		{
+		case WM_KILLFOCUS:
+		case WM_ACTIVATE:
+			if (msg.message == WM_KILLFOCUS || (msg.message == WM_ACTIVATE && LOWORD(msg.wParam) == WA_INACTIVE))
+			{
+                // Reset input state when window is out of focus
+				for (unsigned int i = 0; i < MouseButtonCount_; i++)
+				{
+					HandleButton(device_, nextState_, delta_, i, false);
+				}
+			}
+			return;
 		case WM_LBUTTONDOWN:
 			buttonId = MouseButtonLeft;
 			pressed = true;

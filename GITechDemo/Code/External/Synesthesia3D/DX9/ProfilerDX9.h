@@ -72,6 +72,8 @@ namespace Synesthesia3D
         std::vector<DisjointQuery>              m_arrD3DDisjointQuery;
         std::stack<GPUProfileMarkerResultDX9*>  m_arrGPUProfileMarkerDX9Stack;
 
+        static UINT64   ms_nFirstQueryBeginTime;
+
         friend class RendererDX9;
     };
 }

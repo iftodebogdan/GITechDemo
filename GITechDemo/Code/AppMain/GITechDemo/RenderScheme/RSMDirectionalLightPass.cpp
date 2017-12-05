@@ -34,8 +34,6 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    bool DEBUG_RSM_CAMERA = false;
-
     extern bool INDIRECT_LIGHT_ENABLED;
     extern AABoxf SceneLightSpaceAABB;
 }
@@ -74,20 +72,6 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
     f44RSMWorldViewProjMat = f44RSMProjMat * f44LightWorldViewMat;
     invertFull((Matrix44f&)f44RSMInvProjMat, (Matrix44f&)f44RSMProjMat);
     f44ViewToRSMViewMat = f44LightViewMat * f44InvViewMat;
-
-    // Debug RSM camera
-    if (DEBUG_RSM_CAMERA)
-    {
-        f44ViewMat = f44LightViewMat;
-        invertFull((Matrix44f&)f44InvViewMat, (Matrix44f&)f44ViewMat);
-        f44ProjMat = f44RSMProjMat;
-        invertFull((Matrix44f&)f44InvProjMat, (Matrix44f&)f44ProjMat);
-        f44WorldViewMat = f44ViewMat * f44WorldMat;
-        f44ViewProjMat = f44ProjMat * f44ViewMat;
-        f44InvViewProjMat = f44InvViewMat * f44InvProjMat;
-        f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
-        f44ScreenToLightViewMat = f44LightViewMat * f44InvViewProjMat;
-    }
 }
 
 void RSMDirectionalLightPass::Draw()

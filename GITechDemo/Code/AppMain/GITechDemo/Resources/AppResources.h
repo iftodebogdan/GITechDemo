@@ -33,6 +33,7 @@
 #define CREATE_SHADER_HANDLE(NAME) extern GITechDemoApp::Shader NAME
 #define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME
 #define CREATE_RENDER_TARGET_HANDLE(NAME) extern GITechDemoApp::RenderTarget NAME
+#define SWAP_RENDER_TARGET_HANDLES(RT1, RT2) { GITechDemoApp::RenderTarget* const TEMP = RT1; RT1 = RT2; RT2 = TEMP; }
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
@@ -47,6 +48,7 @@ namespace GITechDemoApp
     CREATE_SHADER_HANDLE(SkyBoxShader);
     CREATE_SHADER_HANDLE(GBufferGenerationShader);
     CREATE_SHADER_HANDLE(DepthPassShader);
+    CREATE_SHADER_HANDLE(DepthPassAlphaTestShader);
     CREATE_SHADER_HANDLE(DepthCopyShader);
     CREATE_SHADER_HANDLE(ColorCopyShader);
     CREATE_SHADER_HANDLE(RSMCaptureShader);
@@ -57,7 +59,7 @@ namespace GITechDemoApp
     CREATE_SHADER_HANDLE(BloomShader);
     CREATE_SHADER_HANDLE(FxaaShader);
     CREATE_SHADER_HANDLE(SsaoShader);
-    CREATE_SHADER_HANDLE(HUDTextShader);
+    CREATE_SHADER_HANDLE(UIShader);
     CREATE_SHADER_HANDLE(MotionBlurShader);
     CREATE_SHADER_HANDLE(SphericalLensFlareFeaturesShader);
     CREATE_SHADER_HANDLE(LensFlareApplyShader);
@@ -328,8 +330,9 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f2LinearDepthEquation,    Vec2f           );
     CREATE_SHADER_CONSTANT_HANDLE(f2DepthHalfTexelOffset,   Vec2f           );
 
-    //  - HUDText.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(f3TextColor,              Vec3f           );
+    //  - UI.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(f44UIProjMat,             Matrix44f       );
+    CREATE_SHADER_CONSTANT_HANDLE(texFont,                  s3dSampler2D    );
 
     //  - MotionBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44PrevViewProjMat,       Matrix44f       );
@@ -353,7 +356,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fLensDirtIntensity,       float           );
     CREATE_SHADER_CONSTANT_HANDLE(fLensStarBurstIntensity,  float           );
     CREATE_SHADER_CONSTANT_HANDLE(f33LensFlareStarBurstMat, Matrix33f       );
-    
+
     //  - BilateralBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f2BlurDir,                Vec2f           );
     CREATE_SHADER_CONSTANT_HANDLE(fBlurDepthFalloff,        float           );

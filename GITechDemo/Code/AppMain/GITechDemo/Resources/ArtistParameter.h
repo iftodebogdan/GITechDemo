@@ -26,90 +26,54 @@
 #include <vector>
 using namespace std;
 
-namespace gainput
-{
-    class InputManager;
-    class InputMap;
-}
-
 namespace GITechDemoApp
 {
-    class ArtistParameter;
-
-    class ArtistParameterManager
-    {
-    public:
-        ArtistParameterManager();
-        ~ArtistParameterManager();
-
-        void Update();
-        void SetupInput(gainput::InputManager* pInputManager);
-
-        bool IsDrawingOnHUD() { return m_nCurrParam != -1; }
-        unsigned int GetParameterCount() { return (unsigned int)ms_arrParams.size(); }
-
-        static void CreateInstance() { ms_pInstance = new ArtistParameterManager(); }
-        static void DestroyInstance() { if (ms_pInstance) delete ms_pInstance; ms_pInstance = nullptr; }
-        static ArtistParameterManager* GetArtistParameterManager() { return ms_pInstance; }
-
-    protected:
-        static vector<ArtistParameter*> ms_arrParams;
-        static ArtistParameterManager*  ms_pInstance;
-
-        gainput::InputMap*  m_pInputMap;
-
-        int     m_nCurrParam;
-        
-        enum Command
-        {
-            APM_CMD_NONE        = 0,
-
-            APM_CMD_NEXT        = 1,
-            APM_CMD_PREV        = APM_CMD_NEXT << 1,
-            APM_CMD_STEP_UP     = APM_CMD_PREV << 1,
-            APM_CMD_STEP_DOWN   = APM_CMD_STEP_UP << 1,
-            APM_CMD_MIN_STEP    = APM_CMD_STEP_DOWN << 1,
-            APM_CMD_MAX_STEP    = APM_CMD_MIN_STEP << 1
-        };
-
-        friend class ArtistParameter;
-    };
-
     class ArtistParameter
     {
     public:
-        string              szName;
-        string              szDesc;
-        string              szCategory;
-
-        void*               pParam;
-        float               pStepValue;
-
-        unsigned long long  nTypeHash;
-
         ArtistParameter(
             const char* const name,
             const char* const desc,
             const char* const category,
             void* const param,
             const float step,
-            const unsigned long long typeHash)
-            : szName(name)
-            , szDesc(desc)
-            , szCategory(category)
-            , pParam(param)
-            , pStepValue(step)
-            , nTypeHash(typeHash)
-        {
-            ArtistParameterManager::ms_arrParams.push_back(this);
-        }
+            const unsigned long long typeHash);
 
-        ~ArtistParameter()
+        ~ArtistParameter();
+
+        enum ArtistParameterDataType
         {
-            for (unsigned int i = 0; i < ArtistParameterManager::ms_arrParams.size(); i++)
-                if (ArtistParameterManager::ms_arrParams[i] == this)
-                    ArtistParameterManager::ms_arrParams.erase(ArtistParameterManager::ms_arrParams.begin() + i);
-        }
+            APDT_FLOAT = 0,
+            APDT_INT,
+            //APDT_UINT,
+            APDT_BOOL,
+            APDT_MAX,
+            APDT_NOT_SUPPORTED
+        };
+
+                const string            GetName() const { return m_szName; };
+                const string            GetDescription() const { return m_szDesc; }
+                const string            GetCategoryName() const { return m_szCategory; }
+        const ArtistParameterDataType   GetDataType() const;
+                const bool              IsDataType(const ArtistParameterDataType type) const;
+                    float&              GetParameterAsFloat() const { assert(IsDataType(APDT_FLOAT)); return *(float*)m_pParam; }
+                    int&                GetParameterAsInt() const { assert(IsDataType(APDT_INT)); return *(int*)m_pParam; }
+        //        unsigned int&           GetParameterAsUInt() const { assert(IsDataType(APDT_UINT)); return *(unsigned int*)m_pParam; }
+                    bool&               GetParameterAsBool() const { assert(IsDataType(APDT_BOOL)); return *(bool*)m_pParam; }
+                    float               GetStepValue() const { return m_fStepValue; }
+
+        static ArtistParameter* const   GetParameterByIdx(const unsigned int idx);
+        static const unsigned int       GetParameterCount() { return (unsigned int)ms_arrParams.size(); }
+
+    protected:
+        string m_szName;
+        string m_szDesc;
+        string m_szCategory;
+        void* m_pParam;
+        float m_fStepValue;
+        unsigned long long m_nTypeHash;
+
+        static vector<ArtistParameter*> ms_arrParams;
     };
 }
 

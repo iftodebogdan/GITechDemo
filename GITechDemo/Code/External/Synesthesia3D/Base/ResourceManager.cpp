@@ -50,8 +50,6 @@ MUTEX   TexMutex;
 MUTEX   RTMutex;
 MUTEX   ModelMutex;
 
-bool    bMutexesInitialized = false;
-
 struct membuf : std::streambuf {
     membuf(char const* base, size_t size) {
         char* p(const_cast<char*>(base));
@@ -68,19 +66,14 @@ struct imemstream : virtual membuf, std::istream {
 
 ResourceManager::ResourceManager()
 {
-    if (!bMutexesInitialized)
-    {
-        MUTEX_INIT(VFMutex);
-        MUTEX_INIT(IBMutex);
-        MUTEX_INIT(VBMutex);
-        MUTEX_INIT(ShdInMutex);
-        MUTEX_INIT(ShdProgMutex);
-        MUTEX_INIT(TexMutex);
-        MUTEX_INIT(RTMutex);
-        MUTEX_INIT(ModelMutex);
-
-        bMutexesInitialized = true;
-    }
+    MUTEX_INIT(VFMutex);
+    MUTEX_INIT(IBMutex);
+    MUTEX_INIT(VBMutex);
+    MUTEX_INIT(ShdInMutex);
+    MUTEX_INIT(ShdProgMutex);
+    MUTEX_INIT(TexMutex);
+    MUTEX_INIT(RTMutex);
+    MUTEX_INIT(ModelMutex);
 }
 
 ResourceManager::~ResourceManager()
@@ -98,19 +91,14 @@ ResourceManager::~ResourceManager()
         GetModelCount())
         ReleaseAll();
 
-    if (bMutexesInitialized)
-    {
-        MUTEX_DESTROY(VFMutex);
-        MUTEX_DESTROY(IBMutex);
-        MUTEX_DESTROY(VBMutex);
-        MUTEX_DESTROY(ShdInMutex);
-        MUTEX_DESTROY(ShdProgMutex);
-        MUTEX_DESTROY(TexMutex);
-        MUTEX_DESTROY(RTMutex);
-        MUTEX_DESTROY(ModelMutex);
-
-        bMutexesInitialized = false;
-    }
+    MUTEX_DESTROY(VFMutex);
+    MUTEX_DESTROY(IBMutex);
+    MUTEX_DESTROY(VBMutex);
+    MUTEX_DESTROY(ShdInMutex);
+    MUTEX_DESTROY(ShdProgMutex);
+    MUTEX_DESTROY(TexMutex);
+    MUTEX_DESTROY(RTMutex);
+    MUTEX_DESTROY(ModelMutex);
 }
 
 void ResourceManager::ReleaseAll()
@@ -194,11 +182,7 @@ void ResourceManager::UnbindAll()
 const unsigned int ResourceManager::CreateShaderInput(ShaderProgram* const shaderProgram)
 {
     ShaderInput* const shdIn = new ShaderInput(shaderProgram);
-    MUTEX_LOCK(ShdInMutex);
-    m_arrShaderInput.push_back(shdIn);
-    const unsigned int ret = (unsigned int)m_arrShaderInput.size() - 1;
-    MUTEX_UNLOCK(ShdInMutex);
-    return ret;
+    return AddShaderInput(shdIn);
 }
 
 const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
@@ -308,10 +292,7 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
                         imemstream  modelBuffer(decompressedBuffer, decompressedBufferSize);
                         Model* const mdl = new Model;
                         mdl->szSourceFile = pathToFile;
-                        MUTEX_LOCK(ModelMutex);
-                        m_arrModel.push_back(mdl);
-                        modelIdx = (unsigned int)m_arrModel.size() - 1;
-                        MUTEX_UNLOCK(ModelMutex);
+                        modelIdx = AddModel(mdl);
                         modelBuffer >> *mdl;
                     }
                     else
@@ -371,11 +352,11 @@ const unsigned int ResourceManager::FindTexture(const char * pathToFile, const b
 
 const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
-    MUTEX_LOCK(ModelMutex);
+    //MUTEX_LOCK(ModelMutex);
     for (unsigned int i = 0; i < m_arrModel.size(); i++)
         if (m_arrModel[i] && m_arrModel[i]->szSourceFile == pathToFile)
         {
-            MUTEX_UNLOCK(ModelMutex);
+            //MUTEX_UNLOCK(ModelMutex);
             return i;
         }
 
@@ -383,11 +364,11 @@ const unsigned int ResourceManager::FindModel(const char * pathToFile, const boo
         for (unsigned int i = 0; i < m_arrModel.size(); i++)
             if (m_arrModel[i] && m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
             {
-                MUTEX_UNLOCK(ModelMutex);
+                //MUTEX_UNLOCK(ModelMutex);
                 return i;
             }
 
-    MUTEX_UNLOCK(ModelMutex);
+    //MUTEX_UNLOCK(ModelMutex);
     return ~0u;
 }
 
@@ -503,6 +484,10 @@ void ResourceManager::ReleaseVertexFormat(const unsigned int idx)
 
     delete m_arrVertexFormat[idx];
     m_arrVertexFormat[idx] = nullptr;
+
+    MUTEX_LOCK(VFMutex);
+    m_arrVertexFormatFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(VFMutex);
 }
 
 void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
@@ -513,6 +498,10 @@ void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
 
     delete m_arrIndexBuffer[idx];
     m_arrIndexBuffer[idx] = nullptr;
+
+    MUTEX_LOCK(IBMutex);
+    m_arrIndexBufferFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(IBMutex);
 }
 
 void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
@@ -523,6 +512,10 @@ void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
 
     delete m_arrVertexBuffer[idx];
     m_arrVertexBuffer[idx] = nullptr;
+
+    MUTEX_LOCK(VBMutex);
+    m_arrVertexBufferFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(VBMutex);
 }
 
 void ResourceManager::ReleaseShaderInput(const unsigned int idx)
@@ -533,6 +526,10 @@ void ResourceManager::ReleaseShaderInput(const unsigned int idx)
 
     delete m_arrShaderInput[idx];
     m_arrShaderInput[idx] = nullptr;
+
+    MUTEX_LOCK(ShdInMutex);
+    m_arrShaderInputFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(ShdInMutex);
 }
 
 void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
@@ -543,6 +540,10 @@ void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 
     delete m_arrShaderProgram[idx];
     m_arrShaderProgram[idx] = nullptr;
+
+    MUTEX_LOCK(ShdProgMutex);
+    m_arrShaderProgramFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(ShdProgMutex);
 }
 
 void ResourceManager::ReleaseTexture(const unsigned int idx)
@@ -553,6 +554,10 @@ void ResourceManager::ReleaseTexture(const unsigned int idx)
 
     delete m_arrTexture[idx];
     m_arrTexture[idx] = nullptr;
+
+    MUTEX_LOCK(TexMutex);
+    m_arrTextureFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(TexMutex);
 }
 
 void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
@@ -563,6 +568,10 @@ void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
 
     delete m_arrRenderTarget[idx];
     m_arrRenderTarget[idx] = nullptr;
+
+    MUTEX_LOCK(RTMutex);
+    m_arrRenderTargetFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(RTMutex);
 }
 
 void ResourceManager::ReleaseModel(const unsigned int idx)
@@ -573,4 +582,176 @@ void ResourceManager::ReleaseModel(const unsigned int idx)
 
     delete m_arrModel[idx];
     m_arrModel[idx] = nullptr;
+
+    MUTEX_LOCK(ModelMutex);
+    m_arrModelFreeSlots.push_back(idx);
+    MUTEX_UNLOCK(ModelMutex);
+}
+
+const unsigned int ResourceManager::AddVertexFormat(VertexFormat* vf)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(VFMutex);
+    if (!m_arrVertexFormatFreeSlots.empty())
+    {
+        idx = m_arrVertexFormatFreeSlots.front();
+        m_arrVertexFormat[idx] = vf;
+        m_arrVertexFormatFreeSlots.erase(m_arrVertexFormatFreeSlots.begin());
+    }
+    else
+    {
+        m_arrVertexFormat.push_back(vf);
+        idx = (unsigned int)m_arrVertexFormat.size() - 1;
+    }
+    MUTEX_UNLOCK(VFMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddIndexBuffer(IndexBuffer* ib)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(IBMutex);
+    if (!m_arrIndexBufferFreeSlots.empty())
+    {
+        idx = m_arrIndexBufferFreeSlots.front();
+        m_arrIndexBuffer[idx] = ib;
+        m_arrIndexBufferFreeSlots.erase(m_arrIndexBufferFreeSlots.begin());
+    }
+    else
+    {
+        m_arrIndexBuffer.push_back(ib);
+        idx = (unsigned int)m_arrIndexBuffer.size() - 1;
+    }
+    MUTEX_UNLOCK(IBMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddVertexBuffer(VertexBuffer* vb)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(VBMutex);
+    if (!m_arrVertexBufferFreeSlots.empty())
+    {
+        idx = m_arrVertexBufferFreeSlots.front();
+        m_arrVertexBuffer[idx] = vb;
+        m_arrVertexBufferFreeSlots.erase(m_arrVertexBufferFreeSlots.begin());
+    }
+    else
+    {
+        m_arrVertexBuffer.push_back(vb);
+        idx = (unsigned int)m_arrVertexBuffer.size() - 1;
+    }
+    MUTEX_UNLOCK(VBMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddShaderProgram(ShaderProgram* shdProg)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(ShdProgMutex);
+    if (!m_arrShaderProgramFreeSlots.empty())
+    {
+        idx = m_arrShaderProgramFreeSlots.front();
+        m_arrShaderProgram[idx] = shdProg;
+        m_arrShaderProgramFreeSlots.erase(m_arrShaderProgramFreeSlots.begin());
+    }
+    else
+    {
+        m_arrShaderProgram.push_back(shdProg);
+        idx = (unsigned int)m_arrShaderProgram.size() - 1;
+    }
+    MUTEX_UNLOCK(ShdProgMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddTexture(Texture* tex)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(TexMutex);
+    if (!m_arrTextureFreeSlots.empty())
+    {
+        idx = m_arrTextureFreeSlots.front();
+        m_arrTexture[idx] = tex;
+        m_arrTextureFreeSlots.erase(m_arrTextureFreeSlots.begin());
+    }
+    else
+    {
+        m_arrTexture.push_back(tex);
+        idx = (unsigned int)m_arrTexture.size() - 1;
+    }
+    MUTEX_UNLOCK(TexMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddRenderTarget(RenderTarget* rt)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(RTMutex);
+    if (!m_arrRenderTargetFreeSlots.empty())
+    {
+        idx = m_arrRenderTargetFreeSlots.front();
+        m_arrRenderTarget[idx] = rt;
+        m_arrRenderTargetFreeSlots.erase(m_arrRenderTargetFreeSlots.begin());
+    }
+    else
+    {
+        m_arrRenderTarget.push_back(rt);
+        idx = (unsigned int)m_arrRenderTarget.size() - 1;
+    }
+    MUTEX_UNLOCK(RTMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddShaderInput(ShaderInput* shdIn)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(ShdInMutex);
+    if (!m_arrShaderInputFreeSlots.empty())
+    {
+        idx = m_arrShaderInputFreeSlots.front();
+        m_arrShaderInput[idx] = shdIn;
+        m_arrShaderInputFreeSlots.erase(m_arrShaderInputFreeSlots.begin());
+    }
+    else
+    {
+        m_arrShaderInput.push_back(shdIn);
+        idx = (unsigned int)m_arrShaderInput.size() - 1;
+    }
+    MUTEX_UNLOCK(ShdInMutex);
+
+    return idx;
+}
+
+const unsigned int ResourceManager::AddModel(Model* mdl)
+{
+    unsigned int idx = ~0u;
+
+    MUTEX_LOCK(ModelMutex);
+    if (!m_arrModelFreeSlots.empty())
+    {
+        idx = m_arrModelFreeSlots.front();
+        m_arrModel[idx] = mdl;
+        m_arrModelFreeSlots.erase(m_arrModelFreeSlots.begin());
+    }
+    else
+    {
+        m_arrModel.push_back(mdl);
+        idx = (unsigned int)m_arrModel.size() - 1;
+    }
+    MUTEX_UNLOCK(ModelMutex);
+
+    return idx;
 }

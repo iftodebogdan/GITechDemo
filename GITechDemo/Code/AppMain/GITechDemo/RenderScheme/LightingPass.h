@@ -29,9 +29,6 @@ namespace GITechDemoApp
     class LightingPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(LightingPass)
-
-    private:
-        void CopyDepthBuffer();
     };
 }
 

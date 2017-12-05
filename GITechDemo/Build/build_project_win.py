@@ -129,7 +129,8 @@ def Run():
 
     # Create directory structure
     logging.info("Creating directory structure...")
-    rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName)
+    rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName + "/")
+    utils.MakeDir(rootBuildDir)
 
     # Copy binaries
     logging.info("Copying binaries...")

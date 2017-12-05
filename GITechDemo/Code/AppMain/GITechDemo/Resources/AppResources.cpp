@@ -28,7 +28,7 @@ using namespace GITechDemoApp;
 using namespace Synesthesia3D;
 
 vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
-vector<ArtistParameter*> ArtistParameterManager::ms_arrParams; // Moved from ArtistParameter.cpp
+vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistParameter.cpp
 
 //////////////////
 // DO NOT USE!  //
@@ -89,6 +89,9 @@ namespace GITechDemoApp
     extern bool GBUFFER_Z_PREPASS;
     extern int DIFFUSE_ANISOTROPY;
     extern bool GBUFFER_USE_NORMAL_MAPS;
+    extern int GBUFFER_DEBUG_VIEW;
+    extern bool GBUFFER_DEBUG_VIEW_DEPTH;
+    extern bool DRAW_ALPHA_TEST_GEOMETRY;
 
     // Directional light
     extern bool DIRECTIONAL_LIGHT_ENABLED;
@@ -156,9 +159,6 @@ namespace GITechDemoApp
     extern int FULLSCREEN_REFRESH_RATE;
     extern bool VSYNC_ENABLED;
 
-    // Profiling
-    extern bool GPU_PROFILE_SCREEN;
-
     // Some misc. resources
     extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
     extern const unsigned int RSM_SIZE;
@@ -199,9 +199,10 @@ namespace GITechDemoApp
     CREATE_SHADER_OBJECT(ColorCopyShader,                   "shaders/ColorCopy.hlsl");
     CREATE_SHADER_OBJECT(RSMCaptureShader,                  "shaders/RSMCapture.hlsl");
     CREATE_SHADER_OBJECT(DepthPassShader,                   "shaders/DepthPass.hlsl");
+    CREATE_SHADER_OBJECT(DepthPassAlphaTestShader,          "shaders/DepthPassAlphaTest.hlsl");
     CREATE_SHADER_OBJECT(SkyBoxShader,                      "shaders/SkyBox.hlsl");
     CREATE_SHADER_OBJECT(LensFlareApplyShader,              "shaders/LensFlareApply.hlsl");
-    CREATE_SHADER_OBJECT(HUDTextShader,                     "shaders/HUDText.hlsl");
+    CREATE_SHADER_OBJECT(UIShader,                          "shaders/UI.hlsl");
     CREATE_SHADER_OBJECT(DepthCopyShader,                   "shaders/DepthCopy.hlsl");
 
     //------------------------------------------------------
@@ -533,10 +534,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fLensDirtIntensity,       float,          0.3f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fLensStarBurstIntensity,  float,          0.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fAnamorphicIntensity,     float,          5.f                     );
-
-    /* HUD parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(f3TextColor,              Vec3f,          Vec3f(1.f, 1.f, 1.f)    );
-
+    
     //------------------------------------------------------
 
 
@@ -632,6 +630,8 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
+    CREATE_SHADER_CONSTANT_OBJECT(texFont,                      s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_OBJECT(f44UIProjMat,                 Matrix44f       );
 
     //--------------------------------------------------------------------------
 
@@ -642,202 +642,197 @@ namespace GITechDemoApp
     //////////////////////////////////////////
 
     // Window properties
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Fullscreen enabled",        "Toggle between window mode and fulscreen mode",                        "Window",                   FULLSCREEN_ENABLED);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Borderless windowed mode",  "Toggle between regular windowed and borderless windowed mode",         "Window",                   BORDERLESS_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Resolution X (width)",      "Set the resolution on the X axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_X,                    1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Resolution Y (height)",     "Set the resolution on the Y axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_Y,                    1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Refresh rate",              "Set the refresh rate of the display (only affects fullscreen mode)",   "Window",                   FULLSCREEN_REFRESH_RATE,                    1.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("VSync enabled",             "Synchronizes backbuffer swapping with screen refresh rate",            "Window",                   VSYNC_ENABLED);
-
-    // Profiling
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Display GPU timings",       "Toggle the display of GPU timings (debug and profile only)",           "Profiler",                 GPU_PROFILE_SCREEN);
-    
-    // HUD
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color R",              "HUD text color - red component",                                       "HUD",                      f3TextColor.GetCurrentValue()[0],           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color G",              "HUD text color - green component",                                     "HUD",                      f3TextColor.GetCurrentValue()[1],           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Text color B",              "HUD text color - blue component",                                      "HUD",                      f3TextColor.GetCurrentValue()[2],           0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Fullscreen enabled",                "Toggle between window mode and fulscreen mode",                        "Window",                   FULLSCREEN_ENABLED);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Borderless windowed mode",          "Toggle between regular windowed and borderless windowed mode",         "Window",                   BORDERLESS_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Resolution X (width)",              "Set the resolution on the X axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_X,                    1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Resolution Y (height)",             "Set the resolution on the Y axis (only affects fullscreen mode)",      "Window",                   FULLSCREEN_RESOLUTION_Y,                    1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Refresh rate",                      "Set the refresh rate of the display (only affects fullscreen mode)",   "Window",                   FULLSCREEN_REFRESH_RATE,                    1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("VSync enabled",                     "Synchronizes backbuffer swapping with screen refresh rate",            "Window",                   VSYNC_ENABLED);
 
     // Camera
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Infinite projection",       "Use a projection matrix with an infinite far plane",                   "Camera",                   CAMERA_INFINITE_PROJ);
-    CREATE_ARTIST_PARAMETER_OBJECT("Z-Near",                    "Distance to the nearest Z clip plane",                                 "Camera",                   fZNear.GetCurrentValue(),                   0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Z-Far",                     "Distance to the furthest Z clip plane (if not infinite projection)",   "Camera",                   fZFar.GetCurrentValue(),                    10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("FOV",                       "Vertical field of view",                                               "Camera",                   CAMERA_FOV,                                 1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Movement speed",            "Camera movement speed",                                                "Camera",                   CAMERA_MOVE_SPEED,                          1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Speed up factor",           "Camera speed multiplier when pressing the 'speed up' button",          "Camera",                   CAMERA_SPEED_UP_FACTOR,                     1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Slow down factor",          "Camera speed multiplier when pressing the 'slow down' button",         "Camera",                   CAMERA_SLOW_DOWN_FACTOR,                    0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Rotation speed",            "Camera rotation speed",                                                "Camera",                   CAMERA_ROTATE_SPEED,                        1.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Camera animation",          "Camera animation toggle (no collisions with world geometry)",          "Camera",                   CAMERA_ANIMATION_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Animation timeout",         "Seconds it takes until the camera animation kicks in",                 "Camera",                   CAMERA_ANIMATION_TIMEOUT_SECONDS,           1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Infinite projection",               "Use a projection matrix with an infinite far plane",                   "Camera",                   CAMERA_INFINITE_PROJ);
+    CREATE_ARTIST_PARAMETER_OBJECT("Z-Near",                            "Distance to the nearest Z clip plane",                                 "Camera",                   fZNear.GetCurrentValue(),                   0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Z-Far",                             "Distance to the furthest Z clip plane (if not infinite projection)",   "Camera",                   fZFar.GetCurrentValue(),                    10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("FOV",                               "Vertical field of view",                                               "Camera",                   CAMERA_FOV,                                 1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Movement speed",                    "Camera movement speed",                                                "Camera",                   CAMERA_MOVE_SPEED,                          1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Speed up factor",                   "Camera speed multiplier when pressing the 'speed up' button",          "Camera",                   CAMERA_SPEED_UP_FACTOR,                     1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Slow down factor",                  "Camera speed multiplier when pressing the 'slow down' button",         "Camera",                   CAMERA_SLOW_DOWN_FACTOR,                    0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Rotation speed",                    "Camera rotation speed",                                                "Camera",                   CAMERA_ROTATE_SPEED,                        1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Camera animation",                  "Camera animation toggle (no collisions with world geometry)",          "Camera",                   CAMERA_ANIMATION_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Animation timeout",                 "Seconds it takes until the camera animation kicks in",                 "Camera",                   CAMERA_ANIMATION_TIMEOUT_SECONDS,           1.f);
 
     // G-Buffer
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Z-prepass",                 "Populate the scene's depth buffer before generating the G-Buffer",     "G-Buffer",                 GBUFFER_Z_PREPASS);
-    CREATE_ARTIST_PARAMETER_OBJECT("Diffuse anisotropic level", "Anisotropic filtering level for diffuse textures",                     "G-Buffer",                 DIFFUSE_ANISOTROPY,                         1.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Use normal maps",           "Toggles the use of normal maps or vertex normals",                     "G-Buffer",                 GBUFFER_USE_NORMAL_MAPS);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Z-prepass",                         "Populate the scene's depth buffer before generating the G-Buffer",     "G-Buffer",                 GBUFFER_Z_PREPASS);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Draw alpha test geometry",          "Draw geometry that uses alpha testing when Z-prepass is active.",      "G-Buffer",                 DRAW_ALPHA_TEST_GEOMETRY);
+    CREATE_ARTIST_PARAMETER_OBJECT("Diffuse anisotropic level",         "Anisotropic filtering level for diffuse textures",                     "G-Buffer",                 DIFFUSE_ANISOTROPY,                         1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Use normal maps",                   "Toggles the use of normal maps or vertex normals",                     "G-Buffer",                 GBUFFER_USE_NORMAL_MAPS);
+    CREATE_ARTIST_PARAMETER_OBJECT("Debug view G-Buffer",               "0 - albedo; 1 - normals; 2 - material/roughness; 3 - vertex normals",  "G-Buffer",                 GBUFFER_DEBUG_VIEW,                         1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug view depth buffer",           "View the depth buffer (linear, scaled by far plane distance)",         "G-Buffer",                 GBUFFER_DEBUG_VIEW_DEPTH);
 
     // Directional light
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Directional lights enable", "Toggle the rendering of directional lights",                           "Directional light",        DIRECTIONAL_LIGHT_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("BRDF model", "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann; 3 - Ashikhmin-Shirley; 4 - Ward", "Directional light", nBRDFModel.GetCurrentValue(),      1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Diffuse factor",            "Scale value for diffuse light equation",                               "Directional light",        fDiffuseFactor.GetCurrentValue(),           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Specular factor",           "Scale value for specular light equation (Blinn-Phong only)",           "Directional light",        fSpecFactor.GetCurrentValue(),              0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Ambient factor",            "Scale value for ambient light equation",                               "Directional light",        fAmbientFactor.GetCurrentValue(),           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Irradiance factor",         "Scale value for irradiance map (Cook-Torrance only)",                  "Directional light",        fIrradianceFactor.GetCurrentValue(),        0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Reflection factor",         "Scale value for reflection map (Cook-Torrance only)",                  "Directional light",        fReflectionFactor.GetCurrentValue(),        0.1f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Light animation",           "Directional light animation toggle",                                   "Directional light",        DIRECTIONAL_LIGHT_ANIMATION_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Light direction - X axis",  "Directional light direction on the X axis of the world",               "Directional light",        f3LightDir.GetCurrentValue()[0],            0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Light direction - Z axis",  "Directional light direction on the Z axis of the world",               "Directional light",        f3LightDir.GetCurrentValue()[2],            0.01f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Directional lights enable",         "Toggle the rendering of directional lights",                           "Directional light",        DIRECTIONAL_LIGHT_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("BRDF model", "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann; 3 - Ashikhmin-Shirley; 4 - Ward", "Directional light", nBRDFModel.GetCurrentValue(),              1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Diffuse factor",                    "Scale value for diffuse light equation",                               "Directional light",        fDiffuseFactor.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Specular factor",                   "Scale value for specular light equation (Blinn-Phong only)",           "Directional light",        fSpecFactor.GetCurrentValue(),              0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Ambient factor",                    "Scale value for ambient light equation",                               "Directional light",        fAmbientFactor.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Irradiance factor",                 "Scale value for irradiance map (Cook-Torrance only)",                  "Directional light",        fIrradianceFactor.GetCurrentValue(),        0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Reflection factor",                 "Scale value for reflection map (Cook-Torrance only)",                  "Directional light",        fReflectionFactor.GetCurrentValue(),        0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Light animation",                   "Directional light animation toggle",                                   "Directional light",        DIRECTIONAL_LIGHT_ANIMATION_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Light direction - X axis",          "Directional light direction on the X axis of the world",               "Directional light",        f3LightDir.GetCurrentValue()[0],            0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Light direction - Z axis",          "Directional light direction on the Z axis of the world",               "Directional light",        f3LightDir.GetCurrentValue()[2],            0.01f);
 
     // CSM
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug cascades",            "Draw cascades with different colors",                                  "Cascaded shadow map",      bDebugCascades.GetCurrentValue());
-    CREATE_ARTIST_PARAMETER_OBJECT("Cascade blend size",        "The size of the blend band between overlapping cascades",              "Cascaded shadow map",      fCascadeBlendSize.GetCurrentValue(),        1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("CSM distribution",          "Factor affecting the distribution of shadow map cascades",             "Cascaded shadow map",      CASCADE_SPLIT_FACTOR,                       0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("CSM range",                 "Shadow draw distance",                                                 "Cascaded shadow map",      CASCADE_MAX_VIEW_DEPTH,                     10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 1",              "Depth bias for cascade 1",                                             "Cascaded shadow map",      DEPTH_BIAS[0],                              0.0001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 1", "Slope scaled depth bias for cascade 1",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[0],                 0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 2",              "Depth bias for cascade 2",                                             "Cascaded shadow map",      DEPTH_BIAS[1],                              0.0001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 2", "Slope scaled depth bias for cascade 2",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[1],                 0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 3",              "Depth bias for cascade 3",                                             "Cascaded shadow map",      DEPTH_BIAS[2],                              0.0001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 3", "Slope scaled depth bias for cascade 3",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[2],                 0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 4",              "Depth bias for cascade 4",                                             "Cascaded shadow map",      DEPTH_BIAS[3],                              0.0001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 4", "Slope scaled depth bias for cascade 4",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[3],                 0.1f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug CSM camera",          "Draw the cascaded shadow map on-screen",                               "Cascaded shadow map",      DEBUG_CSM_CAMERA);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug cascades",                    "Draw cascades with different colors",                                  "Cascaded shadow map",      bDebugCascades.GetCurrentValue());
+    CREATE_ARTIST_PARAMETER_OBJECT("Cascade blend size",                "The size of the blend band between overlapping cascades",              "Cascaded shadow map",      fCascadeBlendSize.GetCurrentValue(),        1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("CSM distribution",                  "Factor affecting the distribution of shadow map cascades",             "Cascaded shadow map",      CASCADE_SPLIT_FACTOR,                       0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("CSM range",                         "Shadow draw distance",                                                 "Cascaded shadow map",      CASCADE_MAX_VIEW_DEPTH,                     10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 1",                      "Depth bias for cascade 1",                                             "Cascaded shadow map",      DEPTH_BIAS[0],                              0.0001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 1",         "Slope scaled depth bias for cascade 1",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[0],                 0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 2",                      "Depth bias for cascade 2",                                             "Cascaded shadow map",      DEPTH_BIAS[1],                              0.0001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 2",         "Slope scaled depth bias for cascade 2",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[1],                 0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 3",                      "Depth bias for cascade 3",                                             "Cascaded shadow map",      DEPTH_BIAS[2],                              0.0001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 3",         "Slope scaled depth bias for cascade 3",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[2],                 0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Depth bias 4",                      "Depth bias for cascade 4",                                             "Cascaded shadow map",      DEPTH_BIAS[3],                              0.0001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Slope scaled depth bias 4",         "Slope scaled depth bias for cascade 4",                                "Cascaded shadow map",      SLOPE_SCALED_DEPTH_BIAS[3],                 0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug CSM camera",                  "Draw the cascaded shadow map on-screen",                               "Cascaded shadow map",      DEBUG_CSM_CAMERA);
     
     // Screen space reflections
-    CREATE_ARTIST_BOOLPARAM_OBJECT("SSR enable",                "Toggle the rendering of screen space reflections",                     "Screen space reflections", SSR_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Reflection intensity",      "Scale value for the intensity of reflections",                         "Screen space reflections", fReflectionIntensity.GetCurrentValue(),     0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Object thickness",          "Used to determine if ray hits are valid",                              "Screen space reflections", fThickness.GetCurrentValue(),               1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sample stride",             "Number of pixels to jump between each ray march iteration",            "Screen space reflections", fSampleStride.GetCurrentValue(),            10.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Manual maximum steps",      "Manually adjust maximum number of steps, or calculate it dynamically", "Screen space reflections", SSR_MANUAL_MAX_STEPS);
-    CREATE_ARTIST_PARAMETER_OBJECT("Maximum step count",        "Maximum number of ray march iterations before returning a miss",       "Screen space reflections", fMaxSteps.GetCurrentValue(),                10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Maximum ray distance",      "Maximum distance to ray march before returning a miss",                "Screen space reflections", fMaxRayDist.GetCurrentValue(),              100.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Use dithering",             "Use a bayer matrix to offset the starting positions of rays",          "Screen space reflections", bUseDither.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("SSR enable",                        "Toggle the rendering of screen space reflections",                     "Screen space reflections", SSR_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Reflection intensity",              "Scale value for the intensity of reflections",                         "Screen space reflections", fReflectionIntensity.GetCurrentValue(),     0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Object thickness",                  "Used to determine if ray hits are valid",                              "Screen space reflections", fThickness.GetCurrentValue(),               1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sample stride",                     "Number of pixels to jump between each ray march iteration",            "Screen space reflections", fSampleStride.GetCurrentValue(),            10.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Manual maximum steps",              "Manually adjust maximum number of steps, or calculate it dynamically", "Screen space reflections", SSR_MANUAL_MAX_STEPS);
+    CREATE_ARTIST_PARAMETER_OBJECT("Maximum step count",                "Maximum number of ray march iterations before returning a miss",       "Screen space reflections", fMaxSteps.GetCurrentValue(),                10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Maximum ray distance",              "Maximum distance to ray march before returning a miss",                "Screen space reflections", fMaxRayDist.GetCurrentValue(),              100.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Use dithering",                     "Use a bayer matrix to offset the starting positions of rays",          "Screen space reflections", bUseDither.GetCurrentValue());
 
     // SSAO
-    CREATE_ARTIST_BOOLPARAM_OBJECT("SSAO enable",               "Toggle the rendering of screen space ambient occlusion",               "SSAO",                     SSAO_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sample radius",             "Radius in which occluders are searched for",                           "SSAO",                     fSSAOSampleRadius.GetCurrentValue(),        1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Intensity",                 "Intensity of SSAO effect",                                             "SSAO",                     fSSAOIntensity.GetCurrentValue(),           1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Scale",                     "Scale for the occlusion attenuation with distance",                    "SSAO",                     fSSAOScale.GetCurrentValue(),               0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Bias",                      "Bias for the occlusion attenuation with normal differences",           "SSAO",                     fSSAOBias.GetCurrentValue(),                0.1f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution",        "Toggle rendering into a quarter resolution buffer",                    "SSAO",                     SSAO_USE_QUARTER_RESOLUTION_BUFFER);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("SSAO enable",                       "Toggle the rendering of screen space ambient occlusion",               "SSAO",                     SSAO_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("SSAO sample radius",                "Radius in which occluders are searched for",                           "SSAO",                     fSSAOSampleRadius.GetCurrentValue(),        1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("SSAO intensity",                    "Intensity of SSAO effect",                                             "SSAO",                     fSSAOIntensity.GetCurrentValue(),           1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("SSAO scale",                        "Scale for the occlusion attenuation with distance",                    "SSAO",                     fSSAOScale.GetCurrentValue(),               0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("SSAO bias",                         "Bias for the occlusion attenuation with normal differences",           "SSAO",                     fSSAOBias.GetCurrentValue(),                0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution SSAO",           "Toggle rendering into a quarter resolution buffer",                    "SSAO",                     SSAO_USE_QUARTER_RESOLUTION_BUFFER);
 
     // RSM
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Indirect lights enable",    "Toggle the rendering of indirect lights",                              "Reflective shadow map",    INDIRECT_LIGHT_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Intensity",                 "The intensity of the indirect light",                                  "Reflective shadow map",    fRSMIntensity.GetCurrentValue(),            1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Kernel scale",              "Scale value for the kernel size for sampling the RSM",                 "Reflective shadow map",    fRSMKernelScale.GetCurrentValue(),          0.001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Upscale threshold",         "Affects the number of rejected pixels during upscaling",               "Reflective shadow map",    fWeightThreshold.GetCurrentValue(),         0.01f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug upscale pass",        "Draws rejected pixels with a red color",                               "Reflective shadow map",    bDebugUpscalePass.GetCurrentValue());
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution",        "Toggle rendering into a quarter resolution buffer",                    "Reflective shadow map",    RSM_USE_QUARTER_RESOLUTION_BUFFER);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug RSM camera",          "Draw the reflective shadow map on-screen",                             "Reflective shadow map",    DEBUG_RSM_CAMERA);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Indirect lights enable",            "Toggle the rendering of indirect lights",                              "Reflective shadow map",    INDIRECT_LIGHT_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Intensity",                         "The intensity of the indirect light",                                  "Reflective shadow map",    fRSMIntensity.GetCurrentValue(),            1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Kernel scale",                      "Scale value for the kernel size for sampling the RSM",                 "Reflective shadow map",    fRSMKernelScale.GetCurrentValue(),          0.001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Upscale threshold",                 "Affects the number of rejected pixels during upscaling",               "Reflective shadow map",    fWeightThreshold.GetCurrentValue(),         0.001f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug upscale pass",                "Draws rejected pixels with a red color",                               "Reflective shadow map",    bDebugUpscalePass.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution RSM",            "Toggle rendering into a quarter resolution buffer",                    "Reflective shadow map",    RSM_USE_QUARTER_RESOLUTION_BUFFER);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug RSM camera",                  "Draw the reflective shadow map on-screen",                             "Reflective shadow map",    DEBUG_RSM_CAMERA);
 
     // Sky
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",                "Affects the radius of the sun",                                        "Sky",                      fSunRadius.GetCurrentValue(),               10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",            "Affects the brightness of the sun",                                    "Sky",                      fSunBrightness.GetCurrentValue(),           10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun radius",                        "Affects the radius of the sun",                                        "Sky",                      fSunRadius.GetCurrentValue(),               10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Sun brightness",                    "Affects the brightness of the sun",                                    "Sky",                      fSunBrightness.GetCurrentValue(),           10.f);
 
     // Volumetric lights
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Volumetric lights enable",  "Toggle the rendering of the volumetric lighting effect (directional)", "Volumetric lights",        DIR_LIGHT_VOLUME_ENABLE);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sample count",              "The number of samples taken across the ray's length",                  "Volumetric lights",        nSampleCount.GetCurrentValue(),             10.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Sample distribution",       "< 1 means higher density of samples near the camera",                  "Volumetric lights",        fSampleDistrib.GetCurrentValue(),           0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Intensity",                 "Intensity of the volumetric effect",                                   "Volumetric lights",        fLightIntensity.GetCurrentValue(),          0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Mult. scatter intensity",   "Intensity of the faked multiple scattering effect",                    "Volumetric lights",        fMultScatterIntensity.GetCurrentValue(),    0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - red",           "Red color channel value for fog",                                      "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[0],                  0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - green",         "Green color channel value for fog",                                    "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[1],                  0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - blue",          "Blue color channel value for fog",                                     "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[2],                  0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog vertical falloff",      "Factor for the exponential vertical falloff of the fog effect",        "Volumetric lights",        fFogVerticalFalloff.GetCurrentValue(),      1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed X axis",          "Speed of fog effect on the X axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[0],            1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Y axis",          "Speed of fog effect on the Y axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[1],            1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Z axis",          "Speed of fog effect on the Z axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[2],            1.f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Blur samples",              "Toggle the use of an additional blur pass",                            "Volumetric lights",        DIR_LIGHT_VOLUME_BLUR_SAMPLES);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Depth-aware blur",          "Make the blur pass depth-aware so as not to cause light bleeding",     "Volumetric lights",        DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE);
-    CREATE_ARTIST_PARAMETER_OBJECT("Blur depth falloff",        "A scaling factor for the blur weights around edges",                   "Volumetric lights",        fBlurDepthFalloff.GetCurrentValue(),        0.0001f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Depth-aware upscaling",     "Make the upscale pass depth-aware so as not to cause artifacts",       "Volumetric lights",        DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE);
-    CREATE_ARTIST_PARAMETER_OBJECT("Upsample depth threshold",  "A threshold for edge detection used to reduce upscaling artifacts",    "Volumetric lights",        fUpsampleDepthThreshold.GetCurrentValue(),  0.0001f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution",        "Toggle the use of an intermediary quarter resolution target",          "Volumetric lights",        DIR_LIGHT_VOLUME_QUARTER_RES);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Volumetric lights enable",          "Toggle the rendering of the volumetric lighting effect (directional)", "Volumetric lights",        DIR_LIGHT_VOLUME_ENABLE);
+    CREATE_ARTIST_PARAMETER_OBJECT("Accumulation sample count",          "The number of samples taken across the ray's length",                  "Volumetric lights",        nSampleCount.GetCurrentValue(),             10.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Accumulation sample distribution",   "< 1 means higher density of samples near the camera",                  "Volumetric lights",        fSampleDistrib.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Accumulation intensity",             "Intensity of the volumetric effect",                                   "Volumetric lights",        fLightIntensity.GetCurrentValue(),          0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Mult. scatter intensity",           "Intensity of the faked multiple scattering effect",                    "Volumetric lights",        fMultScatterIntensity.GetCurrentValue(),    0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - red",                   "Red color channel value for fog",                                      "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[0],                  0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - green",                 "Green color channel value for fog",                                    "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[1],                  0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog color - blue",                  "Blue color channel value for fog",                                     "Volumetric lights",        DIR_LIGHT_VOLUME_COLOR[2],                  0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog vertical falloff",              "Factor for the exponential vertical falloff of the fog effect",        "Volumetric lights",        fFogVerticalFalloff.GetCurrentValue(),      1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed X axis",                  "Speed of fog effect on the X axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[0],            1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Y axis",                  "Speed of fog effect on the Y axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[1],            1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Z axis",                  "Speed of fog effect on the Z axis (world space units / sec)",          "Volumetric lights",        f3FogSpeed.GetCurrentValue()[2],            1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Blur samples",                      "Toggle the use of an additional blur pass",                            "Volumetric lights",        DIR_LIGHT_VOLUME_BLUR_SAMPLES);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Depth-aware blur",                  "Make the blur pass depth-aware so as not to cause light bleeding",     "Volumetric lights",        DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE);
+    CREATE_ARTIST_PARAMETER_OBJECT("Blur depth falloff",                "A scaling factor for the blur weights around edges",                   "Volumetric lights",        fBlurDepthFalloff.GetCurrentValue(),        0.0001f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Depth-aware upscaling",             "Make the upscale pass depth-aware so as not to cause artifacts",       "Volumetric lights",        DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE);
+    CREATE_ARTIST_PARAMETER_OBJECT("Upsample depth threshold",          "A threshold for edge detection used to reduce upscaling artifacts",    "Volumetric lights",        fUpsampleDepthThreshold.GetCurrentValue(),  0.0001f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution accumulation",   "Toggle the use of an intermediary quarter resolution target",          "Volumetric lights",        DIR_LIGHT_VOLUME_QUARTER_RES);
 
     // Post-processing
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Post-processing enable",    "Toggle post-processing effects",                                       "Post-processing effects",  POST_PROCESSING_ENABLED);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Post-processing enable",            "Toggle post-processing effects",                                       "Post-processing effects",  POST_PROCESSING_ENABLED);
 
     // Bokeh DoF
-    CREATE_ARTIST_BOOLPARAM_OBJECT("DoF enable",                "Toggle the rendering of the depth of field effect",                    "Depth of field",           DOF_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Focal depth",               "Focal distance value in meters (overridden by autofocus)",             "Depth of field",           fFocalDepth.GetCurrentValue(),              1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Focal length",              "Focal length in mm",                                                   "Depth of field",           fFocalLength.GetCurrentValue(),             1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("F-stop",                    "F-stop value",                                                         "Depth of field",           fFStop.GetCurrentValue(),                   1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Circle of confusion",       "Circle of confusion size in mm (35mm film = 0.03mm)",                  "Depth of field",           fCoC.GetCurrentValue(),                     0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Aperture size",             "Affects size of bokeh",                                                "Depth of field",           fApertureSize.GetCurrentValue(),            0.001f);
-    CREATE_ARTIST_PARAMETER_OBJECT("DoF pass count",            "The number of times to apply the DoF shader",                          "Depth of field",           DOF_NUM_PASSES,                             1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Highlight threshold",       "Brightness-pass filter threshold (higher = sparser bokeh)",            "Depth of field",           fHighlightThreshold.GetCurrentValue(),      0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Highlight gain",            "Brightness gain (higher = more prominent bokeh)",                      "Depth of field",           fHighlightGain.GetCurrentValue(),           0.1f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Anamorphic bokeh",          "Stretch bokeh effect like on an anamorphic lens",                      "Depth of field",           bAnamorphicBokeh.GetCurrentValue());
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Autofocus",                 "Use autofocus",                                                        "Depth of field",           bAutofocus.GetCurrentValue());
-    CREATE_ARTIST_PARAMETER_OBJECT("Autofocus time",            "Autofocus animation duration in seconds",                              "Depth of field",           DOF_AUTOFOCUS_TIME,                         1.f);;
+    CREATE_ARTIST_BOOLPARAM_OBJECT("DoF enable",                        "Toggle the rendering of the depth of field effect",                    "Depth of field",           DOF_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Focal depth",                       "Focal distance value in meters (overridden by autofocus)",             "Depth of field",           fFocalDepth.GetCurrentValue(),              1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Focal length",                      "Focal length in mm",                                                   "Depth of field",           fFocalLength.GetCurrentValue(),             1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("F-stop",                            "F-stop value",                                                         "Depth of field",           fFStop.GetCurrentValue(),                   1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Circle of confusion",               "Circle of confusion size in mm (35mm film = 0.03mm)",                  "Depth of field",           fCoC.GetCurrentValue(),                     0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Aperture size",                     "Affects size of bokeh",                                                "Depth of field",           fApertureSize.GetCurrentValue(),            0.001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("DoF pass count",                    "The number of times to apply the DoF shader",                          "Depth of field",           DOF_NUM_PASSES,                             1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Highlight threshold",               "Brightness-pass filter threshold (higher = sparser bokeh)",            "Depth of field",           fHighlightThreshold.GetCurrentValue(),      0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Highlight gain",                    "Brightness gain (higher = more prominent bokeh)",                      "Depth of field",           fHighlightGain.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Anamorphic bokeh",                  "Stretch bokeh effect like on an anamorphic lens",                      "Depth of field",           bAnamorphicBokeh.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Autofocus",                         "Use autofocus",                                                        "Depth of field",           bAutofocus.GetCurrentValue());
+    CREATE_ARTIST_PARAMETER_OBJECT("Autofocus time",                    "Autofocus animation duration in seconds",                              "Depth of field",           DOF_AUTOFOCUS_TIME,                         1.f);;
 
     // Vignetting (part of DoF shader)
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Vignetting",                "Optical lens vignetting effect",                                       "Vignetting",               bVignetting.GetCurrentValue());
-    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting out",            "Vignetting outer border",                                              "Vignetting",               fVignOut.GetCurrentValue(),                 0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting in",             "Vignetting inner border",                                              "Vignetting",               fVignIn.GetCurrentValue(),                  0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting fade",           "F-stops until vignette fades",                                         "Vignetting",               fVignFade.GetCurrentValue(),                1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Vignetting",                        "Optical lens vignetting effect",                                       "Vignetting",               bVignetting.GetCurrentValue());
+    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting out",                    "Vignetting outer border",                                              "Vignetting",               fVignOut.GetCurrentValue(),                 0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting in",                     "Vignetting inner border",                                              "Vignetting",               fVignIn.GetCurrentValue(),                  0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Vignetting fade",                   "F-stops until vignette fades",                                         "Vignetting",               fVignFade.GetCurrentValue(),                1.f);
 
     // Chromatic aberration (part of DoF shader)
-    CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift amount",       "The amount of chromatic separation",                                   "Chromatic aberration",     fChromaShiftAmount.GetCurrentValue(),       0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift amount",               "The amount of chromatic separation",                                   "Chromatic aberration",     fChromaShiftAmount.GetCurrentValue(),       0.1f);
 
     // Lens distortion (part of DoF shader)
-    CREATE_ARTIST_PARAMETER_OBJECT("K coefficient",             "Quartic distortion coefficient",                                       "Lens distortion",          fQuarticDistortionCoef.GetCurrentValue(),   0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("K cube modifier",           "Cubic distortion modifier",                                            "Lens distortion",          fCubicDistortionModifier.GetCurrentValue(), 0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Distortion scale",          "Scales the screen to compensate for overscan/underscan",               "Lens distortion",          fDistortionScale.GetCurrentValue(),         0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("K coefficient",                     "Quartic distortion coefficient",                                       "Lens distortion",          fQuarticDistortionCoef.GetCurrentValue(),   0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("K cube modifier",                   "Cubic distortion modifier",                                            "Lens distortion",          fCubicDistortionModifier.GetCurrentValue(), 0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Distortion scale",                  "Scales the screen to compensate for overscan/underscan",               "Lens distortion",          fDistortionScale.GetCurrentValue(),         0.01f);
 
     // Motion blur
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Motion blur enable",        "Toggle the rendering of the motion blur effect",                       "Motion blur",              MOTION_BLUR_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Motion blur intensity",     "The intensity of the motion blur effect",                              "Motion blur",              fMotionBlurIntensity.GetCurrentValue(),     0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Motion blur sample count",  "The number of samples along the velocity vector",                      "Motion blur",              nMotionBlurNumSamples.GetCurrentValue(),    1.f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Motion blur enable",                "Toggle the rendering of the motion blur effect",                       "Motion blur",              MOTION_BLUR_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Motion blur intensity",             "The intensity of the motion blur effect",                              "Motion blur",              fMotionBlurIntensity.GetCurrentValue(),     0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Motion blur sample count",          "The number of samples along the velocity vector",                      "Motion blur",              nMotionBlurNumSamples.GetCurrentValue(),    1.f);
 
     // Bloom
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Bloom enable",              "Toggle the rendering of the bloom effect",                             "Bloom",                    BLOOM_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Brightness threshold",      "Threshold for the low-pass brightness filter",                         "Bloom",                    fBrightnessThreshold.GetCurrentValue(),     0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Power",                     "Exponent of bloom intensity value",                                    "Bloom",                    fBloomPower.GetCurrentValue(),              0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Strength",                  "Strength of bloom intensity value",                                    "Bloom",                    fBloomStrength.GetCurrentValue(),           0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Bloom enable",                      "Toggle the rendering of the bloom effect",                             "Bloom",                    BLOOM_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Bloom brightness threshold",        "Threshold for the low-pass brightness filter",                         "Bloom",                    fBrightnessThreshold.GetCurrentValue(),     0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Bloom power",                       "Exponent of bloom intensity value",                                    "Bloom",                    fBloomPower.GetCurrentValue(),              0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Bloom strength",                    "Strength of bloom intensity value",                                    "Bloom",                    fBloomStrength.GetCurrentValue(),           0.1f);
 
     // Lens flare
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Lens flare enable",         "Toggle the rendering of the lens flare effect",                        "Lens flare",               LENS_FLARE_ENABLED);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Anamorphic lens flare",     "Choose between anamorphic and spherical lens flare",                   "Lens flare",               LENS_FLARE_ANAMORPHIC);
-    CREATE_ARTIST_PARAMETER_OBJECT("Anamorphic intensity",      "Adjust the intensity of the anamophic lens flares",                    "Lens flare",               fAnamorphicIntensity.GetCurrentValue(),     1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Brigthness threshold",      "Brightness threshold for lens flare feature generation",               "Lens flare",               LENS_FLARE_BRIGHTNESS_THRESHOLD,            0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Ghost sample count",        "Number of samples for \"ghost\" features",                             "Lens flare",               nGhostSamples.GetCurrentValue(),            1.f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Ghost dispersion factor",   "Dispersion factor (distance) for \"ghost\" features",                  "Lens flare",               fGhostDispersal.GetCurrentValue(),          0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Ghost radial weight",       "Falloff factor for bright spots that are near screen edges",           "Lens flare",               fGhostRadialWeightExp.GetCurrentValue(),    0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Halo size",                 "Halo size scale factor",                                               "Lens flare",               fHaloSize.GetCurrentValue(),                0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Halo radial weight",        "Determines halo thickness",                                            "Lens flare",               fHaloRadialWeightExp.GetCurrentValue(),     0.1f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Chroma shift enable",       "Toggle the application of a chromatic aberration effect",              "Lens flare",               bChromaShift.GetCurrentValue());
-    CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift factor",       "Intensity of chromatic aberration effect",                             "Lens flare",               fShiftFactor.GetCurrentValue(),             0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Lens dirt intensity",       "Scale factor for lens dirt texture samples",                           "Lens flare",               fLensDirtIntensity.GetCurrentValue(),       0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Lens star burst intensity", "Scale factor for lens star burst texture samples",                     "Lens flare",               fLensStarBurstIntensity.GetCurrentValue(),  0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Lens flare enable",                 "Toggle the rendering of the lens flare effect",                        "Lens flare",               LENS_FLARE_ENABLED);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Anamorphic lens flare",             "Choose between anamorphic and spherical lens flare",                   "Lens flare",               LENS_FLARE_ANAMORPHIC);
+    CREATE_ARTIST_PARAMETER_OBJECT("Anamorphic intensity",              "Adjust the intensity of the anamophic lens flares",                    "Lens flare",               fAnamorphicIntensity.GetCurrentValue(),     1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Brigthness threshold",              "Brightness threshold for lens flare feature generation",               "Lens flare",               LENS_FLARE_BRIGHTNESS_THRESHOLD,            0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Ghost sample count",                "Number of samples for \"ghost\" features",                             "Lens flare",               nGhostSamples.GetCurrentValue(),            1.f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Ghost dispersion factor",           "Dispersion factor (distance) for \"ghost\" features",                  "Lens flare",               fGhostDispersal.GetCurrentValue(),          0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Ghost radial weight",               "Falloff factor for bright spots that are near screen edges",           "Lens flare",               fGhostRadialWeightExp.GetCurrentValue(),    0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Halo size",                         "Halo size scale factor",                                               "Lens flare",               fHaloSize.GetCurrentValue(),                0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Halo radial weight",                "Determines halo thickness",                                            "Lens flare",               fHaloRadialWeightExp.GetCurrentValue(),     0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Chroma shift enable",               "Toggle the application of a chromatic aberration effect",              "Lens flare",               bChromaShift.GetCurrentValue());
+    CREATE_ARTIST_PARAMETER_OBJECT("Chroma shift factor",               "Intensity of chromatic aberration effect",                             "Lens flare",               fShiftFactor.GetCurrentValue(),             0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Lens dirt intensity",               "Scale factor for lens dirt texture samples",                           "Lens flare",               fLensDirtIntensity.GetCurrentValue(),       0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Lens star burst intensity",         "Scale factor for lens star burst texture samples",                     "Lens flare",               fLensStarBurstIntensity.GetCurrentValue(),  0.1f);
 
     // Tone mapping
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Tone mapping enable",       "Toggle tone mapping",                                                  "HDR tone mapping",         HDR_TONE_MAPPING_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Exposure bias",             "Scales color intensities before tone mapping",                         "HDR tone mapping",         fExposureBias.GetCurrentValue(),            0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Lower luma bound",          "Minimum average luma clamp used for exposure adjustment",              "HDR tone mapping",         f2AvgLumaClamp.GetCurrentValue()[0],        0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Upper luma bound",          "Maximum average luma clamp used for exposure adjustment",              "HDR tone mapping",         f2AvgLumaClamp.GetCurrentValue()[1],        0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Shoulder strength",         "Strength of the shoulder part of the filmic tone mapping curve",       "HDR tone mapping",         fShoulderStrength.GetCurrentValue(),        0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Linear strength",           "Strength of the linear part of the filmic tone mapping curve",         "HDR tone mapping",         fLinearStrength.GetCurrentValue(),          0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Linear angle",              "Angle of the linear part of the filmic tone mapping curve",            "HDR tone mapping",         fLinearAngle.GetCurrentValue(),             0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Toe strength",              "Strength of the toe part of the filmic tone mapping curve",            "HDR tone mapping",         fToeStrength.GetCurrentValue(),             0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Toe numerator",             "Numerator of the toe part of the filmic tone mapping curve",           "HDR tone mapping",         fToeNumerator.GetCurrentValue(),            0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Toe denominator",           "Denominator of the toe part of the filmic tone mapping curve",         "HDR tone mapping",         fToeDenominator.GetCurrentValue(),          0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Linear white",              "Reference linear white value of the filmic tone mapping curve",        "HDR tone mapping",         fLinearWhite.GetCurrentValue(),             0.1f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Exposure adapt speed",      "Seconds in which the exposure adapts to scene brightness",             "HDR tone mapping",         fLumaAdaptSpeed.GetCurrentValue(),          0.1f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Tone mapping enable",               "Toggle tone mapping",                                                  "HDR tone mapping",         HDR_TONE_MAPPING_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Exposure bias",                     "Scales color intensities before tone mapping",                         "HDR tone mapping",         fExposureBias.GetCurrentValue(),            0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Lower luma bound",                  "Minimum average luma clamp used for exposure adjustment",              "HDR tone mapping",         f2AvgLumaClamp.GetCurrentValue()[0],        0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Upper luma bound",                  "Maximum average luma clamp used for exposure adjustment",              "HDR tone mapping",         f2AvgLumaClamp.GetCurrentValue()[1],        0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Shoulder strength",                 "Strength of the shoulder part of the filmic tone mapping curve",       "HDR tone mapping",         fShoulderStrength.GetCurrentValue(),        0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Linear strength",                   "Strength of the linear part of the filmic tone mapping curve",         "HDR tone mapping",         fLinearStrength.GetCurrentValue(),          0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Linear angle",                      "Angle of the linear part of the filmic tone mapping curve",            "HDR tone mapping",         fLinearAngle.GetCurrentValue(),             0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Toe strength",                      "Strength of the toe part of the filmic tone mapping curve",            "HDR tone mapping",         fToeStrength.GetCurrentValue(),             0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Toe numerator",                     "Numerator of the toe part of the filmic tone mapping curve",           "HDR tone mapping",         fToeNumerator.GetCurrentValue(),            0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Toe denominator",                   "Denominator of the toe part of the filmic tone mapping curve",         "HDR tone mapping",         fToeDenominator.GetCurrentValue(),          0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Linear white",                      "Reference linear white value of the filmic tone mapping curve",        "HDR tone mapping",         fLinearWhite.GetCurrentValue(),             0.1f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Exposure adapt speed",              "Seconds in which the exposure adapts to scene brightness",             "HDR tone mapping",         fLumaAdaptSpeed.GetCurrentValue(),          0.1f);
 
     // Color correction (part of HDR tonemapping shader)
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Apply color correction",    "Use the provided 3D color lookup table to do color correction",        "Color correction",         bApplyColorCorrection.GetCurrentValue());
-    CREATE_ARTIST_BOOLPARAM_OBJECT("sRGB color lookup table",   "Apply gamma correction when sampling the 3D color lookup table",       "Color correction",         SRGB_COLOR_CORRECTION);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Apply color correction",            "Use the provided 3D color lookup table to do color correction",        "Color correction",         bApplyColorCorrection.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("sRGB color lookup table",           "Apply gamma correction when sampling the 3D color lookup table",       "Color correction",         SRGB_COLOR_CORRECTION);
 
     // Film grain (part of HDR tonemapping shader)
-    CREATE_ARTIST_PARAMETER_OBJECT("Film grain amount",         "Amount of film grain applied to the image",                            "Film grain",               fFilmGrainAmount.GetCurrentValue(),         0.001f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Film grain amount",                 "Amount of film grain applied to the image",                            "Film grain",               fFilmGrainAmount.GetCurrentValue(),         0.001f);
 
     // FXAA
-    CREATE_ARTIST_BOOLPARAM_OBJECT("FXAA enable",               "Toggle the FXAA filter",                                               "FXAA",                     FXAA_ENABLED);
-    CREATE_ARTIST_PARAMETER_OBJECT("Antialiasing factor",       "Amount of sub-pixel aliasing removal",                                 "FXAA",                     fFxaaSubpix.GetCurrentValue(),              0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Edge threshold",            "Minimum amount of local contrast to apply algorithm",                  "FXAA",                     fFxaaEdgeThreshold.GetCurrentValue(),       0.01f);
-    CREATE_ARTIST_PARAMETER_OBJECT("Darkness threshold",        "Keeps the algorithm from processing darks",                            "FXAA",                     fFxaaEdgeThresholdMin.GetCurrentValue(),    0.01f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Apply FXAA only on edges",  "Enables depth based edge detection for conditional FXAA application",  "FXAA",                     bFxaaUseEdgeDetection.GetCurrentValue());
-    CREATE_ARTIST_PARAMETER_OBJECT("Edge detection threshold",  "Adjusts threshold of depth based edge detection algorithm",            "FXAA",                     fFxaaEdgeDepthThreshold.GetCurrentValue(),  0.0001f);
-    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug FXAA edge detection", "Highlight pixels that have FXAA applied",                              "FXAA",                     bFxaaDebugEdgeDetection.GetCurrentValue());
+    CREATE_ARTIST_BOOLPARAM_OBJECT("FXAA enable",                       "Toggle the FXAA filter",                                               "FXAA",                     FXAA_ENABLED);
+    CREATE_ARTIST_PARAMETER_OBJECT("Antialiasing factor",               "Amount of sub-pixel aliasing removal",                                 "FXAA",                     fFxaaSubpix.GetCurrentValue(),              0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Edge threshold",                    "Minimum amount of local contrast to apply algorithm",                  "FXAA",                     fFxaaEdgeThreshold.GetCurrentValue(),       0.01f);
+    CREATE_ARTIST_PARAMETER_OBJECT("Darkness threshold",                "Keeps the algorithm from processing darks",                            "FXAA",                     fFxaaEdgeThresholdMin.GetCurrentValue(),    0.01f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Apply FXAA only on edges",          "Enables depth based edge detection for conditional FXAA application",  "FXAA",                     bFxaaUseEdgeDetection.GetCurrentValue());
+    CREATE_ARTIST_PARAMETER_OBJECT("Edge detection threshold",          "Adjusts threshold of depth based edge detection algorithm",            "FXAA",                     fFxaaEdgeDepthThreshold.GetCurrentValue(),  0.0001f);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Debug FXAA edge detection",         "Highlight pixels that have FXAA applied",                              "FXAA",                     bFxaaDebugEdgeDetection.GetCurrentValue());
 
     //------------------------------------------------------
 }

@@ -38,8 +38,8 @@ namespace GITechDemoApp
         IMPLEMENT_RENDER_PASS(SkyPass)
 
     public:
-        void CreateSkyBoxVB();
-        void ReleaseSkyBoxVB();
+        void AllocateResources();
+        void ReleaseResources();
 
     private:
         // A cube used to draw the sky

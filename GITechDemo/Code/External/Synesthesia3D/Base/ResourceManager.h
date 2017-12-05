@@ -538,6 +538,15 @@ namespace Synesthesia3D
          */
         virtual ~ResourceManager();
 
+        const unsigned int AddVertexFormat(VertexFormat* vf);           /**< @brief Adds a vertex format resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddIndexBuffer(IndexBuffer* ib);             /**< @brief Adds an index buffer resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddVertexBuffer(VertexBuffer* vb);           /**< @brief Adds a vertex buffer resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddShaderProgram(ShaderProgram* shdProg);    /**< @brief Adds a shader program resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddTexture(Texture* tex);                    /**< @brief Adds a textureresource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddRenderTarget(RenderTarget* rt);           /**< @brief Adds a render target resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddShaderInput(ShaderInput* shdIn);          /**< @brief Adds a shader input resource object to the corresponding resource list and returns the resource handle. */
+        const unsigned int AddModel(Model* mdl);                        /**< @brief Adds a model resource object to the corresponding resource list and returns the resource handle. */
+
         std::vector<VertexFormat*>      m_arrVertexFormat;      /**< @brief Array of vertex formats created by the resource manager. */
         std::vector<IndexBuffer*>       m_arrIndexBuffer;       /**< @brief Array of index buffers created by the resource manager. */
         std::vector<VertexBuffer*>      m_arrVertexBuffer;      /**< @brief Array of vertex buffers created by the resource manager. */
@@ -546,6 +555,15 @@ namespace Synesthesia3D
         std::vector<Texture*>           m_arrTexture;           /**< @brief Array of textures created by the resource manager. */
         std::vector<RenderTarget*>      m_arrRenderTarget;      /**< @brief Array of render targets created by the resource manager. */
         std::vector<Model*>             m_arrModel;             /**< @brief Array of models created by the resource manager. */
+
+        std::vector<unsigned int>       m_arrVertexFormatFreeSlots;     /**< @brief Array of vertex format resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrIndexBufferFreeSlots;      /**< @brief Array of index buffer resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrVertexBufferFreeSlots;     /**< @brief Array of vertex buffer resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrShaderInputFreeSlots;      /**< @brief Array of shader input resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrShaderProgramFreeSlots;    /**< @brief Array of shader program resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrTextureFreeSlots;          /**< @brief Array of texture resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrRenderTargetFreeSlots;     /**< @brief Array of render target resource handles that have been freed and can be reused. */
+        std::vector<unsigned int>       m_arrModelFreeSlots;            /**< @brief Array of model resource handles that have been freed and can be reused. */
 
         friend class Renderer;
     };

@@ -57,8 +57,6 @@ namespace GITechDemoApp
             RES_MAX
         };
 
-        static void SetResourceManager(ResourceManager* const resMgr);
-
         static const vector<RenderResource*>& GetResourceList() { return arrResources; }
 
         static void InitAllResources();
@@ -95,7 +93,6 @@ namespace GITechDemoApp
         MUTEX           mInitMutex;
 
         static vector<RenderResource*> arrResources;
-        static ResourceManager* ResMgr;
     };
 
     class Texture;

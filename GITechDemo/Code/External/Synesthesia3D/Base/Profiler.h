@@ -92,6 +92,8 @@ namespace Synesthesia3D
 
         SYNESTHESIA3D_DLL   const char* const   GetLabel() const;
         SYNESTHESIA3D_DLL   const float         GetTiming() const;
+        SYNESTHESIA3D_DLL   const float         GetStart() const;
+        SYNESTHESIA3D_DLL   const float         GetEnd() const;
 
     protected:
         GPUProfileMarkerResult(const char* const label);
@@ -99,6 +101,8 @@ namespace Synesthesia3D
 
         char* m_szLabel;
         float m_fTime;
+        float m_fStart;
+        float m_fEnd;
         GPUProfileMarkerResultStatus m_eStatus;
 
         friend class Profiler;
@@ -114,35 +118,56 @@ namespace Synesthesia3D
         *
         * @param[in]    label   A name for the event.
         */
-        virtual SYNESTHESIA3D_DLL           void        PushProfileMarker(const char* const label, const bool issueGPUQuery = false);
+        virtual SYNESTHESIA3D_DLL                   void                PushProfileMarker(const char* const label, const bool issueGPUQuery = false);
 
         /**
         * @brief    Marks the end of a user-defined event.
         *
         * @note Must be paried with a corresponding @ref PushProfileMarker().
         */
-        virtual SYNESTHESIA3D_DLL           void        PopProfileMarker();
+        virtual SYNESTHESIA3D_DLL                   void                PopProfileMarker();
+        
+        /**
+        * @brief    Retrieves the GPU absolute start time, in seconds, for the specified profile marker label.
+        *
+        * @note Returns <0 if marker is still in flight, non-existant or otherwise invalid.
+        */
+                SYNESTHESIA3D_DLL               const float             RetrieveGPUProfileMarkerStart(const char* const label) const;
+
+        /**
+        * @brief    Retrieves the GPU absolute end time, in seconds, for the specified profile marker label.
+        *
+        * @note Returns <0 if marker is still in flight, non-existant or otherwise invalid.
+        */
+                SYNESTHESIA3D_DLL               const float             RetrieveGPUProfileMarkerEnd(const char* const label) const;
 
         /**
         * @brief    Retrieves the GPU timing, in miliseconds, for the specified profile marker label.
         *
         * @note Returns <0 if marker is still in flight, non-existant or otherwise invalid.
         */
-        SYNESTHESIA3D_DLL       const float     RetrieveGPUProfileMarkerResult(const char* const label) const;
+                SYNESTHESIA3D_DLL               const float             RetrieveGPUProfileMarkerResult(const char* const label) const;
 
         /**
         * @brief    Retrieves the GPU profile marker result for the specified profile marker handle.
         *
         * @note Returns nullptr if marker is still in flight, non-existant or handle is invalid.
         */
-        SYNESTHESIA3D_DLL   const GPUProfileMarkerResult* const RetrieveGPUProfileMarkerResult(const unsigned int handle) const;
+                SYNESTHESIA3D_DLL   const GPUProfileMarkerResult* const RetrieveGPUProfileMarker(const unsigned int handle) const;
+                
+        /**
+        * @brief    Retrieves the GPU profile marker result for the specified profile marker label.
+        *
+        * @note Returns nullptr if marker is still in flight, non-existant or handle is invalid.
+        */
+                SYNESTHESIA3D_DLL   const GPUProfileMarkerResult* const RetrieveGPUProfileMarker(const char* const label) const;
 
         /**
         * @brief    Retrieves the number of GPU profile markers.
         *
         * @note Returns <0 if marker is still in flight, non-existant or otherwise invalid.
         */
-        SYNESTHESIA3D_DLL   const unsigned int  GetGPUProfileMarkerCount() const;
+                SYNESTHESIA3D_DLL           const unsigned int          GetGPUProfileMarkerCount() const;
 
     protected:
         Profiler();
