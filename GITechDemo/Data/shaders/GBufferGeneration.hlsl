@@ -38,7 +38,6 @@ struct VSOut
 {
     float4 f4Position   :   SV_POSITION;
     float2 f2TexCoord   :   TEXCOORD0;
-    float2 f2Depth      :   TEXCOORD1;
     float3 f3Normal     :   NORMAL;
     float3 f3Tangent    :   TANGENT;
     float3 f3Binormal   :   BINORMAL;
@@ -48,7 +47,6 @@ void vsmain(VSIn input, out VSOut output)
 {
     output.f4Position   =   mul(f44WorldViewProjMat, input.f4Position);
     output.f2TexCoord   =   input.f2TexCoord;
-    output.f2Depth      =   output.f4Position.zw;
     output.f3Normal     =   normalize(mul((float3x3)f44WorldViewMat, input.f3Normal));
     output.f3Tangent    =   normalize(mul((float3x3)f44WorldViewMat, input.f3Tangent));
     output.f3Binormal   =   normalize(mul((float3x3)f44WorldViewMat, input.f3Binormal));

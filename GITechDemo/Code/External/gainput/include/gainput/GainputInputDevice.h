@@ -142,14 +142,21 @@ public:
 	const InputState* GetInputState() const { return state_; }
 	/// Returns the device's previous state, probably best if only used internally.
 	InputState* GetPreviousInputState() { return previousState_; }
+	/// Returns the device's state that is currently being determined, may be 0 if not available.
+	virtual InputState* GetNextInputState() { return 0; }
 
+	/// Returns the previously set dead zone for the given button or 0.0f if none was set yet.
 	float GetDeadZone(DeviceButtonId buttonId) const;
+	/// Sets the dead zone for the given button.
 	void SetDeadZone(DeviceButtonId buttonId, float value);
 
 	/// Enable/disable debug rendering of this device.
 	void SetDebugRenderingEnabled(bool enabled);
 	/// Returns true if debug rendering is enabled, false otherwise.
 	bool IsDebugRenderingEnabled() const { return debugRenderingEnabled_; }
+
+	/// Used internally to determine whether a button received both a "down" and "up" message in a single update
+	void ApplyBufferedButton(DeviceButtonId buttonId, bool pressed);
 
 #if defined(GAINPUT_DEV) || defined(GAINPUT_ENABLE_RECORDER)
 	/// Returns true if this device is being controlled by a remote device 
@@ -176,6 +183,9 @@ protected:
 	InputState* state_;
 	/// The previous state of this device.
 	InputState* previousState_;
+
+	/// Stores any button that received both a "down" and "up" message before being handled by InputManager's Update()
+	Array<DeviceButtonId> bufferedButtonInputs_;
 
 	float* deadZones_;
 

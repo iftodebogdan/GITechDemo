@@ -2,7 +2,7 @@
 #ifndef GAINPUTHELPERS_H_
 #define GAINPUTHELPERS_H_
 
-#include "GainputLog.h"
+#include <gainput/GainputLog.h>
 
 namespace gainput
 {
@@ -24,6 +24,8 @@ namespace gainput
 				delta->AddChange(device.GetDeviceId(), buttonId, oldValue, value);
 			}
 		}
+
+		device.ApplyBufferedButton(buttonId, value);
 
 		state.Set(buttonId, value);
 	}

@@ -3,7 +3,7 @@
 #define GAINPUTINPUTDEVICEMOUSEWIN_H_
 
 #include "GainputInputDeviceMouseImpl.h"
-#include "../GainputHelpers.h"
+#include <gainput/GainputHelpers.h>
 
 #include "../GainputWindows.h"
 
@@ -52,7 +52,7 @@ public:
 		GAINPUT_ASSERT(previousState_);
 
 		DeviceButtonId buttonId;
-		bool pressed;
+		bool pressed = false;
 		bool moveMessage = false;
 		int ax = -1;
 		int ay = -1;
@@ -62,7 +62,7 @@ public:
 		case WM_ACTIVATE:
 			if (msg.message == WM_KILLFOCUS || (msg.message == WM_ACTIVATE && LOWORD(msg.wParam) == WA_INACTIVE))
 			{
-                // Reset input state when window is out of focus
+				// Reset input state when window is out of focus
 				for (unsigned int i = 0; i < MouseButtonCount_; i++)
 				{
 					HandleButton(device_, nextState_, delta_, i, false);

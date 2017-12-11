@@ -4,15 +4,15 @@
 
 #include "GainputInputDeviceTouchImpl.h"
 #include "GainputTouchInfo.h"
-#include "../GainputInputDeltaState.h"
-#include "../GainputHelpers.h"
-#include "../GainputLog.h"
+#include <gainput/GainputInputDeltaState.h>
+#include <gainput/GainputHelpers.h>
+#include <gainput/GainputLog.h>
 
 #include "GainputInputDeviceTouchNull.h"
 
 #if defined(GAINPUT_PLATFORM_ANDROID)
 	#include "GainputInputDeviceTouchAndroid.h"
-#elif defined(GAINPUT_PLATFORM_IOS)
+#elif defined(GAINPUT_PLATFORM_IOS) || defined(GAINPUT_PLATFORM_TVOS)
 	#include "GainputInputDeviceTouchIos.h"
 #endif
 
@@ -22,7 +22,7 @@
 namespace gainput
 {
 
-InputDeviceTouch::InputDeviceTouch(InputManager& manager, DeviceId device, unsigned index, DeviceVariant /*variant*/) :
+InputDeviceTouch::InputDeviceTouch(InputManager& manager, DeviceId device, unsigned index, DeviceVariant variant) :
 	InputDevice(manager, device, index == InputDevice::AutoIndex ? manager.GetDeviceCountByType(DT_TOUCH) : 0),
 	impl_(0)
 {
@@ -36,7 +36,7 @@ InputDeviceTouch::InputDeviceTouch(InputManager& manager, DeviceId device, unsig
 	{
 		impl_ = manager.GetAllocator().New<InputDeviceTouchImplAndroid>(manager, *this, *state_, *previousState_);
 	}
-#elif defined(GAINPUT_PLATFORM_IOS)
+#elif defined(GAINPUT_PLATFORM_IOS) || defined(GAINPUT_PLATFORM_TVOS)
 	if (variant != DV_NULL)
 	{
 		impl_ = manager.GetAllocator().New<InputDeviceTouchImplIos>(manager, *this, *state_, *previousState_);
@@ -55,6 +55,24 @@ InputDeviceTouch::~InputDeviceTouch()
 	manager_.GetAllocator().Delete(state_);
 	manager_.GetAllocator().Delete(previousState_);
 	manager_.GetAllocator().Delete(impl_);
+}
+
+bool
+InputDeviceTouch::IsValidButtonId(DeviceButtonId deviceButton) const
+{
+    if (deviceButton == Touch0Pressure
+        || deviceButton == Touch1Pressure
+        || deviceButton == Touch2Pressure
+        || deviceButton == Touch3Pressure
+        || deviceButton == Touch4Pressure
+        || deviceButton == Touch5Pressure
+        || deviceButton == Touch6Pressure
+        || deviceButton == Touch7Pressure
+    )
+    {
+        return impl_->SupportsPressure();
+    }
+    return deviceButton < TouchCount_;
 }
 
 void
@@ -133,5 +151,10 @@ InputDeviceTouch::GetButtonByName(const char* name) const
 	return InvalidDeviceButtonId;
 }
 
+InputState*
+InputDeviceTouch::GetNextInputState()
+{
+	return impl_->GetNextInputState();
 }
 
+}

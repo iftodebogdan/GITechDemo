@@ -52,7 +52,6 @@ InputRecording::InputRecording(InputManager& manager, void* data, size_t size, A
 		{
 			uint8_t value;
 			stream->Read(value);
-			// GITechDemo: warning C4800 'gainput::uint8_t' : forcing value to bool 'true' or 'false' (performance warning)
 			change.b = (value != 0);
 			GAINPUT_ASSERT(sizeof(float) >= sizeof(uint8_t));
 			for (size_t i = 0; i < sizeof(float)-sizeof(uint8_t); ++i)
@@ -125,8 +124,7 @@ InputRecording::GetNextChange(uint64_t time, RecordedDeviceButtonChange& outChan
 uint64_t
 InputRecording::GetDuration() const
 {
-	// GITechDemo: warning C4267 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-	return changes_.empty() ? 0 : changes_[(unsigned int)changes_.size() - 1].time;
+	return changes_.empty() ? 0 : changes_[changes_.size() - 1].time;
 }
 
 size_t

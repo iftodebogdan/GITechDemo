@@ -5,7 +5,7 @@
 #include "../GainputWindows.h"
 
 #include "GainputInputDeviceKeyboardImpl.h"
-#include "../GainputHelpers.h"
+#include <gainput/GainputHelpers.h>
 
 namespace gainput
 {
@@ -191,7 +191,7 @@ public:
 		case WM_ACTIVATE:
 			if (msg.message == WM_KILLFOCUS || (msg.message == WM_ACTIVATE && LOWORD(msg.wParam) == WA_INACTIVE))
 			{
-                // Reset input state when window is out of focus
+				// Reset input state when window is out of focus
 				for (unsigned int i = 0; i < KeyCount_; i++)
 				{
 					HandleButton(device_, nextState_, delta_, i, false);
@@ -243,11 +243,11 @@ public:
 			}
 			else
 			{
-				if (previousState_->GetBool(KeyShiftL) && !(GetKeyState(VK_LSHIFT) & 0x8000))
+				if ((previousState_->GetBool(KeyShiftL) || nextState_.GetBool(KeyShiftL)) && !(GetKeyState(VK_LSHIFT) & 0x8000))
 				{
 					winKey = VK_LSHIFT;
 				} 
-				else if (previousState_->GetBool(KeyShiftR) && !(GetKeyState(VK_RSHIFT) & 0x8000))
+				else if ((previousState_->GetBool(KeyShiftR) || nextState_.GetBool(KeyShiftR)) && !(GetKeyState(VK_RSHIFT) & 0x8000))
 				{
 					winKey = VK_RSHIFT;
 				}

@@ -4,9 +4,9 @@
 
 #include "GainputInputDeviceKeyboardImpl.h"
 #include "GainputKeyboardKeyNames.h"
-#include "../GainputInputDeltaState.h"
-#include "../GainputHelpers.h"
-#include "../GainputLog.h"
+#include <gainput/GainputInputDeltaState.h>
+#include <gainput/GainputHelpers.h>
+#include <gainput/GainputLog.h>
 
 #if defined(GAINPUT_PLATFORM_LINUX)
 	#include "GainputInputDeviceKeyboardLinux.h"
@@ -24,6 +24,7 @@
 
 // GITechDemo: warning C4996 'strncpy': This function or variable may be unsafe.Consider using strncpy_s instead.
 #pragma warning (disable: 4996)
+
 
 namespace gainput
 {
@@ -163,6 +164,12 @@ InputDeviceKeyboard::GetButtonByName(const char* name) const
 		}
 	}
 	return InvalidDeviceButtonId;
+}
+
+InputState*
+InputDeviceKeyboard::GetNextInputState()
+{
+	return impl_->GetNextInputState();
 }
 
 bool

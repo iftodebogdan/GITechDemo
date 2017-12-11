@@ -5,7 +5,7 @@
 #include "GainputNetConnection.h"
 #include "GainputNetListener.h"
 
-#if defined(GAINPUT_PLATFORM_LINUX) || defined(GAINPUT_PLATFORM_ANDROID) || defined(GAINPUT_PLATFORM_IOS) || defined(GAINPUT_PLATFORM_MAC)
+#if defined(GAINPUT_PLATFORM_LINUX) || defined(GAINPUT_PLATFORM_ANDROID) || defined(GAINPUT_PLATFORM_IOS) || defined(GAINPUT_PLATFORM_MAC) || defined(GAINPUT_PLATFORM_TVOS)
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -181,10 +181,5 @@ NetListener::Accept()
 
 
 #endif
-
-#else
-
-namespace { void AvoidWarningLNK4221(){} }
-
 #endif
 

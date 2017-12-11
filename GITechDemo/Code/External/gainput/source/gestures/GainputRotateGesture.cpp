@@ -3,8 +3,8 @@
 #include <gainput/gestures/GainputRotateGesture.h>
 
 #ifdef GAINPUT_ENABLE_ROTATE_GESTURE
-#include "../GainputInputDeltaState.h"
-#include "../GainputHelpers.h"
+#include <gainput/GainputInputDeltaState.h>
+#include <gainput/GainputHelpers.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -114,8 +114,7 @@ RotateGesture::InternalUpdate(InputDeltaState* delta)
 	float currentAngle = angle - initialAngle_;
 	if (currentAngle < 0.0f)
 	{
-		// GITechDemo: warning C4305 '+=' : truncation from 'double' to 'float'
-		currentAngle += (float)M_PI*2.0f;
+		currentAngle += static_cast<float>(M_PI)*2.0f;
 	}
 
 	HandleAxis(*this, *state_, delta, RotateAngle, currentAngle);

@@ -5,7 +5,7 @@
 
 namespace gainput
 {
-
+    
 /// Manages all input devices and some other helpful stuff.
 /**
  * This manager takes care of all device-related things. Normally, you should only need one that contains
@@ -27,10 +27,13 @@ public:
 	/// Initializes the manager.
 	/**
 	 * Further initialization is typically necessary.
+	 * \param useSystemTime Specifies if the GetTime() function uses system time or the time
+	 * supplied to Update(uint64_t).
 	 * \param allocator The memory allocator to be used for all allocations.
 	 * \see SetDisplaySize
+	 * \see GetTime
 	 */
-	InputManager(Allocator& allocator = GetDefaultAllocator());
+	InputManager(bool useSystemTime = true, Allocator& allocator = GetDefaultAllocator());
 
 	/// Destructs the manager.
 	~InputManager();
@@ -61,11 +64,40 @@ public:
 #if defined(GAINPUT_PLATFORM_ANDROID)
 	/// [ANDROID ONLY] Lets the InputManager handle the given input event.
 	int32_t HandleInput(AInputEvent* event);
-	void HandleTouchInput(int id, int action, int x, int y);
+
+	struct DeviceInput
+	{
+		InputDevice::DeviceType deviceType;
+		unsigned deviceIndex;
+		ButtonType buttonType;
+		DeviceButtonId buttonId;
+		union
+		{
+			float f;
+			bool b;
+		} value;
+	};
+    void HandleDeviceInput(DeviceInput const& input);
 #endif
 
 	/// Updates the input state, call this every frame.
+	/**
+	 * If the InputManager was initialized with `useSystemTime` set to `false`, you have to
+	 * call Update(uint64_t) instead.
+	 * \see GetTime
+	 */
 	void Update();
+
+	/// Updates the input state and the manager's time, call this every frame.
+	/**
+	 * Updates the time returned by GetTime() and then calls the regular Update(). This function
+	 * should only be called if the InputManager was initialized with `useSystemTime`
+	 * set to `false`.
+	 * \param deltaTime The provided must be in milliseconds.
+	 * \see Update
+	 * \see GetTime
+	 */
+	void Update(uint64_t deltaTime);
 
 	/// Returns the allocator to be used for memory allocations.
 	Allocator& GetAllocator() const { return allocator_; }
@@ -166,6 +198,9 @@ public:
 	/// De-registers the given modifier.
 	void RemoveDeviceStateModifier(ModifierId modifierId);
 
+    void EnqueueConcurrentChange(InputDevice& device, InputState& state, InputDeltaState* delta, DeviceButtonId buttonId, bool value);
+    void EnqueueConcurrentChange(InputDevice& device, InputState& state, InputDeltaState* delta, DeviceButtonId buttonId, float value);
+
 	/// [IN dev BUILDS ONLY] Connect to a remote host to send device state changes to.
 	void ConnectForStateSync(const char* ip, unsigned port);
 	/// [IN dev BUILDS ONLY] Initiate sending of device state changes to the given device.
@@ -195,12 +230,30 @@ private:
 
 	InputDeltaState* deltaState_;
 
+	uint64_t currentTime_;
+    struct Change
+    {
+        InputDevice* device;
+        InputState* state;
+        InputDeltaState* delta;
+        DeviceButtonId buttonId;
+		ButtonType type;
+		union
+		{
+			bool b;
+			float f;
+		};
+    };
+    
+    GAINPUT_CONC_QUEUE(Change) concurrentInputs_;
+
 	int displayWidth_;
 	int displayHeight_;
+	bool useSystemTime_;
 
 	bool debugRenderingEnabled_;
 	DebugRenderer* debugRenderer_;
-
+    
 	void DeviceCreated(InputDevice* device);
 
 	// Do not copy.

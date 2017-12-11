@@ -120,13 +120,13 @@ public:
 	iterator end() { return data_ + size_; }
 	const_iterator end() const { return data_ + size_; }
 
-	T& operator[] (unsigned i)
+	T& operator[] (size_t i)
 	{
 		GAINPUT_ASSERT(i < size_);
 		return data_[i];
 	}
 
-	const T& operator[] (unsigned i) const
+	const T& operator[] (size_t i) const
 	{
 		GAINPUT_ASSERT(i < size_);
 		return data_[i];
@@ -136,8 +136,7 @@ public:
 	{
 		if (size_ + 1 > capacity_)
 		{
-			// GITechDemo: warning C4267 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-			reserve((unsigned int)size_ + 1);
+			reserve(size_ + 1);
 		}
 		data_[size_++] = val;
 	}
@@ -148,12 +147,11 @@ public:
 			--size_;
 	}
 
-	void reserve(unsigned capacity)
+	void reserve(size_t capacity)
 	{
 		if (capacity <= capacity_)
 			return;
-		// GITechDemo: warning C4267 '=' : conversion from 'size_t' to 'unsigned int', possible loss of data
-		capacity = (unsigned int)((capacity_*capacity_) < capacity ? capacity : (capacity_*capacity_));
+		capacity = (capacity_*2) < capacity ? capacity : (capacity_*2);
 		T* newData = static_cast<T*>(allocator_.Allocate(sizeof(T)*capacity));
 		memcpy(newData, data_, sizeof(T)*capacity_);
 		allocator_.Deallocate(data_);
@@ -264,7 +262,7 @@ public:
 	size_t size() const { return size_; }
 	bool empty() const { return size_ == 0; }
 
-	unsigned count(const K& k)
+	size_t count(const K& k) const
 	{
 		return find(k) != end() ? 1 : 0;
 	}
@@ -349,8 +347,7 @@ public:
 
 		++size_;
 
-		// GITechDemo: warning C4267 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-		return &values_[(unsigned int)values_.size()-1];
+		return &values_[values_.size()-1];
 	}
 
 	V& operator[] (const K& k)
@@ -366,7 +363,7 @@ public:
 		}
 	}
 
-	unsigned erase(const K& k)
+	size_t erase(const K& k)
 	{
 		if (keys_.empty())
 			return 0;
@@ -396,8 +393,7 @@ public:
 				}
 				else
 				{
-					// GITechDemo: warning C4267 'initializing' : conversion from 'size_t' to 'gainput::uint32_t', possible loss of data
-					uint32_t lastVi = (uint32_t)values_.size()-1;
+					size_t lastVi = values_.size()-1;
 					values_[vi] = values_[lastVi];
 					values_.pop_back();
 					
@@ -482,9 +478,9 @@ public:
 		 return nextRead_ < nextWrite_;
 	}
 
-	unsigned GetCount() const
+	size_t GetCount() const
 	{
-		const unsigned d = nextWrite_ - nextRead_;
+		const size_t d = nextWrite_ - nextRead_;
 		return d > N ? N : d;
 	}
 
@@ -502,8 +498,8 @@ public:
 
 private:
 	T buf_[N];
-	unsigned nextRead_;
-	unsigned nextWrite_;
+	size_t nextRead_;
+	size_t nextWrite_;
 };
 
 
