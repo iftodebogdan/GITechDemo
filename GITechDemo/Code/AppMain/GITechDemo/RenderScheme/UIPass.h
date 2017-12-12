@@ -44,9 +44,64 @@ namespace Synesthesia3D
 
 namespace GITechDemoApp
 {
+    #define UI_BUFFER_COUNT (2)
+
     class ArtistParameter;
-    struct GPUProfileMarkerResultCacheEntry;
-    struct ParamCategoryWindowState;
+
+    struct UIDrawData
+    {
+        struct UIDrawCommandList
+        {
+            struct UIDrawCommand
+            {
+                Vec4f ClipRect;
+                unsigned int ElemCount;
+            };
+
+            int VtxBufferSize;
+            std::vector<UIDrawCommand> DrawCmd;
+        };
+
+        std::vector<UIDrawCommandList> CmdList;
+    };
+
+    struct GPUProfileMarkerResultCacheEntry
+    {
+        GPUProfileMarkerResultCacheEntry(
+            std::string _name, float _timing, float _start, float _end,
+            float _rootTiming, float _rootStart, float _rootEnd)
+            : name(_name), timing(_timing), start(_start), end(_end)
+            , rootTiming(_rootTiming), rootStart(_rootStart), rootEnd(_rootEnd)
+        {}
+
+        std::string name;
+        float timing, start, end;
+        float rootTiming, rootStart, rootEnd;
+    };
+
+    struct ParamCategoryWindowState
+    {
+        std::string categoryName;
+        bool windowOpen;
+    };
+
+    class GPUProfileMarkerResultHistory
+    {
+    public:
+        GPUProfileMarkerResultHistory()
+            : m_nCurrBufferIdx(0u)
+            , m_fTimeAccum(0.f)
+        {}
+
+        void Update(const float fDeltaTime);
+        const float GetAverage(const char* const name) const;
+        void PushMarker(const GPUProfileMarkerResultCacheEntry& marker);
+
+    private:
+        std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultHistory[2];
+        unsigned int m_nCurrBufferIdx;
+        float m_fTimeAccum;
+    };
 
     class UIPass : public RenderPass
     {
@@ -75,12 +130,16 @@ namespace GITechDemoApp
         std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultCache;
 
         // Geometry resource data
-        unsigned int m_nImGuiVfIdx;
-        Synesthesia3D::VertexFormat* m_pImGuiVf;
-        unsigned int m_nImGuiIbIdx;
-        Synesthesia3D::IndexBuffer* m_pImGuiIb;
-        unsigned int m_nImGuiVbIdx;
-        Synesthesia3D::VertexBuffer* m_pImGuiVb;
+        unsigned int m_nCurrBufferIdx;
+        unsigned int m_nImGuiVfIdx[UI_BUFFER_COUNT];
+        Synesthesia3D::VertexFormat* m_pImGuiVf[UI_BUFFER_COUNT];
+        unsigned int m_nImGuiIbIdx[UI_BUFFER_COUNT];
+        Synesthesia3D::IndexBuffer* m_pImGuiIb[UI_BUFFER_COUNT];
+        unsigned int m_nImGuiVbIdx[UI_BUFFER_COUNT];
+        Synesthesia3D::VertexBuffer* m_pImGuiVb[UI_BUFFER_COUNT];
+
+        // Draw data
+        UIDrawData m_tDrawData[UI_BUFFER_COUNT];
 
         // Font texture data
         Synesthesia3D::Texture* m_pFontTexture;
@@ -89,26 +148,8 @@ namespace GITechDemoApp
         // Input devices
         gainput::InputDeviceKeyboard* m_pKeyboardDevice;
         gainput::InputDeviceMouse* m_pMouseDevice;
-    };
 
-    struct GPUProfileMarkerResultCacheEntry
-    {
-        GPUProfileMarkerResultCacheEntry(
-            std::string _name, float _timing, float _start, float _end,
-            float _rootTiming, float _rootStart, float _rootEnd)
-            : name(_name), timing(_timing), start(_start), end(_end)
-            , rootTiming(_rootTiming), rootStart(_rootStart), rootEnd(_rootEnd)
-        {}
-
-        std::string name;
-        float timing, start, end;
-        float rootTiming, rootStart, rootEnd;
-    };
-
-    struct ParamCategoryWindowState
-    {
-        std::string categoryName;
-        bool windowOpen;
+        GPUProfileMarkerResultHistory m_tGPUProfileMarkerResultHistory;
     };
 }
 

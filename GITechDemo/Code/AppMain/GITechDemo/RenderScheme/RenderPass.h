@@ -41,7 +41,7 @@ namespace GITechDemoApp
         ~RenderPass();
 
         void AddChildPass(RenderPass* const childPass);
-        const char* GetPassName() const { return m_szPassName.c_str(); }
+        const char* const GetPassName() const { return m_szPassName.c_str(); }
 
         const std::vector<RenderPass*>&     GetChildren() const { return m_arrChildList; }
 

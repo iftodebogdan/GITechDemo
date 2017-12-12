@@ -52,22 +52,29 @@ using namespace GITechDemoApp;
 #define ALPHA_PER_SECOND (5.f)
 #define ALPHA_MIN (0.25f)
 
+#define HISTORY_TIME (1.f)
+
 UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , m_pKeyboardDevice(nullptr)
     , m_pMouseDevice(nullptr)
     , m_pFontTexture(nullptr)
     , m_nFontTextureIdx(~0u)
-    , m_nImGuiVfIdx(~0u)
-    , m_pImGuiVf(nullptr)
-    , m_nImGuiIbIdx(~0u)
-    , m_pImGuiIb(nullptr)
-    , m_nImGuiVbIdx(~0u)
-    , m_pImGuiVb(nullptr)
+    , m_nCurrBufferIdx(0u)
     , m_bShowAllParameters(false)
     , m_bShowProfiler(ENABLE_PROFILE_MARKERS)
     , m_fAlpha(0.f)
-{}
+{
+    for (unsigned int i = 0; i < UI_BUFFER_COUNT; i++)
+    {
+        m_nImGuiVfIdx[i] = ~0u;
+        m_pImGuiVf[i] = nullptr;
+        m_nImGuiIbIdx[i] = ~0u;
+        m_pImGuiIb[i] = nullptr;
+        m_nImGuiVbIdx[i] = ~0u;
+        m_pImGuiVb[i] = nullptr;
+    }
+}
 
 UIPass::~UIPass()
 {}
@@ -81,6 +88,8 @@ void UIPass::Update(const float fDeltaTime)
 
     Framework* const pFW = Framework::GetInstance();
     ImGuiIO& io = ImGui::GetIO();
+
+    m_tGPUProfileMarkerResultHistory.Update(pFW->GetDeltaTime());
 
     io.IniFilename = nullptr;
     io.RenderDrawListsFn = nullptr;
@@ -165,12 +174,13 @@ void UIPass::Update(const float fDeltaTime)
 
     m_fAlpha += (((GITechDemo*)AppMain)->IsUIInFocus() ? ALPHA_PER_SECOND : -ALPHA_PER_SECOND) * pFW->GetDeltaTime();
     m_fAlpha = Math::clamp(m_fAlpha, FLT_MIN, 1.f);
+
+    SetupUI();
+    GenerateDrawData();
 }
 
 void UIPass::Draw()
 {
-    SetupUI();
-    GenerateDrawData();
     RenderUI();
 }
 
@@ -232,21 +242,18 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
 
     if (pass)
     {
-        if (level > 0)
+        const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
+        float timing = marker ? marker->GetTiming() : 0.f;
+        float start = marker ? marker->GetStart() : 0.f;
+        float end = marker ? marker->GetEnd() : 0.f;
+
+        const GPUProfileMarkerResult* const rootMarker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(RenderScheme::GetRootPass().GetPassName());
+        float rootTiming = rootMarker ? rootMarker->GetTiming() : 0.f;
+        float rootStart = rootMarker ? rootMarker->GetStart() : 0.f;
+        float rootEnd = rootMarker ? rootMarker->GetEnd() : 0.f;
+
+        if (level > 0 && timing > 0.f)
         {
-            const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
-            float timing = marker ? marker->GetTiming() : 0.f;
-            float start = marker ? marker->GetStart() : 0.f;
-            float end = marker ? marker->GetEnd() : 0.f;
-
-            const GPUProfileMarkerResult* const rootMarker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(RenderScheme::GetRootPass().GetPassName());
-            float rootTiming = rootMarker ? rootMarker->GetTiming() : 0.f;
-            float rootStart = rootMarker ? rootMarker->GetStart() : 0.f;
-            float rootEnd = rootMarker ? rootMarker->GetEnd() : 0.f;
-
-            if (timing == 0.f)
-                return;
-
             // Add this profile marker result to the cache
             if (start >= rootStart && end <= rootEnd)
             {
@@ -331,6 +338,8 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             ImGui::PopStyleColor();
         }
 
+        m_tGPUProfileMarkerResultHistory.PushMarker(GPUProfileMarkerResultCacheEntry(pass->GetPassName(), timing, start, end, rootTiming, rootStart, rootEnd));
+
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
             DrawGPUProfileBars(pass->GetChildren()[i], level + 1);
@@ -354,7 +363,7 @@ void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int le
         const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
         const float timing = marker ? marker->GetTiming() : 0.f;
 
-        ImGui::Text("%s: %f ms", pass->GetPassName(), timing);
+        ImGui::Text("%s: %6.3f (%6.3f)", pass->GetPassName(), timing, m_tGPUProfileMarkerResultHistory.GetAverage(pass->GetPassName()));
 
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
@@ -400,15 +409,9 @@ void UIPass::SetupUI()
         ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate);
         pFW->PauseUpdate(pauseUpdate);
 
-        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler,
-        #if ENABLE_PROFILE_MARKERS
-            true
-        #else
-            false
-        #endif
-        );
+        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler, ENABLE_PROFILE_MARKERS);
 
-#if !ENABLE_PROFILE_MARKERS
+    #if !ENABLE_PROFILE_MARKERS
         if (ImGui::IsItemHovered())
         {
             ImGui::BeginTooltip();
@@ -417,7 +420,7 @@ void UIPass::SetupUI()
             ImGui::PopTextWrapPos();
             ImGui::EndTooltip();
         }
-#endif
+    #endif
 
         if (ImGui::MenuItem("Quit", "Alt+F4"))
         {
@@ -549,48 +552,50 @@ void UIPass::GenerateDrawData()
     if (!drawData)
         return;
 
+    m_nCurrBufferIdx = (m_nCurrBufferIdx + 1) % UI_BUFFER_COUNT;
+
     const bool isUIInFocus = ((GITechDemo*)AppMain)->IsUIInFocus();
 
-    const bool needsIbReallocation = !m_pImGuiIb || m_pImGuiIb->GetElementCount() < (unsigned int)drawData->TotalIdxCount;
+    const bool needsIbReallocation = !m_pImGuiIb[m_nCurrBufferIdx] || m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() < (unsigned int)drawData->TotalIdxCount;
     if (needsIbReallocation)
     {
-        if (m_nImGuiIbIdx != ~0u)
+        if (m_nImGuiIbIdx[m_nCurrBufferIdx] != ~0u)
         {
-            ResMgr->ReleaseIndexBuffer(m_nImGuiIbIdx);
+            ResMgr->ReleaseIndexBuffer(m_nImGuiIbIdx[m_nCurrBufferIdx]);
         }
 
-        m_nImGuiIbIdx = ResMgr->CreateIndexBuffer(Math::Max(drawData->TotalIdxCount, 1), sizeof(ImDrawIdx) == 2 ? IBF_INDEX16 : IBF_INDEX32);
-        m_pImGuiIb = ResMgr->GetIndexBuffer(m_nImGuiIbIdx);
-        assert(sizeof(ImDrawIdx) == m_pImGuiIb->GetElementSize());
-        assert(m_pImGuiIb->GetElementCount() <= Math::pow(2.f, sizeof(ImDrawIdx) * 8.f));
+        m_nImGuiIbIdx[m_nCurrBufferIdx] = ResMgr->CreateIndexBuffer(Math::Max(drawData->TotalIdxCount, 1), sizeof(ImDrawIdx) == 2 ? IBF_INDEX16 : IBF_INDEX32);
+        m_pImGuiIb[m_nCurrBufferIdx] = ResMgr->GetIndexBuffer(m_nImGuiIbIdx[m_nCurrBufferIdx]);
+        assert(sizeof(ImDrawIdx) == m_pImGuiIb[m_nCurrBufferIdx]->GetElementSize());
+        assert(m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() <= Math::pow(2.f, sizeof(ImDrawIdx) * 8.f));
 
-        //cout << "UI index buffer reallocation: " << m_pImGuiIb->GetElementCount() << " indices." << endl;
+        //cout << "UI index buffer reallocation: " << m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() << " indices." << endl;
     }
 
-    const bool needsVbReallocation = !m_pImGuiVb || m_pImGuiVb->GetElementCount() < (unsigned int)drawData->TotalVtxCount;
+    const bool needsVbReallocation = !m_pImGuiVb[m_nCurrBufferIdx] || m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() < (unsigned int)drawData->TotalVtxCount;
     if (needsIbReallocation || needsVbReallocation)
     {
-        const unsigned int prevMaxVtxCount = m_pImGuiVb ? m_pImGuiVb->GetElementCount() : 1;
-        if (m_nImGuiVbIdx != ~0u)
+        const unsigned int prevMaxVtxCount = m_pImGuiVb[m_nCurrBufferIdx] ? m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() : 1;
+        if (m_nImGuiVbIdx[m_nCurrBufferIdx] != ~0u)
         {
-            ResMgr->ReleaseVertexBuffer(m_nImGuiVbIdx);
+            ResMgr->ReleaseVertexBuffer(m_nImGuiVbIdx[m_nCurrBufferIdx]);
         }
 
-        m_nImGuiVbIdx = ResMgr->CreateVertexBuffer(m_pImGuiVf, Math::Max(prevMaxVtxCount, (unsigned int)drawData->TotalVtxCount), m_pImGuiIb);
-        m_pImGuiVb = ResMgr->GetVertexBuffer(m_nImGuiVbIdx);
+        m_nImGuiVbIdx[m_nCurrBufferIdx] = ResMgr->CreateVertexBuffer(m_pImGuiVf[m_nCurrBufferIdx], Math::Max(prevMaxVtxCount, (unsigned int)drawData->TotalVtxCount), m_pImGuiIb[m_nCurrBufferIdx]);
+        m_pImGuiVb[m_nCurrBufferIdx] = ResMgr->GetVertexBuffer(m_nImGuiVbIdx[m_nCurrBufferIdx]);
 
-        //cout << "UI vertex buffer reallocation: " << m_pImGuiVb->GetElementCount() << " vertices." << endl;
+        //cout << "UI vertex buffer reallocation: " << m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() << " vertices." << endl;
     }
 
-    m_pImGuiIb->Lock(BL_WRITE_ONLY);
-    m_pImGuiVb->Lock(BL_WRITE_ONLY);
+    m_pImGuiIb[m_nCurrBufferIdx]->Lock(BL_WRITE_ONLY);
+    m_pImGuiVb[m_nCurrBufferIdx]->Lock(BL_WRITE_ONLY);
 
     for (int n = 0, vtxOffset = 0, idxOffset = 0; n < drawData->CmdListsCount; n++)
     {
         const ImDrawList* const cmdList = drawData->CmdLists[n];
         const ImDrawVert* vtxSrc = cmdList->VtxBuffer.Data;
 
-        m_pImGuiIb->SetIndices(cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size, idxOffset);
+        m_pImGuiIb[m_nCurrBufferIdx]->SetIndices(cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size, idxOffset);
         idxOffset += cmdList->IdxBuffer.Size;
 
         for (int i = 0; i < cmdList->VtxBuffer.Size; i++)
@@ -600,20 +605,36 @@ void UIPass::GenerateDrawData()
             const s3dByte B = ((vtxSrc->col & 0x00FF0000) >> 16);
             const s3dByte A = ((vtxSrc->col & 0xFF000000) >> 24);// / (isUIInFocus ? 1 : 2);
 
-            m_pImGuiVb->Position<Vec2f>(vtxOffset + i) = Vec2f(vtxSrc->pos.x, vtxSrc->pos.y);
-            m_pImGuiVb->Color<s3dDword>(vtxOffset + i, 0) = (A << 24) | (R << 16) | (G << 8) | (B << 0); // RGBA --> ARGB for DirectX9
-            m_pImGuiVb->TexCoord<Vec2f>(vtxOffset + i, 0) = Vec2f(vtxSrc->uv.x, vtxSrc->uv.y);
+            m_pImGuiVb[m_nCurrBufferIdx]->Position<Vec2f>(vtxOffset + i) = Vec2f(vtxSrc->pos.x, vtxSrc->pos.y);
+            m_pImGuiVb[m_nCurrBufferIdx]->Color<s3dDword>(vtxOffset + i, 0) = (A << 24) | (R << 16) | (G << 8) | (B << 0); // RGBA --> ARGB for DirectX9
+            m_pImGuiVb[m_nCurrBufferIdx]->TexCoord<Vec2f>(vtxOffset + i, 0) = Vec2f(vtxSrc->uv.x, vtxSrc->uv.y);
 
             vtxSrc++;
         }
         vtxOffset += cmdList->VtxBuffer.Size;
     }
 
-    m_pImGuiIb->Update();
-    m_pImGuiVb->Update();
+    m_pImGuiIb[m_nCurrBufferIdx]->Update();
+    m_pImGuiVb[m_nCurrBufferIdx]->Update();
 
-    m_pImGuiIb->Unlock();
-    m_pImGuiVb->Unlock();
+    m_pImGuiIb[m_nCurrBufferIdx]->Unlock();
+    m_pImGuiVb[m_nCurrBufferIdx]->Unlock();
+
+    // Update draw data cache
+    m_tDrawData[m_nCurrBufferIdx].CmdList.resize(drawData->CmdListsCount);
+    for (unsigned int n = 0; n < m_tDrawData[m_nCurrBufferIdx].CmdList.size(); n++)
+    {
+        UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[m_nCurrBufferIdx].CmdList[n];
+        cmdList.DrawCmd.resize(drawData->CmdLists[n]->CmdBuffer.Size);
+        for (unsigned int i = 0; i < cmdList.DrawCmd.size(); i++)
+        {
+            UIDrawData::UIDrawCommandList::UIDrawCommand& cmd = cmdList.DrawCmd[i];
+            const ImVec4 clipRect = drawData->CmdLists[n]->CmdBuffer[i].ClipRect;
+            cmd.ClipRect = Vec4f(clipRect.x, clipRect.y, clipRect.z, clipRect.w);
+            cmd.ElemCount = drawData->CmdLists[n]->CmdBuffer[i].ElemCount;
+        }
+        cmdList.VtxBufferSize = drawData->CmdLists[n]->VtxBuffer.Size;
+    }
 }
 
 void UIPass::RenderUI()
@@ -626,8 +647,9 @@ void UIPass::RenderUI()
     if (!RSMgr)
         return;
 
-    ImDrawData* drawData = ImGui::GetDrawData();
-    if (!drawData)
+    const unsigned int nRenderBufferIdx = (m_nCurrBufferIdx + 1) % UI_BUFFER_COUNT;
+
+    if (!m_pImGuiVb[nRenderBufferIdx])
         return;
 
     // Setup render states
@@ -666,17 +688,17 @@ void UIPass::RenderUI()
 
     // Render geometry
     UIShader.Enable();
-    for (int n = 0, vtxOffset = 0, idxOffset = 0; n < drawData->CmdListsCount; n++)
+    for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[nRenderBufferIdx].CmdList.size(); n++)
     {
-        const ImDrawList* cmdList = drawData->CmdLists[n];
-        for (int i = 0; i < cmdList->CmdBuffer.Size; i++)
+        const UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[nRenderBufferIdx].CmdList[n];
+        for (unsigned int i = 0; i < cmdList.DrawCmd.size(); i++)
         {
-            const ImDrawCmd* cmd = &cmdList->CmdBuffer[i];
-            RSMgr->SetScissor(Vec2i(int(cmd->ClipRect.z - cmd->ClipRect.x), int(cmd->ClipRect.w - cmd->ClipRect.y)), Vec2i(int(cmd->ClipRect.x), int(cmd->ClipRect.y)));
-            RenderContext->DrawVertexBuffer(m_pImGuiVb, vtxOffset, cmd->ElemCount / 3, cmdList->VtxBuffer.Size, idxOffset);
-            idxOffset += cmd->ElemCount;
+            const UIDrawData::UIDrawCommandList::UIDrawCommand& cmd = cmdList.DrawCmd[i];
+            RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
+            RenderContext->DrawVertexBuffer(m_pImGuiVb[nRenderBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
+            idxOffset += cmd.ElemCount;
         }
-        vtxOffset += cmdList->VtxBuffer.Size;
+        vtxOffset += cmdList.VtxBufferSize;
     }
     UIShader.Disable();
 
@@ -769,13 +791,16 @@ void UIPass::AllocateResources()
         io.Fonts->TexID = m_pFontTexture;
     }
 
-    m_nImGuiVfIdx = ResMgr->CreateVertexFormat(
-        3,
-        VAS_POSITION, VAT_FLOAT2, 0,
-        VAS_COLOR, VAT_UBYTE4, 0,
-        VAS_TEXCOORD, VAT_FLOAT2, 0
-    );
-    m_pImGuiVf = ResMgr->GetVertexFormat(m_nImGuiVfIdx);
+    for (unsigned int i = 0; i < UI_BUFFER_COUNT; i++)
+    {
+        m_nImGuiVfIdx[i] = ResMgr->CreateVertexFormat(
+            3,
+            VAS_POSITION, VAT_FLOAT2, 0,
+            VAS_COLOR, VAT_UBYTE4, 0,
+            VAS_TEXCOORD, VAT_FLOAT2, 0
+        );
+        m_pImGuiVf[i] = ResMgr->GetVertexFormat(m_nImGuiVfIdx[i]);
+    }
 
     for (unsigned int paramIdx = 0; paramIdx < ArtistParameter::GetParameterCount(); paramIdx++)
     {
@@ -819,25 +844,70 @@ void UIPass::ReleaseResources()
         io.Fonts->TexID = nullptr;
     }
 
-    if (m_nImGuiVfIdx != ~0u)
+    for (unsigned int i = 0; i < UI_BUFFER_COUNT; i++)
     {
-        ResMgr->ReleaseVertexFormat(m_nImGuiVfIdx);
-        m_nImGuiVfIdx = ~0u;
-        m_pImGuiVf = nullptr;
+        if (m_nImGuiVfIdx[i] != ~0u)
+        {
+            ResMgr->ReleaseVertexFormat(m_nImGuiVfIdx[i]);
+            m_nImGuiVfIdx[i] = ~0u;
+            m_pImGuiVf[i] = nullptr;
+        }
+
+        if (m_nImGuiIbIdx[i] != ~0u)
+        {
+            ResMgr->ReleaseIndexBuffer(m_nImGuiIbIdx[i]);
+            m_nImGuiIbIdx[i] = ~0u;
+            m_pImGuiIb[i] = nullptr;
+
+        }
+
+        if (m_nImGuiVbIdx[i] != ~0u)
+        {
+            ResMgr->ReleaseVertexBuffer(m_nImGuiVbIdx[i]);
+            m_nImGuiVbIdx[i] = ~0u;
+            m_pImGuiVb[i] = nullptr;
+        }
+    }
+}
+
+void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)
+{
+    m_fTimeAccum += fDeltaTime;
+
+    if (m_fTimeAccum >= HISTORY_TIME)
+    {
+        m_fTimeAccum = 0.f;
+        m_nCurrBufferIdx = (m_nCurrBufferIdx + 1) % 2;
+        m_arrGPUProfileMarkerResultHistory[m_nCurrBufferIdx].clear();
+    }
+}
+
+const float GPUProfileMarkerResultHistory::GetAverage(const char* const name) const
+{
+    const int historyBufferIdx = (m_nCurrBufferIdx + 1) % 2;
+    float totalTime = 0.f;
+    int markerCount = 0;
+
+    for (unsigned int i = 0; i < m_arrGPUProfileMarkerResultHistory[historyBufferIdx].size(); i++)
+    {
+        if (m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].name == name)
+        {
+            totalTime += m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].timing;
+            markerCount++;
+        }
     }
 
-    if (m_nImGuiIbIdx != ~0u)
+    if (markerCount)
     {
-        ResMgr->ReleaseIndexBuffer(m_nImGuiIbIdx);
-        m_nImGuiIbIdx = ~0u;
-        m_pImGuiIb = nullptr;
-
+        return totalTime / (float)markerCount;
     }
-
-    if (m_nImGuiVbIdx != ~0u)
+    else
     {
-        ResMgr->ReleaseVertexBuffer(m_nImGuiVbIdx);
-        m_nImGuiVbIdx = ~0u;
-        m_pImGuiVb = nullptr;
+        return 0.f;
     }
+}
+
+void GPUProfileMarkerResultHistory::PushMarker(const GPUProfileMarkerResultCacheEntry& marker)
+{
+    m_arrGPUProfileMarkerResultHistory[m_nCurrBufferIdx].push_back(marker);
 }
