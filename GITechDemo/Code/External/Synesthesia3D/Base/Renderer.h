@@ -256,7 +256,7 @@ namespace Synesthesia3D
          * @param[in]   vb          A pointer to the vertex buffer resource.
          * @param[in]   vtxOffset   Offset from the start of the vertex buffer to the first vertex.
          * @param[in]   primCount   Number of primitives to render. The number of vertices used is a function of the primitive count and the primitive type.
-         * @param[in]   vtxCount    Number of vertices used during this call. The first vertex is located at @ref vtxOffset
+         * @param[in]   vtxCount    Number of vertices used during this call. The first vertex is located at vtxOffset
          * @param[in]   idxOffset   Index of the first index to use when accesssing the vertex buffer.
          */
         virtual SYNESTHESIA3D_DLL           void        DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset = 0, const unsigned int primCount = 0, const unsigned int vtxCount = 0, const unsigned int idxOffset = 0);

@@ -508,10 +508,10 @@ void UIPass::SetupUI()
     if (m_bShowProfiler)
     {
         const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y * 2.f;
-        const ImVec2 window_pos = ImVec2(io.DisplaySize.x - style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y);
-        const ImVec2 window_pos_pivot = ImVec2(1.0f, 0.0f);
+        const ImVec2 windowPos = ImVec2(io.DisplaySize.x - style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y);
+        const ImVec2 windowPosPivot = ImVec2(1.0f, 0.0f);
 
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
         ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - mainMenuBarHeight - style.WindowPadding.y * 2.f));
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -523,7 +523,7 @@ void UIPass::SetupUI()
         ImGui::PopStyleColor();
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
-        if (ImGui::Begin("GPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+        if (ImGui::Begin("GPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
         {
             ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - style.WindowPadding.x - ImGui::GetWindowWidth(), io.DisplaySize.y - style.WindowPadding.y - ImGui::GetWindowHeight()));
             DrawGPUProfileDetails();

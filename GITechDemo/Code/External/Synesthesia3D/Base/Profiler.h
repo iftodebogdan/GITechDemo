@@ -116,7 +116,11 @@ namespace Synesthesia3D
         *
         * @note Must be paried with a corresponding @ref PopProfileMarker().
         *
-        * @param[in]    label   A name for the event.
+        * @param[in]    label           A name for the event.
+        * @param[in]    issueGPUQuery   Whether to issue a GPU marker as well
+        *
+        * @see Profiler::RetrieveGPUProfileMarker() @see Profiler::RetrieveGPUProfileMarkerResult() 
+        * @see Profiler::RetrieveGPUProfileMarkerStart() @see Profiler::RetrieveGPUProfileMarkerEnd()
         */
         virtual SYNESTHESIA3D_DLL                   void                PushProfileMarker(const char* const label, const bool issueGPUQuery = false);
 
