@@ -58,14 +58,12 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define CREATE_MODEL_OBJECT(Name, Filepath) Model Name(Filepath)
 #define CREATE_TEXTURE_OBJECT(Name, Filepath) Texture Name(Filepath)
 #define CREATE_SHADER_OBJECT(Name, Filepath) Shader Name(Filepath)
+#define CREATE_PBR_MATERIAL(Name, FolderPath) PBRMaterial Name(FolderPath)
 #define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__))
 #define CREATE_STATIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], Width, Height, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, STATIC_RENDER_TARGET))
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
 #define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
 #define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f)
-#define START_PBR_MATERIAL_TEST_TEXTURES() unsigned int g_nPBRMaterialDescriptionCount = 0; PBRMaterialDescription g_arrPBRMaterialDescription[] = {
-#define CREATE_PBR_MATERIAL_TEST_TEXTURE(Name, Folder) PBRMaterialDescription(Name, Folder),
-#define END_PBR_MATERIAL_TEST_TEXTURES() };
 
 ///////////////////////////////////////////////////////////
 
@@ -173,6 +171,17 @@ namespace GITechDemoApp
     //////////////////////////////////////////
 
     //////////////
+    // Models   //
+    //////////////
+
+    CREATE_MODEL_OBJECT(SponzaScene,    "models/sponza/sponza.s3dmdl");
+    CREATE_MODEL_OBJECT(SphereModel,    "models/pbr-test/sphere.s3dmdl");
+
+    //------------------------------------------------------
+
+
+
+    //////////////
     // Shaders  //
     //////////////
 
@@ -209,12 +218,30 @@ namespace GITechDemoApp
 
 
 
-    //////////////
-    // Models   //
-    //////////////
+    ///////////////////
+    // PBR Materials //
+    ///////////////////
 
-    CREATE_MODEL_OBJECT(SponzaScene,    "models/sponza/sponza.s3dmdl");
-    CREATE_MODEL_OBJECT(SphereModel,    "models/pbr-test/sphere.s3dmdl");
+    CREATE_PBR_MATERIAL(BambooWood,                     "bamboo_wood");
+    CREATE_PBR_MATERIAL(CrateredRock,                   "cratered_rock");
+    CREATE_PBR_MATERIAL(DirtySlightlyPittedConcrete,    "dirty_slightly_pitted_concrete");
+    CREATE_PBR_MATERIAL(DryBrownDirt,                   "dry_brown_dirt");
+    CREATE_PBR_MATERIAL(GreasyWornMetal,                "greasy_worn_metal");
+    CREATE_PBR_MATERIAL(OctogonStoneCobble,             "octogon_stone_cobble");
+    CREATE_PBR_MATERIAL(PaintPeelingConcrete,           "paint_peeling_concrete");
+    CREATE_PBR_MATERIAL(PolishedGranite,                "polished_granite");
+    CREATE_PBR_MATERIAL(PolishedSpeckledMarble,         "polished_speckled_marble");
+    CREATE_PBR_MATERIAL(RockInfusedWithCopper,          "rock_infused_with_copper");
+    CREATE_PBR_MATERIAL(RustedStreakedIron,             "rusted_streaked_iron");
+    CREATE_PBR_MATERIAL(RustedIron,                     "rusted_iron");
+    CREATE_PBR_MATERIAL(ScuffedAluminum,                "scuffed_aluminum");
+    CREATE_PBR_MATERIAL(ScuffedCopper,                  "scuffed_copper");
+    CREATE_PBR_MATERIAL(ScuffedGold,                    "scuffed_gold");
+    CREATE_PBR_MATERIAL(ScuffedIron,                    "scuffed_iron");
+    CREATE_PBR_MATERIAL(ScuffedTitanium,                "scuffed_titanium");
+    CREATE_PBR_MATERIAL(WornOutOldBrickWall,            "worn_out_old_brick_wall");
+    CREATE_PBR_MATERIAL(WornPaintedCement,              "worn_painted_cement");
+    CREATE_PBR_MATERIAL(WornScuffedPlastic,             "worn_scuffed_plastic");
 
     //------------------------------------------------------
 
@@ -233,37 +260,6 @@ namespace GITechDemoApp
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
     CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
-
-    //------------------------------------------------------
-
-
-
-    ////////////////////////////////
-    // PBR Material Test Textures //
-    ////////////////////////////////
-
-    START_PBR_MATERIAL_TEST_TEXTURES()
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Bamboo wood", "bamboo_wood")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Cratered rock", "cratered_rock")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Dirty slightly pitted concrete", "dirty_slightly_pitted_concrete")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Dry brown dirt", "dry_brown_dirt")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Greasy worn metal", "greasy_worn_metal")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Octogon stone cobble", "octogon_stone_cobble")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Paint peeling concrete", "paint_peeling_concrete")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Polished granite", "polished_granite")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Polished speckled marble", "polished_speckled_marble")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rock infused with copper", "rock_infused_with_copper")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rusted streaked iron", "rusted_streaked_iron")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Rusted iron", "rusted_iron")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed aluminum", "scuffed_aluminum")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed copper", "scuffed_copper")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed gold", "scuffed_gold")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed iron", "scuffed_iron")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Scuffed titanium", "scuffed_titanium")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn out old brick wall", "worn_out_old_brick_wall")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn painted cement", "worn_painted_cement")
-        CREATE_PBR_MATERIAL_TEST_TEXTURE("Worn scuffed plastic", "worn_scuffed_plastic")
-    END_PBR_MATERIAL_TEST_TEXTURES()
 
     //------------------------------------------------------
 

@@ -32,6 +32,9 @@ namespace GITechDemoApp
         static RenderPass&  GetRootPass() { return RootPass; }
         static void         Draw() { RootPass.Draw(); }
 
+        static void         AllocateResources() { RootPass.AllocateResources(); }
+        static void         ReleaseResources() { RootPass.ReleaseResources(); }
+
     private:
         static RenderPass   RootPass;
     };

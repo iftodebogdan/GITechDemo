@@ -27,31 +27,12 @@
 
 namespace GITechDemoApp
 {
-    struct PBRMaterialDescription
-    {
-        enum PBRTextureType
-        {
-            PBRTT_ALBEDO = 0,
-            PBRTT_NORMAL,
-            PBRTT_ROUGHNESS,
-            PBRTT_MATERIAL,
-            PBRTT_MAX
-        };
-
-        std::string  szMaterialName;
-        std::string  szFolderName;
-        Texture*     arrTextures[PBRTT_MAX];
-
-        PBRMaterialDescription(const char* const materialName, const char* const folderName);
-        ~PBRMaterialDescription();
-    };
-
     class PBRMaterialTestPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(PBRMaterialTestPass)
 
     public:
-        static Matrix44f CalculateWorldMatrixForSphereIdx(const unsigned int idx);
+        static Matrix44f CalculateWorldMatrixForSphereIdx(const unsigned int idx, const unsigned int total);
     };
 }
 

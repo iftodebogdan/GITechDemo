@@ -50,6 +50,14 @@ namespace GITechDemoApp
 DirectionalIndirectLightPass::DirectionalIndirectLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {
+}
+
+DirectionalIndirectLightPass::~DirectionalIndirectLightPass()
+{
+}
+
+void DirectionalIndirectLightPass::AllocateResources()
+{
     f3RSMKernel = new Vec3f[RSM_NUM_SAMPLES];
 
     // Generate Poisson-disk sampling pattern
@@ -62,7 +70,7 @@ DirectionalIndirectLightPass::DirectionalIndirectLightPass(const char* const pas
                 minDist,
                 30,
                 RSM_NUM_SAMPLES
-                );
+            );
     } while (poisson.size() != RSM_NUM_SAMPLES);
 
     // Warp kernel so as to distribute more samples towards the exterior
@@ -71,16 +79,16 @@ DirectionalIndirectLightPass::DirectionalIndirectLightPass(const char* const pas
         // Increase sample density towards the outside of the kernel
         f3RSMKernel[i][0] = sqrt(abs(poisson[i].x - 0.5f) * 2.f) * ((poisson[i].x < 0.5f) ? -1.f : 1.f);
         f3RSMKernel[i][1] = sqrt(abs(poisson[i].y - 0.5f) * 2.f) * ((poisson[i].y < 0.5f) ? -1.f : 1.f);
-        
+
         // Linear weights combined with non-linear sample density has proven
         // to provide very good quality with very little jitter / noise
         f3RSMKernel[i][2] = length(Vec2f(poisson[i].x - 0.5f, poisson[i].y - 0.5f)) * 2.f;
     }
 }
 
-DirectionalIndirectLightPass::~DirectionalIndirectLightPass()
+void DirectionalIndirectLightPass::ReleaseResources()
 {
-    if(f3RSMKernel)
+    if (f3RSMKernel)
         delete[] f3RSMKernel;
 }
 

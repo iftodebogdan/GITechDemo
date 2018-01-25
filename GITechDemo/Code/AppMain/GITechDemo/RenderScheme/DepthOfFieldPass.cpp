@@ -269,3 +269,13 @@ void DepthOfFieldPass::Draw()
 
     ApplyDoF();
 }
+
+void DepthOfFieldPass::AllocateResources()
+{
+
+}
+
+void DepthOfFieldPass::ReleaseResources()
+{
+
+}

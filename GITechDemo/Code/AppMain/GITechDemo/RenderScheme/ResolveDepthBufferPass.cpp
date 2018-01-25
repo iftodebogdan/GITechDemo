@@ -73,3 +73,13 @@ void ResolveDepthBufferPass::Draw()
 
     POP_PROFILE_MARKER();
 }
+
+void ResolveDepthBufferPass::AllocateResources()
+{
+
+}
+
+void ResolveDepthBufferPass::ReleaseResources()
+{
+
+}

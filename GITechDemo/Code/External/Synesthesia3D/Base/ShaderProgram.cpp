@@ -51,7 +51,8 @@ void ShaderProgram::DescribeShaderInputs()
     {
         ShaderInputDesc inputDesc;
         inputDesc.szName = GetConstantName(i);
-        inputDesc.nNameHash = S3DHASH(inputDesc.szName.c_str());
+        const char* const inputNameCstr = inputDesc.szName.c_str();
+        inputDesc.nNameHash = S3DHASH(inputNameCstr);
         inputDesc.eInputType = GetConstantType(i);
         inputDesc.eRegisterType = GetConstantRegisterType(i);
         inputDesc.nRegisterIndex = GetConstantRegisterIndex(i);

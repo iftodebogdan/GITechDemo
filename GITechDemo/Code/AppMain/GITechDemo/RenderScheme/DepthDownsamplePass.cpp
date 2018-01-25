@@ -76,3 +76,13 @@ void DepthDownsamplePass::Draw()
 
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 }
+
+void DepthDownsamplePass::AllocateResources()
+{
+
+}
+
+void DepthDownsamplePass::ReleaseResources()
+{
+
+}

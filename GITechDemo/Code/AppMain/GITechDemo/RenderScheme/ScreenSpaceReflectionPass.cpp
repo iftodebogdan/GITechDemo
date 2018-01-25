@@ -90,6 +90,9 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     texSource = ltAccBuf->GetColorBuffer();
     bSingleChannelCopy = false;
     f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+
+    // Normally, tonemapping shouldn't be required, but it's to make the SSR
+    // roughly the same intensity as the fallback cubemap reflection.
     bApplyTonemap = true;
 
     texHDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
@@ -186,4 +189,14 @@ void ScreenSpaceReflectionPass::ApplyScreenSpaceReflection()
     //RenderStateManager->SetColorBlendEnabled(blendEnabled);
 
     POP_PROFILE_MARKER();
+}
+
+void ScreenSpaceReflectionPass::AllocateResources()
+{
+
+}
+
+void ScreenSpaceReflectionPass::ReleaseResources()
+{
+
 }

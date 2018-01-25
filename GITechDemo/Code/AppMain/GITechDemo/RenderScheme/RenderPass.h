@@ -30,7 +30,9 @@
     ~ Class (); \
     protected: \
     void Update(const float fDeltaTime); \
-    void Draw();
+    void Draw(); \
+    void AllocateResources(); \
+    void ReleaseResources();
 
 namespace GITechDemoApp
 {
@@ -49,6 +51,9 @@ namespace GITechDemoApp
         virtual void Update(const float fDeltaTime) {}
         virtual void Draw();
 
+        virtual void AllocateResources();
+        virtual void ReleaseResources();
+
         void DrawChildren();
 
     private:
@@ -56,6 +61,9 @@ namespace GITechDemoApp
         RenderPass();
         RenderPass(const RenderPass&);
         void operator=(const RenderPass&) {}
+
+        void AllocateChildrenResources();
+        void ReleaseChildrenResources();
 
         std::string                 m_szPassName;
         std::vector<RenderPass*>    m_arrChildList;

@@ -113,3 +113,13 @@ void GBufferPass::Draw()
     DrawChildren();
     GBuffer.Disable();
 }
+
+void GBufferPass::AllocateResources()
+{
+
+}
+
+void GBufferPass::ReleaseResources()
+{
+
+}

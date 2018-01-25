@@ -100,3 +100,13 @@ void FXAAPass::Draw()
 
     LDRFxaaImageBuffer.Disable();
 }
+
+void FXAAPass::AllocateResources()
+{
+
+}
+
+void FXAAPass::ReleaseResources()
+{
+
+}

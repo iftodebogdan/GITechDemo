@@ -134,3 +134,13 @@ void MotionBlurPass::ApplyMotionBlur()
 
     POP_PROFILE_MARKER();
 }
+
+void MotionBlurPass::AllocateResources()
+{
+
+}
+
+void MotionBlurPass::ReleaseResources()
+{
+
+}

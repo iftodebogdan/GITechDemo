@@ -285,3 +285,13 @@ void DirectionalLightVolumePass::Draw()
         //pCurrRT->Enable();
     }
 }
+
+void DirectionalLightVolumePass::AllocateResources()
+{
+
+}
+
+void DirectionalLightVolumePass::ReleaseResources()
+{
+
+}

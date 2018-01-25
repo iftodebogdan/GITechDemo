@@ -98,3 +98,13 @@ void RSMDirectionalLightPass::Draw()
 
     RSMBuffer.Disable();
 }
+
+void RSMDirectionalLightPass::AllocateResources()
+{
+
+}
+
+void RSMDirectionalLightPass::ReleaseResources()
+{
+
+}

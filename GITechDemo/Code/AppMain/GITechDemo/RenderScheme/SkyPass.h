@@ -37,10 +37,6 @@ namespace GITechDemoApp
     {
         IMPLEMENT_RENDER_PASS(SkyPass)
 
-    public:
-        void AllocateResources();
-        void ReleaseResources();
-
     private:
         // A cube used to draw the sky
         VertexBuffer*   m_pSkyBoxCube;

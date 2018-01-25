@@ -450,3 +450,13 @@ void LensFlarePass::UpscaleAndBlend()
 
     POP_PROFILE_MARKER();
 }
+
+void LensFlarePass::AllocateResources()
+{
+
+}
+
+void LensFlarePass::ReleaseResources()
+{
+
+}

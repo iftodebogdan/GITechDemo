@@ -105,3 +105,13 @@ void HDRDownsamplePass::Draw()
     DownsamplePass(&LightAccumulationBuffer, HDRDownsampleBuffer[QUARTER]);
     DownsamplePass(HDRDownsampleBuffer[QUARTER], HDRDownsampleBuffer[SIXTEENTH]);
 }
+
+void HDRDownsamplePass::AllocateResources()
+{
+
+}
+
+void HDRDownsamplePass::ReleaseResources()
+{
+
+}

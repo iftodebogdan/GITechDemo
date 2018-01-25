@@ -204,10 +204,8 @@ void GITechDemo::Release()
     }
 
     bExtraResInit = false;
-    FullScreenTri = nullptr;
 
-    SKY_PASS.ReleaseResources();
-    UI_PASS.ReleaseResources();
+    RenderScheme::ReleaseResources();
 
     RenderResource::FreeAll();
     Renderer::DestroyInstance();
@@ -215,14 +213,6 @@ void GITechDemo::Release()
 
 void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 {
-    Renderer* RenderContext = Renderer::GetInstance();
-    if (!RenderContext)
-        return;
-
-    ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
-    if (!ResourceMgr)
-        return;
-
     Framework* const pFW = Framework::GetInstance();
     if (!pFW)
         return;
@@ -258,30 +248,19 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
     {
         if (!bExtraResInit)
         {
-            // Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
-            unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAS_POSITION, VAT_FLOAT4, 0);
-            VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
+            std::stringstream msg;
+            msg << "Thread " << thId << " - ";
+            msg << "RenderScheme::AllocateResources()";
+            cout << msg.str() + " start\n";
 
-            unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
-            IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
-            const unsigned short fsqIndices[] = { 0, 1, 2 };
-            ib->SetIndices(fsqIndices, 3);
-
-            unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
-            FullScreenTri = ResourceMgr->GetVertexBuffer(vbIdx);
-
-            FullScreenTri->Lock(BL_WRITE_ONLY);
-            FullScreenTri->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
-            FullScreenTri->Position<Vec4f>(1) = Vec4f(3.f, 1.f, 1.f, 1.f);
-            FullScreenTri->Position<Vec4f>(2) = Vec4f(-1.f, -3.f, 1.f, 1.f);
-            FullScreenTri->Update();
-            FullScreenTri->Unlock();
+            const unsigned startTicks = pFW->GetTicks();
 
             // Misc. resources
-            SKY_PASS.AllocateResources();
-            UI_PASS.AllocateResources();
+            RenderScheme::AllocateResources();
 
             bExtraResInit = true;
+
+            cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
         }
         MUTEX_UNLOCK(mResInitMutex);
     }

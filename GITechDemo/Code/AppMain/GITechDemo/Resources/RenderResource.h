@@ -43,6 +43,9 @@ namespace GITechDemoApp
 {
     using namespace Synesthesia3D;
 
+    class Texture;
+    class PBRMaterial;
+
     class RenderResource
     {
     public:
@@ -54,20 +57,23 @@ namespace GITechDemoApp
             RES_SHADER_CONSTANT,
             RES_TEXTURE,
             RES_RENDERTARGET,
+            RES_PBR_MATERIAL,
             RES_MAX
         };
 
         static const vector<RenderResource*>& GetResourceList() { return arrResources; }
+        static const unsigned int GetResourceCountByType(const ResourceType type);
 
         static void InitAllResources();
         static void InitAllModels();
         static void InitAllTextures();
         static void InitAllShaders();
         static void InitAllRenderTargets();
+        static void InitAllPBRMaterials();
 
         static void FreeAll();
 
-        const char* GetDesc() { return szDesc.c_str(); }
+        const char* GetDesc() const { return szDesc.c_str(); }
         const ResourceType GetResourceType() { return eResType; }
 
         const bool IsInitialized() { return bInitialized; }
@@ -94,8 +100,6 @@ namespace GITechDemoApp
 
         static vector<RenderResource*> arrResources;
     };
-
-    class Texture;
 
     class Model : public RenderResource
     {
@@ -141,6 +145,7 @@ namespace GITechDemoApp
         unsigned int nTexIdx;
 
         friend class Model;
+        friend class PBRMaterial;
     };
 
     template<class T>
@@ -279,6 +284,33 @@ namespace GITechDemoApp
         float heightRatio;
         PixelFormat eDepthStencilFormat;
         bool bIsDynamic;
+    };
+
+    class PBRMaterial : public RenderResource
+    {
+    public:
+        enum PBRTextureType
+        {
+            PBRTT_ALBEDO = 0,
+            PBRTT_NORMAL,
+            PBRTT_ROUGHNESS,
+            PBRTT_MATERIAL,
+            PBRTT_MAX
+        };
+
+        PBRMaterial(const char* const folderName);
+        ~PBRMaterial();
+
+        Synesthesia3D::Texture* const GetTexture(const PBRTextureType type) const { assert(type < PBRTT_MAX); return arrTexture[type]->GetTexture(); }
+        const unsigned int GetTextureIndex(const PBRTextureType type) const { assert(type < PBRTT_MAX); return arrTexture[type]->GetTextureIndex(); }
+
+    protected:
+        const bool Init();
+        void Free();
+
+        void operator= (const PBRMaterial& lhs) { assert(0); }
+
+        Texture*        arrTexture[PBRTT_MAX];
     };
 }
 #endif

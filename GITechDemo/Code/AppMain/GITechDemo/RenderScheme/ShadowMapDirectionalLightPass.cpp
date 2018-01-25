@@ -73,31 +73,14 @@ namespace GITechDemoApp
         Vec4f( 1.f, -1.f,   0.f,    1.f)
     };
     ////////////////////////////////////
-
-    extern PBRMaterialDescription g_arrPBRMaterialDescription[];
-    extern unsigned int g_nPBRMaterialDescriptionCount;
 }
 
 ShadowMapDirectionalLightPass::ShadowMapDirectionalLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{
-    f44CascadeProjMat = new Matrix44f[NUM_CASCADES];
-    f44LightViewProjMat = new Matrix44f[NUM_CASCADES];
-    f44LightWorldViewProjMat = new Matrix44f[NUM_CASCADES];
-
-    f2CascadeBoundsMin = new Vec2f[NUM_CASCADES];
-    f2CascadeBoundsMax = new Vec2f[NUM_CASCADES];
-}
+{}
 
 ShadowMapDirectionalLightPass::~ShadowMapDirectionalLightPass()
-{
-    delete[] f44CascadeProjMat;
-    delete[] f44LightViewProjMat;
-    delete[] f44LightWorldViewProjMat;
-
-    delete[] f2CascadeBoundsMin;
-    delete[] f2CascadeBoundsMax;
-}
+{}
 
 void ShadowMapDirectionalLightPass::UpdateSceneAABB()
 {
@@ -152,9 +135,6 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
     if (!ResourceMgr)
         return;
-
-    if (!SceneAABB.isInitialized())
-        UpdateSceneAABB();
 
     ResourceMgr->GetTexture(ShadowMapDir.GetRenderTarget()->GetDepthBuffer())->SetAddressingMode(SAM_BORDER);
     ResourceMgr->GetTexture(ShadowMapDir.GetRenderTarget()->GetDepthBuffer())->SetBorderColor(Vec4f(1.f, 1.f, 1.f, 1.f));
@@ -372,21 +352,29 @@ void ShadowMapDirectionalLightPass::Draw()
 
         DepthPassShader.Disable();
 
-        for (unsigned int idx = 0; idx < g_nPBRMaterialDescriptionCount; idx++)
+        const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
+        const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
+
+        for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
         {
-            PUSH_PROFILE_MARKER(g_arrPBRMaterialDescription[idx].szMaterialName.c_str());
+            if (arrRenderResourceList[resIdx] && arrRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
+            {
+                const PBRMaterial* const pbrMaterial = (PBRMaterial*)arrRenderResourceList[resIdx];
 
-            f44WorldViewProjMat = f44LightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(idx);
+                PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
 
-            DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
+                f44WorldViewProjMat = f44LightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
 
-            // It should have only one mesh, but in case we ever change that...
-            for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
-                RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+                DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
 
-            DepthPassShader.Disable();
+                // It should have only one mesh, but in case we ever change that...
+                for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+                    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
 
-            POP_PROFILE_MARKER();
+                DepthPassShader.Disable();
+
+                POP_PROFILE_MARKER();
+            }
         }
 
         POP_PROFILE_MARKER();
@@ -399,4 +387,31 @@ void ShadowMapDirectionalLightPass::Draw()
 
     RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
     RenderContext->GetRenderStateManager()->SetScissorEnabled(scissorEnabled);
+}
+
+void ShadowMapDirectionalLightPass::AllocateResources()
+{
+    f44CascadeProjMat = new Matrix44f[NUM_CASCADES];
+    f44LightViewProjMat = new Matrix44f[NUM_CASCADES];
+    f44LightWorldViewProjMat = new Matrix44f[NUM_CASCADES];
+
+    f2CascadeBoundsMin = new Vec2f[NUM_CASCADES];
+    f2CascadeBoundsMax = new Vec2f[NUM_CASCADES];
+
+    // RenderPass::AllocateResources() is called from multiple threads along with the
+    // various RenderResource::Init() calls. As such, any RenderResource type that is
+    // being modified here has to be locked for modification to avoid race conditions.
+    SponzaScene.LockRes();
+    UpdateSceneAABB();
+    SponzaScene.UnlockRes();
+}
+
+void ShadowMapDirectionalLightPass::ReleaseResources()
+{
+    delete[] f44CascadeProjMat;
+    delete[] f44LightViewProjMat;
+    delete[] f44LightWorldViewProjMat;
+
+    delete[] f2CascadeBoundsMin;
+    delete[] f2CascadeBoundsMax;
 }

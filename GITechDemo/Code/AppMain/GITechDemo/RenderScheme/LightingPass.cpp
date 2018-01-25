@@ -100,3 +100,13 @@ void LightingPass::Draw()
 
     LightAccumulationBuffer.Disable();
 }
+
+void LightingPass::AllocateResources()
+{
+
+}
+
+void LightingPass::ReleaseResources()
+{
+
+}

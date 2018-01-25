@@ -46,6 +46,14 @@ namespace GITechDemoApp
 DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {
+}
+
+DirectionalLightPass::~DirectionalLightPass()
+{
+}
+
+void DirectionalLightPass::AllocateResources()
+{
     f2PoissonDisk = new Vec2f[PCF_MAX_SAMPLE_COUNT];
 
     // Generate Poisson-disk sampling pattern
@@ -60,7 +68,7 @@ DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPas
                 minDist,
                 30,
                 PCF_MAX_SAMPLE_COUNT
-                );
+            );
     } while (poisson.size() != PCF_MAX_SAMPLE_COUNT);
 
     // Normalize the kernel
@@ -71,7 +79,7 @@ DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPas
     }
 }
 
-DirectionalLightPass::~DirectionalLightPass()
+void DirectionalLightPass::ReleaseResources()
 {
     if (f2PoissonDisk)
         delete[] f2PoissonDisk;

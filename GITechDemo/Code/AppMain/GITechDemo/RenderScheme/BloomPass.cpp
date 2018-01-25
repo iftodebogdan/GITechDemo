@@ -232,3 +232,13 @@ void BloomPass::Draw()
     BloomBlur();
     BloomApply();
 }
+
+void BloomPass::AllocateResources()
+{
+
+}
+
+void BloomPass::ReleaseResources()
+{
+
+}

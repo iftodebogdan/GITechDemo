@@ -31,37 +31,9 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    extern PBRMaterialDescription g_arrPBRMaterialDescription[];
-    extern unsigned int g_nPBRMaterialDescriptionCount;
     extern int DIFFUSE_ANISOTROPY;
     extern AABoxf SceneAABB;
     extern bool GBUFFER_USE_NORMAL_MAPS;
-}
-
-PBRMaterialDescription::PBRMaterialDescription(const char* const materialName, const char* const folderName)
-    : szMaterialName(materialName)
-    , szFolderName(folderName)
-{
-    g_nPBRMaterialDescriptionCount++;
-    arrTextures[PBRTT_ALBEDO] = new Texture(("models/pbr-test/textures/" + szFolderName + "/albedo.s3dtex").c_str());
-    arrTextures[PBRTT_NORMAL] = new Texture(("models/pbr-test/textures/" + szFolderName + "/normal.s3dtex").c_str());
-    arrTextures[PBRTT_ROUGHNESS] = new Texture(("models/pbr-test/textures/" + szFolderName + "/roughness.s3dtex").c_str());
-    arrTextures[PBRTT_MATERIAL] = new Texture(("models/pbr-test/textures/" + szFolderName + "/metallic.s3dtex").c_str());
-}
-
-PBRMaterialDescription::~PBRMaterialDescription()
-{
-    assert(g_nPBRMaterialDescriptionCount > 0);
-    g_nPBRMaterialDescriptionCount--;
-    for (unsigned int i = 0; i < PBRTT_MAX; i++)
-    {
-        if (arrTextures[i] != nullptr)
-        {
-            delete arrTextures[i];
-            arrTextures[i] = nullptr;
-        }
-    }
-
 }
 
 PBRMaterialTestPass::PBRMaterialTestPass(const char* const passName, RenderPass* const parentPass)
@@ -84,62 +56,70 @@ void PBRMaterialTestPass::Draw()
 
     GBuffer.Enable();
 
-    for (unsigned int matIdx = 0; matIdx < g_nPBRMaterialDescriptionCount; matIdx++)
+    const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
+    const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
+
+    for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
     {
-        PUSH_PROFILE_MARKER(g_arrPBRMaterialDescription[matIdx].szMaterialName.c_str());
-
-        // Update matrices
-        f44WorldMat = CalculateWorldMatrixForSphereIdx(matIdx);
-        f44WorldViewMat = f44ViewMat * f44WorldMat;
-        f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
-
-        const unsigned int diffuseTexIdx = g_arrPBRMaterialDescription[matIdx].arrTextures[PBRMaterialDescription::PBRTT_ALBEDO]->GetTextureIndex();
-        const unsigned int normalTexIdx = g_arrPBRMaterialDescription[matIdx].arrTextures[PBRMaterialDescription::PBRTT_NORMAL]->GetTextureIndex();
-        const unsigned int matTexIdx = g_arrPBRMaterialDescription[matIdx].arrTextures[PBRMaterialDescription::PBRTT_MATERIAL]->GetTextureIndex();
-        const unsigned int roughnessTexIdx = g_arrPBRMaterialDescription[matIdx].arrTextures[PBRMaterialDescription::PBRTT_ROUGHNESS]->GetTextureIndex();
-
-        if (diffuseTexIdx != ~0u && normalTexIdx != ~0u && matTexIdx != ~0u && roughnessTexIdx != ~0u)
+        if (arrRenderResourceList[resIdx] && arrRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
         {
-            // Reset texture states
-            for (unsigned int i = 0; i < PBRMaterialDescription::PBRTT_MAX; i++)
+            const PBRMaterial* const pbrMaterial = (PBRMaterial*)arrRenderResourceList[resIdx];
+
+            PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
+
+            // Update matrices
+            f44WorldMat = CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
+            f44WorldViewMat = f44ViewMat * f44WorldMat;
+            f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
+
+            const unsigned int diffuseTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_ALBEDO);
+            const unsigned int normalTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_NORMAL);
+            const unsigned int matTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_MATERIAL);
+            const unsigned int roughnessTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_ROUGHNESS);
+
+            if (diffuseTexIdx != ~0u && normalTexIdx != ~0u && matTexIdx != ~0u && roughnessTexIdx != ~0u)
             {
-                g_arrPBRMaterialDescription[matIdx].arrTextures[i]->GetTexture()->SetAnisotropy(1u);
-                g_arrPBRMaterialDescription[matIdx].arrTextures[i]->GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+                // Reset texture states
+                for (unsigned int i = 0; i < PBRMaterial::PBRTT_MAX; i++)
+                {
+                    pbrMaterial->GetTexture((PBRMaterial::PBRTextureType)i)->SetAnisotropy(1u);
+                    pbrMaterial->GetTexture((PBRMaterial::PBRTextureType)i)->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+                }
+                pbrMaterial->GetTexture(PBRMaterial::PBRTT_ALBEDO)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
+
+                texDiffuse = diffuseTexIdx;
+                texNormal = normalTexIdx;
+                bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
+
+                // For Blinn-Phong BRDF
+                texSpec = roughnessTexIdx;
+                bHasSpecMap = true;
+
+                // For Cook-Torrance BRDF
+                texMatType = matTexIdx;
+                texRoughness = roughnessTexIdx;
+
+                GBufferGenerationShader.Enable();
+
+                // It should have only one mesh, but in case we ever change that...
+                for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+                    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+
+                GBufferGenerationShader.Disable();
             }
-            g_arrPBRMaterialDescription[matIdx].arrTextures[PBRMaterialDescription::PBRTT_ALBEDO]->GetTexture()->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
 
-            texDiffuse = diffuseTexIdx;
-            texNormal = normalTexIdx;
-            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
-
-            // For Blinn-Phong BRDF
-            texSpec = roughnessTexIdx;
-            bHasSpecMap = true;
-
-            // For Cook-Torrance BRDF
-            texMatType = matTexIdx;
-            texRoughness = roughnessTexIdx;
-
-            GBufferGenerationShader.Enable();
-
-            // It should have only one mesh, but in case we ever change that...
-            for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
-                RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
-
-            GBufferGenerationShader.Disable();
+            POP_PROFILE_MARKER();
         }
-
-        POP_PROFILE_MARKER();
     }
 
     GBuffer.Disable();
 }
 
-Matrix44f PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(const unsigned int idx)
+Matrix44f PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(const unsigned int idx, const unsigned int total)
 {
     // Do some prerequisite calculations for araging the spheres on a grid
-    const unsigned int sphereRowCount = g_nPBRMaterialDescriptionCount / 10; // Math::sqrt(g_nPBRMaterialDescriptionCount);
-    const unsigned int sphereColCount = (unsigned int)Math::ceil((float)g_nPBRMaterialDescriptionCount / (float)sphereRowCount);
+    const unsigned int sphereRowCount = total / 10; // Math::sqrt(g_nPBRMaterialDescriptionCount);
+    const unsigned int sphereColCount = (unsigned int)Math::ceil((float)total / (float)sphereRowCount);
 
     // Tuned for exactly 20 spheres
     const float sphereSize = 50.f;
@@ -159,4 +139,14 @@ Matrix44f PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(const unsigned i
     );
 
     return makeTrans(sphereWorldPos, Type2Type<Matrix44f>()) * makeScale(Vec3f((float)sphereSize, (float)sphereSize, (float)sphereSize), Type2Type<Matrix44f>());
+}
+
+void PBRMaterialTestPass::AllocateResources()
+{
+
+}
+
+void PBRMaterialTestPass::ReleaseResources()
+{
+
 }

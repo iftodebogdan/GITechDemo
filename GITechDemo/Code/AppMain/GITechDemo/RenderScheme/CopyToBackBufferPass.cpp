@@ -155,3 +155,13 @@ void CopyToBackBufferPass::Draw()
 
     POP_PROFILE_MARKER();
 }
+
+void CopyToBackBufferPass::AllocateResources()
+{
+
+}
+
+void CopyToBackBufferPass::ReleaseResources()
+{
+
+}

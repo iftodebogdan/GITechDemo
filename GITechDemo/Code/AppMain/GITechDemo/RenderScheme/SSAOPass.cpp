@@ -234,3 +234,13 @@ void SSAOPass::Draw()
 
     //pCurrRT->Enable();
 }
+
+void SSAOPass::AllocateResources()
+{
+
+}
+
+void SSAOPass::ReleaseResources()
+{
+
+}

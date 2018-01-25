@@ -426,10 +426,6 @@
     <CustomBuild Include="..\..\Data\shaders\UI.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl" />
   </ItemGroup>
 </Project>

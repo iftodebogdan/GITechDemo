@@ -50,6 +50,7 @@ namespace GITechDemoApp
         "Shader constant",
         "Texture",
         "Render target",
+        "PBR material"
     };
 
     RenderResource::RenderResource(const char* filePath, ResourceType resType)
@@ -144,11 +145,33 @@ namespace GITechDemoApp
                 arrResources[i]->Init();
     }
 
+    void RenderResource::InitAllPBRMaterials()
+    {
+        for (unsigned int i = 0; i < arrResources.size(); i++)
+            if (arrResources[i]->eResType == RES_PBR_MATERIAL)
+                arrResources[i]->Init();
+    }
+
     void RenderResource::FreeAll()
     {
         for (unsigned int i = 0; i < arrResources.size(); i++)
             if (arrResources[i]->eResType != RES_SHADER_CONSTANT)
                 arrResources[i]->Free();
+    }
+
+    const unsigned int RenderResource::GetResourceCountByType(const ResourceType type)
+    {
+        unsigned int count = 0;
+
+        for (unsigned int i = 0; i < arrResources.size(); i++)
+        {
+            if (arrResources[i]->eResType == type)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     Shader::Shader(const char* filePath)
@@ -205,19 +228,22 @@ namespace GITechDemoApp
 
                     for (unsigned int j = 0; j < arrResources.size(); j++)
                     {
-                        if (arrResources[j]->GetResourceType() == RES_SHADER_CONSTANT &&
-                            desc.nNameHash == S3DHASH(((ShaderConstantTemplate<void*>*)arrResources[j])->GetName()))
+                        if (arrResources[j]->GetResourceType() == RES_SHADER_CONSTANT)
                         {
-                            ShaderConstantInstance constInst;
-                            constInst.pShaderConstantTemplate = arrResources[j];
-                            constInst.nShaderConstantHandle = i;
-                            constInst.eShaderType = (ShaderProgramType)spt;
-                            constInst.eConstantType = desc.eInputType;
-                            constInst.nNumRows = desc.nRows;
-                            constInst.nNumColumns = desc.nColumns;
-                            constInst.nNumArrayElem = desc.nArrayElements;
+                            const char* const constName = arrResources[j]->GetDesc();
+                            if (desc.nNameHash == S3DHASH(constName))
+                            {
+                                ShaderConstantInstance constInst;
+                                constInst.pShaderConstantTemplate = arrResources[j];
+                                constInst.nShaderConstantHandle = i;
+                                constInst.eShaderType = (ShaderProgramType)spt;
+                                constInst.eConstantType = desc.eInputType;
+                                constInst.nNumRows = desc.nRows;
+                                constInst.nNumColumns = desc.nColumns;
+                                constInst.nNumArrayElem = desc.nArrayElements;
 
-                            arrConstantList.push_back(constInst);
+                                arrConstantList.push_back(constInst);
+                            }
                         }
                     }
                 }
@@ -929,5 +955,65 @@ namespace GITechDemoApp
     {
         pRenderTarget->Disable();
         POP_PROFILE_MARKER();
+    }
+
+    PBRMaterial::PBRMaterial(const char* const folderName)
+        : RenderResource(folderName, RES_PBR_MATERIAL)
+    {
+        for (unsigned int i = 0; i < PBRTT_MAX; i++)
+        {
+            arrTexture[i] = nullptr;
+        }
+    }
+
+    PBRMaterial::~PBRMaterial()
+    {
+        Free();
+    }
+
+    const bool PBRMaterial::Init()
+    {
+        Renderer* RenderContext = Renderer::GetInstance();
+        ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
+
+        if (!RenderContext || !ResMgr || bInitialized)
+            return false;
+
+        if (RenderResource::Init())
+        {
+            arrTexture[PBRTT_ALBEDO]     = new Texture(("models/pbr-test/textures/" + szDesc + "/albedo.s3dtex").c_str());
+            arrTexture[PBRTT_NORMAL]     = new Texture(("models/pbr-test/textures/" + szDesc + "/normal.s3dtex").c_str());
+            arrTexture[PBRTT_ROUGHNESS]  = new Texture(("models/pbr-test/textures/" + szDesc + "/roughness.s3dtex").c_str());
+            arrTexture[PBRTT_MATERIAL]   = new Texture(("models/pbr-test/textures/" + szDesc + "/metallic.s3dtex").c_str());
+
+            // Other free threads might pick up the above textures for
+            // initialization before we get a chance to do it from here.
+            for (unsigned int i = 0; i < PBRTT_MAX; i++)
+            {
+                if (arrTexture[i]->TryLockRes())
+                {
+                    arrTexture[i]->Init();
+                    arrTexture[i]->UnlockRes();
+                }
+            }
+
+            return true;
+        }
+        else
+            return false;
+    }
+
+    void PBRMaterial::Free()
+    {
+        if (!bInitialized)
+            return;
+
+        RenderResource::Free();
+
+        for (unsigned int i = 0; i < PBRTT_MAX; i++)
+        {
+            arrTexture[i]->Free();
+            arrTexture[i] = nullptr;
+        }
     }
 }

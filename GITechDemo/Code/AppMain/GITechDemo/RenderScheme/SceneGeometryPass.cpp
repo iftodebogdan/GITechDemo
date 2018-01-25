@@ -162,3 +162,13 @@ void SceneGeometryPass::Draw()
         POP_PROFILE_MARKER();
     }
 }
+
+void SceneGeometryPass::AllocateResources()
+{
+
+}
+
+void SceneGeometryPass::ReleaseResources()
+{
+
+}

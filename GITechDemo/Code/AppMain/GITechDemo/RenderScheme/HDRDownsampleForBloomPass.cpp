@@ -109,3 +109,13 @@ void HDRDownsampleForBloomPass::Draw()
 
     DownsampleForBloomPass(&LightAccumulationBuffer, &HDRDownsampleForBloomBuffer);
 }
+
+void HDRDownsampleForBloomPass::AllocateResources()
+{
+
+}
+
+void HDRDownsampleForBloomPass::ReleaseResources()
+{
+
+}

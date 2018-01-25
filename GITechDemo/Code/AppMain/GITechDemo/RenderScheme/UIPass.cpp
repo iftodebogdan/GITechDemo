@@ -47,12 +47,15 @@ using namespace AppFramework;
 #include "RenderScheme.h"
 using namespace GITechDemoApp;
 
+#define FRAMETIME_GRAPH_HEIGHT (100.f)
+#define FRAMETIME_GRAPH_HISTORY (10.f)
+
 #define STEP_FAST (10.f)
 #define BUTTON_WIDTH (100.f)
 #define ALPHA_PER_SECOND (5.f)
 #define ALPHA_MIN (0.25f)
 
-#define HISTORY_TIME (1.f)
+#define MARKER_RESULT_HISTORY (1.f)
 
 UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
@@ -229,6 +232,71 @@ void UIPass::CleanGPUProfileMarkerResultCache(const char* const passName)
     }
 }
 
+void UIPass::DrawGPUFrametimeGraph()
+{
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    const ImGuiStyle& style = ImGui::GetStyle();
+
+    float minTiming = FLT_MAX;
+    float maxTiming = -FLT_MAX;
+
+    // Update GPU frame time history buffer
+    const GPUProfileMarkerResult* const rootMarker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(RenderScheme::GetRootPass().GetPassName());
+    if (rootMarker)
+    {
+        const float rootTiming = rootMarker->GetTiming();
+        const float rootStart = rootMarker->GetStart();
+        m_arrGPUFrametimeHistory.push_back(GPUFrametimeHistoryEntry(rootTiming, rootStart));
+
+        // Clean up entries older than FRAMETIME_GRAPH_HISTORY seconds
+        for (int i = (int)m_arrGPUFrametimeHistory.size() - 1; i >= 0; i--)
+        {
+            if (m_arrGPUFrametimeHistory[i].start < rootStart - FRAMETIME_GRAPH_HISTORY * 1000000.f || m_arrGPUFrametimeHistory[i].start > rootStart)
+            {
+                m_arrGPUFrametimeHistory.erase(m_arrGPUFrametimeHistory.begin() + i);
+            }
+            else
+            {
+                if (m_arrGPUFrametimeHistory[i].timing < minTiming)
+                {
+                    minTiming = m_arrGPUFrametimeHistory[i].timing;
+                }
+
+                if (m_arrGPUFrametimeHistory[i].timing > maxTiming)
+                {
+                    maxTiming = m_arrGPUFrametimeHistory[i].timing;
+                }
+            }
+        }
+    }
+
+    if (m_arrGPUFrametimeHistory.size() > 0)
+    {
+        const float widthFactor = Math::clamp((m_arrGPUFrametimeHistory.back().start - m_arrGPUFrametimeHistory.front().start) / (FRAMETIME_GRAPH_HISTORY * 1000000.f), 0.f, 1.f);
+        const float width = ImGui::GetWindowWidth() - style.WindowPadding.x * 2.f;
+        const float height = FRAMETIME_GRAPH_HEIGHT - ImGui::GetFontSize() * 2.f - style.WindowPadding.y * 2.f - style.FramePadding.y * 2.f;
+        
+        const ImVec2 graphSize(widthFactor * width, height);
+
+        const float lineR = maxTiming > 1000.f / 60.f;
+        const float lineG = maxTiming < 1000.f / 30.f;
+
+        ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+        ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(lineR, lineG, 0.0f, 1.f));
+
+        ImGui::Text("%7.3f ms (%6.3f fps)", maxTiming, 1000.f / maxTiming);
+        ImGui::SetCursorPosX((1.f - widthFactor) * width + style.WindowPadding.x);
+        ImGui::PlotLines("", &(m_arrGPUFrametimeHistory[0].timing), (int)m_arrGPUFrametimeHistory.size(), 0, nullptr, minTiming, maxTiming, graphSize, sizeof(GPUFrametimeHistoryEntry));
+        ImGui::Text("%7.3f ms (%6.3f fps)", minTiming, 1000.f / minTiming);
+
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+    }
+}
+
 void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level)
 {
     Renderer* RenderContext = Renderer::GetInstance();
@@ -325,7 +393,8 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             ImGui::SetCursorPosX(barLeft);
             ImGui::SetCursorPosY((level - 1) * (barHeight + style.FramePadding.y) + style.WindowPadding.y);
 
-            const unsigned int passNameHash = S3DHASH(pass->GetPassName());
+            const char* const passName = pass->GetPassName();
+            const unsigned int passNameHash = S3DHASH(passName);
             const float R = ((passNameHash & 0x000000FF) >> 0) / 255.f;
             const float G = ((passNameHash & 0x0000FF00) >> 8) / 255.f;
             const float B = ((passNameHash & 0x00FF0000) >> 16) / 255.f;
@@ -363,7 +432,7 @@ void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int le
         const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
         const float timing = marker ? marker->GetTiming() : 0.f;
 
-        ImGui::Text("%s: %6.3f (%6.3f)", pass->GetPassName(), timing, m_tGPUProfileMarkerResultHistory.GetAverage(pass->GetPassName()));
+        ImGui::Text("%s: %6.3f ms (avg %6.3f ms)", pass->GetPassName(), timing, m_tGPUProfileMarkerResultHistory.GetAverage(pass->GetPassName()));
 
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
@@ -510,16 +579,23 @@ void UIPass::SetupUI()
 
     if (m_bShowProfiler)
     {
-        const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y * 2.f;
-        const ImVec2 windowPos = ImVec2(io.DisplaySize.x - style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y);
-        const ImVec2 windowPosPivot = ImVec2(1.0f, 0.0f);
+        const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
 
-        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
-        ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - mainMenuBarHeight - style.WindowPadding.y * 2.f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
+        if (ImGui::Begin("GPU frametime graph", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+        {
+            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
+            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, FRAMETIME_GRAPH_HEIGHT));
+            DrawGPUFrametimeGraph();
+            ImGui::End();
+        }
+        ImGui::PopStyleColor();
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-        if (ImGui::Begin("GPU Profiler Bars", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+        if (ImGui::Begin("GPU Profiler Bars", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
         {
+            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + FRAMETIME_GRAPH_HEIGHT + style.WindowPadding.y * 2.f));
+            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, 0.f));
             DrawGPUProfileBars();
             ImGui::End();
         }
@@ -874,7 +950,7 @@ void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)
 {
     m_fTimeAccum += fDeltaTime;
 
-    if (m_fTimeAccum >= HISTORY_TIME)
+    if (m_fTimeAccum >= MARKER_RESULT_HISTORY)
     {
         m_fTimeAccum = 0.f;
         m_nCurrBufferIdx = (m_nCurrBufferIdx + 1) % 2;

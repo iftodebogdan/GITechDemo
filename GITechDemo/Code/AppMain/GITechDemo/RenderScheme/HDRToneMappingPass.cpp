@@ -219,3 +219,13 @@ void HDRToneMappingPass::Draw()
     LuminanceAdaptationPass();
     ToneMappingPass();
 }
+
+void HDRToneMappingPass::AllocateResources()
+{
+
+}
+
+void HDRToneMappingPass::ReleaseResources()
+{
+
+}

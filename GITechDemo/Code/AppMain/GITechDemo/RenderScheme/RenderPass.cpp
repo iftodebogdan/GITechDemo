@@ -65,3 +65,37 @@ void RenderPass::DrawChildren()
         }
     }
 }
+
+void RenderPass::AllocateResources()
+{
+    AllocateChildrenResources();
+}
+
+void RenderPass::ReleaseResources()
+{
+    ReleaseChildrenResources();
+}
+
+void RenderPass::AllocateChildrenResources()
+{
+    for (unsigned int child = 0; child < m_arrChildList.size(); child++)
+    {
+        if (m_arrChildList[child] != nullptr)
+        {
+            m_arrChildList[child]->AllocateResources();
+            m_arrChildList[child]->AllocateChildrenResources();
+        }
+    }
+}
+
+void RenderPass::ReleaseChildrenResources()
+{
+    for (unsigned int child = 0; child < m_arrChildList.size(); child++)
+    {
+        if (m_arrChildList[child] != nullptr)
+        {
+            m_arrChildList[child]->AllocateResources();
+            m_arrChildList[child]->ReleaseChildrenResources();
+        }
+    }
+}

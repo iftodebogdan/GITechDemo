@@ -79,6 +79,15 @@ namespace GITechDemoApp
         float rootTiming, rootStart, rootEnd;
     };
 
+    struct GPUFrametimeHistoryEntry
+    {
+        GPUFrametimeHistoryEntry(float _timing, float _start)
+            : timing(_timing)
+            , start(_start)
+        {}
+        float timing, start;
+    };
+
     struct ParamCategoryWindowState
     {
         std::string categoryName;
@@ -109,8 +118,6 @@ namespace GITechDemoApp
 
     public:
         void SetupInput(gainput::InputManager* pInputManager);
-        void AllocateResources();
-        void ReleaseResources();
 
     private:
         void SetupUI();
@@ -118,6 +125,7 @@ namespace GITechDemoApp
         void RenderUI();
 
         void AddParameterInWindow(ArtistParameter* const param) const;
+        void DrawGPUFrametimeGraph();
         void DrawGPUProfileBars(const RenderPass* pass = nullptr, const unsigned int level = 0);
         void DrawGPUProfileDetails(const RenderPass* pass = nullptr, const unsigned int level = 0) const;
         void CleanGPUProfileMarkerResultCache(const char* const passName);
@@ -128,6 +136,7 @@ namespace GITechDemoApp
         float m_fAlpha;
         std::vector<ParamCategoryWindowState> m_arrParamCategoryWindowStates;
         std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultCache;
+        std::vector<GPUFrametimeHistoryEntry> m_arrGPUFrametimeHistory;
 
         // Geometry resource data
         unsigned int m_nCurrBufferIdx;
