@@ -54,11 +54,11 @@ float4 KawaseBlurAnamorphic(const sampler2D texSource, const float2 f2TexelSize,
             const float2 f2TexelOffset = f2TexelSize * float2(i, j);
             const float2 f2HalfTexelOffset = 0.5f * f2TexelOffset;
             const float2 f2HalfTexelSize = 0.5f * f2TexelSize;
-            const float2 f2SampleCenter = f2TexCoord + f2HalfTexelOffset + f2TexelOffset * nKernel * float2(1.f, 0.f);
+            const float2 f2SampleCenter = f2TexCoord + f2HalfTexelOffset + f2TexelOffset * (nKernel + 0.5f) * float2(1.f, 0.f);
 
             UNROLL for (int x = -1; x <= 1; x += 2)
                 UNROLL for (int y = -1; y <= 1; y += 2)
-                f4Color += tex2D(texSource, f2SampleCenter + f2HalfTexelSize * float2(x, y));
+                    f4Color += tex2D(texSource, f2SampleCenter + f2HalfTexelSize * float2(x, y));
         }
     }
 

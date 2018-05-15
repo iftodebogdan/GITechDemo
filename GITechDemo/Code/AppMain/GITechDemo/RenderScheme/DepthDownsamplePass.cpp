@@ -38,7 +38,9 @@ DepthDownsamplePass::~DepthDownsamplePass()
 {}
 
 void DepthDownsamplePass::Update(const float fDeltaTime)
-{}
+{
+    bDepthDownsample = true;
+}
 
 void DepthDownsamplePass::Draw()
 {

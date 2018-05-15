@@ -124,13 +124,13 @@ bool GITechDemo::Init(void* hWnd)
         return false;
 
     // Set initial camera position
-    m_tCamera.vPos = Vec3f(-840.f, -600.f, -195.f);
+    m_tCamera.vPos = Vec3f(-828.031738f, -651.508972f, -100.693771f);
     m_tCamera.mRot.set(
-        -0.440301329f, 0.00776965916f, 0.897806108f, 0.f,
-        -0.142924204f, 0.986597657f, -0.0786283761f, 0.f,
-        -0.886387110f, -0.162937075f, -0.433295786f, 0.f,
-        0.f, 0.f, 0.f, 1.f
-        );
+         0.524057686f,   0.0577781796f, 0.849711359f,   0.f,
+        -0.155855492f,   0.987355292f,  0.0289840195f,  0.f,
+        -0.837296307f,  -0.147619948f,  0.526430249f,   0.f,
+         0.f,            0.f,           0.f,            1.f
+    );
 
     // Setup Gainput
     if (m_pInputManager)

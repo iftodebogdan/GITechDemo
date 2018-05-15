@@ -37,8 +37,8 @@ using namespace GITechDemoApp;
 namespace GITechDemoApp
 {
     bool BLOOM_ENABLED = true;
-    const unsigned int BLOOM_BLUR_KERNEL_COUNT = 5;
-    const unsigned int BLOOM_BLUR_KERNEL[BLOOM_BLUR_KERNEL_COUNT] = { 0, 1, 2, 2, 3 };
+    const unsigned int BLOOM_BLUR_KERNEL_COUNT = 9;
+    const unsigned int BLOOM_BLUR_KERNEL[BLOOM_BLUR_KERNEL_COUNT] = { 0, 1, 2, 3, 4, 4, 5, 6, 7 };
 }
 
 BloomPass::BloomPass(const char* const passName, RenderPass* const parentPass)
