@@ -155,7 +155,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         const float fLinearDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
 
         // Calculate focal plane
-        const float fFocalPoint = bAutofocus ? ReconstructDepth(tex2D(texTargetFocus, float2(0.5f, 0.5f)).r) : fFocalDepth;
+        const float fFocalPoint = bAutofocus ? tex2D(texTargetFocus, float2(0.5f, 0.5f)).r : fFocalDepth;
 
         // Calculate DoF blur factor
         const float fFocalPointMm   = fFocalPoint   *   1000.f; // Focal point in mm

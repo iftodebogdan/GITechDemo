@@ -103,7 +103,7 @@ void DepthOfFieldPass::AutofocusPass()
 
     f2HalfTexelOffset = Vec2f(0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetHeight());
     texLumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
-    texLumaTarget = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    texLumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
     const float bkp = fLumaAdaptSpeed;
     fLumaAdaptSpeed = DOF_AUTOFOCUS_TIME;

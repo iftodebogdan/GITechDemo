@@ -58,8 +58,8 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
     // Two 1x1 textures containing last and current frames' average lumas are used
     // to slowly adjust the exposure of the HDR image when tone mapping.
-    const float fCurrLuma = tex2D(texLumaInput, float2(0.5f, 0.5f)).r;
-    const float fTargetLuma = tex2D(texLumaTarget, float2(0.5f, 0.5f)).r;
+    const float fCurrLuma = rcp(tex2D(texLumaInput, float2(0.5f, 0.5f)).r);
+    const float fTargetLuma = rcp(tex2D(texLumaTarget, float2(0.5f, 0.5f)).r);
     float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (fFrameTime / max(fLumaAdaptSpeed, 0.01f));
 
     if (fCurrLuma < fTargetLuma)
@@ -67,6 +67,6 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     else
         fNewLuma = clamp(fNewLuma, fTargetLuma, fCurrLuma);
 
-    f4Color = float4(fNewLuma, fNewLuma, fNewLuma, 1.f);
+    f4Color = rcp(float4(fNewLuma, fNewLuma, fNewLuma, 1.f));
 }
 ////////////////////////////////////////////////////////////////////
