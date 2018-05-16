@@ -32,6 +32,10 @@ namespace GITechDemoApp
     class DirectionalIndirectLightPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(DirectionalIndirectLightPass)
+
+    private:
+        void Blur();
+        void Upscale();
     };
 }
 

@@ -40,6 +40,7 @@ namespace GITechDemoApp
 {
     bool INDIRECT_LIGHT_ENABLED = true;
     bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
+    bool RSM_USE_BILATERAL_BLUR = true;
 
     extern const unsigned int RSM_SIZE = 1024;
     const unsigned int RSM_NUM_PASSES = 4;
@@ -102,19 +103,10 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
     if (!ResourceMgr)
         return;
 
-    ResourceMgr->GetTexture(
-        IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0)
-        )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    ResourceMgr->GetTexture(
-        IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0)
-        )->SetAddressingMode(SAM_CLAMP);
-
     texRSMFluxBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(0);
     texRSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);
     texRSMDepthBuffer = RSMBuffer.GetRenderTarget()->GetDepthBuffer();
     texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(3); // use vertex normals to reduce noise
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    texSource = IndirectLightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 }
 
 void DirectionalIndirectLightPass::Draw()
@@ -134,14 +126,14 @@ void DirectionalIndirectLightPass::Draw()
 
     if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
     {
-        IndirectLightAccumulationBuffer.Enable();
+        IndirectLightAccumulationBuffer[0]->Enable();
         RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
     }
 
     f2HalfTexelOffset = Vec2f(
         0.5f / GBuffer.GetRenderTarget()->GetWidth(),
         0.5f / GBuffer.GetRenderTarget()->GetHeight()
-        );
+    );
 
     Vec3f* const f3RSMKernelBkp = f3RSMKernel;
 
@@ -152,7 +144,7 @@ void DirectionalIndirectLightPass::Draw()
         sprintf_s(marker, "Pass %d", i);
 #endif
         PUSH_PROFILE_MARKER(marker);
-        
+
         RSMApplyShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
         RSMApplyShader.Disable();
@@ -166,19 +158,134 @@ void DirectionalIndirectLightPass::Draw()
 
     if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
     {
-        IndirectLightAccumulationBuffer.Disable();
+        IndirectLightAccumulationBuffer[0]->Disable();
 
-        PUSH_PROFILE_MARKER("Upscale");
+        Blur();
 
-        f2HalfTexelOffset = Vec2f(
-            0.5f / IndirectLightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-            0.5f / IndirectLightAccumulationBuffer.GetRenderTarget()->GetHeight()
-            );
-
-        RSMUpscaleShader.Enable();
-        RenderContext->DrawVertexBuffer(FullScreenTri);
-        RSMUpscaleShader.Disable();
-
-        POP_PROFILE_MARKER();
+        Upscale();
     }
+}
+
+void DirectionalIndirectLightPass::Blur()
+{
+    if (!RSM_USE_BILATERAL_BLUR)
+        return;
+
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+    if (!ResourceMgr)
+        return;
+
+    PUSH_PROFILE_MARKER("Bilateral blur");
+
+    const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
+
+    texDepthBuffer = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
+
+    PUSH_PROFILE_MARKER("Horizontal");
+
+    IndirectLightAccumulationBuffer[1]->Enable();
+
+    RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
+
+    f2HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight());
+    f4TexSize = Vec4f(
+        (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
+        1.f / (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        1.f / (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+    );
+
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetAddressingMode(SAM_CLAMP);
+
+    texSource = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+    f2BlurDir = Vec2f(1.f, 0.f);
+
+    BilateralBlurShader.Enable();
+    RenderContext->DrawVertexBuffer(FullScreenTri);
+    BilateralBlurShader.Disable();
+
+    IndirectLightAccumulationBuffer[1]->Disable();
+
+    POP_PROFILE_MARKER();
+
+    PUSH_PROFILE_MARKER("Vertical");
+
+    IndirectLightAccumulationBuffer[0]->Enable();
+
+    f2HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight());
+    f4TexSize = Vec4f(
+        (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
+        (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight(),
+        1.f / (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
+        1.f / (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight()
+    );
+
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetAddressingMode(SAM_CLAMP);
+
+    texSource = IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+    f2BlurDir = Vec2f(0.f, 1.f);
+
+    BilateralBlurShader.Enable();
+    RenderContext->DrawVertexBuffer(FullScreenTri);
+    BilateralBlurShader.Disable();
+
+    IndirectLightAccumulationBuffer[0]->Disable();
+
+    POP_PROFILE_MARKER();
+
+    RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
+
+    POP_PROFILE_MARKER();
+}
+
+void DirectionalIndirectLightPass::Upscale()
+{
+    if (!RSM_USE_QUARTER_RESOLUTION_BUFFER)
+        return;
+
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
+    if (!ResourceMgr)
+        return;
+
+    PUSH_PROFILE_MARKER("Upscale");
+
+    f2HalfTexelOffset = Vec2f(
+        0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+    );
+
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
+    ResourceMgr->GetTexture(
+        IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
+    )->SetAddressingMode(SAM_CLAMP);
+
+    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    texSource = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+
+    RSMUpscaleShader.Enable();
+    RenderContext->DrawVertexBuffer(FullScreenTri);
+    RSMUpscaleShader.Disable();
+
+    POP_PROFILE_MARKER();
 }

@@ -96,7 +96,8 @@ namespace GITechDemoApp
     CREATE_RENDER_TARGET_HANDLE(ShadowMapDir);
     CREATE_RENDER_TARGET_HANDLE(LightAccumulationBuffer);
     CREATE_RENDER_TARGET_HANDLE(RSMBuffer);
-    CREATE_RENDER_TARGET_HANDLE(IndirectLightAccumulationBuffer);
+    CREATE_RENDER_TARGET_HANDLE(IndirectLightAccumulationBuffer0);
+    CREATE_RENDER_TARGET_HANDLE(IndirectLightAccumulationBuffer1);
     CREATE_RENDER_TARGET_HANDLE(VolumetricLightFullBuffer0);
     CREATE_RENDER_TARGET_HANDLE(VolumetricLightFullBuffer1);
     CREATE_RENDER_TARGET_HANDLE(VolumetricLightQuarterBuffer0);
@@ -146,6 +147,7 @@ namespace GITechDemoApp
     extern RenderTarget* AutofocusBuffer[2];
     extern RenderTarget* SphericalLensFlareBuffer[2];
     extern RenderTarget* AnamorphicLensFlareBuffer[3];
+    extern RenderTarget* IndirectLightAccumulationBuffer[2];
     //------------------------------------------------------
 
     // Shader constants

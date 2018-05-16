@@ -426,6 +426,8 @@
     <CustomBuild Include="..\..\Data\shaders\UI.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl" />
+    <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

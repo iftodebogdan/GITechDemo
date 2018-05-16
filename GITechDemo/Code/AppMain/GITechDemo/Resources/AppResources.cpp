@@ -105,6 +105,7 @@ namespace GITechDemoApp
     // RSM
     extern bool INDIRECT_LIGHT_ENABLED;
     extern bool RSM_USE_QUARTER_RESOLUTION_BUFFER;
+    extern bool RSM_USE_BILATERAL_BLUR;
     extern bool DEBUG_RSM_CAMERA;
 
     // Directional light volumetric effect
@@ -294,7 +295,8 @@ namespace GITechDemoApp
     CREATE_STATIC_RENDER_TARGET_OBJECT(RSMBuffer, PF_A8R8G8B8, PF_G16R16F, RSM_SIZE, RSM_SIZE, PF_INTZ);
 
     // Indirect lighting accumulation buffer (quarter resolution)
-    CREATE_DYNAMIC_RENDER_TARGET_OBJECT(IndirectLightAccumulationBuffer, PF_A16B16G16R16F, 0.5f, 0.5f, PF_NONE);
+    CREATE_DYNAMIC_RENDER_TARGET_OBJECT(IndirectLightAccumulationBuffer0, PF_A16B16G16R16F, 0.5f, 0.5f, PF_NONE);
+    CREATE_DYNAMIC_RENDER_TARGET_OBJECT(IndirectLightAccumulationBuffer1, PF_A16B16G16R16F, 0.5f, 0.5f, PF_NONE);
 
     // Volumetric light accumulation buffer
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(VolumetricLightFullBuffer0, PF_R16F, 1.f, 1.f, PF_NONE);
@@ -415,6 +417,11 @@ namespace GITechDemoApp
         &AnamorphicLensFlareBuffer2
     };
 
+    RenderTarget* IndirectLightAccumulationBuffer[2] = {
+        &IndirectLightAccumulationBuffer0,
+        &IndirectLightAccumulationBuffer1
+    };
+
     //------------------------------------------------------
 
 
@@ -454,7 +461,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fCascadeBlendSize,        float,          50.f                    );
 
     /* Reflective Shadow Map parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,            float,          100.f                   );
+    CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,            float,          200.f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,          float,          0.025f                  );
     CREATE_SHADER_CONSTANT_OBJECT(fWeightThreshold,         float,          0.002f                  );
     CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,        bool,           false                   );
@@ -717,6 +724,7 @@ namespace GITechDemoApp
     CREATE_ARTIST_PARAMETER_OBJECT("Upscale threshold",                 "Affects the number of rejected pixels during upscaling",               "Reflective shadow map",    fWeightThreshold.GetCurrentValue(),         0.001f);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Debug upscale pass",                "Draws rejected pixels with a red color",                               "Reflective shadow map",    bDebugUpscalePass.GetCurrentValue());
     CREATE_ARTIST_BOOLPARAM_OBJECT("Quarter resolution RSM",            "Toggle rendering into a quarter resolution buffer",                    "Reflective shadow map",    RSM_USE_QUARTER_RESOLUTION_BUFFER);
+    CREATE_ARTIST_BOOLPARAM_OBJECT("Bilateral blur RSM",                "Toggle blurring of the RSM accumulation buffer",                       "Reflective shadow map",    RSM_USE_BILATERAL_BLUR);
     CREATE_ARTIST_BOOLPARAM_OBJECT("Debug RSM camera",                  "Draw the reflective shadow map on-screen",                             "Reflective shadow map",    DEBUG_RSM_CAMERA);
 
     // Sky
