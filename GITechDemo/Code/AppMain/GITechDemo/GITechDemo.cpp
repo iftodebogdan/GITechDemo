@@ -73,7 +73,7 @@ namespace GITechDemoApp
 
     bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
 
-    Perlin PerlinNoise(1, 0.05f, 1.f, (int)time(NULL));
+    Perlin PerlinNoise(1, 0.05f, 1.f, *(int*)("GITD") /*(int)time(NULL)*/);
 
     extern AABoxf SceneAABB;
 
