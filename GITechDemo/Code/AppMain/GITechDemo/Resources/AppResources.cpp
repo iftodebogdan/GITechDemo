@@ -633,8 +633,13 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
-    CREATE_SHADER_CONSTANT_OBJECT(texFont,                      s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_OBJECT(texUI1D,                      s3dSampler1D    );
+    CREATE_SHADER_CONSTANT_OBJECT(texUI2D,                      s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_OBJECT(texUI3D,                      s3dSampler3D    );
+    CREATE_SHADER_CONSTANT_OBJECT(texUICube,                    s3dSamplerCUBE  );
     CREATE_SHADER_CONSTANT_OBJECT(f44UIProjMat,                 Matrix44f       );
+    CREATE_SHADER_CONSTANT_OBJECT(nUseTexUI,                    int             );
+    CREATE_SHADER_CONSTANT_OBJECT(nDepthSlice,                  int             );
 
     //--------------------------------------------------------------------------
 

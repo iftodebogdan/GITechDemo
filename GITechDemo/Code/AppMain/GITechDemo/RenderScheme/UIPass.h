@@ -56,6 +56,7 @@ namespace GITechDemoApp
             {
                 Vec4f ClipRect;
                 unsigned int ElemCount;
+                Synesthesia3D::Texture* Texture;
             };
 
             int VtxBufferSize;
@@ -133,6 +134,7 @@ namespace GITechDemoApp
         // UI states/parameters
         bool m_bShowAllParameters;
         bool m_bShowProfiler;
+        bool m_bShowTextureViewer;
         float m_fAlpha;
         std::vector<ParamCategoryWindowState> m_arrParamCategoryWindowStates;
         std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultCache;
@@ -153,6 +155,18 @@ namespace GITechDemoApp
         // Font texture data
         Synesthesia3D::Texture* m_pFontTexture;
         unsigned int m_nFontTextureIdx;
+
+        int m_nTextureViewerIdx;
+
+        // Placeholder textures
+        s3dSampler m_nDummyTex1DIdx;
+        s3dSampler m_nDummyTex2DIdx;
+        s3dSampler m_nDummyTex3DIdx;
+        s3dSampler m_nDummyTexCubeIdx;
+        Synesthesia3D::Texture* m_pDummyTex1D;
+        Synesthesia3D::Texture* m_pDummyTex2D;
+        Synesthesia3D::Texture* m_pDummyTex3D;
+        Synesthesia3D::Texture* m_pDummyTexCube;
 
         // Input devices
         gainput::InputDeviceKeyboard* m_pKeyboardDevice;

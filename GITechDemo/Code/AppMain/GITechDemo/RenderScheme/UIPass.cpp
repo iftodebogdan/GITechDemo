@@ -32,6 +32,7 @@
 #include <VertexFormat.h>
 #include <IndexBuffer.h>
 #include <VertexBuffer.h>
+#include <RenderTarget.h>
 using namespace Synesthesia3D;
 
 #include <Utility/Hash.h>
@@ -63,10 +64,20 @@ UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     , m_pMouseDevice(nullptr)
     , m_pFontTexture(nullptr)
     , m_nFontTextureIdx(~0u)
+    , m_nTextureViewerIdx(-1)
     , m_nCurrBufferIdx(0u)
     , m_bShowAllParameters(false)
     , m_bShowProfiler(ENABLE_PROFILE_MARKERS)
+    , m_bShowTextureViewer(false)
     , m_fAlpha(0.f)
+    , m_nDummyTex1DIdx(~0u)
+    , m_nDummyTex2DIdx(~0u)
+    , m_nDummyTex3DIdx(~0u)
+    , m_nDummyTexCubeIdx(~0u)
+    , m_pDummyTex1D(nullptr)
+    , m_pDummyTex2D(nullptr)
+    , m_pDummyTex3D(nullptr)
+    , m_pDummyTexCube(nullptr)
 {
     for (unsigned int i = 0; i < UI_BUFFER_COUNT; i++)
     {
@@ -474,6 +485,8 @@ void UIPass::SetupUI()
             ImGui::EndMenu();
         }
 
+        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer);
+
         bool pauseUpdate = pFW->IsUpdatePaused();
         ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate);
         pFW->PauseUpdate(pauseUpdate);
@@ -611,6 +624,110 @@ void UIPass::SetupUI()
         ImGui::PopStyleColor();
     }
 
+    if (m_bShowTextureViewer)
+    {
+        const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
+
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+        if (ImGui::Begin("Texture viewer", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+        {
+            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
+            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - style.WindowPadding.y * 2.f - mainMenuBarHeight));
+
+            const Synesthesia3D::ResourceManager* const resMan = Synesthesia3D::Renderer::GetInstance()->GetResourceManager();
+
+            string texDesc;
+            vector<s3dSampler> texList;
+            for (unsigned int i = 0; i < RenderResource::GetResourceList().size(); i++)
+            {
+                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_RENDERTARGET)
+                {
+                    const unsigned int targetCount = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->GetTargetCount();
+                    const bool hasDepth = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->HasDepthBuffer();
+
+                    for (unsigned int j = 0; j < targetCount; j++)
+                    {
+                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetColorBuffer(j));
+                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                        if (hasDepth)
+                        {
+                            texDesc += " - color";
+                            if (targetCount > 1)
+                            {
+                                char num[3];
+                                sprintf_s(num, " %d", j);
+                                texDesc += num;
+                            }
+                        }
+                        texDesc += '\0';
+                    }
+
+                    if (hasDepth)
+                    {
+                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetDepthBuffer());
+                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                        if (targetCount > 0)
+                        {
+                            texDesc += " - depth";
+                        }
+                        texDesc += '\0';
+                    }
+                }
+
+                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_TEXTURE)
+                {
+                    texList.push_back(((Texture*)RenderResource::GetResourceList()[i])->GetTextureIndex());
+                    texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                    texDesc += '\0';
+                }
+            }
+
+            ImGui::Combo("", &m_nTextureViewerIdx, texDesc.c_str(), INT_MAX);
+
+            if (m_nTextureViewerIdx >= 0)
+            {
+                const float viewerWidth = ImGui::GetWindowWidth();
+                const float viewerHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - style.WindowPadding.y;
+
+                float imgWidth, imgHeight;
+
+                Synesthesia3D::Texture* const tex = Renderer::GetInstance()->GetResourceManager()->GetTexture(texList[m_nTextureViewerIdx]);
+
+                if (tex->GetWidth() / tex->GetHeight() > viewerWidth / viewerHeight)
+                {
+                    imgWidth = viewerWidth;
+                    imgHeight = tex->GetHeight() * viewerWidth / tex->GetWidth();
+                    ImGui::SetCursorPosY(gmtl::Math::clamp((viewerHeight - imgHeight) * 0.5f, 0.f, viewerHeight));
+                }
+                else
+                {
+                    imgWidth = tex->GetWidth() * viewerHeight / tex->GetHeight();
+                    imgHeight = viewerHeight;
+                    ImGui::SetCursorPosX(gmtl::Math::clamp((viewerWidth - imgWidth) * 0.5f, 0.f, viewerWidth));
+                }
+
+                ImGui::Image(tex, ImVec2(imgWidth, imgHeight), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(1, 0, 0, 1));
+                const ImVec2 imgPos = ImGui::GetItemRectMin();
+
+                if (ImGui::IsItemHovered() && ((GITechDemo*)AppMain)->IsUIInFocus())
+                {
+                    ImGui::BeginTooltip();
+                    float focus_sz = 32.0f;
+                    float focus_x = ImGui::GetMousePos().x - imgPos.x - focus_sz * 0.5f; if (focus_x < 0.0f) focus_x = 0.0f; else if (focus_x > imgWidth - focus_sz) focus_x = imgWidth - focus_sz;
+                    float focus_y = ImGui::GetMousePos().y - imgPos.y - focus_sz * 0.5f; if (focus_y < 0.0f) focus_y = 0.0f; else if (focus_y > imgHeight - focus_sz) focus_y = imgHeight - focus_sz;
+                    //ImGui::Text("Min: (%d, %d)", int(round((focus_x * tex->GetWidth() / imgWidth))), int(round(focus_y * tex->GetHeight() / imgHeight)));
+                    //ImGui::Text("Max: (%d, %d)", int(round((focus_x + focus_sz) * tex->GetWidth() / imgWidth)), int(round((focus_y + focus_sz) * tex->GetHeight() / imgHeight)));
+                    ImVec2 uv0 = ImVec2((focus_x) / imgWidth, (focus_y) / imgHeight);
+                    ImVec2 uv1 = ImVec2((focus_x + focus_sz) / imgWidth, (focus_y + focus_sz) / imgHeight);
+                    ImGui::Image(tex, ImVec2(256, 256), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+                    ImGui::EndTooltip();
+                }
+            }
+            ImGui::End();
+        }
+        ImGui::PopStyleColor();
+    }
+
     ImGui::Render();
 }
 
@@ -708,6 +825,7 @@ void UIPass::GenerateDrawData()
             const ImVec4 clipRect = drawData->CmdLists[n]->CmdBuffer[i].ClipRect;
             cmd.ClipRect = Vec4f(clipRect.x, clipRect.y, clipRect.z, clipRect.w);
             cmd.ElemCount = drawData->CmdLists[n]->CmdBuffer[i].ElemCount;
+            cmd.Texture = (Synesthesia3D::Texture*)(drawData->CmdLists[n]->CmdBuffer[i].TextureId);
         }
         cmdList.VtxBufferSize = drawData->CmdLists[n]->VtxBuffer.Size;
     }
@@ -749,9 +867,6 @@ void UIPass::RenderUI()
     RSMgr->SetScissorEnabled(true);
     RSMgr->SetCullMode(CULL_NONE);
 
-    // Setup shader inputs
-    texFont = m_nFontTextureIdx;
-
     ImGuiIO& io = ImGui::GetIO();
     const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
     f44UIProjMat.GetCurrentValue().set(
@@ -762,6 +877,14 @@ void UIPass::RenderUI()
     );
     gmtl::transpose(f44UIProjMat.GetCurrentValue());
 
+    texUI1D = m_nDummyTex1DIdx;
+    texUI2D = m_nDummyTex2DIdx;
+    texUI3D = m_nDummyTex3DIdx;
+    texUICube = m_nDummyTexCubeIdx;
+
+    nUseTexUI = 2;
+    texUI2D = m_nFontTextureIdx;
+
     // Render geometry
     UIShader.Enable();
     for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[nRenderBufferIdx].CmdList.size(); n++)
@@ -771,7 +894,46 @@ void UIPass::RenderUI()
         {
             const UIDrawData::UIDrawCommandList::UIDrawCommand& cmd = cmdList.DrawCmd[i];
             RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
+            RSMgr->SetSRGBWriteEnabled(((Synesthesia3D::Texture*)cmd.Texture)->GetSRGBEnabled());
+
+            if (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || texUI2D != m_nFontTextureIdx || nUseTexUI != 2)
+            {
+                UIShader.Disable();
+
+                if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
+                {
+                    RSMgr->SetColorBlendEnabled(false);
+                }
+                else
+                {
+                    RSMgr->SetColorBlendEnabled(true);
+                }
+
+                switch (((Synesthesia3D::Texture*)cmd.Texture)->GetTextureType())
+                {
+                case TT_1D:
+                    nUseTexUI = 1;
+                    texUI1D = (Synesthesia3D::Texture*)cmd.Texture;
+                    break;
+                case TT_2D:
+                    nUseTexUI = 2;
+                    texUI2D = (Synesthesia3D::Texture*)cmd.Texture;
+                    break;
+                case TT_3D:
+                    nUseTexUI = 3;
+                    texUI3D = (Synesthesia3D::Texture*)cmd.Texture;
+                    break;
+                case TT_CUBE:
+                    nUseTexUI = 4;
+                    texUICube = (Synesthesia3D::Texture*)cmd.Texture;
+                    break;
+                }
+
+                UIShader.Enable(); // force commit updated shader inputs
+            }
+
             RenderContext->DrawVertexBuffer(m_pImGuiVb[nRenderBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
+
             idxOffset += cmd.ElemCount;
         }
         vtxOffset += cmdList.VtxBufferSize;
@@ -901,6 +1063,30 @@ void UIPass::AllocateResources()
             }
         }
     }
+
+    if (!m_pDummyTex1D)
+    {
+        m_nDummyTex1DIdx = ResMgr->CreateTexture(PF_A8, TT_1D, 1);
+        m_pDummyTex1D = ResMgr->GetTexture(m_nDummyTex1DIdx);
+    }
+
+    if (!m_pDummyTex2D)
+    {
+        m_nDummyTex2DIdx = ResMgr->CreateTexture(PF_A8, TT_2D, 1, 1);
+        m_pDummyTex2D = ResMgr->GetTexture(m_nDummyTex2DIdx);
+    }
+
+    if (!m_pDummyTex3D)
+    {
+        m_nDummyTex3DIdx = ResMgr->CreateTexture(PF_A8, TT_3D, 1, 1, 1);
+        m_pDummyTex3D = ResMgr->GetTexture(m_nDummyTex3DIdx);
+    }
+
+    if (!m_pDummyTexCube)
+    {
+        m_nDummyTexCubeIdx = ResMgr->CreateTexture(PF_A8, TT_CUBE, 1, 1);
+        m_pDummyTexCube = ResMgr->GetTexture(m_nDummyTexCubeIdx);
+    }
 }
 
 void UIPass::ReleaseResources()
@@ -943,6 +1129,30 @@ void UIPass::ReleaseResources()
             m_nImGuiVbIdx[i] = ~0u;
             m_pImGuiVb[i] = nullptr;
         }
+    }
+
+    if (m_nDummyTex1DIdx != ~0u)
+    {
+        ResMgr->ReleaseTexture(m_nDummyTex1DIdx);
+        m_pDummyTex1D = nullptr;
+    }
+
+    if (m_nDummyTex2DIdx != ~0u)
+    {
+        ResMgr->ReleaseTexture(m_nDummyTex2DIdx);
+        m_pDummyTex2D = nullptr;
+    }
+
+    if (m_nDummyTex3DIdx != ~0u)
+    {
+        ResMgr->ReleaseTexture(m_nDummyTex3DIdx);
+        m_pDummyTex3D = nullptr;
+    }
+
+    if (m_nDummyTexCubeIdx != ~0u)
+    {
+        ResMgr->ReleaseTexture(m_nDummyTexCubeIdx);
+        m_pDummyTexCube = nullptr;
     }
 }
 

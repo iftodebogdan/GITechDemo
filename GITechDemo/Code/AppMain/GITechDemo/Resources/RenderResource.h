@@ -29,6 +29,9 @@ using namespace std;
 using namespace gmtl;
 
 #include <ResourceData.h>
+#include <Renderer.h>
+#include <ResourceManager.h>
+#include <Texture.h>
 namespace Synesthesia3D
 {
     class ShaderProgram;
@@ -171,6 +174,7 @@ namespace GITechDemoApp
 
         void operator=(const T& value) { currentValue = value; }
         void operator= (const ShaderConstantTemplate& lhs) { currentValue = lhs.currentValue; }
+        void operator=(const Synesthesia3D::Texture* tex) { assert(0); }
 
         operator T&() { return currentValue; }
 
@@ -195,6 +199,22 @@ namespace GITechDemoApp
         template<class DATA_TYPE, unsigned SIZE>
         friend Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& lhs, ShaderConstantTemplate<T>& rhs);
     };
+    
+    template<>
+    void ShaderConstantTemplate<s3dSampler>::operator=(const Synesthesia3D::Texture* tex)
+    {
+        const Synesthesia3D::ResourceManager* const resMan = Synesthesia3D::Renderer::GetInstance()->GetResourceManager();
+        const unsigned int texCount = resMan->GetTextureCount();
+        currentValue = ~0u;
+        for (unsigned int i = 0; i < texCount; i++)
+        {
+            if (resMan->GetTexture(i) == tex)
+            {
+                currentValue = i;
+                break;
+            }
+        }
+    }
 
     template<class T>
     T operator * (const T& lhs, const ShaderConstantTemplate<T>& rhs) { return lhs * rhs.currentValue; }

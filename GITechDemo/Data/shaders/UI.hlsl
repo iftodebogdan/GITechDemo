@@ -38,10 +38,28 @@ void vsmain(float2 f4Position : POSITION, float4 f4Color : COLOR, float2 f2TexCo
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texFont;    // Font texture
+const sampler1D texUI1D;
+const sampler2D texUI2D; // Usually font texture
+const sampler3D texUI3D;
+const samplerCUBE texUICube;
+
+const unsigned int nUseTexUI;
+const unsigned int nDepthSlice;
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-    f4Color = tex2D(texFont, input.f2TexCoord) * input.f4Color;
+    switch (nUseTexUI)
+    {
+    case 1:
+        f4Color = tex1D(texUI1D, input.f2TexCoord.x) * input.f4Color; break;
+    case 2:
+        f4Color = tex2D(texUI2D, input.f2TexCoord) * input.f4Color; break;
+    case 3:
+        f4Color = tex3D(texUI3D, float3(input.f2TexCoord, nDepthSlice)) * input.f4Color; break;
+    case 4:
+        f4Color = texCUBE(texUICube, float3(input.f2TexCoord, 1.f)) * input.f4Color; break; // TODO
+    default:
+        f4Color = input.f4Color; break;
+    };
 }
 ////////////////////////////////////////////////////////////////////

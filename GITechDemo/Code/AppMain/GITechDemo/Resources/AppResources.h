@@ -334,7 +334,12 @@ namespace GITechDemoApp
 
     //  - UI.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44UIProjMat,             Matrix44f       );
-    CREATE_SHADER_CONSTANT_HANDLE(texFont,                  s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_HANDLE(texUI1D,                  s3dSampler1D    );
+    CREATE_SHADER_CONSTANT_HANDLE(texUI2D,                  s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_HANDLE(texUI3D,                  s3dSampler3D    );
+    CREATE_SHADER_CONSTANT_HANDLE(texUICube,                s3dSamplerCUBE  );
+    CREATE_SHADER_CONSTANT_HANDLE(nUseTexUI,                int             );
+    CREATE_SHADER_CONSTANT_HANDLE(nDepthSlice,              int             );
 
     //  - MotionBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44PrevViewProjMat,       Matrix44f       );
