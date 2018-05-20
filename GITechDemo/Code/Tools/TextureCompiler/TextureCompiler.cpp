@@ -28,75 +28,6 @@ std::string ReplaceAll(std::string str, const std::string& from, const std::stri
     return str;
 }
 
-const char * Synesthesia3DTools::TextureCompiler::GetEnumString(PixelFormat val)
-{
-    switch (val)
-    {
-    case PF_R5G6B5:
-        return "R5G6B5";
-    case PF_A1R5G5B5:
-        return "A1R5G5B5";
-    case PF_A4R4G4B4:
-        return "A4R4G4B4";
-    case PF_A8:
-        return "A8";
-    case PF_L8:
-        return "L8";
-    case PF_A8L8:
-        return "A8L8";
-    case PF_R8G8B8:
-        return "R8G8B8";
-    case PF_A8R8G8B8:
-        return "A8R8G8B8";
-    case PF_A8B8G8R8:
-        return "A8B8G8R8";
-    case PF_L16:
-        return "L16";
-    case PF_G16R16:
-        return "G16R16";
-    case PF_A16B16G16R16:
-        return "A16B16G16R16";
-    case PF_R16F:
-        return "R16F";
-    case PF_G16R16F:
-        return "G16R16F";
-    case PF_A16B16G16R16F:
-        return "A16B16G16R16F";
-    case PF_R32F:
-        return "R32F";
-    case PF_G32R32F:
-        return "G32R32F";
-    case PF_A32B32G32R32F:
-        return "A32B32G32R32F";
-    case PF_DXT1:
-        return "DXT1";
-    case PF_DXT3:
-        return "DXT3";
-    case PF_DXT5:
-        return "DXT5";
-    default:
-        assert(false);
-        return "";
-    }
-}
-
-const char * Synesthesia3DTools::TextureCompiler::GetEnumString(TextureType val)
-{
-    switch (val)
-    {
-    case TT_1D:
-        return "1D";
-    case TT_2D:
-        return "2D";
-    case TT_3D:
-        return "3D";
-    case TT_CUBE:
-        return "Cubemap";
-    default:
-        return "";
-    }
-}
-
 bool TextureCompiler::HandleDevilErrors(mstream& logStream)
 {
     bool shouldExit = ERROR_OK;
@@ -574,8 +505,8 @@ void TextureCompiler::Run(int argc, char* argv[])
             return;
         }
 
-        Log << "\tPixel format: " << GetEnumString(srcFormat) << "\n";
-        Log << "\tTexture type: " << GetEnumString(texType) << "\n";
+        Log << "\tPixel format: " << Renderer::GetEnumString(srcFormat) << "\n";
+        Log << "\tTexture type: " << Renderer::GetEnumString(texType) << "\n";
         Log << "\tWidth: " << info.Width << "\n";
         Log << "\tHeight: " << info.Height << "\n";
         Log << "\tDepth: " << info.Depth << "\n";
@@ -621,9 +552,9 @@ void TextureCompiler::Run(int argc, char* argv[])
             return;
         }
 
-        Log << "\tSource pixel format: " << GetEnumString(srcFormat) << "\n";
-        Log << "\tDestination pixel format: " << GetEnumString(format) << "\n";
-        Log << "\tTexture type: " << GetEnumString(texType) << "\n";
+        Log << "\tSource pixel format: " << Renderer::GetEnumString(srcFormat) << "\n";
+        Log << "\tDestination pixel format: " << Renderer::GetEnumString(format) << "\n";
+        Log << "\tTexture type: " << Renderer::GetEnumString(texType) << "\n";
         Log << "\tWidth: " << info.Width << "\n";
         Log << "\tHeight: " << info.Height << "\n";
         Log << "\tDepth: " << info.Depth << "\n";
@@ -634,7 +565,7 @@ void TextureCompiler::Run(int argc, char* argv[])
         Vec4f* tmpData = nullptr;
         tmpData = new Vec4f[info.Width * info.Height * info.Depth];
 
-        Log << "\t[INFO] Converting from " << GetEnumString(srcFormat) << " to " << GetEnumString(format) << "\n";
+        Log << "\t[INFO] Converting from " << Renderer::GetEnumString(srcFormat) << " to " << Renderer::GetEnumString(format) << "\n";
 
         const unsigned long long convertStart = GetTickCount64();
         if (texDst->GetTextureType() == TT_CUBE)

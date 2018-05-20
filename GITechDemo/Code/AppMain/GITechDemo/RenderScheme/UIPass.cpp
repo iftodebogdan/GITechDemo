@@ -58,6 +58,31 @@ using namespace GITechDemoApp;
 
 #define MARKER_RESULT_HISTORY (1.f)
 
+static const string HumanReadableByteCount(unsigned long bytes)
+{
+    int i = 0;
+    const char* units[] = { "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+    float size = (float)bytes;
+    while (size > 1024.f)
+    {
+        size /= 1024.f;
+        i++;
+    }
+    std::ostringstream stringStream;
+    stringStream.imbue(std::locale(""));
+    stringStream << std::fixed << std::setprecision(2);
+    if (i == 0)
+    {
+        stringStream << bytes << " " << units[i];
+    }
+    else
+    {
+        stringStream << roundf(size * 100.f) / 100.f << " " << units[i] << " (" << bytes << " " << units[0] << ")";
+    }
+    string string = stringStream.str();
+    return string;
+}
+
 UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , m_pKeyboardDevice(nullptr)
@@ -65,6 +90,11 @@ UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     , m_pFontTexture(nullptr)
     , m_nFontTextureIdx(~0u)
     , m_nTextureViewerIdx(-1)
+    , m_nSelectedMip(0)
+    , m_nSelectedSlice(0)
+    , m_fSelectedSlice(0.f)
+    , m_nSelectedFace(0)
+    , m_bChannelMask(true, true, true)
     , m_nCurrBufferIdx(0u)
     , m_bShowAllParameters(false)
     , m_bShowProfiler(ENABLE_PROFILE_MARKERS)
@@ -463,9 +493,9 @@ void UIPass::SetupUI()
     ImGui::NewFrame();
 
     // ImGui test window
-    //bool show_test_window = false;
-    //ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-    //ImGui::ShowTestWindow(&show_test_window);
+    bool show_test_window = false;
+    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+    ImGui::ShowTestWindow(&show_test_window);
 
     // Main menu + title bar
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_fAlpha);
@@ -485,8 +515,6 @@ void UIPass::SetupUI()
             ImGui::EndMenu();
         }
 
-        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer);
-
         bool pauseUpdate = pFW->IsUpdatePaused();
         ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate);
         pFW->PauseUpdate(pauseUpdate);
@@ -503,6 +531,8 @@ void UIPass::SetupUI()
             ImGui::EndTooltip();
         }
     #endif
+
+        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer);
 
         if (ImGui::MenuItem("Quit", "Alt+F4"))
         {
@@ -634,7 +664,7 @@ void UIPass::SetupUI()
             ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
             ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - style.WindowPadding.y * 2.f - mainMenuBarHeight));
 
-            const Synesthesia3D::ResourceManager* const resMan = Synesthesia3D::Renderer::GetInstance()->GetResourceManager();
+            const Synesthesia3D::ResourceManager* const resMan = Renderer::GetInstance()->GetResourceManager();
 
             string texDesc;
             vector<s3dSampler> texList;
@@ -682,18 +712,17 @@ void UIPass::SetupUI()
                 }
             }
 
-            ImGui::Combo("", &m_nTextureViewerIdx, texDesc.c_str(), INT_MAX);
+            const float viewerWidth = ImGui::GetWindowWidth() * 2.f / 3.f;
+            const float viewerHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - style.WindowPadding.y;
+            const float viewerPosY = ImGui::GetCursorPosY();
+
+            Synesthesia3D::Texture* const tex = m_nTextureViewerIdx >= 0 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texList[m_nTextureViewerIdx]) : nullptr;
 
             if (m_nTextureViewerIdx >= 0)
             {
-                const float viewerWidth = ImGui::GetWindowWidth();
-                const float viewerHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - style.WindowPadding.y;
-
                 float imgWidth, imgHeight;
 
-                Synesthesia3D::Texture* const tex = Renderer::GetInstance()->GetResourceManager()->GetTexture(texList[m_nTextureViewerIdx]);
-
-                if (tex->GetWidth() / tex->GetHeight() > viewerWidth / viewerHeight)
+                if (tex->GetWidth() * viewerHeight / tex->GetHeight() > viewerWidth)
                 {
                     imgWidth = viewerWidth;
                     imgHeight = tex->GetHeight() * viewerWidth / tex->GetWidth();
@@ -706,7 +735,8 @@ void UIPass::SetupUI()
                     ImGui::SetCursorPosX(gmtl::Math::clamp((viewerWidth - imgWidth) * 0.5f, 0.f, viewerWidth));
                 }
 
-                ImGui::Image(tex, ImVec2(imgWidth, imgHeight), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(1, 0, 0, 1));
+                ImGui::Image(tex, ImVec2(imgWidth, imgHeight), ImVec2(0, 0), ImVec2(1, 1),
+                    ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImVec4(1, 0, 0, 1));
                 const ImVec2 imgPos = ImGui::GetItemRectMin();
 
                 if (ImGui::IsItemHovered() && ((GITechDemo*)AppMain)->IsUIInFocus())
@@ -719,12 +749,121 @@ void UIPass::SetupUI()
                     //ImGui::Text("Max: (%d, %d)", int(round((focus_x + focus_sz) * tex->GetWidth() / imgWidth)), int(round((focus_y + focus_sz) * tex->GetHeight() / imgHeight)));
                     ImVec2 uv0 = ImVec2((focus_x) / imgWidth, (focus_y) / imgHeight);
                     ImVec2 uv1 = ImVec2((focus_x + focus_sz) / imgWidth, (focus_y + focus_sz) / imgHeight);
-                    ImGui::Image(tex, ImVec2(256, 256), uv0, uv1, ImColor(255, 255, 255, 255), ImColor(255, 255, 255, 128));
+                    ImGui::Image(tex, ImVec2(256, 256), uv0, uv1, ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImColor(255, 255, 255, 128));
                     ImGui::EndTooltip();
                 }
             }
+
+            ImGui::SameLine();
+            ImGui::SetCursorPos(ImVec2(viewerWidth + style.WindowPadding.x + style.FramePadding.x * 2.f, viewerPosY));
+
+            if (ImGui::BeginChild("", ImVec2(viewerWidth / 2.f - style.WindowPadding.x - style.FramePadding.x * 4.f, viewerHeight)))
+            {
+                ImGui::Separator();
+                ImGui::NewLine();
+
+                ImGui::Text("Select texture");
+                ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                ImGui::Combo("Texture", &m_nTextureViewerIdx, texDesc.c_str(), INT_MAX);
+                ImGui::PopItemWidth();
+
+                if (tex)
+                {
+                    ImGui::NewLine();
+
+                    ImGui::Text("Texture type: %s", Renderer::GetEnumString(tex->GetTextureType()));
+                    ImGui::Text("Pixel format: %s", Renderer::GetEnumString(tex->GetPixelFormat()));
+                    ImGui::Text("sRGB: %s", tex->GetSRGBEnabled() ? "true" : "false");
+                    ImGui::Text("Bytes per pixel: %u B", Synesthesia3D::Texture::GetBytesPerPixel(tex->GetPixelFormat()));
+                    ImGui::Text("Render target: %s", tex->IsRenderTarget() ? "true" : "false");
+                    ImGui::Text("Depth/stencil: %s", tex->IsDepthStencil() ? "true" : "false");
+                    ImGui::Text("Width: %u", tex->GetWidth());
+                    ImGui::Text("Height: %u", tex->GetHeight());
+                    ImGui::Text("Depth: %u", tex->GetDepth());
+                    ImGui::Text("MIP count: %u", tex->GetMipCount());
+                    ImGui::Text("Total size: %s", HumanReadableByteCount(tex->GetSize()).c_str());
+
+                    if (tex->GetTextureType() == TT_CUBE)
+                    {
+                        ImGui::NewLine();
+                        ImGui::Separator();
+                        ImGui::NewLine();
+
+                        ImGui::Text("Select cube face");
+                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                        ImGui::SliderInt("Face", &m_nSelectedFace, 0, FACE_MAX - 1, Renderer::GetEnumString((CubeFace)m_nSelectedFace));
+                        ImGui::PopItemWidth();
+                        ImGui::NewLine();
+
+                        ImGui::Text("Face size (incl. MIPs): %s", HumanReadableByteCount(tex->GetCubeFaceOffset()).c_str());
+                    }
+
+                    if (tex->GetTextureType() == TT_3D)
+                    {
+                        ImGui::NewLine();
+                        ImGui::Separator();
+                        ImGui::NewLine();
+
+                        ImGui::Text("Select depth slice");
+                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                        ImGui::SliderInt("Depth", &m_nSelectedSlice, 0, tex->GetDepth() - 1);
+                        m_fSelectedSlice = (float)m_nSelectedSlice / (float)(tex->GetDepth() - 1);
+                        ImGui::PopItemWidth();
+                    }
+
+                    if (tex->GetMipCount() > 1)
+                    {
+                        ImGui::NewLine();
+                        ImGui::Separator();
+                        ImGui::NewLine();
+
+                        ImGui::Text("Select MIP level");
+                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                        ImGui::SliderInt("MIP", &m_nSelectedMip, 0, tex->GetMipCount() - 1);
+                        ImGui::PopItemWidth();
+                        ImGui::NewLine();
+
+                        ImGui::Text("MIP width: %u", tex->GetWidth(m_nSelectedMip));
+                        ImGui::Text("MIP height: %u", tex->GetHeight(m_nSelectedMip));
+                        ImGui::Text("MIP depth: %u", tex->GetDepth(m_nSelectedMip));
+                        ImGui::Text("MIP size: %s", HumanReadableByteCount(tex->GetMipSizeBytes(m_nSelectedMip)).c_str());
+                    }
+
+                    ImGui::NewLine();
+                    ImGui::Separator();
+                    ImGui::NewLine();
+
+                    ImGui::Text("Sampler states:");
+                    ImGui::NewLine();
+
+                    ImGui::Text("Anisotropy: %u", tex->GetAnisotropy());
+                    ImGui::Text("MIP bias: %u", tex->GetMipLodBias());
+                    ImGui::Text("Filter: %s", Renderer::GetEnumString(tex->GetFilter()));
+                    ImGui::Text("Addressing mode U: %s", Renderer::GetEnumString(tex->GetAddressingModeU()));
+                    ImGui::Text("Addressing mode V: %s", Renderer::GetEnumString(tex->GetAddressingModeV()));
+                    ImGui::Text("Addressing mode W: %s", Renderer::GetEnumString(tex->GetAddressingModeW()));
+                    ImGui::Text("Border color: RGBA(%f, %f, %f, %f)",
+                        tex->GetBorderColor()[0], tex->GetBorderColor()[1],
+                        tex->GetBorderColor()[2], tex->GetBorderColor()[3]);
+
+                    ImGui::NewLine();
+                    ImGui::Text("Channel mask:");
+
+                    ImGui::Checkbox("Red", &m_bChannelMask[0]);
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Green", &m_bChannelMask[1]);
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Blue", &m_bChannelMask[2]);
+                }
+
+                ImGui::NewLine();
+                ImGui::Separator();
+            }
+            ImGui::EndChild();
+
             ImGui::End();
         }
+
         ImGui::PopStyleColor();
     }
 
@@ -881,6 +1020,10 @@ void UIPass::RenderUI()
     texUI2D = m_nDummyTex2DIdx;
     texUI3D = m_nDummyTex3DIdx;
     texUICube = m_nDummyTexCubeIdx;
+
+    nUIMipLevel = m_nSelectedMip;
+    fUIDepthSlice = m_fSelectedSlice;
+    nUIFaceIdx = m_nSelectedFace;
 
     nUseTexUI = 2;
     texUI2D = m_nFontTextureIdx;

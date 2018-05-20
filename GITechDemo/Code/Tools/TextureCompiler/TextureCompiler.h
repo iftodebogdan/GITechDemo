@@ -14,8 +14,6 @@ namespace Synesthesia3DTools
 
     class TextureCompiler
     {
-        static const char* GetEnumString(PixelFormat val);
-        static const char* GetEnumString(TextureType val);
         static bool HandleDevilErrors(mstream& logStream);
         static Synesthesia3D::PixelFormat GetPixelFormat(const ILinfo& info, bool& swizzle);
     public:

@@ -319,7 +319,14 @@ Texture::Texture(
     ComputeTextureProperties(Vec3i(sizeX, sizeY, sizeZ));
 
     // Allocate memory for our texture
-    m_pData = new s3dByte[m_nSize];
+    if (!IsRenderTarget() && !IsDepthStencil())
+    {
+        m_pData = new s3dByte[m_nSize];
+    }
+    else
+    {
+        m_pData = nullptr;
+    }
 }
 
 Texture::~Texture()
@@ -470,7 +477,7 @@ void Texture::SetDynamicSizeRatios(const float widthRatio, const float heightRat
 
         // Reallocate memory for our texture
         delete[] m_pData;
-        m_pData = new s3dByte[m_nSize];
+        // m_pData = new s3dByte[m_nSize];
 
         Bind();
     }
@@ -486,7 +493,7 @@ s3dByte* const Texture::GetMipData(const unsigned int mipmapLevel)
     
     // Allocate the memory if required, since we don't allocate memory
     // when we create render targets so as to reduce their memory footprint.
-    if (m_eBufferUsage == BU_RENDERTAGET && m_pData == nullptr)
+    if ((IsRenderTarget() || IsDepthStencil()) && m_pData == nullptr)
     {
         m_pData = new s3dByte[m_nSize];
         assert(m_pData != nullptr);
@@ -620,7 +627,7 @@ void Texture::Bind()
 
         // Reallocate memory for our texture
         delete[] m_pData;
-        m_pData = new s3dByte[m_nSize];
+        //m_pData = new s3dByte[m_nSize];
     }
 }
 

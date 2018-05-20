@@ -44,20 +44,39 @@ const sampler3D texUI3D;
 const samplerCUBE texUICube;
 
 const unsigned int nUseTexUI;
-const unsigned int nDepthSlice;
+const unsigned int nUIMipLevel;
+const unsigned int nUIFaceIdx;
+const float fUIDepthSlice;
 
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     switch (nUseTexUI)
     {
     case 1:
-        f4Color = tex1D(texUI1D, input.f2TexCoord.x) * input.f4Color; break;
+        f4Color = tex1Dlod(texUI1D, float4(input.f2TexCoord.x, 0, 0, nUIMipLevel)) * input.f4Color; break;
     case 2:
-        f4Color = tex2D(texUI2D, input.f2TexCoord) * input.f4Color; break;
+        f4Color = tex2Dlod(texUI2D, float4(input.f2TexCoord, 0, nUIMipLevel)) * input.f4Color; break;
     case 3:
-        f4Color = tex3D(texUI3D, float3(input.f2TexCoord, nDepthSlice)) * input.f4Color; break;
+        f4Color = tex3Dlod(texUI3D, float4(input.f2TexCoord, fUIDepthSlice, nUIMipLevel)) * input.f4Color; break;
     case 4:
-        f4Color = texCUBE(texUICube, float3(input.f2TexCoord, 1.f)) * input.f4Color; break; // TODO
+        const float2 cubeUV = input.f2TexCoord * 2.f - 1.f;
+        switch (nUIFaceIdx)
+        {
+        default:
+        case 0:
+            f4Color = texCUBElod(texUICube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), nUIMipLevel)) * input.f4Color; break;
+        case 1:
+            f4Color = texCUBElod(texUICube, float4(cubeUV.x, 1.f, cubeUV.y, nUIMipLevel)) * input.f4Color; break;
+        case 2:
+            f4Color = texCUBElod(texUICube, float4(cubeUV.x, -1.f, -cubeUV.y, nUIMipLevel)) * input.f4Color; break;
+        case 3:
+            f4Color = texCUBElod(texUICube, float4(cubeUV * float2(1.f, -1.f), 1.f, nUIMipLevel)) * input.f4Color; break;
+        case 4:
+            f4Color = texCUBElod(texUICube, float4(1.f, -cubeUV.yx, nUIMipLevel)) * input.f4Color; break;
+        case 5:
+            f4Color = texCUBElod(texUICube, float4(-cubeUV, -1.f, nUIMipLevel)) * input.f4Color; break;
+        };
+        break;
     default:
         f4Color = input.f4Color; break;
     };

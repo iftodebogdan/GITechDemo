@@ -157,6 +157,11 @@ namespace GITechDemoApp
         unsigned int m_nFontTextureIdx;
 
         int m_nTextureViewerIdx;
+        int m_nSelectedMip;
+        int m_nSelectedSlice;
+        int m_nSelectedFace;
+        float m_fSelectedSlice;
+        Vec<bool, 3u> m_bChannelMask;
 
         // Placeholder textures
         s3dSampler m_nDummyTex1DIdx;

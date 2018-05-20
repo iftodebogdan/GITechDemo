@@ -339,7 +339,9 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(texUI3D,                  s3dSampler3D    );
     CREATE_SHADER_CONSTANT_HANDLE(texUICube,                s3dSamplerCUBE  );
     CREATE_SHADER_CONSTANT_HANDLE(nUseTexUI,                int             );
-    CREATE_SHADER_CONSTANT_HANDLE(nDepthSlice,              int             );
+    CREATE_SHADER_CONSTANT_HANDLE(fUIDepthSlice,            float           );
+    CREATE_SHADER_CONSTANT_HANDLE(nUIMipLevel,              int             );
+    CREATE_SHADER_CONSTANT_HANDLE(nUIFaceIdx,               int             );
 
     //  - MotionBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44PrevViewProjMat,       Matrix44f       );

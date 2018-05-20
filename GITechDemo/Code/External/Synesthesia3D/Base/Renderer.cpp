@@ -220,3 +220,141 @@ void Renderer::SetDeviceState(const DeviceState deviceState)
 {
     m_eDeviceState = deviceState;
 }
+
+const char* Renderer::GetEnumString(PixelFormat val)
+{
+    switch (val)
+    {
+    case PF_NONE:
+        return "NULL";
+    case PF_R5G6B5:
+        return "R5G6B5";
+    case PF_A1R5G5B5:
+        return "A1R5G5B5";
+    case PF_A4R4G4B4:
+        return "A4R4G4B4";
+    case PF_A8:
+        return "A8";
+    case PF_L8:
+        return "L8";
+    case PF_A8L8:
+        return "A8L8";
+    case PF_R8G8B8:
+        return "R8G8B8";
+    case PF_A8R8G8B8:
+        return "A8R8G8B8";
+    case PF_A8B8G8R8:
+        return "A8B8G8R8";
+    case PF_L16:
+        return "L16";
+    case PF_G16R16:
+        return "G16R16";
+    case PF_A16B16G16R16:
+        return "A16B16G16R16";
+    case PF_R16F:
+        return "R16F";
+    case PF_G16R16F:
+        return "G16R16F";
+    case PF_A16B16G16R16F:
+        return "A16B16G16R16F";
+    case PF_R32F:
+        return "R32F";
+    case PF_G32R32F:
+        return "G32R32F";
+    case PF_A32B32G32R32F:
+        return "A32B32G32R32F";
+    case PF_DXT1:
+        return "DXT1";
+    case PF_DXT3:
+        return "DXT3";
+    case PF_DXT5:
+        return "DXT5";
+    case PF_D24S8:
+        return "D24S8";
+    case PF_INTZ:
+        return "INTZ";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+const char* Renderer::GetEnumString(TextureType val)
+{
+    switch (val)
+    {
+    case TT_1D:
+        return "1D";
+    case TT_2D:
+        return "2D";
+    case TT_3D:
+        return "3D";
+    case TT_CUBE:
+        return "Cubemap";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+const char* Renderer::GetEnumString(SamplerFilter val)
+{
+    switch (val)
+    {
+    case SF_MIN_MAG_POINT_MIP_NONE:
+        return "MIN_MAG_POINT_MIP_NONE";
+    case SF_MIN_MAG_LINEAR_MIP_NONE:
+        return "MIN_MAG_LINEAR_MIP_NONE";
+    case SF_MIN_MAG_POINT_MIP_POINT:
+        return "MIN_MAG_POINT_MIP_POINT";
+    case SF_MIN_MAG_POINT_MIP_LINEAR:
+        return "MIN_MAG_POINT_MIP_LINEAR";
+    case SF_MIN_MAG_LINEAR_MIP_POINT:
+        return "MIN_MAG_LINEAR_MIP_POINT";
+    case SF_MIN_MAG_LINEAR_MIP_LINEAR:
+        return "MIN_MAG_LINEAR_MIP_LINEAR";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+const char* Renderer::GetEnumString(SamplerAddressingMode val)
+{
+    switch (val)
+    {
+    case SAM_CLAMP:
+        return "clamp";
+    case SAM_WRAP:
+        return "wrap";
+    case SAM_MIRROR:
+        return "mirror";
+    case SAM_BORDER:
+        return "border";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+const char* Renderer::GetEnumString(CubeFace val)
+{
+    switch (val)
+    {
+    case FACE_XNEG:
+        return "X-";
+    case FACE_YPOS:
+        return "Y+";
+    case FACE_YNEG:
+        return "Y-";
+    case FACE_ZPOS:
+        return "Z+";
+    case FACE_XPOS:
+        return "X+";
+    case FACE_ZNEG:
+        return "Z-";
+    default:
+        assert(false);
+        return "";
+    }
+}

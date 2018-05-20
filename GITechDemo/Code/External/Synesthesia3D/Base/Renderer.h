@@ -275,7 +275,7 @@ namespace Synesthesia3D
          * @brief   Retrieves a pointer to the texture sampler state manager.
          */
                 SYNESTHESIA3D_DLL   SamplerState* const     GetSamplerStateManager() const;
-                
+
         /**
          * @brief   Retrieves a pointer to the profiler, which allows for managing profile markers.
          */
@@ -288,6 +288,15 @@ namespace Synesthesia3D
 
                 SYNESTHESIA3D_DLL   const DeviceState       GetDeviceState() const;
                 SYNESTHESIA3D_DLL           void            SetDeviceState(const DeviceState deviceState);
+
+        /**
+         * @brief   Get text corresponding to enum value
+         */
+                SYNESTHESIA3D_DLL   static const char*      GetEnumString(PixelFormat val);
+                SYNESTHESIA3D_DLL   static const char*      GetEnumString(TextureType val);
+                SYNESTHESIA3D_DLL   static const char*      GetEnumString(SamplerFilter val);
+                SYNESTHESIA3D_DLL   static const char*      GetEnumString(SamplerAddressingMode val);
+                SYNESTHESIA3D_DLL   static const char*      GetEnumString(CubeFace val);
 
     protected:
 

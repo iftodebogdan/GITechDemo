@@ -639,7 +639,9 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texUICube,                    s3dSamplerCUBE  );
     CREATE_SHADER_CONSTANT_OBJECT(f44UIProjMat,                 Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nUseTexUI,                    int             );
-    CREATE_SHADER_CONSTANT_OBJECT(nDepthSlice,                  int             );
+    CREATE_SHADER_CONSTANT_OBJECT(fUIDepthSlice,                float           );
+    CREATE_SHADER_CONSTANT_OBJECT(nUIMipLevel,                  int             );
+    CREATE_SHADER_CONSTANT_OBJECT(nUIFaceIdx,                   int             );
 
     //--------------------------------------------------------------------------
 
