@@ -493,9 +493,9 @@ void UIPass::SetupUI()
     ImGui::NewFrame();
 
     // ImGui test window
-    bool show_test_window = false;
-    ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-    ImGui::ShowTestWindow(&show_test_window);
+    // bool show_test_window = false;
+    // ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+    // ImGui::ShowTestWindow(&show_test_window);
 
     // Main menu + title bar
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_fAlpha);
