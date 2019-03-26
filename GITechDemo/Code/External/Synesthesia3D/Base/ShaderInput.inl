@@ -88,4 +88,33 @@ namespace Synesthesia3D
     {
         return GetMatrix<float, ROWS, COLS>(handle, idx);
     }
+
+    template < typename T >
+    inline void ShaderInput::SetStruct(const unsigned int handle, const T& data)
+    {
+        static_assert(!std::is_pointer<T>::value, "[S3D] ShaderInput::SetStruct() - You cannot pass a pointer to structs");
+        static_assert(!std::is_array<T>::value, "[S3D] ShaderInput::SetStruct() - You cannot pass an array of structs");
+        SetStructArray<T>(handle, &data);
+    }
+
+    template < typename T >
+    inline void ShaderInput::SetStructArray(const unsigned int handle, const T* const data)
+    {
+        static_assert(!std::is_pointer<T>::value && !std::is_array<T>::value, "[S3D] ShaderInput::SetStructArray() - You must pass a pointer or an array of structs");
+        assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+        // unused struct members at the bottom may be optimized away, so <= instead of == is theoretically valid here
+        assert(m_pShaderProgram->m_arrInputDesc[handle].nBytes <= sizeof(T) * m_pShaderProgram->m_arrInputDesc[handle].nArrayElements);
+        SetStructArray(handle, (void*)data);
+    }
+
+    template < typename T >
+    inline const T& ShaderInput::GetStruct(const unsigned int handle, const unsigned int idx) const
+    {
+        assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+        const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
+        assert(desc.eInputType == IT_STRUCT);
+        assert(desc.nBytes / desc.nArrayElements == sizeof(T));
+        assert(idx < desc.nArrayElements);
+        return *(T*)(m_pData + desc.nOffsetInBytes + sizeof(T) * idx);
+    }
 }

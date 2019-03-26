@@ -177,6 +177,7 @@ public:
       unsigned                      mRow;    /** The row being accessed */
    };
 
+#ifdef GMTL_USE_MATRIX_XFORM
    /** describes the xforms that this matrix has been through. */
    enum XformState
    {
@@ -208,6 +209,7 @@ public:
       // error bit
       XFORM_ERROR = 128
    };
+#endif
 
    /** Default Constructor (Identity constructor) */
    Matrix()
@@ -227,15 +229,19 @@ public:
          this->operator()(x, x) = static_cast<DATA_TYPE>(1.0);
       }
 
+    #ifdef GMTL_USE_MATRIX_XFORM
       /** @todo Set initial state to IDENTITY and test other stuff */
       mState = IDENTITY;
+    #endif
    }
 
    /** copy constructor */
    Matrix( const Matrix<DATA_TYPE, ROWS, COLS>& matrix )
    {
       this->set( matrix.getData() );
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = matrix.mState;
+    #endif
    }
 
    /** element wise setter for 2x2.
@@ -250,7 +256,9 @@ public:
       mData[1] = v10;
       mData[2] = v01;
       mData[3] = v11;
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** element wise setter for 2x3.
@@ -266,7 +274,9 @@ public:
       mData[3] = v11;
       mData[4] = v02;
       mData[5] = v12;
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** element wise setter for 3x3.
@@ -288,7 +298,9 @@ public:
       mData[6] = v02;
       mData[7] = v12;
       mData[8] = v22;
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** element wise setter for 3x4.
@@ -313,7 +325,9 @@ public:
       mData[9]  = v03;
       mData[10] = v13;
       mData[11] = v23;
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** element wise setter for 4x4.
@@ -345,7 +359,9 @@ public:
       mData[7]  = v31;
       mData[11] = v32;
       mData[15] = v33;
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** comma operator
@@ -376,7 +392,9 @@ public:
       /** @todo mp */
       for (unsigned int x = 0; x < ROWS * COLS; ++x)
          mData[x] = data[x];
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** set the matrix to the transpose of the given data.
@@ -407,7 +425,9 @@ public:
       for (unsigned int r = 0; r < ROWS; ++r)
       for (unsigned int c = 0; c < COLS; ++c)
          this->operator()( r, c ) = data[(r * COLS) + c];
+    #ifdef GMTL_USE_MATRIX_XFORM
       mState = FULL;
+    #endif
    }
 
    /** access [row, col] in the matrix
@@ -467,6 +487,7 @@ public:
       return mData;
    }
 
+#ifdef GMTL_USE_MATRIX_XFORM
    bool isError()
    {
       return mState & XFORM_ERROR;
@@ -480,6 +501,7 @@ public:
    {
       mState = state;
    }
+#endif
 
 public:
    /** Column major.  In other words {Column1, Column2, Column3, Column4} in memory
@@ -493,8 +515,10 @@ public:
     */
    DATA_TYPE mData[COLS*ROWS];
 
+#ifdef GMTL_USE_MATRIX_XFORM
    /** describes what xforms are in this matrix */
    int mState;
+#endif
 };
 
 typedef Matrix<float, 2, 2> Matrix22f;
@@ -570,6 +594,7 @@ const Matrix44f MAT_IDENTITY44F = Matrix44f();
 /** 64bit floating point 4x4 identity matrix */
 const Matrix44d MAT_IDENTITY44D = Matrix44d();
 
+#ifdef GMTL_USE_MATRIX_XFORM
 /** utility function for use by matrix operations.
  *  given two matrices, when combined with set(..) or xform(..) types of operations,
  *  compute what matrixstate will the resulting matrix have?
@@ -633,6 +658,7 @@ inline int combineMatrixStates( int state1, int state2 )
       return Matrix44f::XFORM_ERROR;
    }
 }
+#endif
 
 } // end namespace gmtl
 

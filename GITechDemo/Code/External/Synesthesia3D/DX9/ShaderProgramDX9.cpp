@@ -109,15 +109,20 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
 {
     IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
 
+    // We need a null terminated array of D3DXMACROs, so adapt std:basic_string to our needs (because strings are null terminated)
+    std::basic_string<D3DXMACRO, std::char_traits<D3DXMACRO>, std::allocator<D3DXMACRO>> macroList;
+
     const char* profile = "";
     switch (m_eProgramType)
     {
     case SPT_VERTEX:
+        macroList.push_back({ "VERTEX", "" });
         profile = "vs_3_0";
         if (strlen(entryPoint) == 0)
             entryPoint = "vsmain";
         break;
     case SPT_PIXEL:
+        macroList.push_back({ "PIXEL", "" });
         profile = "ps_3_0";
         if (strlen(entryPoint) == 0)
             entryPoint = "psmain";
@@ -129,6 +134,7 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
 
 #if defined(_DEBUG) || defined(_PROFILE)
     flags |= D3DXSHADER_DEBUG;
+    macroList.push_back({ "DEBUG", "" });
 #endif
 
 #ifndef _DEBUG
@@ -136,7 +142,9 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
     //flags |= D3DXSHADER_AVOID_FLOW_CONTROL;
 #endif
 
-    HRESULT hr = D3DXCompileShaderFromFile(filePath, NULL, NULL, entryPoint, profile,
+    macroList.push_back({ "HLSL", "" });
+
+    HRESULT hr = D3DXCompileShaderFromFile(filePath, macroList.c_str(), NULL, entryPoint, profile,
         flags, &compiledData, &errorMsg, &m_pConstantTable);
 
 #ifdef _DEBUG
@@ -217,8 +225,16 @@ const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) con
     switch (constDesc.Type)
     {
     case D3DXPT_VOID:
-        assert(false); // no structs or whatever
-        return IT_NONE;
+        // Not sure what else could come through here, but support only non-empty(?) structs
+        if (constDesc.Class == D3DXPC_STRUCT && constDesc.StructMembers > 0)
+        {
+            return IT_STRUCT;
+        }
+        else
+        {
+            assert(false);
+            return IT_NONE;
+        }
     case D3DXPT_BOOL:
         return IT_BOOL;
     case D3DXPT_INT:
@@ -356,8 +372,7 @@ const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int han
 
     //assert(size == constDesc.Bytes);
     unsigned int constantSize = 0;
-    constantSize = max(constDesc.RegisterCount * registerSize, constDesc.Bytes);
-    constantSize = max(constantSize, constDesc.Elements * constDesc.Rows * registerSize);
+    constantSize = max(constDesc.RegisterCount * registerSize, constDesc.Bytes); // compiler optimizations and struct packings make this calculation tricky
 
     return constantSize;
 }

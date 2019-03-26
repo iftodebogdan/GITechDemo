@@ -13,7 +13,7 @@
  */
 //#define GMTL_COUNT_CONSTRUCT_CALLS 1
 
-
+//#define GMTL_USE_MATRIX_XFORM
 
 #endif
 

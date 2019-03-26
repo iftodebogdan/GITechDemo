@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#ifndef UTILS_HLSLI
+#define UTILS_HLSLI
+
 #include "Common.hlsli"
 
 //#define NORMAL_RECONSTRUCT_Z
@@ -403,3 +406,5 @@ float PCF8x8(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, 
 #define safe_saturate_dot(x, y) (clamp(dot(x, y), 0.0001f, 0.9999f))
 
 ////////////////////////////////////////////////////////////////
+
+#endif // UTILS_HLSLI

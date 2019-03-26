@@ -45,8 +45,9 @@ ShaderProgram::~ShaderProgram()
 
 void ShaderProgram::DescribeShaderInputs()
 {
-    unsigned int paramCount = GetConstantCount();   
+    const unsigned int paramCount = GetConstantCount();
     unsigned int offset = 0;
+
     for (unsigned int i = 0; i < paramCount; i++)
     {
         ShaderInputDesc inputDesc;
@@ -92,7 +93,7 @@ const unsigned int ShaderProgram::GetTotalSizeOfInputConstants() const
 
 void ShaderProgram::Enable(ShaderInput* const shaderInput)
 {
-    assert(m_pShaderInput == nullptr);
+    assert(m_pShaderInput == nullptr); // Was this shader enabled twice without disabling first?
     //assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
     m_pShaderInput = shaderInput;
@@ -101,7 +102,7 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
     {
         PUSH_PROFILE_MARKER(m_arrInputDesc[i].szName.c_str());
 
-        if (m_arrInputDesc[i].eInputType >= IT_BOOL && m_arrInputDesc[i].eInputType <= IT_FLOAT)
+        if (m_arrInputDesc[i].eInputType >= IT_STRUCT && m_arrInputDesc[i].eInputType <= IT_FLOAT)
         {
             SetValue(
                 m_arrInputDesc[i].eRegisterType,

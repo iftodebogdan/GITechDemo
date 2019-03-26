@@ -118,6 +118,43 @@ public:
       BaseType::operator=(rhs);
       return *this;
    }
+
+   template<class DATA_TYPE2, unsigned SIZE2, typename REP2>
+   inline VecType& operator=(const VecBase<DATA_TYPE2, SIZE2, REP2>& rhs)
+   {
+       BaseType::operator=(rhs);
+       return *this;
+   }
+
+   inline VecType& operator=(const bool& rhs)
+   {
+       BaseType::operator=((DATA_TYPE)rhs);
+       return *this;
+   }
+
+   inline VecType& operator=(const int& rhs)
+   {
+       BaseType::operator=((DATA_TYPE)rhs);
+       return *this;
+   }
+
+   inline VecType& operator=(const unsigned int& rhs)
+   {
+       BaseType::operator=((DATA_TYPE)rhs);
+       return *this;
+   }
+
+   inline VecType& operator=(const float& rhs)
+   {
+       BaseType::operator=((DATA_TYPE)rhs);
+       return *this;
+   }
+
+   inline VecType& operator=(const double& rhs)
+   {
+       BaseType::operator=((DATA_TYPE)rhs);
+       return *this;
+   }
 #endif
 };
 

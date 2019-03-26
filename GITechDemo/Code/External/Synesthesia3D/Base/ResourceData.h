@@ -355,6 +355,7 @@ namespace Synesthesia3D
     {
         IT_NONE,        /**< @brief DO NOT USE! INTERNAL USAGE ONLY! */
 
+        IT_STRUCT,      /**< @brief Structured data type. */
         IT_BOOL,        /**< @brief Boolean data type. */
         IT_INT,         /**< @brief Integer data type. */
         IT_FLOAT,       /**< @brief Floating point data type. */

@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#ifndef CSMUTILS_HLSLI_
+#define CSMUTILS_HLSLI_
+
 #include "Common.hlsli"
 
 #define NUM_CASCADES (4)        // Number of supported cascades
@@ -83,3 +86,5 @@ const float3 GetCascadeSpacePos(const float3 f3LightViewPos, const unsigned int 
 
     return f3CascadeTexCoord;
 }
+
+#endif // CSMUTILS_HLSLI_

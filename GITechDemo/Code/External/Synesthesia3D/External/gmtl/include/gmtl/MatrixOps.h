@@ -31,7 +31,9 @@ namespace gmtl
    inline Matrix<DATA_TYPE, ROWS, COLS>&
    identity(Matrix<DATA_TYPE, ROWS, COLS>& result)
    {
+    #ifdef GMTL_USE_MATRIX_XFORM
       if(result.mState != Matrix<DATA_TYPE, ROWS, COLS>::IDENTITY)   // if not already ident
+    #endif
       {
          // TODO: mp
          for (unsigned int r = 0; r < ROWS; ++r)
@@ -48,8 +50,10 @@ namespace gmtl
             result(x, x) = static_cast<DATA_TYPE>(1.0);
          }
 
+        #ifdef GMTL_USE_MATRIX_XFORM
          result.mState = Matrix<DATA_TYPE, ROWS, COLS>::IDENTITY;
 //         result.mState = Matrix<DATA_TYPE, ROWS, COLS>::FULL;
+        #endif
       }
 
       return result;
@@ -64,6 +68,7 @@ namespace gmtl
    inline Matrix<DATA_TYPE, ROWS, COLS>&
    zero(Matrix<DATA_TYPE, ROWS, COLS>& result)
    {
+    #ifdef GMTL_USE_MATRIX_XFORM
       if (result.mState == Matrix<DATA_TYPE, ROWS, COLS>::IDENTITY)
       {
          for (unsigned int x = 0; x < Math::Min(ROWS, COLS); ++x)
@@ -72,13 +77,16 @@ namespace gmtl
          }
       }
       else
+    #endif
       {
          for (unsigned int x = 0; x < ROWS * COLS; ++x)
          {
             result.mData[x] = static_cast<DATA_TYPE>(0);
          }
       }
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = Matrix<DATA_TYPE, ROWS, COLS>::ORTHOGONAL;
+    #endif
       return result;
    }
 
@@ -104,8 +112,11 @@ namespace gmtl
       for (unsigned int k = 0; k < INTERNAL; ++k)       // [k = 1 to p]
          ret_mat( i, j ) += lhs( i, k ) * rhs( k, j );
 
+    #ifdef GMTL_USE_MATRIX_XFORM
       // track state
       ret_mat.mState = combineMatrixStates( lhs.mState, rhs.mState );
+    #endif
+
       return result = ret_mat;
    }
 
@@ -139,8 +150,11 @@ namespace gmtl
       for (unsigned int j = 0; j < COLS; ++j)           // 1 <= j <= n
          result( i, j ) = lhs( i, j ) - rhs( i, j );
 
+    #ifdef GMTL_USE_MATRIX_XFORM
       // track state
       result.mState = combineMatrixStates( lhs.mState, rhs.mState );
+    #endif
+
       return result;
    }
 
@@ -161,8 +175,11 @@ namespace gmtl
       for (unsigned int j = 0; j < COLS; ++j)           // 1 <= j <= n
          result( i, j ) = lhs( i, j ) + rhs( i, j );
 
+    #ifdef GMTL_USE_MATRIX_XFORM
       // track state
       result.mState = combineMatrixStates( lhs.mState, rhs.mState );
+    #endif
+
       return result;
    }
 
@@ -209,7 +226,11 @@ namespace gmtl
    {
       for (unsigned i = 0; i < ROWS * COLS; ++i)
          result.mData[i] = mat.mData[i] * scalar;
+
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = mat.mState;
+    #endif
+
       return result;
    }
 
@@ -268,7 +289,11 @@ namespace gmtl
             result( i, j ) = temp( j, i );
          }
       }
+
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = temp.mState;
+    #endif
+
       return result;
    }
 
@@ -319,7 +344,11 @@ namespace gmtl
             result( i, j ) = temp( j, i );
          }
       }
+
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = temp.mState;
+    #endif
+
       return result;
    }
 
@@ -348,7 +377,9 @@ namespace gmtl
       }
 
       // do non-uniform scale inversion
+    #ifdef GMTL_USE_MATRIX_XFORM
       if (src.mState & Matrix<DATA_TYPE, ROWS, COLS>::NON_UNISCALE)
+    #endif
       {
          DATA_TYPE l0 = gmtl::lengthSquared( gmtl::Vec<DATA_TYPE, 3>( result[0][0], result[0][1], result[0][2] ) );
          DATA_TYPE l1 = gmtl::lengthSquared( gmtl::Vec<DATA_TYPE, 3>( result[1][0], result[1][1], result[1][2] ) );
@@ -403,8 +434,9 @@ namespace gmtl
       }
 
 
-
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = src.mState;
+    #endif
 
       return result;
    }
@@ -588,7 +620,9 @@ namespace gmtl
          if ( gmtl::Math::abs( pivot) <= 1e-20)
          {
             std::cerr << "*** pivot = " << pivot << " in mat_inv. ***\n";
+        #ifdef GMTL_USE_MATRIX_XFORM
             result.setError();
+        #endif
             return result;
          }
 
@@ -645,7 +679,9 @@ namespace gmtl
       }
 
       // It worked
+    #ifdef GMTL_USE_MATRIX_XFORM
       result.mState = src.mState;
+    #endif
       return result;
    }
 
@@ -672,6 +708,7 @@ namespace gmtl
    template <typename DATA_TYPE, unsigned ROWS, unsigned COLS>
    inline Matrix<DATA_TYPE, ROWS, COLS>& invert( Matrix<DATA_TYPE, ROWS, COLS>& result, const Matrix<DATA_TYPE, ROWS, COLS>& src )
    {
+    #ifdef GMTL_USE_MATRIX_XFORM
       if (src.mState == Matrix<DATA_TYPE, ROWS, COLS>::IDENTITY )
          return result = src;
       else if (src.mState == Matrix<DATA_TYPE, ROWS, COLS>::TRANS)
@@ -682,6 +719,7 @@ namespace gmtl
                src.mState == (Matrix<DATA_TYPE, ROWS, COLS>::AFFINE | Matrix<DATA_TYPE, ROWS, COLS>::NON_UNISCALE))
          return invertAffine( result, src );
       else
+    #endif
          return invertFull_orig( result, src );
    }
 

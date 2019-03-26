@@ -31,13 +31,15 @@
 #define CREATE_MODEL_HANDLE(NAME) extern GITechDemoApp::Model NAME
 #define CREATE_TEXTURE_HANDLE(NAME) extern GITechDemoApp::Texture NAME
 #define CREATE_SHADER_HANDLE(NAME) extern GITechDemoApp::Shader NAME
-#define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME
+#define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) namespace HLSL { extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME; }
 #define CREATE_RENDER_TARGET_HANDLE(NAME) extern GITechDemoApp::RenderTarget NAME
 #define SWAP_RENDER_TARGET_HANDLES(RT1, RT2) { GITechDemoApp::RenderTarget* const TEMP = RT1; RT1 = RT2; RT2 = TEMP; }
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
 {
+    #include "UI.hlsl"
+
     using namespace Synesthesia3D;
 
     // Shaders
@@ -333,15 +335,11 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f2DepthHalfTexelOffset,   Vec2f           );
 
     //  - UI.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(f44UIProjMat,             Matrix44f       );
-    CREATE_SHADER_CONSTANT_HANDLE(texUI1D,                  s3dSampler1D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texUI2D,                  s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texUI3D,                  s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texUICube,                s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_HANDLE(nUseTexUI,                int             );
-    CREATE_SHADER_CONSTANT_HANDLE(fUIDepthSlice,            float           );
-    CREATE_SHADER_CONSTANT_HANDLE(nUIMipLevel,              int             );
-    CREATE_SHADER_CONSTANT_HANDLE(nUIFaceIdx,               int             );
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture1D,              s3dSampler1D    );
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture2D,              s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture3D,              s3dSampler3D    );
+    CREATE_SHADER_CONSTANT_HANDLE(UITextureCube,            s3dSamplerCUBE  );
+    CREATE_SHADER_CONSTANT_HANDLE(UIParams,                 UIConstantTable );
 
     //  - MotionBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44PrevViewProjMat,       Matrix44f       );
@@ -386,6 +384,12 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(bUseDither,               bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity,     float           );
     //-------------------------------------------------------
+
+    #define STRINGIZE_HELPER(x) #x
+    #define STRINGIZE(x) STRINGIZE_HELPER(x)
+    #define WARNING(desc) message(__FILE__ "(" STRINGIZE(__LINE__) ") : Warning: " #desc)
+    #pragma WARNING("Remove this when done refactoring!")
+    using namespace HLSL;
 
     // Used for fullscreen effects, post-processing, etc.
     extern VertexBuffer*    FullScreenTri;

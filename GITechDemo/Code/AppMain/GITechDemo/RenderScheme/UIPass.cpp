@@ -970,6 +970,9 @@ void UIPass::GenerateDrawData()
     }
 }
 
+#include <ShaderInput.h>
+#include <ShaderProgram.h>
+
 void UIPass::RenderUI()
 {
     Renderer* RenderContext = Renderer::GetInstance();
@@ -1006,30 +1009,26 @@ void UIPass::RenderUI()
     RSMgr->SetScissorEnabled(true);
     RSMgr->SetCullMode(CULL_NONE);
 
+    HLSL::UITexture1D = m_nDummyTex1DIdx;
+    HLSL::UITexture2D = m_nFontTextureIdx;
+    HLSL::UITexture3D = m_nDummyTex3DIdx;
+    HLSL::UITextureCube = m_nDummyTexCubeIdx;
+
     ImGuiIO& io = ImGui::GetIO();
     const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
-    f44UIProjMat.GetCurrentValue().set(
-        2.0f / (R - L), 0.0f, 0.0f, 0.0f,
-        0.0f, 2.0f / (T - B), 0.0f, 0.0f,
-        0.0f, 0.0f, 0.5f, 0.0f,
-        (L + R) / (L - R), (T + B) / (B - T), 0.5f, 1.0f
+    HLSL::UIParams->ProjMat.set(
+        2.0f / (R - L),         0.0f,           0.0f,   (L + R) / (L - R),
+            0.0f,           2.0f / (T - B),     0.0f,   (T + B) / (B - T),
+            0.0f,               0.0f,           0.5f,         0.5f,
+            0.0f,               0.0f,           0.0f,         1.0f
     );
-    gmtl::transpose(f44UIProjMat.GetCurrentValue());
 
-    texUI1D = m_nDummyTex1DIdx;
-    texUI2D = m_nDummyTex2DIdx;
-    texUI3D = m_nDummyTex3DIdx;
-    texUICube = m_nDummyTexCubeIdx;
-
-    nUIMipLevel = m_nSelectedMip;
-    fUIDepthSlice = m_fSelectedSlice;
-    nUIFaceIdx = m_nSelectedFace;
-
-    nUseTexUI = 2;
-    texUI2D = m_nFontTextureIdx;
+    HLSL::UIParams->TextureSwitch = 2;
+    HLSL::UIParams->MipLevel = m_nSelectedMip;
+    HLSL::UIParams->FaceIdx = m_nSelectedFace;
+    HLSL::UIParams->DepthSlice = m_fSelectedSlice;
 
     // Render geometry
-    UIShader.Enable();
     for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[nRenderBufferIdx].CmdList.size(); n++)
     {
         const UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[nRenderBufferIdx].CmdList[n];
@@ -1039,49 +1038,43 @@ void UIPass::RenderUI()
             RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
             RSMgr->SetSRGBWriteEnabled(((Synesthesia3D::Texture*)cmd.Texture)->GetSRGBEnabled());
 
-            if (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || texUI2D != m_nFontTextureIdx || nUseTexUI != 2)
+            if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
             {
-                UIShader.Disable();
-
-                if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
-                {
-                    RSMgr->SetColorBlendEnabled(false);
-                }
-                else
-                {
-                    RSMgr->SetColorBlendEnabled(true);
-                }
-
-                switch (((Synesthesia3D::Texture*)cmd.Texture)->GetTextureType())
-                {
-                case TT_1D:
-                    nUseTexUI = 1;
-                    texUI1D = (Synesthesia3D::Texture*)cmd.Texture;
-                    break;
-                case TT_2D:
-                    nUseTexUI = 2;
-                    texUI2D = (Synesthesia3D::Texture*)cmd.Texture;
-                    break;
-                case TT_3D:
-                    nUseTexUI = 3;
-                    texUI3D = (Synesthesia3D::Texture*)cmd.Texture;
-                    break;
-                case TT_CUBE:
-                    nUseTexUI = 4;
-                    texUICube = (Synesthesia3D::Texture*)cmd.Texture;
-                    break;
-                }
-
-                UIShader.Enable(); // force commit updated shader inputs
+                RSMgr->SetColorBlendEnabled(false);
+            }
+            else
+            {
+                RSMgr->SetColorBlendEnabled(true);
             }
 
+            switch (((Synesthesia3D::Texture*)cmd.Texture)->GetTextureType())
+            {
+            case TT_1D:
+                HLSL::UIParams->TextureSwitch = 1;
+                HLSL::UITexture1D = (Synesthesia3D::Texture*)cmd.Texture;
+                break;
+            case TT_2D:
+                HLSL::UIParams->TextureSwitch = 2;
+                HLSL::UITexture2D = (Synesthesia3D::Texture*)cmd.Texture;
+                break;
+            case TT_3D:
+                HLSL::UIParams->TextureSwitch = 3;
+                HLSL::UITexture3D = (Synesthesia3D::Texture*)cmd.Texture;
+                break;
+            case TT_CUBE:
+                HLSL::UIParams->TextureSwitch = 4;
+                HLSL::UITextureCube = (Synesthesia3D::Texture*)cmd.Texture;
+                break;
+            }
+
+            UIShader.Enable();
             RenderContext->DrawVertexBuffer(m_pImGuiVb[nRenderBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
+            UIShader.Disable();
 
             idxOffset += cmd.ElemCount;
         }
         vtxOffset += cmdList.VtxBufferSize;
     }
-    UIShader.Disable();
 
     // Revert render states
     RSMgr->SetSRGBWriteEnabled(sRGBEnabled);

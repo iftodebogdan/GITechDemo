@@ -378,6 +378,12 @@ namespace GITechDemoApp
 
             switch (arrConstantList[i].eConstantType)
             {
+            case IT_STRUCT:
+            {
+                const void* const structAddr = &((ShaderConstantTemplate<void*>*)arrConstantList[i].pShaderConstantTemplate)->GetCurrentValue();
+                shdInput->SetStructArray(arrConstantList[i].nShaderConstantHandle, structAddr);
+                break;
+            }
             case IT_BOOL:
                 if (arrConstantList[i].nNumArrayElem > 1)
                     switch (arrConstantList[i].nNumRows)

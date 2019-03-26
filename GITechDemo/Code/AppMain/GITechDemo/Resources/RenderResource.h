@@ -184,6 +184,8 @@ namespace GITechDemoApp
         template<class DATA_TYPE, unsigned SIZE>
         Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& rhs) { return currentValue * rhs; }
 
+        T* const operator->() { return &currentValue; }
+
     protected:
         T       currentValue;
 

@@ -19,6 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#ifndef COMMON_HLSLI_
+#define COMMON_HLSLI_
+
+#ifdef HLSL
+
 //////////////////////////////////////////////////////////////
 // The ratio of a circle's circumference to its diameter    //
 //////////////////////////////////////////////////////////////
@@ -74,3 +79,284 @@
 // Used in multiple shaders, so defined here.   //
 //////////////////////////////////////////////////
 #define ENVIRONMENT_MAP_MIP_COUNT   (9)
+
+typedef bool  CB_bool;
+typedef bool1 CB_bool1;
+typedef bool2 CB_bool2;
+typedef bool3 CB_bool3;
+typedef bool4 CB_bool4;
+
+typedef int  CB_int;
+typedef int1 CB_int1;
+typedef int2 CB_int2;
+typedef int4 CB_int4;
+typedef int3 CB_int3;
+
+typedef uint  CB_uint;
+typedef uint1 CB_uint1;
+typedef uint2 CB_uint2;
+typedef uint4 CB_uint4;
+typedef uint3 CB_uint3;
+
+typedef half  CB_half;
+typedef half1 CB_half1;
+typedef half2 CB_half2;
+typedef half3 CB_half3;
+typedef half4 CB_half4;
+
+typedef float  CB_float;
+typedef float1 CB_float1;
+typedef float2 CB_float2;
+typedef float3 CB_float3;
+typedef float4 CB_float4;
+
+typedef double  CB_double;
+typedef double1 CB_double1;
+typedef double2 CB_double2;
+typedef double3 CB_double3;
+typedef double4 CB_double4;
+
+typedef bool1x1 CB_bool1x1;
+typedef bool1x2 CB_bool1x2;
+typedef bool1x3 CB_bool1x3;
+typedef bool1x4 CB_bool1x4;
+typedef bool2x1 CB_bool2x1;
+typedef bool2x2 CB_bool2x2;
+typedef bool2x3 CB_bool2x3;
+typedef bool2x4 CB_bool2x4;
+typedef bool3x1 CB_bool3x1;
+typedef bool3x2 CB_bool3x2;
+typedef bool3x3 CB_bool3x3;
+typedef bool3x4 CB_bool3x4;
+typedef bool4x1 CB_bool4x1;
+typedef bool4x2 CB_bool4x2;
+typedef bool4x3 CB_bool4x3;
+typedef bool4x4 CB_bool4x4;
+
+typedef int1x1 CB_int1x1;
+typedef int1x2 CB_int1x2;
+typedef int1x3 CB_int1x3;
+typedef int1x4 CB_int1x4;
+typedef int2x1 CB_int2x1;
+typedef int2x2 CB_int2x2;
+typedef int2x3 CB_int2x3;
+typedef int2x4 CB_int2x4;
+typedef int3x1 CB_int3x1;
+typedef int3x2 CB_int3x2;
+typedef int3x3 CB_int3x3;
+typedef int3x4 CB_int3x4;
+typedef int4x1 CB_int4x1;
+typedef int4x2 CB_int4x2;
+typedef int4x3 CB_int4x3;
+typedef int4x4 CB_int4x4;
+
+typedef uint1x1 CB_uint1x1;
+typedef uint1x2 CB_uint1x2;
+typedef uint1x3 CB_uint1x3;
+typedef uint1x4 CB_uint1x4;
+typedef uint2x1 CB_uint2x1;
+typedef uint2x2 CB_uint2x2;
+typedef uint2x3 CB_uint2x3;
+typedef uint2x4 CB_uint2x4;
+typedef uint3x1 CB_uint3x1;
+typedef uint3x2 CB_uint3x2;
+typedef uint3x3 CB_uint3x3;
+typedef uint3x4 CB_uint3x4;
+typedef uint4x1 CB_uint4x1;
+typedef uint4x2 CB_uint4x2;
+typedef uint4x3 CB_uint4x3;
+typedef uint4x4 CB_uint4x4;
+
+typedef half1x1 CB_half1x1;
+typedef half1x2 CB_half1x2;
+typedef half1x3 CB_half1x3;
+typedef half1x4 CB_half1x4;
+typedef half2x1 CB_half2x1;
+typedef half2x2 CB_half2x2;
+typedef half2x3 CB_half2x3;
+typedef half2x4 CB_half2x4;
+typedef half3x1 CB_half3x1;
+typedef half3x2 CB_half3x2;
+typedef half3x3 CB_half3x3;
+typedef half3x4 CB_half3x4;
+typedef half4x1 CB_half4x1;
+typedef half4x2 CB_half4x2;
+typedef half4x3 CB_half4x3;
+typedef half4x4 CB_half4x4;
+
+typedef float1x1 CB_float1x1;
+typedef float1x2 CB_float1x2;
+typedef float1x3 CB_float1x3;
+typedef float1x4 CB_float1x4;
+typedef float2x1 CB_float2x1;
+typedef float2x2 CB_float2x2;
+typedef float2x3 CB_float2x3;
+typedef float2x4 CB_float2x4;
+typedef float3x1 CB_float3x1;
+typedef float3x2 CB_float3x2;
+typedef float3x3 CB_float3x3;
+typedef float3x4 CB_float3x4;
+typedef float4x1 CB_float4x1;
+typedef float4x2 CB_float4x2;
+typedef float4x3 CB_float4x3;
+typedef float4x4 CB_float4x4;
+
+typedef double1x1 CB_double1x1;
+typedef double1x2 CB_double1x2;
+typedef double1x3 CB_double1x3;
+typedef double1x4 CB_double1x4;
+typedef double2x1 CB_double2x1;
+typedef double2x2 CB_double2x2;
+typedef double2x3 CB_double2x3;
+typedef double2x4 CB_double2x4;
+typedef double3x1 CB_double3x1;
+typedef double3x2 CB_double3x2;
+typedef double3x3 CB_double3x3;
+typedef double3x4 CB_double3x4;
+typedef double4x1 CB_double4x1;
+typedef double4x2 CB_double4x2;
+typedef double4x3 CB_double4x3;
+typedef double4x4 CB_double4x4;
+
+#else // HLSL
+
+typedef Vec4f CB_bool;
+typedef Vec4f CB_bool1;
+typedef Vec4f CB_bool2;
+typedef Vec4f CB_bool3;
+typedef Vec4f CB_bool4;
+
+typedef Vec4f CB_int;
+typedef Vec4f CB_int1;
+typedef Vec4f CB_int2;
+typedef Vec4f CB_int4;
+typedef Vec4f CB_int3;
+
+typedef Vec4f CB_uint;
+typedef Vec4f CB_uint1;
+typedef Vec4f CB_uint2;
+typedef Vec4f CB_uint4;
+typedef Vec4f CB_uint3;
+
+typedef Vec4f CB_half;
+typedef Vec4f CB_half1;
+typedef Vec4f CB_half2;
+typedef Vec4f CB_half3;
+typedef Vec4f CB_half4;
+
+typedef Vec4f CB_float;
+typedef Vec4f CB_float1;
+typedef Vec4f CB_float2;
+typedef Vec4f CB_float3;
+typedef Vec4f CB_float4;
+
+typedef Vec4f CB_double;
+typedef Vec4f CB_double1;
+typedef Vec4f CB_double2;
+typedef Vec4f CB_double3;
+typedef Vec4f CB_double4;
+
+typedef Matrix<float, 1u, 4u> CB_bool1x1;
+typedef Matrix<float, 1u, 4u> CB_bool1x2;
+typedef Matrix<float, 1u, 4u> CB_bool1x3;
+typedef Matrix<float, 1u, 4u> CB_bool1x4;
+typedef Matrix<float, 2u, 4u> CB_bool2x1;
+typedef Matrix<float, 2u, 4u> CB_bool2x2;
+typedef Matrix<float, 2u, 4u> CB_bool2x3;
+typedef Matrix<float, 2u, 4u> CB_bool2x4;
+typedef Matrix<float, 3u, 4u> CB_bool3x1;
+typedef Matrix<float, 3u, 4u> CB_bool3x2;
+typedef Matrix<float, 3u, 4u> CB_bool3x3;
+typedef Matrix<float, 3u, 4u> CB_bool3x4;
+typedef Matrix<float, 4u, 4u> CB_bool4x1;
+typedef Matrix<float, 4u, 4u> CB_bool4x2;
+typedef Matrix<float, 4u, 4u> CB_bool4x3;
+typedef Matrix<float, 4u, 4u> CB_bool4x4;
+
+typedef Matrix<float, 1u, 4u> CB_int1x1;
+typedef Matrix<float, 1u, 4u> CB_int1x2;
+typedef Matrix<float, 1u, 4u> CB_int1x3;
+typedef Matrix<float, 1u, 4u> CB_int1x4;
+typedef Matrix<float, 2u, 4u> CB_int2x1;
+typedef Matrix<float, 2u, 4u> CB_int2x2;
+typedef Matrix<float, 2u, 4u> CB_int2x3;
+typedef Matrix<float, 2u, 4u> CB_int2x4;
+typedef Matrix<float, 3u, 4u> CB_int3x1;
+typedef Matrix<float, 3u, 4u> CB_int3x2;
+typedef Matrix<float, 3u, 4u> CB_int3x3;
+typedef Matrix<float, 3u, 4u> CB_int3x4;
+typedef Matrix<float, 4u, 4u> CB_int4x1;
+typedef Matrix<float, 4u, 4u> CB_int4x2;
+typedef Matrix<float, 4u, 4u> CB_int4x3;
+typedef Matrix<float, 4u, 4u> CB_int4x4;
+
+typedef Matrix<float, 1u, 4u> CB_uint1x1;
+typedef Matrix<float, 1u, 4u> CB_uint1x2;
+typedef Matrix<float, 1u, 4u> CB_uint1x3;
+typedef Matrix<float, 1u, 4u> CB_uint1x4;
+typedef Matrix<float, 2u, 4u> CB_uint2x1;
+typedef Matrix<float, 2u, 4u> CB_uint2x2;
+typedef Matrix<float, 2u, 4u> CB_uint2x3;
+typedef Matrix<float, 2u, 4u> CB_uint2x4;
+typedef Matrix<float, 3u, 4u> CB_uint3x1;
+typedef Matrix<float, 3u, 4u> CB_uint3x2;
+typedef Matrix<float, 3u, 4u> CB_uint3x3;
+typedef Matrix<float, 3u, 4u> CB_uint3x4;
+typedef Matrix<float, 4u, 4u> CB_uint4x1;
+typedef Matrix<float, 4u, 4u> CB_uint4x2;
+typedef Matrix<float, 4u, 4u> CB_uint4x3;
+typedef Matrix<float, 4u, 4u> CB_uint4x4;
+
+typedef Matrix<float, 1u, 4u> CB_half1x1;
+typedef Matrix<float, 1u, 4u> CB_half1x2;
+typedef Matrix<float, 1u, 4u> CB_half1x3;
+typedef Matrix<float, 1u, 4u> CB_half1x4;
+typedef Matrix<float, 2u, 4u> CB_half2x1;
+typedef Matrix<float, 2u, 4u> CB_half2x2;
+typedef Matrix<float, 2u, 4u> CB_half2x3;
+typedef Matrix<float, 2u, 4u> CB_half2x4;
+typedef Matrix<float, 3u, 4u> CB_half3x1;
+typedef Matrix<float, 3u, 4u> CB_half3x2;
+typedef Matrix<float, 3u, 4u> CB_half3x3;
+typedef Matrix<float, 3u, 4u> CB_half3x4;
+typedef Matrix<float, 4u, 4u> CB_half4x1;
+typedef Matrix<float, 4u, 4u> CB_half4x2;
+typedef Matrix<float, 4u, 4u> CB_half4x3;
+typedef Matrix<float, 4u, 4u> CB_half4x4;
+
+typedef Matrix<float, 1u, 4u> CB_float1x1;
+typedef Matrix<float, 1u, 4u> CB_float1x2;
+typedef Matrix<float, 1u, 4u> CB_float1x3;
+typedef Matrix<float, 1u, 4u> CB_float1x4;
+typedef Matrix<float, 2u, 4u> CB_float2x1;
+typedef Matrix<float, 2u, 4u> CB_float2x2;
+typedef Matrix<float, 2u, 4u> CB_float2x3;
+typedef Matrix<float, 2u, 4u> CB_float2x4;
+typedef Matrix<float, 3u, 4u> CB_float3x1;
+typedef Matrix<float, 3u, 4u> CB_float3x2;
+typedef Matrix<float, 3u, 4u> CB_float3x3;
+typedef Matrix<float, 3u, 4u> CB_float3x4;
+typedef Matrix<float, 4u, 4u> CB_float4x1;
+typedef Matrix<float, 4u, 4u> CB_float4x2;
+typedef Matrix<float, 4u, 4u> CB_float4x3;
+typedef Matrix<float, 4u, 4u> CB_float4x4;
+
+typedef Matrix<float, 1u, 4u> CB_double1x1;
+typedef Matrix<float, 1u, 4u> CB_double1x2;
+typedef Matrix<float, 1u, 4u> CB_double1x3;
+typedef Matrix<float, 1u, 4u> CB_double1x4;
+typedef Matrix<float, 2u, 4u> CB_double2x1;
+typedef Matrix<float, 2u, 4u> CB_double2x2;
+typedef Matrix<float, 2u, 4u> CB_double2x3;
+typedef Matrix<float, 2u, 4u> CB_double2x4;
+typedef Matrix<float, 3u, 4u> CB_double3x1;
+typedef Matrix<float, 3u, 4u> CB_double3x2;
+typedef Matrix<float, 3u, 4u> CB_double3x3;
+typedef Matrix<float, 3u, 4u> CB_double3x4;
+typedef Matrix<float, 4u, 4u> CB_double4x1;
+typedef Matrix<float, 4u, 4u> CB_double4x2;
+typedef Matrix<float, 4u, 4u> CB_double4x3;
+typedef Matrix<float, 4u, 4u> CB_double4x4;
+
+#endif // HLSL
+#endif // COMMON_HLSLI_

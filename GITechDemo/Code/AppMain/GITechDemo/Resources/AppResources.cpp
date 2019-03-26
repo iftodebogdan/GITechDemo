@@ -59,7 +59,7 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define CREATE_TEXTURE_OBJECT(Name, Filepath) Texture Name(Filepath)
 #define CREATE_SHADER_OBJECT(Name, Filepath) Shader Name(Filepath)
 #define CREATE_PBR_MATERIAL(Name, FolderPath) PBRMaterial Name(FolderPath)
-#define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__))
+#define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) namespace HLSL { EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__)); }
 #define CREATE_STATIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], Width, Height, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, STATIC_RENDER_TARGET))
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
 #define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
@@ -633,15 +633,11 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
-    CREATE_SHADER_CONSTANT_OBJECT(texUI1D,                      s3dSampler1D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texUI2D,                      s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texUI3D,                      s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texUICube,                    s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_OBJECT(f44UIProjMat,                 Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(nUseTexUI,                    int             );
-    CREATE_SHADER_CONSTANT_OBJECT(fUIDepthSlice,                float           );
-    CREATE_SHADER_CONSTANT_OBJECT(nUIMipLevel,                  int             );
-    CREATE_SHADER_CONSTANT_OBJECT(nUIFaceIdx,                   int             );
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture1D,                  s3dSampler1D    );
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture2D,                  s3dSampler2D    );
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture3D,                  s3dSampler3D    );
+    CREATE_SHADER_CONSTANT_OBJECT(UITextureCube,                s3dSamplerCUBE  );
+    CREATE_SHADER_CONSTANT_OBJECT(UIParams,                     UIConstantTable);
 
     //--------------------------------------------------------------------------
 

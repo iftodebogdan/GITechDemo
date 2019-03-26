@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#ifndef POSTPROCESSINGUTILS_HLSLI
+#define POSTPROCESSINGUTILS_HLSLI
+
 #include "Common.hlsli"
 
 //////////////////////////////////////////////////////////
@@ -164,3 +167,5 @@ float GetDitherAmount(float2 texelIdx)
 {
     return tex2D(texDitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
 }
+
+#endif // POSTPROCESSINGUTILS_HLSLI

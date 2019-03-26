@@ -269,6 +269,29 @@ public:
       //gmtl::meta::AssignVecUnrolled<SIZE-1, VecBase<DATA_TYPE,SIZE> >::func(*this, rVec);
       return *this;
    }
+
+   template<class DATA_TYPE2, unsigned SIZE2, typename REP2>
+   inline VecType& operator=(const VecBase<DATA_TYPE2, SIZE2, REP2>& rhs)
+   {
+       for (unsigned i = 0; i < SIZE; ++i)
+       {
+           mData[i] = (i >= SIZE2 ? (DATA_TYPE)-1 : (DATA_TYPE)rhs[i]);
+       }
+
+       return *this;
+   }
+
+   inline VecType& operator=(const DATA_TYPE& rhs)
+   {
+       mData[0] = rhs;
+
+       for (unsigned i = 1; i < SIZE; ++i)
+       {
+           mData[i] = (DATA_TYPE)-1;
+       }
+
+       return *this;
+   }
 #endif
 
    /*

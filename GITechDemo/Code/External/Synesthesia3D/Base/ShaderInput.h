@@ -302,7 +302,37 @@ namespace Synesthesia3D
          */
         SYNESTHESIA3D_DLL void  SetMatrix4x4(const unsigned int handle, const Matrix44f data);
         //////////////////////////////////////////////////////////////////
-        
+
+        /**
+         * @brief   Sets a structure using a shader constant handle.
+         *
+         * @param[in]   handle  Handle for the shader constant obtained from @ref GetInputHandleByName().
+         * @param[in]   data    Structure data.
+         */
+        template < typename T >
+        inline  void    SetStruct(const unsigned int handle, const T& data);
+
+        /**
+         * @brief   Sets an array of structures using a shader constant handle.
+         *
+         * @param[in]   handle  Handle for the shader constant obtained from @ref GetInputHandleByName().
+         * @param[in]   data    Array of structures.
+         */
+        template < typename T >
+        inline  void    SetStructArray(const unsigned int handle, const T* const data);
+        //////////////////////////////////////////////////////////////////
+
+        /**
+         * @brief   Sets an array of structures using a shader constant handle.
+         *
+         * @param[in]   handle  Handle for the shader constant obtained from @ref GetInputHandleByName().
+         * @param[in]   data    Array of structures.
+         *
+         * @note This can be used with a generic buffer when you don't have type information (e.g. received a void pointer to an already populated struct from external code and passing it on)
+         */
+        SYNESTHESIA3D_DLL void    SetStructArray(const unsigned int handle, const void* const data);
+        //////////////////////////////////////////////////////////////////
+
         /**
          * @brief   Retrieves the texture object that is set in the shader constant corresponding to the supplied handle.
          *
@@ -310,7 +340,7 @@ namespace Synesthesia3D
          *
          * @return  Texture bound to specified shader input handle.
          */
-        SYNESTHESIA3D_DLL Texture* const    GetTexture(const unsigned int handle) const;
+        SYNESTHESIA3D_DLL Texture* const        GetTexture(const unsigned int handle) const;
         
         /**
          * @brief   Retrieves the bool value that is set in the shader constant corresponding to the supplied handle.
@@ -441,7 +471,7 @@ namespace Synesthesia3D
          * @return  Matrix bound to specified shader input handle.
          */
         template < typename T, const unsigned int ROWS, const unsigned int COLS >
-        inline  const Matrix<T, ROWS, COLS>     GetMatrix(const unsigned int handle, const unsigned int idx = 0) const;
+        inline  const Matrix<T, ROWS, COLS>         GetMatrix(const unsigned int handle, const unsigned int idx = 0) const;
         
         /**
          * @brief   Retrieves the matrix of floats with ROWS rows and COLS columns that is set in the shader constant corresponding to the supplied handle.
@@ -452,7 +482,7 @@ namespace Synesthesia3D
          * @return  Matrix of float values bound to specified shader input handle.
          */
         template < const unsigned int ROWS, const unsigned int COLS >
-        inline  const Matrix<float, ROWS, COLS> GetMatrix(const unsigned int handle, const unsigned int idx = 0) const;
+        inline  const Matrix<float, ROWS, COLS>     GetMatrix(const unsigned int handle, const unsigned int idx = 0) const;
         
         /**
          * @brief   Retrieves the 3x3 matrix of floats with ROWS rows and COLS columns that is set in the shader constant corresponding to the supplied handle.
@@ -473,7 +503,18 @@ namespace Synesthesia3D
          * @return  4x4 matrix of float values bound to specified shader input handle.
          */
         SYNESTHESIA3D_DLL const Matrix44f           GetMatrix4x4(const unsigned int handle, const unsigned int idx = 0) const;
-        
+
+        /**
+         * @brief   Retrieves the structure that is set in the shader constant corresponding to the supplied handle.
+         *
+         * @param[in]   handle  Handle for the shader constant obtained from @ref GetInputHandleByName().
+         * @param[in]   idx     Index in the array (where applicable).
+         *
+         * @return  Structure data bound to specified shader input handle.
+         */
+        template < typename T >
+        inline  const T&                            GetStruct(const unsigned int handle, const unsigned int idx = 0) const;
+
         /**
          * @brief   Retrieves the number of shader constants managed by this shader input object.
          *

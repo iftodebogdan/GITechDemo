@@ -567,3 +567,15 @@ const ShaderInputDesc& ShaderInput::GetInputDesc(const unsigned int handle) cons
     assert(handle < GetInputCount());
     return m_pShaderProgram->m_arrInputDesc[handle];
 }
+
+inline void ShaderInput::SetStructArray(const unsigned int handle, const void* const data)
+{
+    assert(handle < m_pShaderProgram->m_arrInputDesc.size());
+    const ShaderInputDesc& desc = m_pShaderProgram->m_arrInputDesc[handle];
+    assert(desc.eInputType == IT_STRUCT);
+    memcpy(
+        m_pData + desc.nOffsetInBytes,
+        data,
+        desc.nBytes
+    );
+}

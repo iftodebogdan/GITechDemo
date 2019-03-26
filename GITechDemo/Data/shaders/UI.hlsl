@@ -19,9 +19,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-// Vertex shader /////////////////////////////////////////////////
-const float4x4 f44UIProjMat;
+#include "Common.hlsli"
 
+struct UIConstantTable
+{
+    CB_float4x4 ProjMat;
+    CB_uint TextureSwitch;
+    CB_uint MipLevel;
+    CB_uint FaceIdx;
+    CB_float DepthSlice;
+};
+
+#ifdef HLSL
 struct VSOut
 {
     float4  f4Position  :   SV_POSITION;
@@ -29,56 +38,62 @@ struct VSOut
     float4  f4Color     :   COLOR;
 };
 
+cbuffer UIResourceTable
+{
+    sampler1D UITexture1D;
+    sampler2D UITexture2D; // Usually font texture
+    sampler3D UITexture3D;
+    samplerCUBE UITextureCube;
+
+    UIConstantTable UIParams;
+};
+
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
 void vsmain(float2 f4Position : POSITION, float4 f4Color : COLOR, float2 f2TexCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = mul(f44UIProjMat, float4(f4Position, 0.f, 1.f));
+    output.f4Position = mul(UIParams.ProjMat, float4(f4Position, 0.f, 1.f));
     output.f2TexCoord = f2TexCoord;
     output.f4Color = f4Color;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler1D texUI1D;
-const sampler2D texUI2D; // Usually font texture
-const sampler3D texUI3D;
-const samplerCUBE texUICube;
-
-const unsigned int nUseTexUI;
-const unsigned int nUIMipLevel;
-const unsigned int nUIFaceIdx;
-const float fUIDepthSlice;
-
+#ifdef PIXEL
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
-    switch (nUseTexUI)
+    switch (UIParams.TextureSwitch)
     {
     case 1:
-        f4Color = tex1Dlod(texUI1D, float4(input.f2TexCoord.x, 0, 0, nUIMipLevel)) * input.f4Color; break;
+        f4Color = tex1Dlod(UITexture1D, float4(input.f2TexCoord.x, 0, 0, UIParams.MipLevel)) * input.f4Color; break;
     case 2:
-        f4Color = tex2Dlod(texUI2D, float4(input.f2TexCoord, 0, nUIMipLevel)) * input.f4Color; break;
+        f4Color = tex2Dlod(UITexture2D, float4(input.f2TexCoord, 0, UIParams.MipLevel)) * input.f4Color; break;
     case 3:
-        f4Color = tex3Dlod(texUI3D, float4(input.f2TexCoord, fUIDepthSlice, nUIMipLevel)) * input.f4Color; break;
+        f4Color = tex3Dlod(UITexture3D, float4(input.f2TexCoord, UIParams.DepthSlice, UIParams.MipLevel)) * input.f4Color; break;
     case 4:
         const float2 cubeUV = input.f2TexCoord * 2.f - 1.f;
-        switch (nUIFaceIdx)
+        switch (UIParams.FaceIdx)
         {
         default:
         case 0:
-            f4Color = texCUBElod(texUICube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), UIParams.MipLevel)) * input.f4Color; break;
         case 1:
-            f4Color = texCUBElod(texUICube, float4(cubeUV.x, 1.f, cubeUV.y, nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(cubeUV.x, 1.f, cubeUV.y, UIParams.MipLevel)) * input.f4Color; break;
         case 2:
-            f4Color = texCUBElod(texUICube, float4(cubeUV.x, -1.f, -cubeUV.y, nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(cubeUV.x, -1.f, -cubeUV.y, UIParams.MipLevel)) * input.f4Color; break;
         case 3:
-            f4Color = texCUBElod(texUICube, float4(cubeUV * float2(1.f, -1.f), 1.f, nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(cubeUV * float2(1.f, -1.f), 1.f, UIParams.MipLevel)) * input.f4Color; break;
         case 4:
-            f4Color = texCUBElod(texUICube, float4(1.f, -cubeUV.yx, nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(1.f, -cubeUV.yx, UIParams.MipLevel)) * input.f4Color; break;
         case 5:
-            f4Color = texCUBElod(texUICube, float4(-cubeUV, -1.f, nUIMipLevel)) * input.f4Color; break;
+            f4Color = texCUBElod(UITextureCube, float4(-cubeUV, -1.f, UIParams.MipLevel)) * input.f4Color; break;
         };
         break;
     default:
         f4Color = input.f4Color; break;
     };
 }
+#endif // PIXEL
+#endif // HLSL
 ////////////////////////////////////////////////////////////////////

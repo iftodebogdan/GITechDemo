@@ -19,6 +19,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#ifndef RSMCOMMON_HLSLI
+#define RSMCOMMON_HLSLI
+
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
@@ -136,3 +139,5 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
             pow(length(f3DeltaPos), 4.f);
     }
 }
+
+#endif // RSMCOMMON_HLSLI

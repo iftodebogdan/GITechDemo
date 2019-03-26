@@ -164,10 +164,10 @@ namespace GITechDemoApp
         Vec<bool, 3u> m_bChannelMask;
 
         // Placeholder textures
-        s3dSampler m_nDummyTex1DIdx;
-        s3dSampler m_nDummyTex2DIdx;
-        s3dSampler m_nDummyTex3DIdx;
-        s3dSampler m_nDummyTexCubeIdx;
+        Synesthesia3D::s3dSampler m_nDummyTex1DIdx;
+        Synesthesia3D::s3dSampler m_nDummyTex2DIdx;
+        Synesthesia3D::s3dSampler m_nDummyTex3DIdx;
+        Synesthesia3D::s3dSampler m_nDummyTexCubeIdx;
         Synesthesia3D::Texture* m_pDummyTex1D;
         Synesthesia3D::Texture* m_pDummyTex2D;
         Synesthesia3D::Texture* m_pDummyTex3D;
