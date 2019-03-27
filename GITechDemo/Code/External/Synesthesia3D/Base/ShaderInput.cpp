@@ -579,3 +579,8 @@ inline void ShaderInput::SetStructArray(const unsigned int handle, const void* c
         desc.nBytes
     );
 }
+
+ShaderProgram* const ShaderInput::GetAssociatedShaderProgram() const
+{
+    return m_pShaderProgram;
+}

@@ -360,6 +360,23 @@ namespace GITechDemoApp
     {
         PUSH_PROFILE_MARKER(szDesc.c_str());
 
+        CommitShaderInputsInternal();
+
+        pVertexShaderProg->Enable(pVertexShaderInput);
+        pPixelShaderProg->Enable(pPixelShaderInput);
+    }
+
+    void Shader::CommitShaderInputs()
+    {
+        CommitShaderInputsInternal();
+        pVertexShaderProg->CommitShaderInput(pVertexShaderInput);
+        pPixelShaderProg->CommitShaderInput(pPixelShaderInput);
+    }
+
+    void Shader::CommitShaderInputsInternal()
+    {
+        PUSH_PROFILE_MARKER((szDesc + " - CommitShaderInputs()").c_str());
+
         for (unsigned int i = 0; i < arrConstantList.size(); i++)
         {
             ShaderInput* shdInput = nullptr;
@@ -596,8 +613,7 @@ namespace GITechDemoApp
             }
         }
 
-        pVertexShaderProg->Enable(pVertexShaderInput);
-        pPixelShaderProg->Enable(pPixelShaderInput);
+        POP_PROFILE_MARKER();
     }
 
     void Shader::Disable()

@@ -237,6 +237,7 @@ namespace GITechDemoApp
 
         void Enable();
         void Disable();
+        void CommitShaderInputs();
 
     protected:
         struct ShaderConstantInstance
@@ -252,6 +253,8 @@ namespace GITechDemoApp
 
         const bool Init();
         void Free();
+
+        void CommitShaderInputsInternal();
 
         void operator= (const Shader& lhs) { assert(0); }
 

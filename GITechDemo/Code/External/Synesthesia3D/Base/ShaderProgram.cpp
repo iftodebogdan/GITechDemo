@@ -94,9 +94,42 @@ const unsigned int ShaderProgram::GetTotalSizeOfInputConstants() const
 void ShaderProgram::Enable(ShaderInput* const shaderInput)
 {
     assert(m_pShaderInput == nullptr); // Was this shader enabled twice without disabling first?
+    CommitShaderInput(shaderInput);
+}
+
+void ShaderProgram::Disable()
+{
+    //assert((m_pShaderInput && m_arrInputDesc.size()) || (!m_pShaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
+
+    for (unsigned int i = 0, n = (unsigned int)m_arrInputDesc.size(); i < n; i++)
+    {
+        if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
+        {
+            const unsigned int texIdx = *(unsigned int*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+            const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
+            if (tex)
+                tex->Disable(m_arrInputDesc[i].nRegisterIndex);
+        }
+    }
+
+    m_pShaderInput = nullptr;
+}
+
+void ShaderProgram::Enable(ShaderInput& shaderInput)
+{
+    Enable(&shaderInput);
+}
+
+void ShaderProgram::CommitShaderInput(ShaderInput* const shaderInput)
+{
+    assert(shaderInput != nullptr);
+    assert(shaderInput->GetAssociatedShaderProgram() == this);
     //assert((shaderInput && m_arrInputDesc.size()) || (!shaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
 
-    m_pShaderInput = shaderInput;
+    if(shaderInput != nullptr)
+        m_pShaderInput = shaderInput;
+
+    assert(m_pShaderInput != nullptr);
 
     for (unsigned int i = 0, n = (unsigned int)m_arrInputDesc.size(); i < n; i++)
     {
@@ -107,7 +140,7 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
             SetValue(
                 m_arrInputDesc[i].eRegisterType,
                 m_arrInputDesc[i].nRegisterIndex,
-                shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes,
+                m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes,
                 m_arrInputDesc[i].nRegisterCount
             );
         }
@@ -115,12 +148,12 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
         {
             if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
             {
-                const unsigned int texIdx = *(unsigned int*)(shaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
+                const unsigned int texIdx = *(unsigned int*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
                 const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
 
                 if (tex)
                 {
-                    if(strlen(tex->GetSourceFileName()))
+                    if (strlen(tex->GetSourceFileName()))
                         PUSH_PROFILE_MARKER(tex->GetSourceFileName());
 
                     tex->Enable(m_arrInputDesc[i].nRegisterIndex);
@@ -146,27 +179,14 @@ void ShaderProgram::Enable(ShaderInput* const shaderInput)
     }
 }
 
-void ShaderProgram::Disable()
+void ShaderProgram::CommitShaderInput(ShaderInput& shaderInput)
 {
-    //assert((m_pShaderInput && m_arrInputDesc.size()) || (!m_pShaderInput && !m_arrInputDesc.size()) || (Renderer::GetAPI() == API_NULL));
-
-    for (unsigned int i = 0, n = (unsigned int)m_arrInputDesc.size(); i < n; i++)
-    {
-        if (m_arrInputDesc[i].eInputType >= IT_SAMPLER && m_arrInputDesc[i].eInputType <= IT_SAMPLERCUBE)
-        {
-            const unsigned int texIdx = *(unsigned int*)(m_pShaderInput->GetData() + m_arrInputDesc[i].nOffsetInBytes);
-            const Texture* const tex = texIdx != -1 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texIdx) : nullptr;
-            if (tex)
-                tex->Disable(m_arrInputDesc[i].nRegisterIndex);
-        }
-    }
-
-    m_pShaderInput = nullptr;
+    CommitShaderInput(&shaderInput);
 }
 
-void ShaderProgram::Enable(ShaderInput& shaderInput)
+void ShaderProgram::CommitShaderInput()
 {
-    Enable(&shaderInput);
+    CommitShaderInput(nullptr);
 }
 
 const std::vector<ShaderInputDesc> ShaderProgram::GetConstantTable()

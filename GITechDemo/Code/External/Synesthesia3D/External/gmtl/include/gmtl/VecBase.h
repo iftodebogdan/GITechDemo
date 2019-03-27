@@ -155,6 +155,16 @@ public:
    /**
     * Creates a new VecBase initialized to the given values.
     */
+   VecBase(const DATA_TYPE& val)
+   {
+#ifdef GMTL_COUNT_CONSTRUCT_CALLS
+      gmtl::helpers::VecCtrCounterInstance()->inc();
+#endif
+      GMTL_STATIC_ASSERT( SIZE == 1, Invalid_constructor_of_size_1_used);
+      mData[0] = val;
+      for(unsigned i=1;i<SIZE;++i)
+      {  mData[i] = (DATA_TYPE)0; }
+   }
    VecBase(const DATA_TYPE& val0,const DATA_TYPE& val1)
    {
 #ifdef GMTL_COUNT_CONSTRUCT_CALLS
@@ -162,6 +172,8 @@ public:
 #endif
       GMTL_STATIC_ASSERT( SIZE == 2, Invalid_constructor_of_size_2_used);
       mData[0] = val0; mData[1] = val1;
+      for(unsigned i=2;i<SIZE;++i)
+      {  mData[i] = (DATA_TYPE)0; }
    }
    VecBase(const DATA_TYPE& val0,const DATA_TYPE& val1,const DATA_TYPE& val2)
    {
@@ -170,6 +182,8 @@ public:
 #endif
       GMTL_STATIC_ASSERT( SIZE == 3, Invalid_constructor_of_size_3_used );
       mData[0] = val0;  mData[1] = val1;  mData[2] = val2;
+      for(unsigned i=3;i<SIZE;++i)
+      {  mData[i] = (DATA_TYPE)0; }
    }
    VecBase(const DATA_TYPE& val0,const DATA_TYPE& val1,const DATA_TYPE& val2,const DATA_TYPE& val3)
    {
@@ -275,7 +289,7 @@ public:
    {
        for (unsigned i = 0; i < SIZE; ++i)
        {
-           mData[i] = (i >= SIZE2 ? (DATA_TYPE)-1 : (DATA_TYPE)rhs[i]);
+           mData[i] = (i >= SIZE2 ? (DATA_TYPE)0 : (DATA_TYPE)rhs[i]);
        }
 
        return *this;
@@ -287,7 +301,7 @@ public:
 
        for (unsigned i = 1; i < SIZE; ++i)
        {
-           mData[i] = (DATA_TYPE)-1;
+           mData[i] = (DATA_TYPE)0;
        }
 
        return *this;

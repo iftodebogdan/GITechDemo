@@ -59,6 +59,25 @@ namespace Synesthesia3D
         virtual SYNESTHESIA3D_DLL void Disable();
 
         /**
+         * @brief   Invalidates the state of the constant tables on the GPU and uploads the updated data as provided via the @ref ShaderInput object
+         *
+         * @param[in]   shaderInput     Pointer to a @ref ShaderInput object matching this shader binary.
+         */
+                SYNESTHESIA3D_DLL void CommitShaderInput(ShaderInput* const shaderInput);
+
+        /**
+         * @brief   Invalidates the state of the constant tables on the GPU and uploads the updated data as provided via the @ref ShaderInput object
+         *
+         * @param[in]   shaderInput     Reference to a @ref ShaderInput object matching this shader binary.
+         */
+                SYNESTHESIA3D_DLL void CommitShaderInput(ShaderInput& shaderInput);
+
+        /**
+         * @brief   Invalidates the state of the constant tables on the GPU and uploads the updated data as provided via the @ref ShaderInput object when calling @ref ShaderProgram::Enable()
+         */
+                SYNESTHESIA3D_DLL void CommitShaderInput();
+
+        /**
          * @brief   Retrieves the constant table.
          */
                 SYNESTHESIA3D_DLL const std::vector<ShaderInputDesc> GetConstantTable();

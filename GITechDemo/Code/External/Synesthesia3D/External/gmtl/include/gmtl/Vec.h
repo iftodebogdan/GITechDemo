@@ -85,6 +85,12 @@ public:
    /**
     * Creates a new Vec initialized to the given values.
     */
+   Vec(const DATA_TYPE& val)
+       : BaseType(val)
+   {
+       GMTL_STATIC_ASSERT(SIZE == 1, Out_Of_Bounds_Element_Access_In_Vec);
+   }
+
    Vec(const DATA_TYPE& val0,const DATA_TYPE& val1)
    : BaseType(val0, val1)
    {

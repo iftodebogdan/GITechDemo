@@ -29,8 +29,9 @@ namespace gmtl
  * @param   msg      the message to display if expr is zero; msg cannot
  *                   contain spaces!
  */
-#define GMTL_STATIC_ASSERT(expr, msg) \
-   { gmtl::CompileTimeError<((expr) != 0)> ERROR_##msg; (void)ERROR_##msg; }
+//#define GMTL_STATIC_ASSERT(expr, msg) \
+//   { gmtl::CompileTimeError<((expr) != 0)> ERROR_##msg; (void)ERROR_##msg; }
+#define GMTL_STATIC_ASSERT(expr, msg) ((void)0)
 
 // -- OLD Static assert --- //
 // -- To be used if the new one causes problems -- //

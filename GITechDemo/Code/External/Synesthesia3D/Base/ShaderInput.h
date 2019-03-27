@@ -553,6 +553,13 @@ namespace Synesthesia3D
         SYNESTHESIA3D_DLL const ShaderInputDesc&    GetInputDesc(const unsigned int handle) const;
         //////////////////////////////////////////////////////////////////
 
+        /**
+         * @brief   Retrieves a pointer to the shader program associated with this input buffer.
+         *
+         * @return  Pointer to the @ref ShaderProgram corresponding to this @ref ShaderInput object
+         */
+        SYNESTHESIA3D_DLL ShaderProgram* const      GetAssociatedShaderProgram() const;
+
     protected:
         
         /**

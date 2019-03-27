@@ -221,6 +221,24 @@ void UIPass::Update(const float fDeltaTime)
 
     SetupUI();
     GenerateDrawData();
+
+    HLSL::UITexture1D = m_nDummyTex1DIdx;
+    HLSL::UITexture2D = m_nFontTextureIdx;
+    HLSL::UITexture3D = m_nDummyTex3DIdx;
+    HLSL::UITextureCube = m_nDummyTexCubeIdx;
+
+    const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
+    HLSL::UIParams->ProjMat.set(
+        2.0f / (R - L), 0.0f, 0.0f, (L + R) / (L - R),
+        0.0f, 2.0f / (T - B), 0.0f, (T + B) / (B - T),
+        0.0f, 0.0f, 0.5f, 0.5f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+
+    HLSL::UIParams->TextureSwitch = 2;
+    HLSL::UIParams->MipLevel = m_nSelectedMip;
+    HLSL::UIParams->FaceIdx = m_nSelectedFace;
+    HLSL::UIParams->DepthSlice = m_fSelectedSlice;
 }
 
 void UIPass::Draw()
@@ -970,9 +988,6 @@ void UIPass::GenerateDrawData()
     }
 }
 
-#include <ShaderInput.h>
-#include <ShaderProgram.h>
-
 void UIPass::RenderUI()
 {
     Renderer* RenderContext = Renderer::GetInstance();
@@ -1009,26 +1024,8 @@ void UIPass::RenderUI()
     RSMgr->SetScissorEnabled(true);
     RSMgr->SetCullMode(CULL_NONE);
 
-    HLSL::UITexture1D = m_nDummyTex1DIdx;
-    HLSL::UITexture2D = m_nFontTextureIdx;
-    HLSL::UITexture3D = m_nDummyTex3DIdx;
-    HLSL::UITextureCube = m_nDummyTexCubeIdx;
-
-    ImGuiIO& io = ImGui::GetIO();
-    const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
-    HLSL::UIParams->ProjMat.set(
-        2.0f / (R - L),         0.0f,           0.0f,   (L + R) / (L - R),
-            0.0f,           2.0f / (T - B),     0.0f,   (T + B) / (B - T),
-            0.0f,               0.0f,           0.5f,         0.5f,
-            0.0f,               0.0f,           0.0f,         1.0f
-    );
-
-    HLSL::UIParams->TextureSwitch = 2;
-    HLSL::UIParams->MipLevel = m_nSelectedMip;
-    HLSL::UIParams->FaceIdx = m_nSelectedFace;
-    HLSL::UIParams->DepthSlice = m_fSelectedSlice;
-
     // Render geometry
+    UIShader.Enable();
     for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[nRenderBufferIdx].CmdList.size(); n++)
     {
         const UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[nRenderBufferIdx].CmdList[n];
@@ -1037,6 +1034,8 @@ void UIPass::RenderUI()
             const UIDrawData::UIDrawCommandList::UIDrawCommand& cmd = cmdList.DrawCmd[i];
             RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
             RSMgr->SetSRGBWriteEnabled(((Synesthesia3D::Texture*)cmd.Texture)->GetSRGBEnabled());
+
+            const bool invalidateShaderConstants = (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || HLSL::UITexture2D != m_nFontTextureIdx || HLSL::UIParams->TextureSwitch != (CB_uint)2);
 
             if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
             {
@@ -1066,15 +1065,17 @@ void UIPass::RenderUI()
                 HLSL::UITextureCube = (Synesthesia3D::Texture*)cmd.Texture;
                 break;
             }
+            
+            if (invalidateShaderConstants)
+                UIShader.CommitShaderInputs();
 
-            UIShader.Enable();
             RenderContext->DrawVertexBuffer(m_pImGuiVb[nRenderBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
-            UIShader.Disable();
 
             idxOffset += cmd.ElemCount;
         }
         vtxOffset += cmdList.VtxBufferSize;
     }
+    UIShader.Disable();
 
     // Revert render states
     RSMgr->SetSRGBWriteEnabled(sRGBEnabled);
