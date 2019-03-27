@@ -59,7 +59,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     // from ruining mip chain of light accumulation buffer.
     if (bApplyTonemap)
     {
-        f4Color.rgb /= (1.f + dot(LUMINANCE_VECTOR, f4Color.rgb));
+        f4Color.rgb /= (1.f + dot(LUMA_COEF, f4Color.rgb));
         f4Color.rgb = saturate(f4Color.rgb);
     }
 }

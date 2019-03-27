@@ -126,7 +126,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     // NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()
     //f4Color = float4(pow(abs(f3FinalColor), 1.f / 2.2f), 1);
     // Encode gamma-corrected luma in the alpha channel for FXAA
-    f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMINANCE_VECTOR)), 1.f / 2.2f));
+    f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMA_COEF)), 1.f / 2.2f));
 
     // Film grain needs to be applied after tonemapping, so as not to be affected by exposure variance
     if(fFilmGrainAmount > 0.f)

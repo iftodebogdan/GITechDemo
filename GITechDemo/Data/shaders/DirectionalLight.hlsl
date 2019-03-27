@@ -254,7 +254,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     // CSM debug
     if (bDebugCascades)
     {
-        const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
+        const float fBrightness = dot(f4Color.rgb, LUMA_COEF);
         f4Color += float4(nValidCascade % 3 == 0, nValidCascade % 3 == 1, nValidCascade % 3 == 2, 0.f) * fBrightness * 0.5f;
         if (fBlendAmount > 0.f)
         {

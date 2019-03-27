@@ -138,7 +138,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
             const float fSampleDofBlurFactor = f4Sample.a * 2.f - 1.f;
 
             // Calculate sample weight
-            const float fLuma   = dot(f4Sample.rgb, LUMINANCE_VECTOR);
+            const float fLuma   = dot(f4Sample.rgb, LUMA_COEF);
             const float fWeight =
                 max((fLuma > fHighlightThreshold) * fHighlightGain * abs(fDofBlurFactor), 1.f) *    // Luma threshold for applying highlight gain (more prominent bokeh)
                 saturate(fSampleDofBlurFactor * fDofBlurFactor);            // Weight based on CoC values of center and sampled points,

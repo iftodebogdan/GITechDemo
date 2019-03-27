@@ -138,12 +138,12 @@ float4 Downsample2x2(sampler2D tex, float2 texCoord, float2 texelSize)
 
 
 //////////////////////////////////////////
-// Luminance vectors                    //
+// Luma coefficients                    //
 // http://stackoverflow.com/a/24213274  //
 //////////////////////////////////////////
-#define ITUR_LUMA_VEC (float3(0.2125f, 0.7154f, 0.0721f))
-#define CCIR601_LUMA_VEC (float3(0.299f, 0.587f, 0.114f))
-#define LUMINANCE_VECTOR CCIR601_LUMA_VEC
+#define REC709_LUMA_COEF (float3(0.2126f, 0.7152f, 0.0722f))
+#define REC601_LUMA_COEF (float3(0.299f, 0.587f, 0.114f))
+#define LUMA_COEF REC601_LUMA_COEF
 ////////////////////////////////////////////////////////////////
 
 

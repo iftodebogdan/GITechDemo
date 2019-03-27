@@ -82,7 +82,7 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
         if (bApplyBrightnessFilter)
         {
-            const float fBrightness = dot(f4Color.rgb, LUMINANCE_VECTOR);
+            const float fBrightness = dot(f4Color.rgb, LUMA_COEF);
             f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
             //f4Color.rgb /= fBrightness;
             f4Color.rgb /= 1.f + fBrightness;
