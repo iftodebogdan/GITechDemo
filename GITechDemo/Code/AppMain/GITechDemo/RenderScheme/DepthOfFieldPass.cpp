@@ -83,9 +83,9 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 
     texTargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
-    bSingleChannelCopy = false;
-    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
-    bApplyTonemap = false;
+    HLSL::ColorCopyParams->SingleChannelCopy = false;
+    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
 void DepthOfFieldPass::AutofocusPass()
@@ -222,17 +222,18 @@ void DepthOfFieldPass::ApplyDoF()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    f2HalfTexelOffset = Vec2f(
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-        );
     f4TexSize = Vec4f(
         (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
         1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
     );
-    texSource = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
+
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+    );
+    HLSL::ColorCopySourceTexture = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

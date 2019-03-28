@@ -537,7 +537,17 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fLensDirtIntensity,       float,          0.3f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fLensStarBurstIntensity,  float,          0.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fAnamorphicIntensity,     float,          5.f                     );
-    
+
+    // ColorCopy.hlsl
+    CREATE_SHADER_CONSTANT_OBJECT(ColorCopySourceTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(ColorCopyParams, ColorCopyConstantTable);
+
+    // UI.hlsl
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture1D, s3dSampler1D);
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture2D, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(UITexture3D, s3dSampler3D);
+    CREATE_SHADER_CONSTANT_OBJECT(UITextureCube, s3dSamplerCUBE);
+    CREATE_SHADER_CONSTANT_OBJECT(UIParams, UIConstantTable);
     //------------------------------------------------------
 
 
@@ -633,11 +643,6 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
     CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
     CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture1D,                  s3dSampler1D    );
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture2D,                  s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture3D,                  s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_OBJECT(UITextureCube,                s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_OBJECT(UIParams,                     UIConstantTable);
 
     //--------------------------------------------------------------------------
 

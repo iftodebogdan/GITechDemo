@@ -72,9 +72,9 @@ void SSAOPass::Update(const float fDeltaTime)
         BlurKernelCount = SSAO_BLUR_KERNEL_COUNT;
     }
 
-    bSingleChannelCopy = true;
-    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
-    bApplyTonemap = false;
+    HLSL::ColorCopyParams->SingleChannelCopy = true;
+    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
 // Generate ambient occlusion buffer
@@ -196,14 +196,14 @@ void SSAOPass::ApplySSAO()
     RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ZERO);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
         0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
         0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
         );
     ResourceMgr->GetTexture(
         SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    texSource = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopySourceTexture = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

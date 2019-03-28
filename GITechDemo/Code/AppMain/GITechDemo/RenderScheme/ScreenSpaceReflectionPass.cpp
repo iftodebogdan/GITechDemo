@@ -86,14 +86,14 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     ltAccBufCopy->SetBorderColor(Vec4f(0.f, 0.f, 0.f, 0.f));
     ltAccBufCopy->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 
-    f2HalfTexelOffset = Vec2f(0.5f / m_pLightAccumulationBufferCopyRT->GetWidth(), 0.5f / m_pLightAccumulationBufferCopyRT->GetHeight());
-    texSource = ltAccBuf->GetColorBuffer();
-    bSingleChannelCopy = false;
-    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / m_pLightAccumulationBufferCopyRT->GetWidth(), 0.5f / m_pLightAccumulationBufferCopyRT->GetHeight());
+    HLSL::ColorCopySourceTexture = ltAccBuf->GetColorBuffer();
+    HLSL::ColorCopyParams->SingleChannelCopy = false;
+    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
 
     // Normally, tonemapping shouldn't be required, but it's to make the SSR
     // roughly the same intensity as the fallback cubemap reflection.
-    bApplyTonemap = true;
+    HLSL::ColorCopyParams->ApplyTonemap = true;
 
     texHDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
     texLinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
@@ -153,7 +153,7 @@ void ScreenSpaceReflectionPass::CopyLightAccumulationBuffer()
     RenderState* RenderStateManager = RenderContext->GetRenderStateManager();
     const bool blendEnabled = RenderStateManager->GetColorBlendEnabled();
     RenderStateManager->SetColorBlendEnabled(false);
-    
+
     m_pLightAccumulationBufferCopyRT->Enable();
 
     ColorCopyShader.Enable();

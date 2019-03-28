@@ -73,12 +73,10 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
         1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
-    bSingleChannelCopy = true;
     DIR_LIGHT_VOLUME_COLOR[0] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[0], 0.f, 1.f);
     DIR_LIGHT_VOLUME_COLOR[1] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[1], 0.f, 1.f);
     DIR_LIGHT_VOLUME_COLOR[2] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[2], 0.f, 1.f);
     DIR_LIGHT_VOLUME_COLOR[3] = 1.f;
-    f4CustomColorModulator = DIR_LIGHT_VOLUME_COLOR;
     BayerMatrix.GetTexture()->SetAddressingMode(SAM_WRAP);
     BayerMatrix.GetTexture()->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     texDitherMap = BayerMatrix.GetTextureIndex();
@@ -87,7 +85,10 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     texNoise = NoiseTexture.GetTextureIndex();
     fElapsedTime += fDeltaTime;
     f3FogBox = Vec3f(CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH);
-    bApplyTonemap = false;
+
+    HLSL::ColorCopyParams->SingleChannelCopy = true;
+    HLSL::ColorCopyParams->CustomColorModulator = DIR_LIGHT_VOLUME_COLOR;
+    HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
 void DirectionalLightVolumePass::CalculateLightVolume()
@@ -221,7 +222,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 
     //LightAccumulationBuffer.Enable();
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
         );
@@ -241,7 +242,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
     ResourceMgr->GetTexture(
         VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
         )->SetAddressingMode(SAM_CLAMP);
-    texSource = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopySourceTexture = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
     texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
     texQuarterDepthBuffer = HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
 

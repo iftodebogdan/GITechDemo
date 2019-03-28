@@ -38,6 +38,7 @@
 
 namespace GITechDemoApp
 {
+    #include "ColorCopy.hlsl"
     #include "UI.hlsl"
 
     using namespace Synesthesia3D;
@@ -383,6 +384,10 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f44ViewToRasterMat,       Matrix44f       );
     CREATE_SHADER_CONSTANT_HANDLE(bUseDither,               bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity,     float           );
+
+    //  - ColorCopy.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(ColorCopySourceTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(ColorCopyParams, ColorCopyConstantTable);
     //-------------------------------------------------------
 
     #define STRINGIZE_HELPER(x) #x

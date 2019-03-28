@@ -67,10 +67,11 @@ void BloomPass::Update(const float fDeltaTime)
 
     nDownsampleFactor = 1;
     bApplyBrightnessFilter = true;
-    bSingleChannelCopy = false;
-    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     bDepthDownsample = false;
-    bApplyTonemap = false;
+
+    HLSL::ColorCopyParams->SingleChannelCopy = false;
+    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
 // Apply a brightness filter to the downsampled HDR scene color buffer
@@ -202,11 +203,11 @@ void BloomPass::BloomApply()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    f2HalfTexelOffset = Vec2f(0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetHeight());
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
         BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    texSource = BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopySourceTexture = BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

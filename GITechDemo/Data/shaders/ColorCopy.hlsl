@@ -21,8 +21,21 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct ColorCopyConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_bool SingleChannelCopy;
+    CB_float4 CustomColorModulator;
+    CB_bool ApplyTonemap;
+};
+
+#ifdef HLSL
+cbuffer ColorCopyResourceTable
+{
+    const sampler2D ColorCopySourceTexture; // The texture to be copied
+
+    ColorCopyConstantTable ColorCopyParams;
+};
 
 struct VSOut
 {
@@ -30,37 +43,37 @@ struct VSOut
     float2  f2TexCoord  :   TEXCOORD0;
 };
 
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
 void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
 {
     output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + ColorCopyParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource; // The texture to be copied
-
-const bool bSingleChannelCopy;
-const float4 f4CustomColorModulator;
-const bool bApplyTonemap;
-
+#ifdef PIXEL
 void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 {
     // Simple color texture copy onto a color render target
-    if(bSingleChannelCopy)
+    if(ColorCopyParams.SingleChannelCopy)
         // For use with single channel textures (e.g. SSAO buffer)
-        f4Color = tex2D(texSource, input.f2TexCoord).rrrr;
+        f4Color = tex2D(ColorCopySourceTexture, input.f2TexCoord).rrrr;
     else
-        f4Color = tex2D(texSource, input.f2TexCoord);
+        f4Color = tex2D(ColorCopySourceTexture, input.f2TexCoord);
 
-    f4Color *= f4CustomColorModulator;
+    f4Color *= ColorCopyParams.CustomColorModulator;
 
     // Tonemapping, mainly used by SSR to prevent specular highlights
     // from ruining mip chain of light accumulation buffer.
-    if (bApplyTonemap)
+    if (ColorCopyParams.ApplyTonemap)
     {
         f4Color.rgb /= (1.f + dot(LUMA_COEF, f4Color.rgb));
         f4Color.rgb = saturate(f4Color.rgb);
     }
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

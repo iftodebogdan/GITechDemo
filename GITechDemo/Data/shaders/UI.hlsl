@@ -31,13 +31,6 @@ struct UIConstantTable
 };
 
 #ifdef HLSL
-struct VSOut
-{
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
-    float4  f4Color     :   COLOR;
-};
-
 cbuffer UIResourceTable
 {
     sampler1D UITexture1D;
@@ -46,6 +39,13 @@ cbuffer UIResourceTable
     samplerCUBE UITextureCube;
 
     UIConstantTable UIParams;
+};
+
+struct VSOut
+{
+    float4  f4Position  :   SV_POSITION;
+    float2  f2TexCoord  :   TEXCOORD0;
+    float4  f4Color     :   COLOR;
 };
 
 // Vertex shader /////////////////////////////////////////////////
@@ -95,5 +95,5 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     };
 }
 #endif // PIXEL
-#endif // HLSL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

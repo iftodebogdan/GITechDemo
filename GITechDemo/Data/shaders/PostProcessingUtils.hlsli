@@ -24,6 +24,8 @@
 
 #include "Common.hlsli"
 
+#ifdef HLSL
+
 //////////////////////////////////////////////////////////
 // Hardcoded mip level when sampling from textures to   //
 // prevent the GPU from calculating ddx(), ddy() for    //
@@ -167,5 +169,7 @@ float GetDitherAmount(float2 texelIdx)
 {
     return tex2D(texDitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
 }
+
+#endif // HLSL
 
 #endif // POSTPROCESSINGUTILS_HLSLI

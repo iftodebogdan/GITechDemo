@@ -48,9 +48,9 @@ MotionBlurPass::~MotionBlurPass()
 
 void MotionBlurPass::Update(const float fDeltaTime)
 {
-    bSingleChannelCopy = false;
-    f4CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
-    bApplyTonemap = false;
+    HLSL::ColorCopyParams->SingleChannelCopy = false;
+    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
+    HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
 void MotionBlurPass::Draw()
@@ -116,11 +116,12 @@ void MotionBlurPass::ApplyMotionBlur()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
         );
-    texSource = MotionBlurBuffer.GetRenderTarget()->GetColorBuffer();
+
+    HLSL::ColorCopySourceTexture = MotionBlurBuffer.GetRenderTarget()->GetColorBuffer();
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
