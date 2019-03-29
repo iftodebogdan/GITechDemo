@@ -25,8 +25,8 @@ struct ColorCopyConstantTable
 {
     CB_float2 HalfTexelOffset;
     CB_bool SingleChannelCopy;
-    CB_float4 CustomColorModulator;
     CB_bool ApplyTonemap;
+    CB_float4 CustomColorModulator;
 };
 
 #ifdef HLSL

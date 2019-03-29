@@ -80,11 +80,53 @@
 //////////////////////////////////////////////////
 #define ENVIRONMENT_MAP_MIP_COUNT   (9)
 
-typedef bool  CB_bool;
-typedef bool1 CB_bool1;
-typedef bool2 CB_bool2;
-typedef bool3 CB_bool3;
-typedef bool4 CB_bool4;
+//////////////////////////////////////////////////////////////////////////////////////////////
+// These typedefs help with achieving the same memory layout between HLSL and CPP structs.  //
+// They are not required if you don't use structs.                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////
+//
+// The way FXC for Shader Model 3.0 handles structs with mixed member types (basically bools and floats/ints) is... stupid.
+//
+// They seem to be using different packing rules when counting float register offsets vs bool register offsets.
+// More exactly, a float vector maps to one float register regardless of whether you pack tightly (e.g. float2 + float2,
+// float2 + float + float, etc). However, when counting bool registers, float vectors "map" to the same number of bool
+// registers as its dimensions (e.g. 2 bool registers for a float2). This makes it impossible to map a HLSL struct to a
+// CPP struct w.r.t. memory layout because a float2 will occupy one float register (16 bytes), but will only generate a
+// 2 bool register offset (8 bytes).
+//
+// Even if we order them in such a way as to make it work, you don't have any guarantee bools in your struct will end up in bool registers.
+// It all depends on whether the compiler decides to use an actual flow-control instruction (i.e. somehting like 'if b0 ... else ... endif'), in which case the bool uses up one
+// 4-byte bool register, or it flattens the conditional (i.e. something like 'cmp ##, -c0.x, ##, ##'), in which case it uses a 16-byte float register. This means that there's
+// no realiable way of knowing how to setup the memory layout of CPP structs without parsing the output assembly from FXC.
+//
+// As such we have to drop bools from HLSL to force the use of only float registers.
+//
+// Concrete example taken from FXC output, annotated for clarity:
+//
+// Parameters:
+//
+//   struct
+//   {
+//       float2 HalfTexelOffset;        -> (c0) and (b0-b1)
+//       bool SingleChannelCopy;        -> (c1) and (b2)
+//       bool ApplyTonemap;             -> (c2) and (b3)
+//       float4 CustomColorModulator;   -> (c3) and [optimized away from b# register count]
+//
+//   } ColorCopyParams;
+//
+// Registers:
+//
+//   Name                   Reg   Size
+//   ---------------------- ----- ----
+//   ColorCopyParams        b0       4
+//   ColorCopyParams        c0       4
+//
+
+typedef float  CB_bool;
+typedef float1 CB_bool1;
+typedef float2 CB_bool2;
+typedef float3 CB_bool3;
+typedef float4 CB_bool4;
 
 typedef int  CB_int;
 typedef int1 CB_int1;
@@ -116,22 +158,22 @@ typedef double2 CB_double2;
 typedef double3 CB_double3;
 typedef double4 CB_double4;
 
-typedef bool1x1 CB_bool1x1;
-typedef bool1x2 CB_bool1x2;
-typedef bool1x3 CB_bool1x3;
-typedef bool1x4 CB_bool1x4;
-typedef bool2x1 CB_bool2x1;
-typedef bool2x2 CB_bool2x2;
-typedef bool2x3 CB_bool2x3;
-typedef bool2x4 CB_bool2x4;
-typedef bool3x1 CB_bool3x1;
-typedef bool3x2 CB_bool3x2;
-typedef bool3x3 CB_bool3x3;
-typedef bool3x4 CB_bool3x4;
-typedef bool4x1 CB_bool4x1;
-typedef bool4x2 CB_bool4x2;
-typedef bool4x3 CB_bool4x3;
-typedef bool4x4 CB_bool4x4;
+typedef float1x1 CB_bool1x1;
+typedef float1x2 CB_bool1x2;
+typedef float1x3 CB_bool1x3;
+typedef float1x4 CB_bool1x4;
+typedef float2x1 CB_bool2x1;
+typedef float2x2 CB_bool2x2;
+typedef float2x3 CB_bool2x3;
+typedef float2x4 CB_bool2x4;
+typedef float3x1 CB_bool3x1;
+typedef float3x2 CB_bool3x2;
+typedef float3x3 CB_bool3x3;
+typedef float3x4 CB_bool3x4;
+typedef float4x1 CB_bool4x1;
+typedef float4x2 CB_bool4x2;
+typedef float4x3 CB_bool4x3;
+typedef float4x4 CB_bool4x4;
 
 typedef int1x1 CB_int1x1;
 typedef int1x2 CB_int1x2;
@@ -357,6 +399,7 @@ typedef Matrix<float, 4u, 4u> CB_double4x1;
 typedef Matrix<float, 4u, 4u> CB_double4x2;
 typedef Matrix<float, 4u, 4u> CB_double4x3;
 typedef Matrix<float, 4u, 4u> CB_double4x4;
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // HLSL
 #endif // COMMON_HLSLI_
