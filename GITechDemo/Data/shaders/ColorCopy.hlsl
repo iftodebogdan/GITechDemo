@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Common.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 struct ColorCopyConstantTable
@@ -39,39 +40,43 @@ cbuffer ColorCopyResourceTable
 
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position  :   SV_POSITION;
+    float2  TexCoord  :   TEXCOORD0;
 };
 
 // Vertex shader /////////////////////////////////////////////////
 #ifdef VERTEX
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + ColorCopyParams.HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + ColorCopyParams.HalfTexelOffset;
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
 #ifdef PIXEL
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Simple color texture copy onto a color render target
-    if(ColorCopyParams.SingleChannelCopy)
+    if (ColorCopyParams.SingleChannelCopy)
+    {
         // For use with single channel textures (e.g. SSAO buffer)
-        f4Color = tex2D(ColorCopySourceTexture, input.f2TexCoord).rrrr;
+        color = tex2D(ColorCopySourceTexture, input.TexCoord).rrrr;
+    }
     else
-        f4Color = tex2D(ColorCopySourceTexture, input.f2TexCoord);
+    {
+        color = tex2D(ColorCopySourceTexture, input.TexCoord);
+    }
 
-    f4Color *= ColorCopyParams.CustomColorModulator;
+    color *= ColorCopyParams.CustomColorModulator;
 
     // Tonemapping, mainly used by SSR to prevent specular highlights
     // from ruining mip chain of light accumulation buffer.
     if (ColorCopyParams.ApplyTonemap)
     {
-        f4Color.rgb /= (1.f + dot(LUMA_COEF, f4Color.rgb));
-        f4Color.rgb = saturate(f4Color.rgb);
+        color.rgb /= (1.f + dot(LUMA_COEF, color.rgb));
+        color.rgb = saturate(color.rgb);
     }
 }
 #endif // PIXEL

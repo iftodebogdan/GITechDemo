@@ -38,6 +38,7 @@
 
 namespace GITechDemoApp
 {
+    #include "FXAA.hlsl"
     #include "ColorCopy.hlsl"
     #include "UI.hlsl"
 
@@ -297,14 +298,6 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fBloomStrength,           float           );
     CREATE_SHADER_CONSTANT_HANDLE(bAdjustIntensity,         bool            );
 
-    //  - FXAA.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(fFxaaSubpix,              float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeThreshold,       float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeThresholdMin,    float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fFxaaEdgeDepthThreshold,  float           );
-    CREATE_SHADER_CONSTANT_HANDLE(bFxaaUseEdgeDetection,    bool            );
-    CREATE_SHADER_CONSTANT_HANDLE(bFxaaDebugEdgeDetection,  bool            );
-
     //  - SSAO.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(fSSAOSampleRadius,        float           );
     CREATE_SHADER_CONSTANT_HANDLE(fSSAOIntensity,           float           );
@@ -334,13 +327,6 @@ namespace GITechDemoApp
     //  - PostProcessingUtils.hlsli
     CREATE_SHADER_CONSTANT_HANDLE(f2LinearDepthEquation,    Vec2f           );
     CREATE_SHADER_CONSTANT_HANDLE(f2DepthHalfTexelOffset,   Vec2f           );
-
-    //  - UI.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture1D,              s3dSampler1D    );
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture2D,              s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture3D,              s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_HANDLE(UITextureCube,            s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_HANDLE(UIParams,                 UIConstantTable );
 
     //  - MotionBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f44PrevViewProjMat,       Matrix44f       );
@@ -385,9 +371,21 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(bUseDither,               bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity,     float           );
 
+    //  - FXAA.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(FXAASourceTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(FXAADepthBuffer, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(FXAAParams, FXAAConstantTable);
+
     //  - ColorCopy.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(ColorCopySourceTexture, s3dSampler2D);
     CREATE_SHADER_CONSTANT_HANDLE(ColorCopyParams, ColorCopyConstantTable);
+
+    //  - UI.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture1D, s3dSampler1D);
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture2D, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(UITexture3D, s3dSampler3D);
+    CREATE_SHADER_CONSTANT_HANDLE(UITextureCube, s3dSamplerCUBE);
+    CREATE_SHADER_CONSTANT_HANDLE(UIParams, UIConstantTable);
     //-------------------------------------------------------
 
     #define STRINGIZE_HELPER(x) #x

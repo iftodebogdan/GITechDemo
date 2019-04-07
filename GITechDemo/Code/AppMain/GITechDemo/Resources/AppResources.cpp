@@ -24,6 +24,9 @@
 #include "AppResources.h"
 #include "ArtistParameter.h"
 #include "PBRMaterialTestPass.h"
+
+#include "FXAAPass.h"
+
 using namespace GITechDemoApp;
 using namespace Synesthesia3D;
 
@@ -148,6 +151,7 @@ namespace GITechDemoApp
     extern bool SRGB_COLOR_CORRECTION;
 
     // FXAA
+    extern FXAAPass FXAA_PASS;
     extern bool FXAA_ENABLED;
 
     // Window properties
@@ -498,13 +502,6 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.2f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,              float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,           float,          0.75f                   );
-    // FXAA
-    CREATE_SHADER_CONSTANT_OBJECT(fFxaaSubpix,              float,          0.75f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThreshold,       float,          0.166f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeThresholdMin,    float,          0.0833f                 );
-    CREATE_SHADER_CONSTANT_OBJECT(fFxaaEdgeDepthThreshold,  float,          0.00025f                );
-    CREATE_SHADER_CONSTANT_OBJECT(bFxaaUseEdgeDetection,    bool,           true                    );
-    CREATE_SHADER_CONSTANT_OBJECT(bFxaaDebugEdgeDetection,  bool,           false                   );
     // DoF
     CREATE_SHADER_CONSTANT_OBJECT(fFocalDepth,              float,          100.f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fFocalLength,             float,          100.f                   );
@@ -537,6 +534,11 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fLensDirtIntensity,       float,          0.3f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fLensStarBurstIntensity,  float,          0.5f                    );
     CREATE_SHADER_CONSTANT_OBJECT(fAnamorphicIntensity,     float,          5.f                     );
+
+    // FXAA
+    CREATE_SHADER_CONSTANT_OBJECT(FXAASourceTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(FXAADepthBuffer, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(FXAAParams, FXAAConstantTable);
 
     // ColorCopy.hlsl
     CREATE_SHADER_CONSTANT_OBJECT(ColorCopySourceTexture, s3dSampler2D);
@@ -1664,40 +1666,40 @@ namespace GITechDemoApp
         "Antialiasing factor",
         "Amount of sub-pixel aliasing removal",
         "FXAA",
-        fFxaaSubpix.GetCurrentValue(),
+        FXAA_PASS.Subpix,
         0.01f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge threshold",
         "Minimum amount of local contrast to apply algorithm",
         "FXAA",
-        fFxaaEdgeThreshold.GetCurrentValue(),
+        FXAA_PASS.EdgeThreshold,
         0.01f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Darkness threshold",
         "Keeps the algorithm from processing darks",
         "FXAA",
-        fFxaaEdgeThresholdMin.GetCurrentValue(),
+        FXAA_PASS.EdgeThresholdMin,
         0.01f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Apply FXAA only on edges",
         "Enables depth based edge detection for conditional FXAA application",
         "FXAA",
-        bFxaaUseEdgeDetection.GetCurrentValue());
+        FXAA_PASS.UseEdgeDetection);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge detection threshold",
         "Adjusts threshold of depth based edge detection algorithm",
         "FXAA",
-        fFxaaEdgeDepthThreshold.GetCurrentValue(),
+        FXAA_PASS.EdgeDepthThreshold,
         0.0001f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug FXAA edge detection",
         "Highlight pixels that have FXAA applied",
         "FXAA",
-        bFxaaDebugEdgeDetection.GetCurrentValue());
+        FXAA_PASS.DebugEdgeDetection);
     //------------------------------------------------------
 }

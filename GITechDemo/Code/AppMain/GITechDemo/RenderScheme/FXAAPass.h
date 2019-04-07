@@ -29,6 +29,14 @@ namespace GITechDemoApp
     class FXAAPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(FXAAPass)
+
+    public:
+        float Subpix;
+        float EdgeThreshold;
+        float EdgeThresholdMin;
+        float EdgeDepthThreshold;
+        bool UseEdgeDetection;
+        bool DebugEdgeDetection;
     };
 }
 

@@ -43,55 +43,55 @@ cbuffer UIResourceTable
 
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
-    float4  f4Color     :   COLOR;
+    float4  Position  :   SV_POSITION;
+    float2  TexCoord  :   TEXCOORD0;
+    float4  Color     :   COLOR;
 };
 
 // Vertex shader /////////////////////////////////////////////////
 #ifdef VERTEX
-void vsmain(float2 f4Position : POSITION, float4 f4Color : COLOR, float2 f2TexCoord : TEXCOORD, out VSOut output)
+void vsmain(float2 position : POSITION, float4 color : COLOR, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = mul(UIParams.ProjMat, float4(f4Position, 0.f, 1.f));
-    output.f2TexCoord = f2TexCoord;
-    output.f4Color = f4Color;
+    output.Position = mul(UIParams.ProjMat, float4(position, 0.f, 1.f));
+    output.TexCoord = texCoord;
+    output.Color = color;
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
 #ifdef PIXEL
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     switch (UIParams.TextureSwitch)
     {
     case 1:
-        f4Color = tex1Dlod(UITexture1D, float4(input.f2TexCoord.x, 0, 0, UIParams.MipLevel)) * input.f4Color; break;
+        color = tex1Dlod(UITexture1D, float4(input.TexCoord.x, 0, 0, UIParams.MipLevel)) * input.Color; break;
     case 2:
-        f4Color = tex2Dlod(UITexture2D, float4(input.f2TexCoord, 0, UIParams.MipLevel)) * input.f4Color; break;
+        color = tex2Dlod(UITexture2D, float4(input.TexCoord, 0, UIParams.MipLevel)) * input.Color; break;
     case 3:
-        f4Color = tex3Dlod(UITexture3D, float4(input.f2TexCoord, UIParams.DepthSlice, UIParams.MipLevel)) * input.f4Color; break;
+        color = tex3Dlod(UITexture3D, float4(input.TexCoord, UIParams.DepthSlice, UIParams.MipLevel)) * input.Color; break;
     case 4:
-        const float2 cubeUV = input.f2TexCoord * 2.f - 1.f;
+        const float2 cubeUV = input.TexCoord * 2.f - 1.f;
         switch (UIParams.FaceIdx)
         {
         default:
         case 0:
-            f4Color = texCUBElod(UITextureCube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), UIParams.MipLevel)) * input.Color; break;
         case 1:
-            f4Color = texCUBElod(UITextureCube, float4(cubeUV.x, 1.f, cubeUV.y, UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(cubeUV.x, 1.f, cubeUV.y, UIParams.MipLevel)) * input.Color; break;
         case 2:
-            f4Color = texCUBElod(UITextureCube, float4(cubeUV.x, -1.f, -cubeUV.y, UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(cubeUV.x, -1.f, -cubeUV.y, UIParams.MipLevel)) * input.Color; break;
         case 3:
-            f4Color = texCUBElod(UITextureCube, float4(cubeUV * float2(1.f, -1.f), 1.f, UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(cubeUV * float2(1.f, -1.f), 1.f, UIParams.MipLevel)) * input.Color; break;
         case 4:
-            f4Color = texCUBElod(UITextureCube, float4(1.f, -cubeUV.yx, UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(1.f, -cubeUV.yx, UIParams.MipLevel)) * input.Color; break;
         case 5:
-            f4Color = texCUBElod(UITextureCube, float4(-cubeUV, -1.f, UIParams.MipLevel)) * input.f4Color; break;
+            color = texCUBElod(UITextureCube, float4(-cubeUV, -1.f, UIParams.MipLevel)) * input.Color; break;
         };
         break;
     default:
-        f4Color = input.f4Color; break;
+        color = input.Color; break;
     };
 }
 #endif // PIXEL

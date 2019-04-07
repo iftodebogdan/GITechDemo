@@ -101,9 +101,9 @@
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -111,9 +111,9 @@
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
     <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -172,16 +172,15 @@
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
+    <CustomBuildStep />
+    <CustomBuildStep />
+    <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
 DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
-DEL /F /Q "$(OutDir)\vld_x86.dll"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
+DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -206,16 +205,15 @@ DEL /F /Q "$(OutDir)\vld_x86.dll"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
+    <CustomBuildStep />
+    <CustomBuildStep />
+    <CustomBuildStep />
     <CustomBuildStep>
       <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
 DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
-DEL /F /Q "$(OutDir)\vld_x64.dll"</Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
+DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

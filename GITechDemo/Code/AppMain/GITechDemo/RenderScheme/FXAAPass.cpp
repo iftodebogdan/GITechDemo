@@ -41,7 +41,14 @@ namespace GITechDemoApp
 
 FXAAPass::FXAAPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{}
+{
+    Subpix = 0.75f;
+    EdgeThreshold = 0.166f;
+    EdgeThresholdMin = 0.0833f;
+    EdgeDepthThreshold = 0.00025f;
+    UseEdgeDetection = true;
+    DebugEdgeDetection = false;
+}
 
 FXAAPass::~FXAAPass()
 {}
@@ -56,23 +63,30 @@ void FXAAPass::Update(const float fDeltaTime)
     if (!ResourceMgr)
         return;
 
+    HLSL::FXAAParams->Subpix = Subpix;
+    HLSL::FXAAParams->EdgeThreshold = EdgeThreshold;
+    HLSL::FXAAParams->EdgeThresholdMin = EdgeThresholdMin;
+    HLSL::FXAAParams->EdgeDepthThreshold = EdgeDepthThreshold;
+    HLSL::FXAAParams->UseEdgeDetection = UseEdgeDetection;
+    HLSL::FXAAParams->DebugEdgeDetection = DebugEdgeDetection;
+
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 
     const Synesthesia3D::RenderTarget* const srcRT = HDR_TONE_MAPPING_ENABLED ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
-    f2HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
-    f4TexSize = Vec4f(
+    HLSL::FXAAParams->HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
+    HLSL::FXAAParams->TextureSize = Vec4f(
         (float)srcRT->GetWidth(),
         (float)srcRT->GetHeight(),
         1.f / (float)srcRT->GetWidth(),
         1.f / (float)srcRT->GetHeight()
     );
-    texSource = srcRT->GetColorBuffer(0);
+    HLSL::FXAASourceTexture = srcRT->GetColorBuffer(0);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
 
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    //texDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::FXAADepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    //HLSL::FXAADepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
 }
 
 void FXAAPass::Draw()

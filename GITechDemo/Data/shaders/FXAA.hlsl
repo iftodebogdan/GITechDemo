@@ -19,6 +19,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Common.hlsli"
+#include "PostProcessingUtils.hlsli"
+
+struct FXAAConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_float4 TextureSize;          // xy: size of texture in pixels; zw: the size of a texel (1 / xy)
+    CB_float Subpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
+    CB_float EdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
+    CB_float EdgeThresholdMin;      // Trims the algorithm from processing darks (default: 0.0833f)
+    CB_float EdgeDepthThreshold;    // Threshold for depth based edge detection
+    CB_bool UseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
+    CB_bool DebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
+};
+
+#ifdef HLSL
+cbuffer FXAAResourceTable
+{
+    sampler2D FXAASourceTexture;    // The texture to be antialiased
+    sampler2D FXAADepthBuffer;      // Scene depth values
+
+    FXAAConstantTable FXAAParams;
+};
+
+struct VSOut
+{
+    float4  Position  :   SV_POSITION;
+    float2  TexCoord  :   TEXCOORD0;
+};
+
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
+{
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + FXAAParams.HalfTexelOffset;
+}
+#endif // VERTEX
+////////////////////////////////////////////////////////////////////
+
+#ifdef PIXEL
 //----------------------------------------------------------------------------------
 // File:        FXAA\media/FXAA.hlsl
 // SDK Version: v1.2 
@@ -2132,61 +2173,33 @@ return FxaaPixelShader(
 }
 */
 
-#include "PostProcessingUtils.hlsli"
-
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
-
-struct VSOut
-{
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
-};
-
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
-{
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
-}
-////////////////////////////////////////////////////////////////////
-
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;              // The texture to be antialiased
-const sampler2D texDepthBuffer;         // Scene depth values
-const float4 f4TexSize;                 // zw: the size of a texel
-const float fFxaaSubpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
-const float fFxaaEdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
-const float fFxaaEdgeThresholdMin;      // Trims the algorithm from processing darks (default: 0.0833f)
-const float fFxaaEdgeDepthThreshold;    // Threshold for depth based edge detection
-const bool bFxaaUseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
-const bool bFxaaDebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////////////
     // These values aren't actually used on PC, but are here for portability reasons    //
     //////////////////////////////////////////////////////////////////////////////////////
-    const float4 f4PosPos = float4(input.f2TexCoord - f2HalfTexelOffset, input.f2TexCoord + f2HalfTexelOffset);
+    const float4 fxaaPosPos = float4(input.TexCoord - FXAAParams.HalfTexelOffset, input.TexCoord + FXAAParams.HalfTexelOffset);
     
-    const float fSharpness = 0.5f;
-    const float4 f4RcpFrameOpt = float4(-fSharpness * f4TexSize.zw, fSharpness * f4TexSize.zw);
-    const float4 f4RcpFrameOpt2 = float4(-2.f * f4TexSize.zw, 2.f * f4TexSize.zw);
-    const float4 f4360RcpFrameOpt2 = float4(8.f * f4TexSize.zw, -4.f * f4TexSize.zw);
+    const float fxaaSharpness = 0.5f;
+    const float4 fxaaRcpFrameOpt = float4(-fxaaSharpness * FXAAParams.TextureSize.zw, fxaaSharpness * FXAAParams.TextureSize.zw);
+    const float4 fxaaRcpFrameOpt2 = float4(-2.f * FXAAParams.TextureSize.zw, 2.f * FXAAParams.TextureSize.zw);
+    const float4 fxaa360RcpFrameOpt2 = float4(8.f * FXAAParams.TextureSize.zw, -4.f * FXAAParams.TextureSize.zw);
     
-    const float fFxaaEdgeSharpness = 8.0f;
-    //const float fFxaaEdgeThreshold = 0.125f;
-    //const float fFxaaEdgeThresholdMin = 0.05f;
-    const float4 f4Fxaa360ConstDir = float4(1.0f, -1.0f, 0.25f, -0.25f);
+    const float fxaaEdgeSharpness = 8.0f;
+    //const float fxaaEdgeThreshold = 0.125f;
+    //const float fxaaEdgeThresholdMin = 0.05f;
+    const float4 fxaa360ConstDir = float4(1.0f, -1.0f, 0.25f, -0.25f);
     //////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////
     // Edge detection algorithm //
     //////////////////////////////
-    bool bIsEdge = !bFxaaUseEdgeDetection;
+    bool isEdge = !FXAAParams.UseEdgeDetection;
 
-    if (bFxaaUseEdgeDetection)
+    if (FXAAParams.UseEdgeDetection)
     {
-        const float2 f2SampleOffset[] =
+        const float2 sampleOffset[] =
         {
             float2(0.f, 0.f),
             float2(0.f, 1.f),
@@ -2198,44 +2211,46 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         };
 
         // Fetch the reference depth
-        const float fRefDepth = tex2D(texDepthBuffer, input.f2TexCoord + f2SampleOffset[0] * f4TexSize.zw).r;
+        const float refDepth = tex2D(FXAADepthBuffer, input.TexCoord + sampleOffset[0] * FXAAParams.TextureSize.zw).r;
 
         UNROLL for (int i = 1; i < 7; i++)
         {
-            const float fSampleDepth = tex2D(texDepthBuffer, input.f2TexCoord + f2SampleOffset[i] * f4TexSize.zw).r;
+            const float sampleDepth = tex2D(FXAADepthBuffer, input.TexCoord + sampleOffset[i] * FXAAParams.TextureSize.zw).r;
 
             // Calculate the difference to the reference depth value
-            const float fCurrentDepthDiff = abs(fSampleDepth - fRefDepth);
+            const float currentDepthDiff = abs(sampleDepth - refDepth);
 
             // Mark as edge, if it's the case
-            bIsEdge = bIsEdge || (fCurrentDepthDiff > fFxaaEdgeDepthThreshold);
+            isEdge = isEdge || (currentDepthDiff > FXAAParams.EdgeDepthThreshold);
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////
 
-    if (bIsEdge)
-        f4Color = FxaaPixelShader(
-            input.f2TexCoord,       // FxaaFloat2 pos
-            f4PosPos,               // FxaaFloat4 fxaaConsolePosPos
-            texSource,              // FxaaTex tex
-            texSource,              // FxaaTex fxaaConsole360TexExpBiasNegOne
-            texSource,              // FxaaTex fxaaConsole360TexExpBiasNegTwo
-            f4TexSize.zw,           // FxaaFloat2 fxaaQualityRcpFrame
-            f4RcpFrameOpt,          // FxaaFloat4 fxaaConsoleRcpFrameOpt
-            f4RcpFrameOpt2,         // FxaaFloat4 fxaaConsoleRcpFrameOpt2
-            f4360RcpFrameOpt2,      // fxaaConsole360RcpFrameOpt2
-            fFxaaSubpix,            // FxaaFloat fxaaQualitySubpix
-            fFxaaEdgeThreshold,     // FxaaFloat fxaaQualityEdgeThreshold
-            fFxaaEdgeThresholdMin,  // FxaaFloat fxaaQualityEdgeThresholdMin
-            fFxaaEdgeSharpness,     // FxaaFloat fxaaConsoleEdgeSharpness
-            fFxaaEdgeThreshold,     // FxaaFloat fxaaConsoleEdgeThreshold
-            fFxaaEdgeThresholdMin,  // FxaaFloat fxaaConsoleEdgeThresholdMin
-            f4Fxaa360ConstDir       // FxaaFloat4 fxaaConsole360ConstDir
+    if (isEdge)
+        color = FxaaPixelShader(
+            input.TexCoord,                 // FxaaFloat2 pos
+            fxaaPosPos,                     // FxaaFloat4 fxaaConsolePosPos
+            FXAASourceTexture,              // FxaaTex tex
+            FXAASourceTexture,              // FxaaTex fxaaConsole360TexExpBiasNegOne
+            FXAASourceTexture,              // FxaaTex fxaaConsole360TexExpBiasNegTwo
+            FXAAParams.TextureSize.zw,      // FxaaFloat2 fxaaQualityRcpFrame
+            fxaaRcpFrameOpt,                // FxaaFloat4 fxaaConsoleRcpFrameOpt
+            fxaaRcpFrameOpt2,               // FxaaFloat4 fxaaConsoleRcpFrameOpt2
+            fxaa360RcpFrameOpt2,            // fxaaConsole360RcpFrameOpt2
+            FXAAParams.Subpix,              // FxaaFloat fxaaQualitySubpix
+            FXAAParams.EdgeThreshold,       // FxaaFloat fxaaQualityEdgeThreshold
+            FXAAParams.EdgeThresholdMin,    // FxaaFloat fxaaQualityEdgeThresholdMin
+            fxaaEdgeSharpness,              // FxaaFloat fxaaConsoleEdgeSharpness
+            FXAAParams.EdgeThreshold,       // FxaaFloat fxaaConsoleEdgeThreshold
+            FXAAParams.EdgeThresholdMin,    // FxaaFloat fxaaConsoleEdgeThresholdMin
+            fxaa360ConstDir                 // FxaaFloat4 fxaaConsole360ConstDir
         );
     else
-        f4Color = tex2D(texSource, input.f2TexCoord);
+        color = tex2D(FXAASourceTexture, input.TexCoord);
 
-    if (bFxaaDebugEdgeDetection && bFxaaUseEdgeDetection && bIsEdge)
-        f4Color += float4(1.f, 0.f, 0.f, 0.f);
+    if (FXAAParams.DebugEdgeDetection && FXAAParams.UseEdgeDetection && isEdge)
+        color += float4(1.f, 0.f, 0.f, 0.f);
 }
 ////////////////////////////////////////////////////////////////////
+#endif // PIXEL
+#endif // HLSL
