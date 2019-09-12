@@ -19,53 +19,62 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "PostProcessingUtils.hlsli"
+#include "Common.hlsli"
 #include "Utils.hlsli"
+#include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct HDRToneMappingConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_float ExposureBias;      // Exposure amount
+    CB_float ShoulderStrength;  // = 0.15;
+    CB_float LinearStrength;    // = 0.50;
+    CB_float LinearAngle;       // = 0.10;
+    CB_float ToeStrength;       // = 0.20;
+    CB_float ToeNumerator;      // = 0.02;
+    CB_float ToeDenominator;    // = 0.30;
+    CB_float LinearWhite;       // = 11.2;
+    CB_float FrameTime;
+    CB_float FilmGrainAmount;
+    CB_bool ApplyColorCorrection;
+};
+
+#ifdef HLSL
+cbuffer HDRToneMappingResourceTable
+{
+    sampler2D HDRToneMappingSourceTexture;            // Source HDR texture
+    sampler2D HDRToneMappingAvgLumaTexture;           // 1x1 average luma texture
+    sampler3D HDRToneMappingColorCorrectionTexture;   // Color correction texture
+
+    HDRToneMappingConstantTable HDRToneMappingParams;
+};
 
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position    :   SV_POSITION;
+    float2  TexCoord    :   TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + HDRToneMappingParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;  // Source HDR texture
-const sampler2D texAvgLuma; // 1x1 average luma texture
-const sampler3D texColorCorrection; // Color correction texture
-
-const float fExposureBias;  // Exposure amount
-
-const float fShoulderStrength;  // = 0.15;
-const float fLinearStrength;    // = 0.50;
-const float fLinearAngle;       // = 0.10;
-const float fToeStrength;       // = 0.20;
-const float fToeNumerator;      // = 0.02;
-const float fToeDenominator;    // = 0.30;
-const float fLinearWhite;       // = 11.2;
-
-const float fFrameTime;
-const float fFilmGrainAmount;
-
-const bool bApplyColorCorrection;
-
-float3 ReinhardTonemap(const float3 f3Color, const float fAvgLuma)
+#ifdef PIXEL
+float3 ReinhardTonemap(const float3 color, const float avgLuma)
 {
-    return f3Color / (1.f + fAvgLuma);
+    return color / (1.f + avgLuma);
 }
 
-float3 DuikerOptimizedTonemap(const float3 f3Color)
+float3 DuikerOptimizedTonemap(const float3 color)
 {
-    float3 x = max(0, f3Color - 0.004f);
+    float3 x = max(0, color - 0.004f);
     return (x * (6.2f * x + 0.5f)) / (x * (6.2f * x + 1.7f) + 0.06f);
 }
 
@@ -73,22 +82,22 @@ float3 DuikerOptimizedTonemap(const float3 f3Color)
 // Filmic tone mapping operator used in Uncharted 2                         //
 // http://filmicgames.com/Downloads/GDC_2010/Uncharted2-Hdr-Lighting.pptx   //
 //////////////////////////////////////////////////////////////////////////////
-float3 FilmicTonemap(const float3 f3Color)
+float3 FilmicTonemap(const float3 color)
 {
     return
         (
             (
-                f3Color * (fShoulderStrength * f3Color + fLinearStrength * fLinearAngle)
-                + fToeStrength * fToeNumerator
+                color * (HDRToneMappingParams.ShoulderStrength * color + HDRToneMappingParams.LinearStrength * HDRToneMappingParams.LinearAngle)
+                + HDRToneMappingParams.ToeStrength * HDRToneMappingParams.ToeNumerator
             ) /
             (
-                f3Color * (fShoulderStrength * f3Color + fLinearStrength)
-                + fToeStrength * fToeDenominator
+                color * (HDRToneMappingParams.ShoulderStrength * color + HDRToneMappingParams.LinearStrength)
+                + HDRToneMappingParams.ToeStrength * HDRToneMappingParams.ToeDenominator
             )
-        ) - fToeNumerator / fToeDenominator;
+        ) - HDRToneMappingParams.ToeNumerator / HDRToneMappingParams.ToeDenominator;
 }
 
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////
     // Convert color from gamma space to linear space               //
@@ -96,11 +105,11 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     //////////////////////////////////////////////////////////////////
 
     // Linear gamma conversion done by SamplerState::SetSRGBEnabled()
-    //float3 f3Color = pow(abs(tex2D(texSource, input.f2TexCoord)), 2.2f).rgb;
-    float3 f3Color = tex2D(texSource, input.f2TexCoord).rgb;
+    //float3 sourceColor = pow(abs(tex2D(HDRToneMappingSourceTexture, input.TexCoord)), 2.2f).rgb;
+    float3 sourceColor = tex2D(HDRToneMappingSourceTexture, input.TexCoord).rgb;
 
-    float fAvgLuma = tex2D(texAvgLuma, float2(0.5f, 0.5f)).r;
-    f3Color /= fAvgLuma;
+    float avgLuma = tex2D(HDRToneMappingAvgLumaTexture, float2(0.5f, 0.5f)).r;
+    sourceColor /= avgLuma;
 
     //////////////////////////////////////////
     // Apply tone mapping operator          //
@@ -108,28 +117,30 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     //////////////////////////////////////////
 
     // Reinhard
-    //float3 f3FinalColor = ReinhardTonemap(f3Color * fExposureBias, fAvgLuma);
+    //float3 finalColor = ReinhardTonemap(sourceColor * HDRToneMappingParams.ExposureBias, avgLuma);
 
     // Duiker
-    //float3 f3FinalColor = DuikerOptimizedTonemap(f3Color * fExposureBias);
+    //float3 finalColor = DuikerOptimizedTonemap(sourceColor * HDRToneMappingParams.ExposureBias);
 
     // Uncharted 2
-    float3 f3FinalColor = FilmicTonemap(f3Color * fExposureBias);
-    const float3 f3WhiteScale = rcp(FilmicTonemap(fLinearWhite));
-    f3FinalColor *= f3WhiteScale;
+    float3 finalColor = FilmicTonemap(sourceColor * HDRToneMappingParams.ExposureBias);
+    const float3 whiteScale = rcp(FilmicTonemap(HDRToneMappingParams.LinearWhite));
+    finalColor *= whiteScale;
 
     // Color correction
-    if(bApplyColorCorrection)
-        f3FinalColor = tex3D(texColorCorrection, saturate(f3FinalColor)).rgb;
+    if(HDRToneMappingParams.ApplyColorCorrection)
+        finalColor = tex3D(HDRToneMappingColorCorrectionTexture, saturate(finalColor)).rgb;
 
     // Convert back to gamma space (not required for Duiker tonemap)
     // NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()
-    //f4Color = float4(pow(abs(f3FinalColor), 1.f / 2.2f), 1);
+    //color = float4(pow(abs(finalColor), 1.f / 2.2f), 1);
     // Encode gamma-corrected luma in the alpha channel for FXAA
-    f4Color = float4(f3FinalColor, pow(abs(dot(f3FinalColor, LUMA_COEF)), 1.f / 2.2f));
+    color = float4(finalColor, pow(abs(dot(finalColor, LUMA_COEF)), 1.f / 2.2f));
 
     // Film grain needs to be applied after tonemapping, so as not to be affected by exposure variance
-    if(fFilmGrainAmount > 0.f)
-        f4Color.rgb += (frac(sin(dot(input.f2TexCoord + float2(fFrameTime, fFrameTime), float2(12.9898f, 78.233f))) * 43758.5453f) * 2.f - 1.f) * fFilmGrainAmount;
+    if(HDRToneMappingParams.FilmGrainAmount > 0.f)
+        color.rgb += (frac(sin(dot(input.TexCoord + float2(HDRToneMappingParams.FrameTime, HDRToneMappingParams.FrameTime), float2(12.9898f, 78.233f))) * 43758.5453f) * 2.f - 1.f) * HDRToneMappingParams.FilmGrainAmount;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

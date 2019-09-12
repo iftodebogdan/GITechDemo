@@ -487,6 +487,20 @@ public:
       return mData;
    }
 
+   template <typename DATA_TYPE2, unsigned ROWS2, unsigned COLS2>
+   inline Matrix& operator=(const Matrix<DATA_TYPE2, ROWS2, COLS2>& rhs)
+   {
+       for (unsigned i = 0; i < ROWS; ++i)
+       {
+           for (unsigned j = 0; j < COLS; ++j)
+           {
+               mData[j*ROWS + i] = ((i >= ROWS2 || j >= COLS2) ? (DATA_TYPE)0 : (DATA_TYPE)rhs.mData[j*ROWS2 + i]);
+           }
+       }
+
+       return *this;
+   }
+
 #ifdef GMTL_USE_MATRIX_XFORM
    bool isError()
    {

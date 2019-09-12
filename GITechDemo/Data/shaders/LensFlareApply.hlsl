@@ -21,35 +21,46 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct LensFlareApplyConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_float DirtIntensity; // Scale factor for lens dirt texture samples
+    CB_float StarBurstIntensity; // Scale factor for lens star burst texture samples
+
+    // Transform matrix for the star burst texture coordinates
+    // applying a camera dependent rotation
+    CB_float3x3 StarBurstMat;
+};
+
+#ifdef HLSL
+cbuffer LensFlareApplyResourceTable
+{
+    sampler2D LensFlareFeatures; // Lens flare effect features
+    sampler2D LensFlareDirt; // Lens dirt texture
+    sampler2D LensFlareStarBurst; // Lens star burst texture
+
+    LensFlareApplyConstantTable LensFlareApplyParams;
+};
 
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position    :   SV_POSITION;
+    float2  TexCoord    :   TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + LensFlareApplyParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texLensFlareFeatures; // Lens flare effect features
-const sampler2D texLensFlareDirt; // Lens dirt texture
-const sampler2D texLensFlareStarBurst; // Lens star burst texture
-
-const float fLensDirtIntensity; // Scale factor for lens dirt texture samples
-const float fLensStarBurstIntensity; // Scale factor for lens star burst texture samples
-
-// Transform matrix for the star burst texture coordinates
-// applying a camera dependent rotation
-const float3x3 f33LensFlareStarBurstMat;
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////
     // Lens flare effect                                                        //
@@ -57,15 +68,17 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     //////////////////////////////////////////////////////////////////////////////
 
     // Sample lens flare features
-    f4Color  = float4(tex2D(texLensFlareFeatures, input.f2TexCoord).rgb, 0.f);
+    color  = float4(tex2D(LensFlareFeatures, input.TexCoord).rgb, 0.f);
     
     // Sample dirt texture
-    const float3 f3Dirt = tex2D(texLensFlareDirt, input.f2TexCoord).rgb * fLensDirtIntensity;
+    const float3 dirt = tex2D(LensFlareDirt, input.TexCoord).rgb * LensFlareApplyParams.DirtIntensity;
 
     // Sample star burst texture
-    const float3 f3StarBurst = tex2D(texLensFlareStarBurst, mul(f33LensFlareStarBurstMat, float3(input.f2TexCoord, 1.f)).xy).rgb * fLensStarBurstIntensity;
+    const float3 starBurst = tex2D(LensFlareStarBurst, mul(LensFlareApplyParams.StarBurstMat, float3(input.TexCoord, 1.f)).xy).rgb * LensFlareApplyParams.StarBurstIntensity;
 
     // Modulate features by dirt and star burst textures
-    f4Color.rgb *= f3Dirt + f3StarBurst;
+    color.rgb *= dirt + starBurst;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

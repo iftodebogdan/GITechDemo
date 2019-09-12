@@ -42,7 +42,20 @@ namespace GITechDemoApp
 
 HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{}
+{
+    ExposureBias = 0.25f;
+    AvgLumaClamp = Vec2f(0.0001f, 0.75f);
+    ShoulderStrength = 0.5f;
+    LinearStrength = 0.58f;
+    LinearAngle = 0.35f;
+    ToeStrength = 0.48f;
+    ToeNumerator = 0.12f;
+    ToeDenominator = 0.58f;
+    LinearWhite = 3.f;
+    LumaAdaptSpeed = 1.f;
+    FilmGrainAmount = 0.001f;
+    ApplyColorCorrection = true;
+}
 
 HDRToneMappingPass::~HDRToneMappingPass()
 {}
@@ -74,10 +87,23 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
-    fFrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
+    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
 
     texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
-    texColorCorrection = ColorCorrectionTexture.GetTextureIndex();
+    HLSL::HDRToneMappingColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
+
+    HLSL::HDRToneMappingParams->ExposureBias = ExposureBias;
+    //HLSL::HDRToneMappingParams->AvgLumaClamp = AvgLumaClamp;
+    HLSL::HDRToneMappingParams->ShoulderStrength = ShoulderStrength;
+    HLSL::HDRToneMappingParams->LinearStrength = LinearStrength;
+    HLSL::HDRToneMappingParams->LinearAngle = LinearAngle;
+    HLSL::HDRToneMappingParams->ToeStrength = ToeStrength;
+    HLSL::HDRToneMappingParams->ToeNumerator = ToeNumerator;
+    HLSL::HDRToneMappingParams->ToeDenominator = ToeDenominator;
+    HLSL::HDRToneMappingParams->LinearWhite = LinearWhite;
+    //HLSL::HDRToneMappingParams->LumaAdaptSpeed = LumaAdaptSpeed;
+    HLSL::HDRToneMappingParams->FilmGrainAmount = FilmGrainAmount;
+    HLSL::HDRToneMappingParams->ApplyColorCorrection = ApplyColorCorrection;
 }
 
 // Measure average luminance level of scene
@@ -111,7 +137,7 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        f2HalfTexelOffset = Vec2f(
+        HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(
             0.5f / AverageLuminanceBuffer[i]->GetRenderTarget()->GetWidth(),
             0.5f / AverageLuminanceBuffer[i]->GetRenderTarget()->GetHeight()
             );
@@ -167,7 +193,7 @@ void HDRToneMappingPass::LuminanceAdaptationPass()
 
     AdaptedLuminance[0]->Enable();
 
-    f2HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
+    HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
     texLumaInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
 
     LumaAdaptShader.Enable();
@@ -195,9 +221,9 @@ void HDRToneMappingPass::ToneMappingPass()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    f2HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
-    texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
-    texAvgLuma = AdaptedLuminance[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
+    HLSL::HDRToneMappingSourceTexture = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::HDRToneMappingAvgLumaTexture = AdaptedLuminance[0]->GetRenderTarget()->GetColorBuffer(0);
 
     HDRToneMappingShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

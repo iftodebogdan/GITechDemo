@@ -50,11 +50,11 @@ RendererDX9::~RendererDX9()
 
     if (m_pd3dDevice)
         refCount = m_pd3dDevice->Release();
-    assert(refCount == 0);
+    //assert(refCount == 0);
 
     if (m_pD3D)
         refCount = m_pD3D->Release();
-    assert(refCount == 0);
+    //assert(refCount == 0);
 }
 
 void RendererDX9::CheckDeviceCaps()

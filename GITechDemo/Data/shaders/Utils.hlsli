@@ -24,6 +24,8 @@
 
 #include "Common.hlsli"
 
+#ifdef HLSL
+
 //#define NORMAL_RECONSTRUCT_Z
 //#define NORMAL_SPHERICAL_COORDINATES
 //#define NORMAL_SPHEREMAP_TRANSFORM
@@ -407,4 +409,5 @@ float PCF8x8(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, 
 
 ////////////////////////////////////////////////////////////////
 
+#endif // HLSL
 #endif // UTILS_HLSLI

@@ -48,7 +48,10 @@ namespace GITechDemoApp
 
 LensFlarePass::LensFlarePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{}
+{
+    DirtIntensity = 0.3f;
+    StarBurstIntensity = 0.5f;
+}
 
 LensFlarePass::~LensFlarePass()
 {}
@@ -67,13 +70,13 @@ void LensFlarePass::Update(const float fDeltaTime)
     LensFlareGhostColorLUT.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     texGhostColorLUT = LensFlareGhostColorLUT.GetTextureIndex();
 
-    LensFlareDirt.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    LensFlareDirt.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-    texLensFlareDirt = LensFlareDirt.GetTextureIndex();
+    LensFlareDirtTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
+    LensFlareDirtTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+    LensFlareDirt = LensFlareDirtTexture.GetTextureIndex();
 
-    LensFlareStarBurst.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    LensFlareStarBurst.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-    texLensFlareStarBurst = LensFlareStarBurst.GetTextureIndex();
+    LensFlareStarBurstTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
+    LensFlareStarBurstTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+    LensFlareStarBurst = LensFlareStarBurstTexture.GetTextureIndex();
 
     nDownsampleFactor = 1;
     bDepthDownsample = false;
@@ -111,7 +114,10 @@ void LensFlarePass::Update(const float fDeltaTime)
         0.f,    0.5f,   0.5f,
         0.f,    0.f,    1.f);
 
-    f33LensFlareStarBurstMat = scaleBias2 * rotMat * scaleBias1;
+    HLSL::LensFlareApplyParams->StarBurstMat = scaleBias2 * rotMat * scaleBias1;
+
+    HLSL::LensFlareApplyParams->DirtIntensity = DirtIntensity;
+    HLSL::LensFlareApplyParams->StarBurstIntensity = StarBurstIntensity;
 
     if (LENS_FLARE_ANAMORPHIC)
         CurrentLensFlareBuffer = AnamorphicLensFlareBuffer;
@@ -430,11 +436,11 @@ void LensFlarePass::UpscaleAndBlend()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    f2HalfTexelOffset = Vec2f(0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetWidth(), 0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetHeight());
+    HLSL::LensFlareApplyParams->HalfTexelOffset = Vec2f(0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetWidth(), 0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
         CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    texLensFlareFeatures = CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer();
+    LensFlareFeatures = CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer();
 
     LensFlareApplyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

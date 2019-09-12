@@ -40,6 +40,10 @@ namespace GITechDemoApp
         void    UpscaleAndBlend();
 
         RenderTarget** CurrentLensFlareBuffer;
+
+    public:
+        float DirtIntensity;
+        float StarBurstIntensity;
     };
 }
 

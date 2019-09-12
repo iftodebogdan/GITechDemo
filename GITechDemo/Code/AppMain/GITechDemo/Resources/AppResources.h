@@ -38,6 +38,8 @@
 
 namespace GITechDemoApp
 {
+    #include "LensFlareApply.hlsl"
+    #include "HDRToneMapping.hlsl"
     #include "FXAA.hlsl"
     #include "ColorCopy.hlsl"
     #include "UI.hlsl"
@@ -85,8 +87,8 @@ namespace GITechDemoApp
     CREATE_TEXTURE_HANDLE(IrradianceTexture);
     CREATE_TEXTURE_HANDLE(EnvironmentTexture);
     CREATE_TEXTURE_HANDLE(LensFlareGhostColorLUT);
-    CREATE_TEXTURE_HANDLE(LensFlareDirt);
-    CREATE_TEXTURE_HANDLE(LensFlareStarBurst);
+    CREATE_TEXTURE_HANDLE(LensFlareDirtTexture);
+    CREATE_TEXTURE_HANDLE(LensFlareStarBurstTexture);
     CREATE_TEXTURE_HANDLE(BayerMatrix);
     CREATE_TEXTURE_HANDLE(NoiseTexture);
     CREATE_TEXTURE_HANDLE(ColorCorrectionTexture);
@@ -267,20 +269,6 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(bInitialLumaPass,         bool            );
     CREATE_SHADER_CONSTANT_HANDLE(bFinalLumaPass,           bool            );
     CREATE_SHADER_CONSTANT_HANDLE(f2AvgLumaClamp,           Vec2f           );
-    
-    //  - HDRToneMapping.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(texAvgLuma,               s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texColorCorrection,       s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_HANDLE(bApplyColorCorrection,    bool            );
-    CREATE_SHADER_CONSTANT_HANDLE(fExposureBias,            float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fShoulderStrength,        float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fLinearStrength,          float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fLinearAngle,             float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fToeStrength,             float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fToeNumerator,            float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fToeDenominator,          float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fLinearWhite,             float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fFilmGrainAmount,         float           );
 
     //  - LumaAdapt.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(fLumaAdaptSpeed,          float           );
@@ -344,12 +332,10 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fShiftFactor,             float           );
 
     //  - LensFlareApply.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(texLensFlareFeatures,     s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texLensFlareDirt,         s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(texLensFlareStarBurst,    s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(fLensDirtIntensity,       float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fLensStarBurstIntensity,  float           );
-    CREATE_SHADER_CONSTANT_HANDLE(f33LensFlareStarBurstMat, Matrix33f       );
+    CREATE_SHADER_CONSTANT_HANDLE(LensFlareFeatures, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(LensFlareDirt, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(LensFlareStarBurst, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(LensFlareApplyParams, LensFlareApplyConstantTable);
 
     //  - BilateralBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f2BlurDir,                Vec2f           );
@@ -370,6 +356,12 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f44ViewToRasterMat,       Matrix44f       );
     CREATE_SHADER_CONSTANT_HANDLE(bUseDither,               bool            );
     CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity,     float           );
+
+    //  - HDRToneMapping.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingSourceTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingAvgLumaTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingColorCorrectionTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingParams, HDRToneMappingConstantTable);
 
     //  - FXAA.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(FXAASourceTexture, s3dSampler2D);
