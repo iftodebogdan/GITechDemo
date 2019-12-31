@@ -21,36 +21,48 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct AnamorphicLensFlareFeaturesConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_float4 TexSize;     // zw: size of source texture texel
+
+    CB_float AnamorphicIntensity;
+};
+
+#ifdef HLSL
+cbuffer AnamorphicLensFlareFeaturesResourceTable
+{
+    sampler2D AnamorphicLensFlareFeaturesSource;  // Source texture
+
+    AnamorphicLensFlareFeaturesConstantTable AnamorphicLensFlareFeaturesParams;
+};
 
 struct VSOut
 {
-    float4  f4Position          :   SV_POSITION;
-    float2  f2TexCoord          :   TEXCOORD0;
-    float2  f2FlippedTexCoord   :   TEXCOORD1;
+    float4  Position        :   SV_POSITION;
+    float2  TexCoord        :   TEXCOORD0;
+    float2  FlippedTexCoord :   TEXCOORD1;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + AnamorphicLensFlareFeaturesParams.HalfTexelOffset;
     // Flip texture coordinates horizontally/vertically
-    output.f2FlippedTexCoord = float2(1.f, 1.f) - (f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset);
+    output.FlippedTexCoord = float2(1.f, 1.f) - (position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + AnamorphicLensFlareFeaturesParams.HalfTexelOffset);
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;  // Source texture
-const float4 f4TexSize;     // zw: size of source texture texel
-
-const float fAnamorphicIntensity;
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
+    color = float4(0.f, 0.f, 0.f, 1.f);
 
-    const float fWeight[] =
+    const float weight[] =
     {
         0.044256f,
         0.044036f, 0.043381f, 0.042311f, 0.040857f,
@@ -62,13 +74,16 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     UNROLL for (int i = -16; i <= 16; i++)
     {
         // Calculate coordinates for sampling source texture
-        const float2 f2Offset = float2(i * f4TexSize.z, 0.f);
-        const float2 f2SampleTexCoord = input.f2TexCoord + f2Offset;
+        const float2 offset = float2(i * AnamorphicLensFlareFeaturesParams.TexSize.z, 0.f);
+        const float2 sampleTexCoord = input.TexCoord + offset;
 
         // Sample the texture and give it a bluish tint
-        float3 f3SampleColor = tex2D(texSource, f2SampleTexCoord).rgb;
-        f3SampleColor.b += f3SampleColor.r + f3SampleColor.g;
+        float3 sampleColor = tex2D(AnamorphicLensFlareFeaturesSource, sampleTexCoord).rgb;
+        sampleColor.b += sampleColor.r + sampleColor.g;
 
-        f4Color.rgb += fWeight[abs(i)] * f3SampleColor * fAnamorphicIntensity;
+        color.rgb += weight[abs(i)] * sampleColor * AnamorphicLensFlareFeaturesParams.AnamorphicIntensity;
     }
 }
+#endif // PIXEL
+////////////////////////////////////////////////////////////////////
+#endif // HLSL

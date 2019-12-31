@@ -522,7 +522,12 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fHaloRadialWeightExp,     float,          5.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(bChromaShift,             bool,           true                    );
     CREATE_SHADER_CONSTANT_OBJECT(fShiftFactor,             float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fAnamorphicIntensity,     float,          5.f                     );
+
+    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurSource, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
+
+    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
 
     CREATE_SHADER_CONSTANT_OBJECT(LensFlareFeatures, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(LensFlareDirt, s3dSampler2D);
@@ -1472,7 +1477,7 @@ namespace GITechDemoApp
         "Anamorphic intensity",
         "Adjust the intensity of the anamophic lens flares",
         "Lens flare",
-        fAnamorphicIntensity.GetCurrentValue(),
+        LENS_FLARE_PASS.AnamorphicIntensity,
         1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(

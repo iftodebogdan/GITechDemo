@@ -38,6 +38,8 @@
 
 namespace GITechDemoApp
 {
+    #include "AnamorphicLensFlareBlur.hlsl"
+    #include "AnamorphicLensFlareFeatures.hlsl"
     #include "LensFlareApply.hlsl"
     #include "HDRToneMapping.hlsl"
     #include "FXAA.hlsl"
@@ -344,8 +346,13 @@ namespace GITechDemoApp
     //  - NearestDepthUpscale.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(fUpsampleDepthThreshold,  float           );
 
+    //  - AnamorphicLensFlareBlur.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurSource, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
+
     //  - AnamorphicLensFlareFeatures.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(fAnamorphicIntensity,     float           );
+    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
 
     //  - ScreenSpaceReflection.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(texHDRSceneTexture,       s3dSampler2D    );

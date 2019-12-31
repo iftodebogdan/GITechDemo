@@ -42,6 +42,7 @@ namespace GITechDemoApp
         RenderTarget** CurrentLensFlareBuffer;
 
     public:
+        float AnamorphicIntensity;
         float DirtIntensity;
         float StarBurstIntensity;
     };

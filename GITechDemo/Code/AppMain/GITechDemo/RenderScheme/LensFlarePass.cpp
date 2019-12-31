@@ -49,6 +49,7 @@ namespace GITechDemoApp
 LensFlarePass::LensFlarePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {
+    AnamorphicIntensity = 5.f;
     DirtIntensity = 0.3f;
     StarBurstIntensity = 0.5f;
 }
@@ -259,17 +260,17 @@ void LensFlarePass::GenerateFeatures()
     }
     else
     {
-        f2HalfTexelOffset = Vec2f(
+        HLSL::AnamorphicLensFlareFeaturesParams->HalfTexelOffset = Vec2f(
             0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
             0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::AnamorphicLensFlareFeaturesParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight(),
             1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
             );
-        texSource = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
+        HLSL::AnamorphicLensFlareFeaturesSource = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
 
         AnamorphicLensFlareFeaturesShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -385,18 +386,18 @@ void LensFlarePass::AnamorphicBlur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        f2HalfTexelOffset = Vec2f(
+        HLSL::AnamorphicLensFlareBlurParams->HalfTexelOffset = Vec2f(
             0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::AnamorphicLensFlareBlurParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
-        texSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
-        nKernel = i;
+        HLSL::AnamorphicLensFlareBlurSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::AnamorphicLensFlareBlurParams->Kernel = i;
 
         AnamorphicLensFlareBlurShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -420,7 +421,7 @@ void LensFlarePass::UpscaleAndBlend()
     if (!ResourceMgr)
         return;
 
-    PUSH_PROFILE_MARKER("Upscale and blend + full-resolution features");
+    PUSH_PROFILE_MARKER("Upscale and blend");
 
     LightAccumulationBuffer.Enable();
 
