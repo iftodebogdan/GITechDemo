@@ -96,7 +96,7 @@
 //
 // Even if we order them in such a way as to make it work, you don't have any guarantee bools in your struct will end up in bool registers.
 // It all depends on whether the compiler decides to use an actual flow-control instruction (i.e. somehting like 'if b0 ... else ... endif'), in which case the bool uses up one
-// 4-byte bool register, or it flattens the conditional (i.e. something like 'cmp ##, -c0.x, ##, ##'), in which case it uses a 16-byte float register. This means that there's
+// 4-byte bool register, or it flattens the conditional (i.e. something like 'cmp ##, -c0.x, ##, ##'), in which case it uses a 16-byte float4 register. This means that there's
 // no realiable way of knowing how to setup the memory layout of CPP structs without parsing the output assembly from FXC.
 //
 // As such we have to drop bools from HLSL to force the use of only float registers.
@@ -107,10 +107,10 @@
 //
 //   struct
 //   {
-//       float2 HalfTexelOffset;        -> (c0) and (b0-b1)
-//       bool SingleChannelCopy;        -> (c1) and (b2)
-//       bool ApplyTonemap;             -> (c2) and (b3)
-//       float4 CustomColorModulator;   -> (c3) and [optimized away from b# register count]
+//       float2 HalfTexelOffset;        -> (c0) or (b0-b1)
+//       bool SingleChannelCopy;        -> (c1) or (b2)
+//       bool ApplyTonemap;             -> (c2) or (b3)
+//       float4 CustomColorModulator;   -> (c3) or (b4-b7)
 //
 //   } ColorCopyParams;
 //
@@ -118,8 +118,8 @@
 //
 //   Name                   Reg   Size
 //   ---------------------- ----- ----
-//   ColorCopyParams        b0       4
-//   ColorCopyParams        c0       4
+//   ColorCopyParams        b0       8 // i.e. 8 x 4-byte bool registers (b#) used when code forced to use all those constants in flow-control instructions
+//   ColorCopyParams        c0       4 // i.e. 4 x 16-byte float4 registers (c#) used when code forced to not use flow-control instructions
 //
 
 typedef float  CB_bool;

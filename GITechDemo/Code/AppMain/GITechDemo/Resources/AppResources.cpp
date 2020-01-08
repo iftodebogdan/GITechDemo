@@ -448,7 +448,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.15f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,        float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,        float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            COOK_TORRANCE_GGX       );
+    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            BRDF::CookTorranceGGX   );
 
     /* Volumetric directional light parameters */
     CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,             int,            32                      );

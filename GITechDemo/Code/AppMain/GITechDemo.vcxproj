@@ -1384,6 +1384,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(Platform)\fxc.e
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
     </CustomBuild>
     <None Include="..\..\Data\shaders\RSMCommon.hlsli">
       <FileType>Document</FileType>

@@ -99,7 +99,7 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
     DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
-    nBRDFModel = gmtl::Math::clamp(nBRDFModel.GetCurrentValue(), (int)BLINN_PHONG, (int)BRDF_MODEL_MAX - 1);
+    nBRDFModel = gmtl::Math::clamp(nBRDFModel.GetCurrentValue(), (int)BRDF::BlinnPhong, (int)BRDF::BRDFModelCount - 1);
 }
 
 void GBufferPass::Draw()

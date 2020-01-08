@@ -21,107 +21,115 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct SphericalLensFlareFeaturesConstantTable
+{
+    CB_float2 HalfTexelOffset;
+    CB_float4 TexSize; // zw: size of source texture texel
+
+    // Ghost features
+    CB_int GhostSamples;
+    CB_float GhostDispersal;
+    CB_float GhostRadialWeightExp;
+
+    // Halo feature
+    CB_float HaloSize;
+    CB_float HaloRadialWeightExp;
+
+    // Chromatic aberration feature
+    CB_bool ChromaShift;
+    CB_float ShiftFactor;
+};
+
+#ifdef HLSL
+cbuffer SphericalLensFlareFeaturesResourceTable
+{
+    sampler1D SphericalLensFlareFeaturesGhostColorLUT;
+    sampler2D SphericalLensFlareFeaturesSource;  // Source texture
+
+    SphericalLensFlareFeaturesConstantTable SphericalLensFlareFeaturesParams;
+};
 
 struct VSOut
 {
-    float4  f4Position          :   SV_POSITION;
-    float2  f2TexCoord          :   TEXCOORD0;
-    float2  f2FlippedTexCoord   :   TEXCOORD1;
+    float4  Position          :   SV_POSITION;
+    float2  TexCoord          :   TEXCOORD0;
+    float2  FlippedTexCoord   :   TEXCOORD1;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + SphericalLensFlareFeaturesParams.HalfTexelOffset;
     // Flip texture coordinates horizontally/vertically
-    output.f2FlippedTexCoord = float2(1.f, 1.f) - (f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset);
+    output.FlippedTexCoord = float2(1.f, 1.f) - (position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + SphericalLensFlareFeaturesParams.HalfTexelOffset);
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;  // Source texture
-const float4 f4TexSize; // zw: size of source texture texel
-
-// Ghost features
-const sampler1D texGhostColorLUT;
-const int nGhostSamples;
-const float fGhostDispersal;
-const float fGhostRadialWeightExp;
-
-// Halo feature
-const float fHaloSize;
-const float fHaloRadialWeightExp;
-
-// Chromatic aberration feature
-const bool bChromaShift;
-const float fShiftFactor;
-
+#ifdef PIXEL
 // Replacement for tex2D() which adds a
 // chromatic aberration effect to texture samples
 float4 FetchChromaShiftedTextureSample(sampler2D tex, float2 texCoord)
 {
-    if (bChromaShift)
+    if (SphericalLensFlareFeaturesParams.ChromaShift)
     {
-        const float3 f2ShiftAmount = float3(
-            -f4TexSize.z * fShiftFactor,
+        const float3 shiftAmount = float3(
+            -SphericalLensFlareFeaturesParams.TexSize.z * SphericalLensFlareFeaturesParams.ShiftFactor,
             0.f,
-            f4TexSize.z * fShiftFactor);
-        const float2 f2Dir = normalize(float2(0.5f, 0.5f) - texCoord);
+            SphericalLensFlareFeaturesParams.TexSize.z * SphericalLensFlareFeaturesParams.ShiftFactor);
+        const float2 dir = normalize(float2(0.5f, 0.5f) - texCoord);
         return float4(
-            tex2D(tex, texCoord + f2Dir * f2ShiftAmount.r).r,
-            tex2D(tex, texCoord + f2Dir * f2ShiftAmount.g).g,
-            tex2D(tex, texCoord + f2Dir * f2ShiftAmount.b).b,
+            tex2D(tex, texCoord + dir * shiftAmount.r).r,
+            tex2D(tex, texCoord + dir * shiftAmount.g).g,
+            tex2D(tex, texCoord + dir * shiftAmount.b).b,
             1.f);
     }
     else
         return tex2D(tex, texCoord);
 }
 
-// Convert tex2D() calls to FetchChromaShiftedTextureSample() calls
-#ifdef tex2D
-#undef tex2D
-#endif
-#define tex2D(tex, texCoord) FetchChromaShiftedTextureSample(tex, texCoord)
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////
     // Lens flare effect                                                        //
     // http://john-chapman-graphics.blogspot.ro/2013/02/pseudo-lens-flare.html  //
     //////////////////////////////////////////////////////////////////////////////
 
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
+    color = float4(0.f, 0.f, 0.f, 1.f);
 
     // Ghost vector to image center
-    const float2 f2GhostVec = (float2(0.5f, 0.5f) - input.f2FlippedTexCoord) * fGhostDispersal;
+    const float2 ghostVec = (float2(0.5f, 0.5f) - input.FlippedTexCoord) * SphericalLensFlareFeaturesParams.GhostDispersal;
 
     // Generate ghost features
-    for (int i = 0; i < nGhostSamples; i++)
+    for (int i = 0; i < SphericalLensFlareFeaturesParams.GhostSamples; i++)
     {
-        const float2 f2Offset = input.f2FlippedTexCoord + f2GhostVec * float(i);
-        const float fGhostWeight =
+        const float2 offset = input.FlippedTexCoord + ghostVec * float(i);
+        const float ghostWeight =
             pow(abs(1.f -
-                length(float2(0.5f, 0.5f) - f2Offset) /
+                length(float2(0.5f, 0.5f) - offset) /
                 length(float2(0.5f, 0.5f))),
-                fGhostRadialWeightExp);
-        f4Color.rgb += tex2D(texSource, f2Offset).rgb * fGhostWeight;
+                SphericalLensFlareFeaturesParams.GhostRadialWeightExp);
+        color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeaturesSource, offset).rgb * ghostWeight;
     }
 
     // Adjust ghosts' color using a LUT
-    f4Color.rgb *= tex1D(texGhostColorLUT, length(float2(0.5f, 0.5f) - input.f2FlippedTexCoord) / length(float2(0.5f, 0.5f))).rgb;
+    color.rgb *= tex1D(SphericalLensFlareFeaturesGhostColorLUT, length(float2(0.5f, 0.5f) - input.FlippedTexCoord) / length(float2(0.5f, 0.5f))).rgb;
 
     // Generate halo feature
-    const float2 f2HaloVec = normalize(f2GhostVec) * fHaloSize;
-    const float fHaloWeight =
+    const float2 haloVec = normalize(ghostVec) * SphericalLensFlareFeaturesParams.HaloSize;
+    const float haloWeight =
         pow(abs(1.f -
             length(
                 float2(0.5f, 0.5f) -
-                (input.f2FlippedTexCoord + f2HaloVec)
+                (input.FlippedTexCoord + haloVec)
                 ) /
             length(float2(0.5f, 0.5f))),
-            fHaloRadialWeightExp);
-    f4Color.rgb += tex2D(texSource, input.f2FlippedTexCoord + f2HaloVec).rgb * fHaloWeight;
+            SphericalLensFlareFeaturesParams.HaloRadialWeightExp);
+    color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeaturesSource, input.FlippedTexCoord + haloVec).rgb * haloWeight;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

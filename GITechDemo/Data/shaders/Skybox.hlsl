@@ -19,42 +19,52 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-// Vertex shader /////////////////////////////////////////////////
-const float4x4 f44SkyViewProjMat;
+#include "Common.hlsli"
 
-struct VSIn
+struct SkyboxConstantTable
 {
-    float4 f4Position   :   POSITION;
+    CB_float4x4 SkyViewProjMat;
+    CB_float3 LightDir;    // Direction of sunlight
+    CB_float SunRadius;     // Determines sun radius
+    CB_float SunBrightness; // Determines sun brightness
+};
+
+#ifdef HLSL
+cbuffer SkyboxResourceTable
+{
+    samplerCUBE SkyboxSkyCube;   // Sky cubemap
+
+    SkyboxConstantTable SkyboxParams;
 };
 
 struct VSOut
 {
-    float4 f4Position   :   SV_POSITION;
-    float3 f3TexCoord   :   TEXCOORD0;
+    float4 Position   :   SV_POSITION;
+    float3 TexCoord   :   TEXCOORD0;
 };
 
-void vsmain(VSIn input, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, out VSOut output)
 {
-    output.f4Position   =   mul(f44SkyViewProjMat, input.f4Position);
-    output.f3TexCoord   =   normalize(input.f4Position.xyz);
-    output.f4Position.z =   output.f4Position.w; // Position sky at far plane
+    output.Position   =   mul(SkyboxParams.SkyViewProjMat, position);
+    output.Position.z =   output.Position.w; // Position sky at far plane
+    output.TexCoord   =   normalize(position.xyz);
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const samplerCUBE texSkyCube;   // Sky cubemap
-
-const float3 f3LightDir;    // Direction of sunlight
-const float fSunRadius;     // Determines sun radius
-const float fSunBrightness; // Determines sun brightness
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Do a dot product of the view direciton and the sunlight direction
-    const float3 f3SunDir   =   normalize(-f3LightDir);
-    const float fSunDot     =   dot(normalize(input.f3TexCoord), f3SunDir);
+    const float3 sunDir = normalize(-SkyboxParams.LightDir);
+    const float sunDot  = dot(normalize(input.TexCoord), sunDir);
 
-    f4Color  =  texCUBE(texSkyCube, input.f3TexCoord);
-    f4Color +=  pow(max(0.f, fSunDot), fSunRadius) * fSunBrightness;
+    color  = texCUBE(SkyboxSkyCube, input.TexCoord);
+    color += pow(max(0.f, sunDot), SkyboxParams.SunRadius) * SkyboxParams.SunBrightness;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

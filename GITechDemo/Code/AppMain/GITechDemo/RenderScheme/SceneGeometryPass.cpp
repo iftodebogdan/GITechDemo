@@ -130,7 +130,7 @@ void SceneGeometryPass::Draw()
         const unsigned int matTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
         const unsigned int roughnessTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
-        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || nBRDFModel == BLINN_PHONG))
+        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || nBRDFModel == BRDF::BlinnPhong))
         {
             RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
 

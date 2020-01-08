@@ -38,6 +38,11 @@
 
 namespace GITechDemoApp
 {
+    #include "ScreenSpaceReflection.hlsl"
+    #include "DirectionalLight.hlsl"
+    #include "Skybox.hlsl"
+    #include "SphericalLensFlareFeatures.hlsl"
+    #include "SSAO.hlsl"
     #include "AnamorphicLensFlareBlur.hlsl"
     #include "AnamorphicLensFlareFeatures.hlsl"
     #include "LensFlareApply.hlsl"
@@ -396,6 +401,8 @@ namespace GITechDemoApp
     // Used for fullscreen effects, post-processing, etc.
     extern VertexBuffer*    FullScreenTri;
 
+    #pragma WARNING("Also remove this")
+    /*
     // Used to set the nBRDFModel shader constant
     enum BRDFModel
     {
@@ -406,6 +413,7 @@ namespace GITechDemoApp
         WARD,
         BRDF_MODEL_MAX
     };
+    */
 }
 
 ///////////////////////////////////////////////////////////
