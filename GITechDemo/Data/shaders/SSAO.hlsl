@@ -24,21 +24,21 @@
 
 struct SSAOConstantTable
 {
-    CB_float2 HalfTexelOffset;
+    GPU_float2 HalfTexelOffset;
 
-    CB_float4x4 InvProjMat;   // Matrix for inversing the projection transform
+    GPU_float4x4 InvProjMat;   // Matrix for inversing the projection transform
 
-    CB_float SampleRadius;  // Radius of the sampling pattern
-    CB_float Intensity;     // Overall intensity of the SSAO effect
-    CB_float Scale;         // Scale for the occlusion attenuation with distance
-    CB_float Bias;          // Bias for the occlusion attenuation with normal differences
+    GPU_float SampleRadius;  // Radius of the sampling pattern
+    GPU_float Intensity;     // Overall intensity of the SSAO effect
+    GPU_float Scale;         // Scale for the occlusion attenuation with distance
+    GPU_float Bias;          // Bias for the occlusion attenuation with normal differences
 };
 
 #ifdef HLSL
 cbuffer SSAOResourceTable
 {
-    sampler2D SSAONormalBuffer;    // View-space normals
-    sampler2D SSAODepthBuffer;     // Depth values
+    sampler2D SSAO_NormalBuffer;    // View-space normals
+    sampler2D SSAO_DepthBuffer;     // Depth values
 
     SSAOConstantTable SSAOParams;
 };
@@ -76,7 +76,7 @@ float AOCalc(const float2 texCoord, const float2 offset, const float3 position, 
 {
     const float2 sampleTexCoord     = texCoord + offset;
     const float2 sampleScreenPos    = sampleTexCoord * float2(2.f, -2.f) - float2(1.f, -1.f);
-    const float sampleDepth         = tex2D(SSAODepthBuffer, sampleTexCoord).r;
+    const float sampleDepth         = tex2D(SSAO_DepthBuffer, sampleTexCoord).r;
     const float4 sampleProjPosition = float4(sampleScreenPos, sampleDepth, 1.f);
     const float4 samplePositionPreW = mul(SSAOParams.InvProjMat, sampleProjPosition);
     const float3 samplePosition     = samplePositionPreW.xyz / samplePositionPreW.w;
@@ -98,13 +98,13 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         float2( 0.f,    -1.f)
     };
 
-    const float depth = tex2D(SSAODepthBuffer, input.TexCoord).r;
+    const float depth = tex2D(SSAO_DepthBuffer, input.TexCoord).r;
     DEPTH_KILL(depth, 1.f);
 
     const float4 projPosition = float4(input.ScreenPos, depth, 1.f);
     const float4 positionPreW = mul(SSAOParams.InvProjMat, projPosition);
     const float3 position = positionPreW.xyz / positionPreW.w;
-    const float3 normal = DecodeNormal(tex2D(SSAONormalBuffer, input.TexCoord));
+    const float3 normal = DecodeNormal(tex2D(SSAO_NormalBuffer, input.TexCoord));
     //const float2 f2Rand = float2(GenerateRandomNumber(input.f2TexCoord.xy), GenerateRandomNumber(input.f2TexCoord.yx));
 
     float AO = 0.0f;

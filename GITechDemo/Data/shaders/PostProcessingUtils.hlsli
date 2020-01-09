@@ -24,7 +24,22 @@
 
 #include "Common.hlsli"
 
+struct PostProcessingConstantTable
+{
+    GPU_float zNear;
+    GPU_float zFar;
+    GPU_float2 linearDepthEquation;
+    GPU_float depthHalfTexelOffset; // Half texel offset of depth buffer
+};
+
 #ifdef HLSL
+
+cbuffer PostProcessingResourceTable
+{
+    sampler2D PostProcessing_DitherMap;   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
+
+    PostProcessingConstantTable PostProcessingParams;
+};
 
 //////////////////////////////////////////////////////////
 // Hardcoded mip level when sampling from textures to   //
@@ -36,31 +51,27 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// Reconstruct the depth in view space coordinates from the hyperbolic depth                //
-//------------------------------------------------------------------------------------------//
-// LinearDepth = (fZNear * fZFar / (fZNear - fZFar)) / (Depth - (fZFar / (fZFar - fZNear))) //
-// f2LinearDepthEquation.x = fZNear * fZFar / (fZNear - fZFar)                              //
-// f2LinearDepthEquation.y = fZFar / (fZFar - fZNear)                                       //
-//////////////////////////////////////////////////////////////////////////////////////////////
-const float fZNear;
-const float fZFar;
-const float2 f2LinearDepthEquation;
-float ReconstructDepth(float fHyperbolicDepth)
+//////////////////////////////////////////////////////////////////////////////////////////
+// Reconstruct the depth in view space coordinates from the hyperbolic depth            //
+//--------------------------------------------------------------------------------------//
+// linearDepth = (zNear * zFar / (zNear - zFar)) / (depth - (zFar / (zFar - zNear)))    //
+// linearDepthEquation.x = zNear * zFar / (zNear - zFar)                                //
+// linearDepthEquation.y = zFar / (zFar - zNear)                                        //
+//////////////////////////////////////////////////////////////////////////////////////////
+float ReconstructDepth(float hyperbolicDepth)
 {
-    return f2LinearDepthEquation.x / (fHyperbolicDepth - f2LinearDepthEquation.y);
+    return PostProcessingParams.linearDepthEquation.x / (hyperbolicDepth - PostProcessingParams.linearDepthEquation.y);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Downsample depth to a quarter of the original resolution             //
-// NB: f2TexCoord must be at the center of the quarter resolution texel //
+// NB: texCoord must be at the center of the quarter resolution texel   //
 // (i.e. right at the middle of the 4 full resolution samples)          //
 //////////////////////////////////////////////////////////////////////////
 #define DEPTH_DOWNSAMPLE_FUNC(x, y) (max(x, y))
-const float f2DepthHalfTexelOffset; // Half texel offset of depth buffer
-const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2TexCoord)
+const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 texCoord)
 {
-    const float2 f2SampleOffset[] =
+    const float2 sampleOffset[] =
     {
         float2(-1.f, -1.f),
         float2(-1.f,  1.f),
@@ -71,41 +82,41 @@ const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 f2T
     return
         DEPTH_DOWNSAMPLE_FUNC(
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[0]).r,
-                tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[1]).r
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[0]).r,
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[1]).r
                 ),
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[2]).r,
-                tex2D(texDepthBuffer, f2TexCoord + f2DepthHalfTexelOffset * f2SampleOffset[3]).r
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[2]).r,
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[3]).r
                 )
             );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Kawase blur, approximating a 35x35 Gaussian kernel                                                                   //
-// in the nKernel = [0-1-2-2-3] format over 5 passes                                                                    //
+// in the kernel = [0-1-2-2-3] format over 5 passes                                                                     //
 // https://software.intel.com/en-us/blogs/2014/07/15/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float4 KawaseBlur(const sampler2D texSource, const float2 f2TexelSize, const float2 f2TexCoord, const int nKernel)
+float4 KawaseBlur(const sampler2D texSource, const float2 texelSize, const float2 texCoord, const int kernel)
 {
-    float4 f4Color = float4(0.f, 0.f, 0.f, 0.f);
+    float4 color = float4(0.f, 0.f, 0.f, 0.f);
 
     UNROLL for (int i = -1; i <= 1; i += 2)
     {
         UNROLL for (int j = -1; j <= 1; j += 2)
         {
-            const float2 f2TexelOffset = f2TexelSize * float2(i, j);
-            const float2 f2HalfTexelOffset = 0.5f * f2TexelOffset;
-            const float2 f2HalfTexelSize = 0.5f * f2TexelSize;
-            const float2 f2SampleCenter = f2TexCoord + f2HalfTexelOffset + f2TexelOffset * (nKernel + 0.5f);
+            const float2 texelOffset = texelSize * float2(i, j);
+            const float2 halfTexelOffset = 0.5f * texelOffset;
+            const float2 halfTexelSize = 0.5f * texelSize;
+            const float2 sampleCenter = texCoord + halfTexelOffset + texelOffset * (kernel + 0.5f);
 
             UNROLL for (int x = -1; x <= 1; x += 2)
                 UNROLL for (int y = -1; y <= 1; y += 2)
-                    f4Color += tex2D(texSource, f2SampleCenter + f2HalfTexelSize * float2(x, y));
+                    color += tex2D(texSource, sampleCenter + halfTexelSize * float2(x, y));
         }
     }
 
-    return f4Color * 0.0625f;
+    return color * 0.0625f;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -158,16 +169,15 @@ float4 Downsample2x2(sampler2D tex, float2 texCoord, float2 texelSize)
 #define INTERLEAVED_GRID_SIZE_RCP       (0.125f)
 #define INTERLEAVED_GRID_SIZE_SQR       (64.f)
 #define INTERLEAVED_GRID_SIZE_SQR_RCP   (0.015625f)
-const sampler2D texDitherMap;   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
 
 float GetDitherAmount(float2 texCoord, float2 texSize)
 {
-    return tex2D(texDitherMap, texCoord * texSize * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+    return tex2D(PostProcessing_DitherMap, texCoord * texSize * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
 }
 
 float GetDitherAmount(float2 texelIdx)
 {
-    return tex2D(texDitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+    return tex2D(PostProcessing_DitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
 }
 
 #endif // HLSL

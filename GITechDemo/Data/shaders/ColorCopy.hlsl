@@ -24,16 +24,16 @@
 
 struct ColorCopyConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_bool SingleChannelCopy;
-    CB_bool ApplyTonemap;
-    CB_float4 CustomColorModulator;
+    GPU_float2 HalfTexelOffset;
+    GPU_bool SingleChannelCopy;
+    GPU_bool ApplyTonemap;
+    GPU_float4 CustomColorModulator;
 };
 
 #ifdef HLSL
 cbuffer ColorCopyResourceTable
 {
-    const sampler2D ColorCopySourceTexture; // The texture to be copied
+    const sampler2D ColorCopy_SourceTexture; // The texture to be copied
 
     ColorCopyConstantTable ColorCopyParams;
 };
@@ -62,11 +62,11 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     if (ColorCopyParams.SingleChannelCopy)
     {
         // For use with single channel textures (e.g. SSAO buffer)
-        color = tex2D(ColorCopySourceTexture, input.TexCoord).rrrr;
+        color = tex2D(ColorCopy_SourceTexture, input.TexCoord).rrrr;
     }
     else
     {
-        color = tex2D(ColorCopySourceTexture, input.TexCoord);
+        color = tex2D(ColorCopy_SourceTexture, input.TexCoord);
     }
 
     color *= ColorCopyParams.CustomColorModulator;

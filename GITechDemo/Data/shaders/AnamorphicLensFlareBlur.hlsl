@@ -24,15 +24,15 @@
 
 struct AnamorphicLensFlareBlurConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float4 TexSize;     // zw: normalized size of texel
-    CB_int Kernel;          // Kernel size for current pass
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize;     // zw: normalized size of texel
+    GPU_int Kernel;          // Kernel size for current pass
 };
 
 #ifdef HLSL
 cbuffer AnamorphicLensFlareBlurResourceTable
 {
-    sampler2D AnamorphicLensFlareBlurSource;  // The texture to be blurred
+    sampler2D AnamorphicLensFlareBlur_Source;  // The texture to be blurred
 
     AnamorphicLensFlareBlurConstantTable AnamorphicLensFlareBlurParams;
 };
@@ -79,7 +79,7 @@ float4 KawaseBlurAnamorphic(const sampler2D texSource, const float2 texelSize, c
 
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    color = KawaseBlurAnamorphic(AnamorphicLensFlareBlurSource, AnamorphicLensFlareBlurParams.TexSize.zw, input.TexCoord, AnamorphicLensFlareBlurParams.Kernel);
+    color = KawaseBlurAnamorphic(AnamorphicLensFlareBlur_Source, AnamorphicLensFlareBlurParams.TexSize.zw, input.TexCoord, AnamorphicLensFlareBlurParams.Kernel);
 }
 #endif // PIXEL
 ////////////////////////////////////////////////////////////////////

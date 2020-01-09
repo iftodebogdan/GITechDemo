@@ -1035,7 +1035,7 @@ void UIPass::RenderUI()
             RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
             RSMgr->SetSRGBWriteEnabled(((Synesthesia3D::Texture*)cmd.Texture)->GetSRGBEnabled());
 
-            const bool invalidateShaderConstants = (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || HLSL::UITexture2D != m_nFontTextureIdx || HLSL::UIParams->TextureSwitch != (CB_uint)2);
+            const bool invalidateShaderConstants = (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || HLSL::UITexture2D != m_nFontTextureIdx || HLSL::UIParams->TextureSwitch != (GPU_uint)2);
 
             if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
             {

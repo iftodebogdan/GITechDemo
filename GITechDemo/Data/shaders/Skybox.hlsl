@@ -23,16 +23,16 @@
 
 struct SkyboxConstantTable
 {
-    CB_float4x4 SkyViewProjMat;
-    CB_float3 LightDir;    // Direction of sunlight
-    CB_float SunRadius;     // Determines sun radius
-    CB_float SunBrightness; // Determines sun brightness
+    GPU_float4x4 SkyViewProjMat;
+    GPU_float3 LightDir;    // Direction of sunlight
+    GPU_float SunRadius;     // Determines sun radius
+    GPU_float SunBrightness; // Determines sun brightness
 };
 
 #ifdef HLSL
 cbuffer SkyboxResourceTable
 {
-    samplerCUBE SkyboxSkyCube;   // Sky cubemap
+    samplerCUBE Skybox_SkyCube;   // Sky cubemap
 
     SkyboxConstantTable SkyboxParams;
 };
@@ -62,7 +62,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     const float3 sunDir = normalize(-SkyboxParams.LightDir);
     const float sunDot  = dot(normalize(input.TexCoord), sunDir);
 
-    color  = texCUBE(SkyboxSkyCube, input.TexCoord);
+    color  = texCUBE(Skybox_SkyCube, input.TexCoord);
     color += pow(max(0.f, sunDot), SkyboxParams.SunRadius) * SkyboxParams.SunBrightness;
 }
 #endif // PIXEL

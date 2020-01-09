@@ -24,21 +24,21 @@
 
 struct FXAAConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float4 TextureSize;          // xy: size of texture in pixels; zw: the size of a texel (1 / xy)
-    CB_float Subpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
-    CB_float EdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
-    CB_float EdgeThresholdMin;      // Trims the algorithm from processing darks (default: 0.0833f)
-    CB_float EdgeDepthThreshold;    // Threshold for depth based edge detection
-    CB_bool UseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
-    CB_bool DebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TextureSize;          // xy: size of texture in pixels; zw: the size of a texel (1 / xy)
+    GPU_float Subpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
+    GPU_float EdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
+    GPU_float EdgeThresholdMin;      // Trims the algorithm from processing darks (default: 0.0833f)
+    GPU_float EdgeDepthThreshold;    // Threshold for depth based edge detection
+    GPU_bool UseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
+    GPU_bool DebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
 };
 
 #ifdef HLSL
 cbuffer FXAAResourceTable
 {
-    sampler2D FXAASourceTexture;    // The texture to be antialiased
-    sampler2D FXAADepthBuffer;      // Scene depth values
+    sampler2D FXAA_SourceTexture;    // The texture to be antialiased
+    sampler2D FXAA_DepthBuffer;      // Scene depth values
 
     FXAAConstantTable FXAAParams;
 };
@@ -2211,11 +2211,11 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         };
 
         // Fetch the reference depth
-        const float refDepth = tex2D(FXAADepthBuffer, input.TexCoord + sampleOffset[0] * FXAAParams.TextureSize.zw).r;
+        const float refDepth = tex2D(FXAA_DepthBuffer, input.TexCoord + sampleOffset[0] * FXAAParams.TextureSize.zw).r;
 
         UNROLL for (int i = 1; i < 7; i++)
         {
-            const float sampleDepth = tex2D(FXAADepthBuffer, input.TexCoord + sampleOffset[i] * FXAAParams.TextureSize.zw).r;
+            const float sampleDepth = tex2D(FXAA_DepthBuffer, input.TexCoord + sampleOffset[i] * FXAAParams.TextureSize.zw).r;
 
             // Calculate the difference to the reference depth value
             const float currentDepthDiff = abs(sampleDepth - refDepth);
@@ -2228,25 +2228,25 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 
     if (isEdge)
         color = FxaaPixelShader(
-            input.TexCoord,                 // FxaaFloat2 pos
-            fxaaPosPos,                     // FxaaFloat4 fxaaConsolePosPos
-            FXAASourceTexture,              // FxaaTex tex
-            FXAASourceTexture,              // FxaaTex fxaaConsole360TexExpBiasNegOne
-            FXAASourceTexture,              // FxaaTex fxaaConsole360TexExpBiasNegTwo
-            FXAAParams.TextureSize.zw,      // FxaaFloat2 fxaaQualityRcpFrame
-            fxaaRcpFrameOpt,                // FxaaFloat4 fxaaConsoleRcpFrameOpt
-            fxaaRcpFrameOpt2,               // FxaaFloat4 fxaaConsoleRcpFrameOpt2
-            fxaa360RcpFrameOpt2,            // fxaaConsole360RcpFrameOpt2
-            FXAAParams.Subpix,              // FxaaFloat fxaaQualitySubpix
-            FXAAParams.EdgeThreshold,       // FxaaFloat fxaaQualityEdgeThreshold
-            FXAAParams.EdgeThresholdMin,    // FxaaFloat fxaaQualityEdgeThresholdMin
-            fxaaEdgeSharpness,              // FxaaFloat fxaaConsoleEdgeSharpness
-            FXAAParams.EdgeThreshold,       // FxaaFloat fxaaConsoleEdgeThreshold
-            FXAAParams.EdgeThresholdMin,    // FxaaFloat fxaaConsoleEdgeThresholdMin
-            fxaa360ConstDir                 // FxaaFloat4 fxaaConsole360ConstDir
+            input.TexCoord,             // FxaaFloat2 pos
+            fxaaPosPos,                 // FxaaFloat4 fxaaConsolePosPos
+            FXAA_SourceTexture,         // FxaaTex tex
+            FXAA_SourceTexture,         // FxaaTex fxaaConsole360TexExpBiasNegOne
+            FXAA_SourceTexture,         // FxaaTex fxaaConsole360TexExpBiasNegTwo
+            FXAAParams.TextureSize.zw,  // FxaaFloat2 fxaaQualityRcpFrame
+            fxaaRcpFrameOpt,            // FxaaFloat4 fxaaConsoleRcpFrameOpt
+            fxaaRcpFrameOpt2,           // FxaaFloat4 fxaaConsoleRcpFrameOpt2
+            fxaa360RcpFrameOpt2,        // fxaaConsole360RcpFrameOpt2
+            FXAAParams.Subpix,          // FxaaFloat fxaaQualitySubpix
+            FXAAParams.EdgeThreshold,   // FxaaFloat fxaaQualityEdgeThreshold
+            FXAAParams.EdgeThresholdMin,// FxaaFloat fxaaQualityEdgeThresholdMin
+            fxaaEdgeSharpness,          // FxaaFloat fxaaConsoleEdgeSharpness
+            FXAAParams.EdgeThreshold,   // FxaaFloat fxaaConsoleEdgeThreshold
+            FXAAParams.EdgeThresholdMin,// FxaaFloat fxaaConsoleEdgeThresholdMin
+            fxaa360ConstDir             // FxaaFloat4 fxaaConsole360ConstDir
         );
     else
-        color = tex2D(FXAASourceTexture, input.TexCoord);
+        color = tex2D(FXAA_SourceTexture, input.TexCoord);
 
     if (FXAAParams.DebugEdgeDetection && FXAAParams.UseEdgeDetection && isEdge)
         color += float4(1.f, 0.f, 0.f, 0.f);

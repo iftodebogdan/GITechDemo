@@ -23,20 +23,20 @@
 
 struct UIConstantTable
 {
-    CB_float4x4 ProjMat;
-    CB_uint TextureSwitch;
-    CB_uint MipLevel;
-    CB_uint FaceIdx;
-    CB_float DepthSlice;
+    GPU_float4x4 ProjMat;
+    GPU_uint TextureSwitch;
+    GPU_uint MipLevel;
+    GPU_uint FaceIdx;
+    GPU_float DepthSlice;
 };
 
 #ifdef HLSL
 cbuffer UIResourceTable
 {
-    sampler1D UITexture1D;
-    sampler2D UITexture2D; // Usually font texture
-    sampler3D UITexture3D;
-    samplerCUBE UITextureCube;
+    sampler1D UI_Texture1D;
+    sampler2D UI_Texture2D; // Usually font texture
+    sampler3D UI_Texture3D;
+    samplerCUBE UI_TextureCube;
 
     UIConstantTable UIParams;
 };
@@ -66,28 +66,28 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     switch (UIParams.TextureSwitch)
     {
     case 1:
-        color = tex1Dlod(UITexture1D, float4(input.TexCoord.x, 0, 0, UIParams.MipLevel)) * input.Color; break;
+        color = tex1Dlod(UI_Texture1D, float4(input.TexCoord.x, 0, 0, UIParams.MipLevel)) * input.Color; break;
     case 2:
-        color = tex2Dlod(UITexture2D, float4(input.TexCoord, 0, UIParams.MipLevel)) * input.Color; break;
+        color = tex2Dlod(UI_Texture2D, float4(input.TexCoord, 0, UIParams.MipLevel)) * input.Color; break;
     case 3:
-        color = tex3Dlod(UITexture3D, float4(input.TexCoord, UIParams.DepthSlice, UIParams.MipLevel)) * input.Color; break;
+        color = tex3Dlod(UI_Texture3D, float4(input.TexCoord, UIParams.DepthSlice, UIParams.MipLevel)) * input.Color; break;
     case 4:
         const float2 cubeUV = input.TexCoord * 2.f - 1.f;
         switch (UIParams.FaceIdx)
         {
         default:
         case 0:
-            color = texCUBElod(UITextureCube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(-1.f, cubeUV.yx * float2(-1.f, 1.f), UIParams.MipLevel)) * input.Color; break;
         case 1:
-            color = texCUBElod(UITextureCube, float4(cubeUV.x, 1.f, cubeUV.y, UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(cubeUV.x, 1.f, cubeUV.y, UIParams.MipLevel)) * input.Color; break;
         case 2:
-            color = texCUBElod(UITextureCube, float4(cubeUV.x, -1.f, -cubeUV.y, UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(cubeUV.x, -1.f, -cubeUV.y, UIParams.MipLevel)) * input.Color; break;
         case 3:
-            color = texCUBElod(UITextureCube, float4(cubeUV * float2(1.f, -1.f), 1.f, UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(cubeUV * float2(1.f, -1.f), 1.f, UIParams.MipLevel)) * input.Color; break;
         case 4:
-            color = texCUBElod(UITextureCube, float4(1.f, -cubeUV.yx, UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(1.f, -cubeUV.yx, UIParams.MipLevel)) * input.Color; break;
         case 5:
-            color = texCUBElod(UITextureCube, float4(-cubeUV, -1.f, UIParams.MipLevel)) * input.Color; break;
+            color = texCUBElod(UI_TextureCube, float4(-cubeUV, -1.f, UIParams.MipLevel)) * input.Color; break;
         };
         break;
     default:

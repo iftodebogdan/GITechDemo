@@ -26,22 +26,22 @@
 
 struct DirectionalLightConstantTable
 {
-    CB_float4x4 InvProjMat;
-    CB_float2 HalfTexelOffset;
+    GPU_float4x4 InvProjMat;
+    GPU_float2 HalfTexelOffset;
 
-    CB_float2 OneOverShadowMapSize; // 1 / shadow map width/height
-    CB_float4x4 ScreenToLightViewMat;    // Composite matrix for transforming screen-space coordinates to light-view space
-    CB_bool DebugCascades; // Visual cascade debug option
+    GPU_float2 OneOverShadowMapSize; // 1 / shadow map width/height
+    GPU_float4x4 ScreenToLightViewMat;    // Composite matrix for transforming screen-space coordinates to light-view space
+    GPU_bool DebugCascades; // Visual cascade debug option
 };
 
 #ifdef HLSL
 cbuffer DirectionalLightResourceTable
 {
-    sampler2D DirectionalLightDiffuseBuffer;   // Diffuse color
-    sampler2D DirectionalLightNormalBuffer;    // View-space normals
-    sampler2D DirectionalLightDepthBuffer;     // Depth values
-    sampler2D DirectionalLightMaterialBuffer;  // Roughness and material type (metallic/dielectric)
-    sampler2D DirectionalLightShadowMap;           // Cascaded shadow maps
+    sampler2D DirectionalLight_DiffuseBuffer;   // Diffuse color
+    sampler2D DirectionalLight_NormalBuffer;    // View-space normals
+    sampler2D DirectionalLight_DepthBuffer;     // Depth values
+    sampler2D DirectionalLight_MaterialBuffer;  // Roughness and material type (metallic/dielectric)
+    sampler2D DirectionalLight_ShadowMap;           // Cascaded shadow maps
 
     DirectionalLightConstantTable DirectionalLightParams;
 };
@@ -84,22 +84,22 @@ void vsmain(float4 position : POSITION, out VSOut output)
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Sample the depth buffer
-    const float depth = tex2D(DirectionalLightDepthBuffer, input.TexCoord).r;
+    const float depth = tex2D(DirectionalLight_DepthBuffer, input.TexCoord).r;
 
     // Early depth check, so that we don't shade
     // the far plane (where the sky will be drawn)
     DEPTH_KILL(depth, 1.f);
 
     // Sample the diffuse buffer
-    const float4 diffuseColor = tex2D(DirectionalLightDiffuseBuffer, input.TexCoord);
+    const float4 diffuseColor = tex2D(DirectionalLight_DiffuseBuffer, input.TexCoord);
 
     // Sample the normal buffer
-    const float3 normal = DecodeNormal(tex2D(DirectionalLightNormalBuffer, input.TexCoord));
+    const float3 normal = DecodeNormal(tex2D(DirectionalLight_NormalBuffer, input.TexCoord));
 
     // Sample the material buffer
     // R = material type (metallic/dielectric)
     // G = roughness
-    const float2 material = tex2D(DirectionalLightMaterialBuffer, input.TexCoord).rg;
+    const float2 material = tex2D(DirectionalLight_MaterialBuffer, input.TexCoord).rg;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Cascaded Shadow Maps                                                                 //
@@ -134,7 +134,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         break;
     }
 #else
-    float percentLit = PCF_SAMPLE(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
+    float percentLit = PCF_SAMPLE(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
     //float percentLit = tex2D(DirectionalLightShadowMap, cascadeTexCoord.xy).r > cascadeTexCoord.z;
 #endif
     
@@ -229,7 +229,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                     break;
                 }
             #else
-                const float percentLitLQ = PCF_SAMPLE(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
+                const float percentLitLQ = PCF_SAMPLE(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
                 //float percentLitLQ = tex2D(DirectionalLightParams.ShadowMap, cascadeLQTexCoord.xy).r > cascadeLQTexCoord.z;
             #endif
 

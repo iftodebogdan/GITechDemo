@@ -38,6 +38,9 @@
 
 namespace GITechDemoApp
 {
+    #include "RSMApply.hlsl"
+    #include "RSMCapture.hlsl"
+    #include "RSMUpscale.hlsl"
     #include "ScreenSpaceReflection.hlsl"
     #include "DirectionalLight.hlsl"
     #include "Skybox.hlsl"

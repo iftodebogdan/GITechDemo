@@ -26,30 +26,30 @@
 struct ScreenSpaceReflectionConstantTable
 {
 
-    CB_float2 HalfTexelOffset;
-    CB_float4x4 InvProjMat;
+    GPU_float2 HalfTexelOffset;
+    GPU_float4x4 InvProjMat;
 
-    CB_float4 TexSize;   // xy: dimensions of scene/depth texture; zw: normalized texel size (1/xy)
-    CB_int TexMipCount;  // Number of mips the scene texture has
+    GPU_float4 TexSize;   // xy: dimensions of scene/depth texture; zw: normalized texel size (1/xy)
+    GPU_int TexMipCount;  // Number of mips the scene texture has
 
-    CB_float ReflectionIntensity;   // Scale value for reflected color from raymarching.
-    CB_float Thickness;             // Camera space thickness to ascribe to each pixel in the depth buffer.
-    CB_float SampleStride;          // Step in horizontal or vertical pixels between samples. This is a float because integer math is slow on GPUs, but should be set to an integer >= 1.
-    CB_float MaxSteps;              // Maximum number of iterations. Higher gives better images but may be slow.
-    CB_float MaxRayDist;            // Maximum camera-space distance to trace before returning a miss.
-    CB_bool UseDither;              // Use dithering on ray starting positions.
+    GPU_float ReflectionIntensity;   // Scale value for reflected color from raymarching.
+    GPU_float Thickness;             // Camera space thickness to ascribe to each pixel in the depth buffer.
+    GPU_float SampleStride;          // Step in horizontal or vertical pixels between samples. This is a float because integer math is slow on GPUs, but should be set to an integer >= 1.
+    GPU_float MaxSteps;              // Maximum number of iterations. Higher gives better images but may be slow.
+    GPU_float MaxRayDist;            // Maximum camera-space distance to trace before returning a miss.
+    GPU_bool UseDither;              // Use dithering on ray starting positions.
 
-    CB_float4x4 ViewToRasterMat; // Projection matrix that maps to pixel coordinates
+    GPU_float4x4 ViewToRasterMat; // Projection matrix that maps to pixel coordinates
 };
 
 #ifdef HLSL
 cbuffer ScreenSpaceReflectionResourceTable
 {
-    sampler2D ScreenSpaceReflectionHDRSceneTexture; // Scene color buffer
-    sampler2D ScreenSpaceReflectionDiffuseBuffer;   // Diffuse color
-    sampler2D ScreenSpaceReflectionMaterialBuffer;  // Roughness and material type (metallic/dielectric)
-    sampler2D ScreenSpaceReflectionLinDepthBuffer;  // View space linear Z buffer
-    sampler2D ScreenSpaceReflectionNormalBuffer;    // View space normal buffer
+    sampler2D ScreenSpaceReflection_HDRSceneTexture; // Scene color buffer
+    sampler2D ScreenSpaceReflection_DiffuseBuffer;   // Diffuse color
+    sampler2D ScreenSpaceReflection_MaterialBuffer;  // Roughness and material type (metallic/dielectric)
+    sampler2D ScreenSpaceReflection_LinDepthBuffer;  // View space linear Z buffer
+    sampler2D ScreenSpaceReflection_NormalBuffer;    // View space normal buffer
 
     ScreenSpaceReflectionConstantTable ScreenSpaceReflectionParams;
 };
@@ -86,22 +86,22 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     float2 hitTexelCoord; float3 hitPoint; color = 0;
 
-    const float depth = tex2D(ScreenSpaceReflectionLinDepthBuffer, input.TexCoord).r;
-    DEPTH_KILL(depth, fZFar * 0.999f);
+    const float depth = tex2D(ScreenSpaceReflection_LinDepthBuffer, input.TexCoord).r;
+    DEPTH_KILL(depth, PostProcessingParams.zFar * 0.999f);
 
-    const float3    materialColor   = tex2D(ScreenSpaceReflectionDiffuseBuffer, input.TexCoord).rgb;
-    const float2    material        = tex2D(ScreenSpaceReflectionMaterialBuffer, input.TexCoord).rg;
+    const float3    materialColor   = tex2D(ScreenSpaceReflection_DiffuseBuffer, input.TexCoord).rgb;
+    const float2    material        = tex2D(ScreenSpaceReflection_MaterialBuffer, input.TexCoord).rg;
     const float     materialType    = material.r;
     const float     roughness       = material.g;
 
     const float3 viewDir           = normalize(input.ViewVec);
-    const float3 normal            = DecodeNormal(tex2D(ScreenSpaceReflectionNormalBuffer, input.TexCoord));
+    const float3 normal            = DecodeNormal(tex2D(ScreenSpaceReflection_NormalBuffer, input.TexCoord));
     const float3 rayStartPosVS     = input.ViewVec * depth + normal * max(0.01f * depth, 0.001f);
     const float3 reflectedRayDir   = reflect(viewDir, normal);
     const float ditherAmount       = ScreenSpaceReflectionParams.UseDither ? GetDitherAmount(input.TexCoord, ScreenSpaceReflectionParams.TexSize.xy) : 0.f;
 
     // Sample the environment map
-    float3 envAlbedo = texCUBElod(BRDFEnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflectedRayDir), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb * BRDFParams.ReflectionFactor;
+    float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflectedRayDir), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb * BRDFParams.ReflectionFactor;
 
     if (CastSSRRay(rayStartPosVS, reflectedRayDir, ditherAmount, hitTexelCoord, hitPoint))
     {
@@ -110,7 +110,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         const float distanceFadeFactor = 1.f - normalizedDistance * normalizedDistance;
         const float2 hitTexCoord = float2(hitTexelCoord * ScreenSpaceReflectionParams.TexSize.zw);
         const float screenEdgeFactor = saturate((0.5f - max(abs(0.5f - hitTexCoord.x), abs(0.5f - hitTexCoord.y))) * 10.f);
-        const float3 SSRColor = tex2Dlod(ScreenSpaceReflectionHDRSceneTexture, float4(hitTexCoord, 0.f, ComputeMipFromRoughness(roughness, ScreenSpaceReflectionParams.TexMipCount))).rgb;
+        const float3 SSRColor = tex2Dlod(ScreenSpaceReflection_HDRSceneTexture, float4(hitTexCoord, 0.f, ComputeMipFromRoughness(roughness, ScreenSpaceReflectionParams.TexMipCount))).rgb;
 
         // Mix reflection with environment map sample
         envAlbedo = lerp(
@@ -141,8 +141,8 @@ bool CastSSRRay(float3 rayOrigin, float3 rayDir, float jitterAmount, out float2 
 {
     // Clip ray to a near plane in 3D (doesn't have to be *the* near plane, although that would be a good idea)
     float rayLength =
-        ((rayOrigin.z + rayDir.z * ScreenSpaceReflectionParams.MaxRayDist) < fZNear) ?
-        (rayOrigin.z - fZNear) / rayDir.z :
+        ((rayOrigin.z + rayDir.z * ScreenSpaceReflectionParams.MaxRayDist) < PostProcessingParams.zNear) ?
+        (rayOrigin.z - PostProcessingParams.zNear) / rayDir.z :
         ScreenSpaceReflectionParams.MaxRayDist;
     float3 csEndPoint = rayDir * rayLength + rayOrigin;
 
@@ -267,7 +267,7 @@ bool CastSSRRay(float3 rayOrigin, float3 rayDir, float jitterAmount, out float2 
             swap(rayZMin, rayZMax);
 
         // Camera-space z of the background
-        sceneZMax = tex2D(ScreenSpaceReflectionLinDepthBuffer, hitTexelCoord * ScreenSpaceReflectionParams.TexSize.zw).r;
+        sceneZMax = tex2D(ScreenSpaceReflection_LinDepthBuffer, hitTexelCoord * ScreenSpaceReflectionParams.TexSize.zw).r;
     }
 
     Q.xy += dQ.xy * stepCount;

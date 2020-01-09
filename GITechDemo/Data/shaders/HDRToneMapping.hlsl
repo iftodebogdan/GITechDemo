@@ -25,26 +25,26 @@
 
 struct HDRToneMappingConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float ExposureBias;      // Exposure amount
-    CB_float ShoulderStrength;  // = 0.15;
-    CB_float LinearStrength;    // = 0.50;
-    CB_float LinearAngle;       // = 0.10;
-    CB_float ToeStrength;       // = 0.20;
-    CB_float ToeNumerator;      // = 0.02;
-    CB_float ToeDenominator;    // = 0.30;
-    CB_float LinearWhite;       // = 11.2;
-    CB_float FrameTime;
-    CB_float FilmGrainAmount;
-    CB_bool ApplyColorCorrection;
+    GPU_float2 HalfTexelOffset;
+    GPU_float ExposureBias;      // Exposure amount
+    GPU_float ShoulderStrength;  // = 0.15;
+    GPU_float LinearStrength;    // = 0.50;
+    GPU_float LinearAngle;       // = 0.10;
+    GPU_float ToeStrength;       // = 0.20;
+    GPU_float ToeNumerator;      // = 0.02;
+    GPU_float ToeDenominator;    // = 0.30;
+    GPU_float LinearWhite;       // = 11.2;
+    GPU_float FrameTime;
+    GPU_float FilmGrainAmount;
+    GPU_bool ApplyColorCorrection;
 };
 
 #ifdef HLSL
 cbuffer HDRToneMappingResourceTable
 {
-    sampler2D HDRToneMappingSourceTexture;            // Source HDR texture
-    sampler2D HDRToneMappingAvgLumaTexture;           // 1x1 average luma texture
-    sampler3D HDRToneMappingColorCorrectionTexture;   // Color correction texture
+    sampler2D HDRToneMapping_SourceTexture;            // Source HDR texture
+    sampler2D HDRToneMapping_AvgLumaTexture;           // 1x1 average luma texture
+    sampler3D HDRToneMapping_ColorCorrectionTexture;   // Color correction texture
 
     HDRToneMappingConstantTable HDRToneMappingParams;
 };
@@ -105,10 +105,10 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     //////////////////////////////////////////////////////////////////
 
     // Linear gamma conversion done by SamplerState::SetSRGBEnabled()
-    //float3 sourceColor = pow(abs(tex2D(HDRToneMappingSourceTexture, input.TexCoord)), 2.2f).rgb;
-    float3 sourceColor = tex2D(HDRToneMappingSourceTexture, input.TexCoord).rgb;
+    //float3 sourceColor = pow(abs(tex2D(HDRToneMapping_SourceTexture, input.TexCoord)), 2.2f).rgb;
+    float3 sourceColor = tex2D(HDRToneMapping_SourceTexture, input.TexCoord).rgb;
 
-    float avgLuma = tex2D(HDRToneMappingAvgLumaTexture, float2(0.5f, 0.5f)).r;
+    float avgLuma = tex2D(HDRToneMapping_AvgLumaTexture, float2(0.5f, 0.5f)).r;
     sourceColor /= avgLuma;
 
     //////////////////////////////////////////
@@ -129,7 +129,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 
     // Color correction
     if(HDRToneMappingParams.ApplyColorCorrection)
-        finalColor = tex3D(HDRToneMappingColorCorrectionTexture, saturate(finalColor)).rgb;
+        finalColor = tex3D(HDRToneMapping_ColorCorrectionTexture, saturate(finalColor)).rgb;
 
     // Convert back to gamma space (not required for Duiker tonemap)
     // NB: Gamma correction done by RenderState::SetSRGBWriteEnabled()

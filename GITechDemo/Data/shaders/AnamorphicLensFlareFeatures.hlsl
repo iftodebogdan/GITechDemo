@@ -23,16 +23,16 @@
 
 struct AnamorphicLensFlareFeaturesConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float4 TexSize;     // zw: size of source texture texel
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize;     // zw: size of source texture texel
 
-    CB_float AnamorphicIntensity;
+    GPU_float AnamorphicIntensity;
 };
 
 #ifdef HLSL
 cbuffer AnamorphicLensFlareFeaturesResourceTable
 {
-    sampler2D AnamorphicLensFlareFeaturesSource;  // Source texture
+    sampler2D AnamorphicLensFlareFeatures_Source;  // Source texture
 
     AnamorphicLensFlareFeaturesConstantTable AnamorphicLensFlareFeaturesParams;
 };
@@ -78,7 +78,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         const float2 sampleTexCoord = input.TexCoord + offset;
 
         // Sample the texture and give it a bluish tint
-        float3 sampleColor = tex2D(AnamorphicLensFlareFeaturesSource, sampleTexCoord).rgb;
+        float3 sampleColor = tex2D(AnamorphicLensFlareFeatures_Source, sampleTexCoord).rgb;
         sampleColor.b += sampleColor.r + sampleColor.g;
 
         color.rgb += weight[abs(i)] * sampleColor * AnamorphicLensFlareFeaturesParams.AnamorphicIntensity;

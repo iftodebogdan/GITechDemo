@@ -25,58 +25,64 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-const sampler2D texRSMFluxBuffer;   // RSM flux data
-const sampler2D texRSMNormalBuffer; // RSM normal data
-const sampler2D texRSMDepthBuffer;  // RSM depth data
+struct RSM
+{
+    // This kernel is based on a Poisson Disk kernel.
+    // The samples' coordinates are "pushed" towards the exterior of
+    // the disk by calculating the square root of the sample coordinates.
+    // The sample weights are in the z component. Their value are
+    // actually the distance of each sample before being pushed outward
+    // from the center of the kernel. In other words, the sample density
+    // is higher towards the edges of the kernel, but the weights do not
+    // vary linearly with the samples' offsets.
+    static const unsigned int PassCount = 4; // The number of passes
+    static const unsigned int SamplesPerPass = 16; // The number of samples from the RSM in each pass
+};
 
-const sampler2D texNormalBuffer;    // G-Buffer view-space normals
+struct RSMCommonConstantTable
+{
+    // The kernel for sampling the RSM
+    GPU_float3 KernelApplyPass[RSM::SamplesPerPass];
+    GPU_float3 KernelUpscalePass[RSM::PassCount * RSM::SamplesPerPass];
 
-// Composite matrix for transforming coordinates from render
-// camera projective space to light projective space
-// NB: perspective divide (i.e. w-divide) required
-const float4x4 f44ScreenToLightViewMat;
+    // Intensity of the indirect light
+    GPU_float Intensity;
 
-// Matrix for transforming coordinates from light
-// view space to light projective space
-const float4x4 f44RSMProjMat;
+    // Scale the kernel for tweaking between more
+    // "concentrated" bounces and larger bounce distances
+    GPU_float KernelScale;
 
-// Matrix for transforming coordinates from
-// light projective space to light view space
-const float4x4 f44RSMInvProjMat;
+    // Composite matrix for transforming coordinates from render
+    // camera projective space to light projective space
+    // NB: perspective divide (i.e. w-divide) required
+    GPU_float4x4 ScreenToLightViewMat;
 
-// Composite matrix for transforming from render
-// camera view space to light view space
-const float4x4 f44ViewToRSMViewMat;
+    // Matrix for transforming coordinates from light
+    // view space to light projective space
+    GPU_float4x4 RSMProjMat;
 
-// This kernel is based on a Poisson Disk kernel.
-// The samples' coordinates are "pushed" towards the exterior of
-// the disk by calculating the square root of the sample coordinates.
-// The sample weights are in the z component. Their value are
-// actually the distance of each sample before being pushed outward
-// from the center of the kernel. In other words, the sample density
-// is higher towards the edges of the kernel, but the weights do not
-// vary linearly with the samples' offsets.
-#define RSM_NUM_PASSES (4)          // The number of passes
-#define RSM_SAMPLES_PER_PASS (16)   // The number of samples from the RSM in each pass
+    // Matrix for transforming coordinates from
+    // light projective space to light view space
+    GPU_float4x4 RSMInvProjMat;
 
-// The kernel for sampling the RSM
-#if RSM_APPLY_PASS
-const float3 f3RSMKernel[RSM_SAMPLES_PER_PASS];
-#elif RSM_UPSCALE_PASS
-const float3 f3RSMKernel[RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS];
-#endif
+    // Composite matrix for transforming from render
+    // camera view space to light view space
+    GPU_float4x4 ViewToRSMViewMat;
+};
 
-// Intensity of the indirect light
-const float fRSMIntensity;
+#ifdef HLSL
+cbuffer RSMCommonResourceTable
+{
+    sampler2D RSMCommon_RSMFluxBuffer;   // RSM flux data
+    sampler2D RSMCommon_RSMNormalBuffer; // RSM normal data
+    sampler2D RSMCommon_RSMDepthBuffer;  // RSM depth data
 
-// Scale the kernel for tweaking between more
-// "concentrated" bounces and larger bounce distances
-const float fRSMKernelScale;
+    sampler2D RSMCommon_NormalBuffer;    // G-Buffer view-space normals
 
-// For upsampling
-const sampler2D texSource;      // The texture to be upsampled
+    RSMCommonConstantTable RSMCommonParams;
+};
 
-void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
+void ApplyRSM(const float2 texCoord, const float depth, out float4 colorOut)
 {
     colorOut = float4(0.f, 0.f, 0.f, 0.f);
 
@@ -86,24 +92,26 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
     //////////////////////////////////////////////////////////////////
 
     // Calculate normalized device coordinates (NDC) space position of currently shaded pixel
-    const float4 f4ScreenProjSpacePos = float4(f2TexCoord * float2(2.f, -2.f) - float2(1.f, -1.f), fDepth, 1.f);
+    const float4 screenProjSpacePos = float4(texCoord * float2(2.f, -2.f) - float2(1.f, -1.f), depth, 1.f);
     // Transform pixel coordinates from NDC space to RSM view space
-    const float4 f4RSMViewSpacePos = mul(f44ScreenToLightViewMat, f4ScreenProjSpacePos);
+    const float4 RSMViewSpacePosW = mul(RSMCommonParams.ScreenToLightViewMat, screenProjSpacePos);
     // Perspective w-divide
-    const float3 f3RSMViewSpacePos = f4RSMViewSpacePos.xyz / f4RSMViewSpacePos.w;
+    const float3 RSMViewSpacePos = RSMViewSpacePosW.xyz / RSMViewSpacePosW.w;
     // Sample normal for currently shaded pixel and transform to RSM view space
-    const float3 f3RSMViewSpaceNormal = mul((float3x3)f44ViewToRSMViewMat, DecodeNormal(tex2D(texNormalBuffer, f2TexCoord)));
+    const float3 RSMViewSpaceNormal = mul((float3x3)RSMCommonParams.ViewToRSMViewMat, DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord)));
     // Transform point to RSM NDC space
-    const float3 f3RSMProjSpacePos = mul(f44RSMProjMat, float4(f3RSMViewSpacePos, 1.f)).xyz;
+    const float3 RSMProjSpacePos = mul(RSMCommonParams.RSMProjMat, float4(RSMViewSpacePos, 1.f)).xyz;
     // Calculate texture coordinates for the currently shaded pixel in the RSM texture
-    const float2 f2RSMTexCoord = f3RSMProjSpacePos.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+    const float2 RSMTexCoord = RSMProjSpacePos.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
 
     // Sample around the corresponding location in the RSM
     // and accumulate light contribution from each VPL
 #if RSM_APPLY_PASS
-    const unsigned int nEndIdx = RSM_SAMPLES_PER_PASS;
+    const unsigned int endIdx = RSM::SamplesPerPass;
+    const float3 kernel[] = RSMCommonParams.KernelApplyPass;
 #elif RSM_UPSCALE_PASS
-    const unsigned int nEndIdx = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
+    const unsigned int endIdx = RSM::PassCount * RSM::SamplesPerPass;
+    const float3 kernel[] = RSMCommonParams.KernelUpscalePass;
 #else
     #error Either RSM_APPLY_PASS or RSM_UPSCALE_PASS must be defined!
 #endif
@@ -113,31 +121,32 @@ void ApplyRSM(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
 #elif RSM_UPSCALE_PASS
     LOOP
 #endif
-    for (unsigned int i = 0; i < nEndIdx; i++)
+    for (unsigned int i = 0; i < endIdx; i++)
     {
         // Add a bias to the texture coordinate calculated above
-        const float2 f2RSMSampleTexCoord = f2RSMTexCoord + f3RSMKernel[i].xy * fRSMKernelScale;
+        const float2 RSMSampleTexCoord = RSMTexCoord + kernel[i].xy * RSMCommonParams.KernelScale;
         // The radiant flux for the current sample
-        const float4 f4RSMSampleFlux = tex2D(texRSMFluxBuffer, f2RSMSampleTexCoord) * f3RSMKernel[i].z;
+        const float4 RSMSampleFlux = tex2D(RSMCommon_RSMFluxBuffer, RSMSampleTexCoord) * kernel[i].z;
         // The normal for the current sample
-        const float3 f3RSMSampleNormal = DecodeNormal(tex2D(texRSMNormalBuffer, f2RSMSampleTexCoord));
+        const float3 RSMSampleNormal = DecodeNormal(tex2D(RSMCommon_RSMNormalBuffer, RSMSampleTexCoord));
         // Sample coordinates in RSM NDC space
-        const float4 f4RSMSampleProjSpacePos =
+        const float4 RSMSampleProjSpacePos =
             float4(
-                f2RSMSampleTexCoord * float2(2.f, -2.f) - float2(1.f, -1.f),
-                tex2D(texRSMDepthBuffer, f2RSMSampleTexCoord).r, 1.f
+                RSMSampleTexCoord * float2(2.f, -2.f) - float2(1.f, -1.f),
+                tex2D(RSMCommon_RSMDepthBuffer, RSMSampleTexCoord).r, 1.f
                 );
         // Sample coordinates in RSM view space
-        const float3 f3RSMSamplePos = mul(f44RSMInvProjMat, f4RSMSampleProjSpacePos).xyz;
+        const float3 RSMSamplePos = mul(RSMCommonParams.RSMInvProjMat, RSMSampleProjSpacePos).xyz;
         // Distance vector (RSM view space coordinates between shaded pixel and RSM sample
-        const float3 f3DeltaPos = f3RSMViewSpacePos - f3RSMSamplePos;
+        const float3 deltaPos = RSMViewSpacePos - RSMSamplePos;
         // Calculate the light contribution from this VPL
         colorOut +=
-            f4RSMSampleFlux * fRSMIntensity *
-            max(0.f, dot(f3RSMSampleNormal, f3DeltaPos)) *
-            max(0.f, dot(f3RSMViewSpaceNormal, -f3DeltaPos)) /
-            pow(length(f3DeltaPos), 4.f);
+            RSMSampleFlux * RSMCommonParams.Intensity *
+            max(0.f, dot(RSMSampleNormal, deltaPos)) *
+            max(0.f, dot(RSMViewSpaceNormal, -deltaPos)) /
+            pow(length(deltaPos), 4.f);
     }
 }
 
+#endif // HLSL
 #endif // RSMCOMMON_HLSLI

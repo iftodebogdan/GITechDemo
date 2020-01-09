@@ -25,59 +25,69 @@
 #define RSM_UPSCALE_PASS (1)
 #include "RSMCommon.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+struct RSMUpscaleConstantTable
+{
+    GPU_float2 HalfTexelOffset;
+    GPU_float WeightThreshold; // Set a threshold which controls the level of sensitivity of the edge detection.
+    GPU_bool DebugUpscalePass; // Shows pixels that could not be interpolated and need reshading
+};
+
+#ifdef HLSL
+cbuffer RSMUpscaleResourceTable
+{
+    sampler2D RSMUpscale_Source;      // The texture to be upsampled
+    sampler2D RSMUpscale_DepthBuffer; // G-Buffer depth values
+
+    RSMUpscaleConstantTable RSMUpscaleParams;
+};
 
 struct VSOut
 {
-    float4 f4Position   :   SV_POSITION;
-    float2 f2TexCoord   :   TEXCOORD0;
+    float4 Position :   SV_POSITION;
+    float2 TexCoord :   TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + RSMUpscaleParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texDepthBuffer; // G-Buffer depth values
+#ifdef PIXEL
+bool PerformUpscale(const float2 texCoord, const float depth, out float4 colorOut);
 
-// Set a threshold which controls the level of sensitivity of the edge detection.
-const float fWeightThreshold;
-
-const bool bDebugUpscalePass;   // Shows pixels that could not be interpolated and need reshading
-
-bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut);
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
+    color = float4(0.f, 0.f, 0.f, 1.f);
 
     // Early depth test so that we don't shade
     // at the far plane (where the sky is drawn)
-    const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
-    DEPTH_KILL(fDepth, 1.f);
+    const float depth = tex2D(RSMUpscale_DepthBuffer, input.TexCoord).r;
+    DEPTH_KILL(depth, 1.f);
 
     // If we have successfully interpolated this pixel there is no need to reshade it.
-    if (!PerformUpscale(input.f2TexCoord, fDepth, f4Color))
+    if (!PerformUpscale(input.TexCoord, depth, color))
     {
-        ApplyRSM(input.f2TexCoord, fDepth, f4Color);
+        ApplyRSM(input.TexCoord, depth, color);
 
-        if (bDebugUpscalePass)
-            f4Color += float4(1.f, 0.f, 0.f, 0.f);
+        if (RSMUpscaleParams.DebugUpscalePass)
+            color += float4(1.f, 0.f, 0.f, 0.f);
     }
 }
 
-bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colorOut)
+bool PerformUpscale(const float2 texCoord, const float depth, out float4 colorOut)
 {
     // Sample the color from the quarter-resolution render target
-    const float4 f4Color = tex2D(texSource, f2TexCoord);
+    const float4 color = tex2D(RSMUpscale_Source, texCoord);
 
     // If the sample is black we can safely clip this
     // pixel in an attempt to save some bandwidth
-    clip(-!any(f4Color.rgb));
+    clip(-!any(color.rgb));
 
     // Easier to write f3TexelOffset.xz or f3TexelOffset.zy than
     // float2(0.5f * f2HalfTexelOffset.x, 0.f) or float2(0.f, 0.5f * f2HalfTexelOffset.y);
@@ -85,52 +95,54 @@ bool PerformUpscale(const float2 f2TexCoord, const float fDepth, out float4 colo
     // IndirectLightAccumulationBuffer render target (quarter resolution). As such, we require
     // half of that width and half of that height in order to offset our coordinates from the
     // center of a quarter resolution texel to the center of a full resolution texel.
-    const float3 f3TexelOffset = float3(0.5f * f2HalfTexelOffset, 0.f);
+    const float3 texelOffset = float3(0.5f * RSMUpscaleParams.HalfTexelOffset, 0.f);
 
     // Sample the normal for our reference pixel (i.e. the one we're shading)
-    const float3 f3RefNormal = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord));
+    const float3 refNormal = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord));
     // Sample the neighbours' normals
-    const float3 f3NeighbourNormalN = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord - f3TexelOffset.zy));
-    const float3 f3NeighbourNormalS = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord + f3TexelOffset.zy));
-    const float3 f3NeighbourNormalW = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord - f3TexelOffset.xz));
-    const float3 f3NeighbourNormalE = DecodeNormal(tex2D(texNormalBuffer, f2TexCoord + f3TexelOffset.xz));
+    const float3 neighbourNormalN = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord - texelOffset.zy));
+    const float3 neighbourNormalS = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord + texelOffset.zy));
+    const float3 neighbourNormalW = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord - texelOffset.xz));
+    const float3 neighbourNormalE = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord + texelOffset.xz));
 
     // Sample the depth for our reference pixel
-    const float fRefDepth = fDepth;
+    const float refDepth = depth;
     // Sample the neighbours' depths
-    const float fNeighbourDepthN = tex2D(texDepthBuffer, f2TexCoord - f3TexelOffset.zy).r;
-    const float fNeighbourDepthS = tex2D(texDepthBuffer, f2TexCoord + f3TexelOffset.zy).r;
-    const float fNeighbourDepthW = tex2D(texDepthBuffer, f2TexCoord - f3TexelOffset.xz).r;
-    const float fNeighbourDepthE = tex2D(texDepthBuffer, f2TexCoord + f3TexelOffset.xz).r;
+    const float neighbourDepthN = tex2D(RSMUpscale_DepthBuffer, texCoord - texelOffset.zy).r;
+    const float neighbourDepthS = tex2D(RSMUpscale_DepthBuffer, texCoord + texelOffset.zy).r;
+    const float neighbourDepthW = tex2D(RSMUpscale_DepthBuffer, texCoord - texelOffset.xz).r;
+    const float neighbourDepthE = tex2D(RSMUpscale_DepthBuffer, texCoord + texelOffset.xz).r;
 
     // Calculate a weight based on normal differences between the reference pixel and its neighbours
-    const float fWeightNormalN = pow(saturate(dot(f3RefNormal, f3NeighbourNormalN)), 32);
-    const float fWeightNormalS = pow(saturate(dot(f3RefNormal, f3NeighbourNormalS)), 32);
-    const float fWeightNormalW = pow(saturate(dot(f3RefNormal, f3NeighbourNormalW)), 32);
-    const float fWeightNormalE = pow(saturate(dot(f3RefNormal, f3NeighbourNormalE)), 32);
+    const float weightNormalN = pow(saturate(dot(refNormal, neighbourNormalN)), 32);
+    const float weightNormalS = pow(saturate(dot(refNormal, neighbourNormalS)), 32);
+    const float weightNormalW = pow(saturate(dot(refNormal, neighbourNormalW)), 32);
+    const float weightNormalE = pow(saturate(dot(refNormal, neighbourNormalE)), 32);
 
     // Calculate a weight based on depth differences between the reference pixel and its neighbours
-    const float fWeightDepthN = rcp(abs(fRefDepth - fNeighbourDepthN) + 0.00001f);
-    const float fWeightDepthS = rcp(abs(fRefDepth - fNeighbourDepthS) + 0.00001f);
-    const float fWeightDepthW = rcp(abs(fRefDepth - fNeighbourDepthW) + 0.00001f);
-    const float fWeightDepthE = rcp(abs(fRefDepth - fNeighbourDepthE) + 0.00001f);
+    const float weightDepthN = rcp(abs(refDepth - neighbourDepthN) + 0.00001f);
+    const float weightDepthS = rcp(abs(refDepth - neighbourDepthS) + 0.00001f);
+    const float weightDepthW = rcp(abs(refDepth - neighbourDepthW) + 0.00001f);
+    const float weightDepthE = rcp(abs(refDepth - neighbourDepthE) + 0.00001f);
 
     // Put all weights into a float4
-    const float4 f4Weight =
+    const float4 weight =
         normalize(float4(
-            fWeightNormalN * fWeightDepthN,
-            fWeightNormalS * fWeightDepthS,
-            fWeightNormalW * fWeightDepthW,
-            fWeightNormalE * fWeightDepthE));
+            weightNormalN * weightDepthN,
+            weightNormalS * weightDepthS,
+            weightNormalW * weightDepthW,
+            weightNormalE * weightDepthE));
 
     // If none of the weights fall below the threshold, or if the pixel is black,
     // then it is valid and it doesn't require reshading using the RSM algorithm.
-    if (all(saturate(f4Weight - fWeightThreshold.xxxx)) || !any(f4Color.rgb))
+    if (all(saturate(weight - RSMUpscaleParams.WeightThreshold.xxxx)) || !any(color.rgb))
     {
-        colorOut = f4Color;
+        colorOut = color;
         return true;
     }
 
     return false;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

@@ -23,28 +23,28 @@
 
 struct SphericalLensFlareFeaturesConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float4 TexSize; // zw: size of source texture texel
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize; // zw: size of source texture texel
 
     // Ghost features
-    CB_int GhostSamples;
-    CB_float GhostDispersal;
-    CB_float GhostRadialWeightExp;
+    GPU_int GhostSamples;
+    GPU_float GhostDispersal;
+    GPU_float GhostRadialWeightExp;
 
     // Halo feature
-    CB_float HaloSize;
-    CB_float HaloRadialWeightExp;
+    GPU_float HaloSize;
+    GPU_float HaloRadialWeightExp;
 
     // Chromatic aberration feature
-    CB_bool ChromaShift;
-    CB_float ShiftFactor;
+    GPU_bool ChromaShift;
+    GPU_float ShiftFactor;
 };
 
 #ifdef HLSL
 cbuffer SphericalLensFlareFeaturesResourceTable
 {
-    sampler1D SphericalLensFlareFeaturesGhostColorLUT;
-    sampler2D SphericalLensFlareFeaturesSource;  // Source texture
+    sampler1D SphericalLensFlareFeatures_GhostColorLUT;
+    sampler2D SphericalLensFlareFeatures_Source;  // Source texture
 
     SphericalLensFlareFeaturesConstantTable SphericalLensFlareFeaturesParams;
 };
@@ -112,11 +112,11 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                 length(float2(0.5f, 0.5f) - offset) /
                 length(float2(0.5f, 0.5f))),
                 SphericalLensFlareFeaturesParams.GhostRadialWeightExp);
-        color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeaturesSource, offset).rgb * ghostWeight;
+        color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeatures_Source, offset).rgb * ghostWeight;
     }
 
     // Adjust ghosts' color using a LUT
-    color.rgb *= tex1D(SphericalLensFlareFeaturesGhostColorLUT, length(float2(0.5f, 0.5f) - input.FlippedTexCoord) / length(float2(0.5f, 0.5f))).rgb;
+    color.rgb *= tex1D(SphericalLensFlareFeatures_GhostColorLUT, length(float2(0.5f, 0.5f) - input.FlippedTexCoord) / length(float2(0.5f, 0.5f))).rgb;
 
     // Generate halo feature
     const float2 haloVec = normalize(ghostVec) * SphericalLensFlareFeaturesParams.HaloSize;
@@ -128,7 +128,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                 ) /
             length(float2(0.5f, 0.5f))),
             SphericalLensFlareFeaturesParams.HaloRadialWeightExp);
-    color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeaturesSource, input.FlippedTexCoord + haloVec).rgb * haloWeight;
+    color.rgb += FetchChromaShiftedTextureSample(SphericalLensFlareFeatures_Source, input.FlippedTexCoord + haloVec).rgb * haloWeight;
 }
 #endif // PIXEL
 ////////////////////////////////////////////////////////////////////

@@ -23,21 +23,21 @@
 
 struct LensFlareApplyConstantTable
 {
-    CB_float2 HalfTexelOffset;
-    CB_float DirtIntensity; // Scale factor for lens dirt texture samples
-    CB_float StarBurstIntensity; // Scale factor for lens star burst texture samples
+    GPU_float2 HalfTexelOffset;
+    GPU_float DirtIntensity; // Scale factor for lens dirt texture samples
+    GPU_float StarBurstIntensity; // Scale factor for lens star burst texture samples
 
     // Transform matrix for the star burst texture coordinates
     // applying a camera dependent rotation
-    CB_float3x3 StarBurstMat;
+    GPU_float3x3 StarBurstMat;
 };
 
 #ifdef HLSL
 cbuffer LensFlareApplyResourceTable
 {
-    sampler2D LensFlareFeatures; // Lens flare effect features
-    sampler2D LensFlareDirt; // Lens dirt texture
-    sampler2D LensFlareStarBurst; // Lens star burst texture
+    sampler2D LensFlareApply_Features; // Lens flare effect features
+    sampler2D LensFlareApply_Dirt; // Lens dirt texture
+    sampler2D LensFlareApply_StarBurst; // Lens star burst texture
 
     LensFlareApplyConstantTable LensFlareApplyParams;
 };
@@ -68,13 +68,13 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     //////////////////////////////////////////////////////////////////////////////
 
     // Sample lens flare features
-    color  = float4(tex2D(LensFlareFeatures, input.TexCoord).rgb, 0.f);
+    color  = float4(tex2D(LensFlareApply_Features, input.TexCoord).rgb, 0.f);
     
     // Sample dirt texture
-    const float3 dirt = tex2D(LensFlareDirt, input.TexCoord).rgb * LensFlareApplyParams.DirtIntensity;
+    const float3 dirt = tex2D(LensFlareApply_Dirt, input.TexCoord).rgb * LensFlareApplyParams.DirtIntensity;
 
     // Sample star burst texture
-    const float3 starBurst = tex2D(LensFlareStarBurst, mul(LensFlareApplyParams.StarBurstMat, float3(input.TexCoord, 1.f)).xy).rgb * LensFlareApplyParams.StarBurstIntensity;
+    const float3 starBurst = tex2D(LensFlareApply_StarBurst, mul(LensFlareApplyParams.StarBurstMat, float3(input.TexCoord, 1.f)).xy).rgb * LensFlareApplyParams.StarBurstIntensity;
 
     // Modulate features by dirt and star burst textures
     color.rgb *= dirt + starBurst;

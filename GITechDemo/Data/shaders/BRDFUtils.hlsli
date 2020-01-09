@@ -37,26 +37,26 @@ struct BRDF
 
 struct BRDFConstantTable
 {
-    CB_float DiffuseFactor;     // Scale value for diffuse light
-    CB_float SpecFactor;        // Scale value for specular light
-    CB_float AmbientFactor;     // Scale value for ambient light
-    CB_float IrradianceFactor;  // Scale value for irradiance (Cook-Torrance BRDF only)
-    CB_float ReflectionFactor;  // Scale value for reflected light (Cook-Torrance BRDF only)
+    GPU_float DiffuseFactor;     // Scale value for diffuse light
+    GPU_float SpecFactor;        // Scale value for specular light
+    GPU_float AmbientFactor;     // Scale value for ambient light
+    GPU_float IrradianceFactor;  // Scale value for irradiance (Cook-Torrance BRDF only)
+    GPU_float ReflectionFactor;  // Scale value for reflected light (Cook-Torrance BRDF only)
 
-    CB_float4x4 ViewMat;     // View matrix
-    CB_float4x4 InvViewMat;  // The inverse view matrix
+    GPU_float4x4 ViewMat;     // View matrix
+    GPU_float4x4 InvViewMat;  // The inverse view matrix
     
-    CB_float3 LightDir;     // The direction of the light
+    GPU_float3 LightDir;     // The direction of the light
 
-    CB_uint BRDFModel;
+    GPU_uint BRDFModel;
 
 };
 
 #ifdef HLSL
 cbuffer BRDFResourceTable
 {
-    samplerCUBE   BRDFIrradianceMap;   // Irradiance map for Cook-Torrance BRDF
-    samplerCUBE   BRDFEnvMap;          // Environment map for Cook-Torrance BRDF
+    samplerCUBE   BRDF_IrradianceMap;   // Irradiance map for Cook-Torrance BRDF
+    samplerCUBE   BRDF_EnvMap;          // Environment map for Cook-Torrance BRDF
 
     BRDFConstantTable BRDFParams;
 };
@@ -213,10 +213,10 @@ float3 CookTorrance(const float3 materialColor, const float materialType, const 
 
     // Handled in ScreenSpaceReflection.hlsl as well, so be careful not to have them both active at the same time
     // (i.e. set fReflectionFactor to 0 for this shader when SSR is active and restore it when rendering with SSR shader)
-    const float3 envAlbedo = texCUBElod(BRDFEnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflect(viewVec, normal)), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb;
+    const float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflect(viewVec, normal)), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb;
     const float3 envFresnel = FresnelRoughnessTerm(specularAlbedo, roughness, normal, viewVec);
 
-    const float3 irradiance = texCUBE(BRDFIrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
+    const float3 irradiance = texCUBE(BRDF_IrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
 
     // Final color
     return NdotL * (diffuseColor * (1.f - specularColor) + specularColor) * BRDFParams.DiffuseFactor * percentLit +
@@ -268,7 +268,7 @@ float3 AshikhminShirley(const float3 materialColor, const float materialType, co
     const float Ps = PsNum / PsDen;
 
     // Ambient term
-    const float3 irradiance = texCUBE(BRDFIrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
+    const float3 irradiance = texCUBE(BRDF_IrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
 
     // Final value
     return (diffuseAlbedo * Pd * (1.f - specularAlbedo) + specularAlbedo * Ps * fresnel) * BRDFParams.DiffuseFactor * percentLit + diffuseAlbedo * irradiance * BRDFParams.IrradianceFactor;
@@ -298,7 +298,7 @@ float3 Ward(const float3 materialColor, const float materialType, const float ro
     const float Ps = PsNum / PsDen;
 
     // Ambient term
-    const float3 irradiance = texCUBE(BRDFIrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
+    const float3 irradiance = texCUBE(BRDF_IrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
 
     // Final value
     return NdotL * (diffuseAlbedo + specularAlbedo * Ps) * BRDFParams.DiffuseFactor * percentLit + diffuseAlbedo * irradiance * BRDFParams.IrradianceFactor;
