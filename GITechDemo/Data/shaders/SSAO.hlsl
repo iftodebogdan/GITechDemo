@@ -22,8 +22,10 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-struct SSAOConstantTable
-{
+TEXTURE_2D_RESOURCE(SSAO_NormalBuffer);    // View-space normals
+TEXTURE_2D_RESOURCE(SSAO_DepthBuffer);     // Depth values
+
+CBUFFER_RESOURCE(SSAO,
     GPU_float2 HalfTexelOffset;
 
     GPU_float4x4 InvProjMat;   // Matrix for inversing the projection transform
@@ -32,17 +34,9 @@ struct SSAOConstantTable
     GPU_float Intensity;     // Overall intensity of the SSAO effect
     GPU_float Scale;         // Scale for the occlusion attenuation with distance
     GPU_float Bias;          // Bias for the occlusion attenuation with normal differences
-};
+);
 
 #ifdef HLSL
-cbuffer SSAOResourceTable
-{
-    sampler2D SSAO_NormalBuffer;    // View-space normals
-    sampler2D SSAO_DepthBuffer;     // Depth values
-
-    SSAOConstantTable SSAOParams;
-};
-
 struct VSOut
 {
     float4  Position  :   SV_POSITION;

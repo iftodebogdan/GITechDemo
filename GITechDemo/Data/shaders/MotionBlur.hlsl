@@ -22,69 +22,79 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(MotionBlur_Source);      // Color texture
+TEXTURE_2D_RESOURCE(MotionBlur_DepthBuffer); // Depth buffer
 
+CBUFFER_RESOURCE(MotionBlur,
+    GPU_float2 HalfTexelOffset;
+    GPU_int NumSamples;             // The number of samples along the velocity vector
+    GPU_float4x4 InvViewProjMat;    // Inverse view-projection matrix
+    GPU_float4x4 PrevViewProjMat;   // Previous frame's view-projection matrix
+    GPU_float FrameTime;            // Frame duration
+    GPU_float Intensity;            // Intensity of the motion blur effect
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
-    float2  f2ScreenPos :   TEXCOORD1;
+    float4  Position  : SV_POSITION;
+    float2  TexCoord  : TEXCOORD0;
+    float2  ScreenPos : TEXCOORD1;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
-    output.f2ScreenPos = f4Position.xy;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + MotionBlurParams.HalfTexelOffset;
+    output.ScreenPos = position.xy;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;      // Color texture
-const sampler2D texDepthBuffer; // Depth buffer
-
-const float4x4 f44InvViewProjMat;   // Inverse view-projection matrix
-const float4x4 f44PrevViewProjMat;  // Previous frame's view-projection matrix
-const float fFrameTime;             // Frame duration
-const float fMotionBlurIntensity;   // Intensity of the motion blur effect
-const int nMotionBlurNumSamples;    // The number of samples along the velocity vector
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////
     // Motion blur effect                                           //
     // http://http.developer.nvidia.com/GPUGems3/gpugems3_ch27.html //
     //////////////////////////////////////////////////////////////////
 
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
+    color = float4(0.f, 0.f, 0.f, 1.f);
 
     // Compute NDC space position
-    const float fDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
-    const float4 f4NDCPos = float4(input.f2ScreenPos, fDepth, 1.f);
+    const float depth = tex2D(MotionBlur_DepthBuffer, input.TexCoord).r;
+    const float4 NDCPos = float4(input.ScreenPos, depth, 1.f);
 
     // Compute world space position
-    const float4 f4WorldPosPreW = mul(f44InvViewProjMat, f4NDCPos);
-    const float4 f4WorldPos = f4WorldPosPreW / f4WorldPosPreW.w;
+    const float4 worldPosPreW = mul(MotionBlurParams.InvViewProjMat, NDCPos);
+    const float4 worldPos = worldPosPreW / worldPosPreW.w;
 
     // Compute last frame NDC space position
-    const float4 f4PrevNDCPosPreW = mul(f44PrevViewProjMat, f4WorldPos);
-    const float4 f4PrevNDCPos = f4PrevNDCPosPreW / f4PrevNDCPosPreW.w;
+    const float4 prevNDCPosPreW = mul(MotionBlurParams.PrevViewProjMat, worldPos);
+    const float4 prevNDCPos = prevNDCPosPreW / prevNDCPosPreW.w;
 
     // Compute pixel velocity
-    const float2 f2NDCSpeed = (f4NDCPos.xy - f4PrevNDCPos.xy) / fFrameTime; // Speed (NDC units / s)
+    const float2 NDCSpeed = (NDCPos.xy - prevNDCPos.xy) / MotionBlurParams.FrameTime; // Speed (NDC units / s)
 
-    float2 f2Velocity = f2NDCSpeed
-        * fMotionBlurIntensity      // Scale velocity by intensity value
-        / nMotionBlurNumSamples;    // Divide by the number of samples (so that there would be no
-                                    // change in perceived intensity if sample count varies)
+    float2 velocity = NDCSpeed
+        * MotionBlurParams.Intensity    // Scale velocity by intensity value
+        / MotionBlurParams.NumSamples;  // Divide by the number of samples (so that there would be no
+                                        // change in perceived intensity if sample count varies)
     
     // Clamp it so as not to ruin the effect at high speed
-    f2Velocity = normalize(f2Velocity) * clamp(length(f2Velocity), 0.f, 0.01f);
+    velocity = normalize(velocity) * clamp(length(velocity), 0.f, 0.01f);
 
     // Sample along the velocity vector and average the result
-    for (int i = 0; i < nMotionBlurNumSamples; i++)
-        f4Color.rgb += tex2D(texSource, input.f2TexCoord + f2Velocity * i).rgb;
-    f4Color.rgb /= nMotionBlurNumSamples;
+    for (int i = 0; i < MotionBlurParams.NumSamples; i++)
+    {
+        color.rgb += tex2D(MotionBlur_Source, input.TexCoord + velocity * i).rgb;
+    }
+
+    color.rgb /= MotionBlurParams.NumSamples;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

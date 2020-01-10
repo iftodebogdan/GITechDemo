@@ -144,6 +144,7 @@ void SkyPass::Update(const float fDeltaTime)
     SkyTexture.GetTexture()->SetSRGBEnabled(true);
 
     texSkyCube = SkyTexture.GetTextureIndex();
+    HLSL::Skybox_SkyCube = SkyTexture.GetTextureIndex();
 }
 
 // Draw a world axis-aligned cube with its' center coinciding with the camera's position.

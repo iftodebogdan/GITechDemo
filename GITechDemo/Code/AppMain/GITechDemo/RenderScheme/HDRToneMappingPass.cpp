@@ -90,7 +90,7 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
     HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
 
     texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
-    HLSL::HDRToneMappingColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
+    HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
 
     HLSL::HDRToneMappingParams->ExposureBias = ExposureBias;
     //HLSL::HDRToneMappingParams->AvgLumaClamp = AvgLumaClamp;
@@ -222,8 +222,8 @@ void HDRToneMappingPass::ToneMappingPass()
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
     HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
-    HLSL::HDRToneMappingSourceTexture = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
-    HLSL::HDRToneMappingAvgLumaTexture = AdaptedLuminance[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::HDRToneMapping_SourceTexture = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::HDRToneMapping_AvgLumaTexture = AdaptedLuminance[0]->GetRenderTarget()->GetColorBuffer(0);
 
     HDRToneMappingShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

@@ -260,6 +260,21 @@ typedef double4x2 GPU_double4x2;
 typedef double4x3 GPU_double4x3;
 typedef double4x4 GPU_double4x4;
 
+#define TEXTURE_1D_RESOURCE(textureName) sampler1D textureName
+#define TEXTURE_2D_RESOURCE(textureName) sampler2D textureName
+#define TEXTURE_3D_RESOURCE(textureName) sampler3D textureName
+#define TEXTURE_CUBE_RESOURCE(textureName) samplerCUBE textureName
+#define CBUFFER_RESOURCE(CBUFFER_NAME, CBUFFER_BODY) \
+struct CBUFFER_NAME##ConstantTable \
+{ \
+    CBUFFER_BODY \
+}; \
+\
+cbuffer CBUFFER_NAME##ResourceTable \
+{ \
+    CBUFFER_NAME##ConstantTable CBUFFER_NAME##Params; \
+};
+
 #else // HLSL
 
 typedef Vec4f GPU_bool;

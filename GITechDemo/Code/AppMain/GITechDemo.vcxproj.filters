@@ -160,6 +160,9 @@
     <ClInclude Include="GITechDemo\RenderScheme\SceneGeometryPass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
+    <ClInclude Include="GITechDemo\Resources\Shaders.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">

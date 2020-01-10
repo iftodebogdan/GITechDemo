@@ -25,19 +25,13 @@
 #include "RSMCommon.hlsli"
 #undef RSM_APPLY_PASS
 
-struct RSMApplyConstantTable
-{
+TEXTURE_2D_RESOURCE(RSMApply_DepthBuffer);
+
+CBUFFER_RESOURCE(RSMApply,
     GPU_float2 HalfTexelOffset;
-};
+);
 
 #ifdef HLSL
-cbuffer RSMApplyResourceTable
-{
-    sampler2D RSMApply_DepthBuffer; // G-Buffer depth values
-
-    RSMApplyConstantTable RSMApplyParams;
-};
-
 struct VSOut
 {
     float4 Position :   SV_POSITION;

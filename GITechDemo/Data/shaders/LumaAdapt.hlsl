@@ -22,51 +22,51 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(LumaAdapt_LumaInput); // One of the two 1x1 textures with the current average luma value
+TEXTURE_2D_RESOURCE(LumaAdapt_LumaTarget); // The 1x1 texture with the target average luma value
 
+CBUFFER_RESOURCE(LumaAdapt,
+    GPU_float2 HalfTexelOffset;
+    GPU_float LumaAdaptSpeed; // The speed of the animation
+    GPU_float FrameTime; // Last frame's duration in seconds
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + LumaAdaptParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-
-// One of the two 1x1 textures with the current average luma value
-const sampler2D texLumaInput;
-
-// The 1x1 texture with the target average luma value
-const sampler2D texLumaTarget;
-
-// The speed of the animation
-const float fLumaAdaptSpeed;
-
-// Last frame's duration in seconds
-const float fFrameTime;
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    f4Color = float4(0.f, 0.f, 0.f, 0.f);
+    color = float4(0.f, 0.f, 0.f, 0.f);
 
     // Two 1x1 textures containing last and current frames' average lumas are used
     // to slowly adjust the exposure of the HDR image when tone mapping.
-    const float fCurrLuma = rcp(tex2D(texLumaInput, float2(0.5f, 0.5f)).r);
-    const float fTargetLuma = rcp(tex2D(texLumaTarget, float2(0.5f, 0.5f)).r);
-    float fNewLuma = fCurrLuma + (fTargetLuma - fCurrLuma) * (fFrameTime / max(fLumaAdaptSpeed, 0.01f));
+    const float currLuma = rcp(tex2D(LumaAdapt_LumaInput, float2(0.5f, 0.5f)).r);
+    const float targetLuma = rcp(tex2D(LumaAdapt_LumaTarget, float2(0.5f, 0.5f)).r);
+    float newLuma = currLuma + (targetLuma - currLuma) * (LumaAdaptParams.FrameTime / max(LumaAdaptParams.LumaAdaptSpeed, 0.01f));
 
-    if (fCurrLuma < fTargetLuma)
-        fNewLuma = clamp(fNewLuma, fCurrLuma, fTargetLuma);
+    if (currLuma < targetLuma)
+        newLuma = clamp(newLuma, currLuma, targetLuma);
     else
-        fNewLuma = clamp(fNewLuma, fTargetLuma, fCurrLuma);
+        newLuma = clamp(newLuma, targetLuma, currLuma);
 
-    f4Color = rcp(float4(fNewLuma, fNewLuma, fNewLuma, 1.f));
+    color = rcp(float4(newLuma, newLuma, newLuma, 1.f));
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

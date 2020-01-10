@@ -24,6 +24,9 @@
 
 #include "Common.hlsli"
 
+TEXTURE_CUBE_RESOURCE(BRDF_IrradianceMap);   // Irradiance map for Cook-Torrance BRDF
+TEXTURE_CUBE_RESOURCE(BRDF_EnvMap);          // Environment map for Cook-Torrance BRDF
+
 // BRDF model
 struct BRDF
 {
@@ -35,8 +38,7 @@ struct BRDF
     static const unsigned int BRDFModelCount = 5;
 };
 
-struct BRDFConstantTable
-{
+CBUFFER_RESOURCE(BRDF,
     GPU_float DiffuseFactor;     // Scale value for diffuse light
     GPU_float SpecFactor;        // Scale value for specular light
     GPU_float AmbientFactor;     // Scale value for ambient light
@@ -49,18 +51,9 @@ struct BRDFConstantTable
     GPU_float3 LightDir;     // The direction of the light
 
     GPU_uint BRDFModel;
-
-};
+);
 
 #ifdef HLSL
-cbuffer BRDFResourceTable
-{
-    samplerCUBE   BRDF_IrradianceMap;   // Irradiance map for Cook-Torrance BRDF
-    samplerCUBE   BRDF_EnvMap;          // Environment map for Cook-Torrance BRDF
-
-    BRDFConstantTable BRDFParams;
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Blinn-Phong BRDF model                                                                                   //
 // http://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model#High-Level_Shading_Language_code_sample   //

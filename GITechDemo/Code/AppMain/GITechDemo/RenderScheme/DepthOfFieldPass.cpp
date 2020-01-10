@@ -233,7 +233,7 @@ void DepthOfFieldPass::ApplyDoF()
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
     );
-    HLSL::ColorCopySourceTexture = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
+    HLSL::ColorCopy_SourceTexture = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

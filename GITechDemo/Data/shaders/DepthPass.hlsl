@@ -19,18 +19,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-// Vertex shader /////////////////////////////////////////////////
-const float4x4 f44WorldViewProjMat;
+#include "Common.hlsli"
 
-float4 vsmain(float4 f4Position : POSITION) : SV_POSITION
+CBUFFER_RESOURCE(DepthPass,
+    GPU_float4x4 WorldViewProjMat;
+);
+
+#ifdef HLSL
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+float4 vsmain(float4 position : POSITION) : SV_POSITION
 {
-    return mul(f44WorldViewProjMat, f4Position);
+    return mul(DepthPassParams.WorldViewProjMat, position);
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-float4 psmain(float4 f4Position : SV_POSITION) : SV_TARGET
+#ifdef PIXEL
+float4 psmain(float4 position : SV_POSITION) : SV_TARGET
 {
     return float4(1.f, 0.f, 1.f, 1.f);
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

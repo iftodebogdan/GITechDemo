@@ -22,8 +22,10 @@
 #include "Common.hlsli"
 #include "PostProcessingUtils.hlsli"
 
-struct FXAAConstantTable
-{
+TEXTURE_2D_RESOURCE(FXAA_SourceTexture);    // The texture to be antialiased
+TEXTURE_2D_RESOURCE(FXAA_DepthBuffer);      // Scene depth values
+
+CBUFFER_RESOURCE(FXAA,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TextureSize;          // xy: size of texture in pixels; zw: the size of a texel (1 / xy)
     GPU_float Subpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
@@ -32,17 +34,9 @@ struct FXAAConstantTable
     GPU_float EdgeDepthThreshold;    // Threshold for depth based edge detection
     GPU_bool UseEdgeDetection;       // Use depth based edge detection to try to minimize texture blurring
     GPU_bool DebugEdgeDetection;     // Draw pixels that have FXAA applied with a red tint
-};
+);
 
 #ifdef HLSL
-cbuffer FXAAResourceTable
-{
-    sampler2D FXAA_SourceTexture;    // The texture to be antialiased
-    sampler2D FXAA_DepthBuffer;      // Scene depth values
-
-    FXAAConstantTable FXAAParams;
-};
-
 struct VSOut
 {
     float4  Position  :   SV_POSITION;

@@ -203,7 +203,7 @@ void SSAOPass::ApplySSAO()
     ResourceMgr->GetTexture(
         SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    HLSL::ColorCopySourceTexture = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopy_SourceTexture = SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

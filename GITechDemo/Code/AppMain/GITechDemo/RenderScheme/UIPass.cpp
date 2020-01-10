@@ -222,10 +222,10 @@ void UIPass::Update(const float fDeltaTime)
     SetupUI();
     GenerateDrawData();
 
-    HLSL::UITexture1D = m_nDummyTex1DIdx;
-    HLSL::UITexture2D = m_nFontTextureIdx;
-    HLSL::UITexture3D = m_nDummyTex3DIdx;
-    HLSL::UITextureCube = m_nDummyTexCubeIdx;
+    HLSL::UI_Texture1D = m_nDummyTex1DIdx;
+    HLSL::UI_Texture2D = m_nFontTextureIdx;
+    HLSL::UI_Texture3D = m_nDummyTex3DIdx;
+    HLSL::UI_TextureCube = m_nDummyTexCubeIdx;
 
     const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
     HLSL::UIParams->ProjMat.set(
@@ -1035,7 +1035,7 @@ void UIPass::RenderUI()
             RSMgr->SetScissor(Vec2i(int(cmd.ClipRect[2] - cmd.ClipRect[0]), int(cmd.ClipRect[3] - cmd.ClipRect[1])), Vec2i(int(cmd.ClipRect[0]), int(cmd.ClipRect[1])));
             RSMgr->SetSRGBWriteEnabled(((Synesthesia3D::Texture*)cmd.Texture)->GetSRGBEnabled());
 
-            const bool invalidateShaderConstants = (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || HLSL::UITexture2D != m_nFontTextureIdx || HLSL::UIParams->TextureSwitch != (GPU_uint)2);
+            const bool invalidateShaderConstants = (((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture || HLSL::UI_Texture2D != m_nFontTextureIdx || HLSL::UIParams->TextureSwitch != (GPU_uint)2);
 
             if(((Synesthesia3D::Texture*)cmd.Texture) != m_pFontTexture)
             {
@@ -1050,19 +1050,19 @@ void UIPass::RenderUI()
             {
             case TT_1D:
                 HLSL::UIParams->TextureSwitch = 1;
-                HLSL::UITexture1D = (Synesthesia3D::Texture*)cmd.Texture;
+                HLSL::UI_Texture1D = (Synesthesia3D::Texture*)cmd.Texture;
                 break;
             case TT_2D:
                 HLSL::UIParams->TextureSwitch = 2;
-                HLSL::UITexture2D = (Synesthesia3D::Texture*)cmd.Texture;
+                HLSL::UI_Texture2D = (Synesthesia3D::Texture*)cmd.Texture;
                 break;
             case TT_3D:
                 HLSL::UIParams->TextureSwitch = 3;
-                HLSL::UITexture3D = (Synesthesia3D::Texture*)cmd.Texture;
+                HLSL::UI_Texture3D = (Synesthesia3D::Texture*)cmd.Texture;
                 break;
             case TT_CUBE:
                 HLSL::UIParams->TextureSwitch = 4;
-                HLSL::UITextureCube = (Synesthesia3D::Texture*)cmd.Texture;
+                HLSL::UI_TextureCube = (Synesthesia3D::Texture*)cmd.Texture;
                 break;
             }
             

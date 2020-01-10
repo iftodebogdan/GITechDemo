@@ -21,22 +21,16 @@
 
 #include "Common.hlsli"
 
-struct SkyboxConstantTable
-{
+TEXTURE_CUBE_RESOURCE(Skybox_SkyCube);   // Sky cubemap
+
+CBUFFER_RESOURCE(Skybox,
     GPU_float4x4 SkyViewProjMat;
     GPU_float3 LightDir;    // Direction of sunlight
     GPU_float SunRadius;     // Determines sun radius
     GPU_float SunBrightness; // Determines sun brightness
-};
+);
 
 #ifdef HLSL
-cbuffer SkyboxResourceTable
-{
-    samplerCUBE Skybox_SkyCube;   // Sky cubemap
-
-    SkyboxConstantTable SkyboxParams;
-};
-
 struct VSOut
 {
     float4 Position   :   SV_POSITION;

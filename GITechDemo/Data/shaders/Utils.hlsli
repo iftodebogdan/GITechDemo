@@ -24,17 +24,11 @@
 
 #include "Common.hlsli"
 
-struct UtilsConstantTable
-{
+CBUFFER_RESOURCE(Utils,
     GPU_float2 PoissonDisk[16];
-};
+);
 
 #ifdef HLSL
-cbuffer UtilsResourceTable
-{
-    UtilsConstantTable UtilsParams;
-};
-
 //#define NORMAL_RECONSTRUCT_Z
 //#define NORMAL_SPHERICAL_COORDINATES
 //#define NORMAL_SPHEREMAP_TRANSFORM

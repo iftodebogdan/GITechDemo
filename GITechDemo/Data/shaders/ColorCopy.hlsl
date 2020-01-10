@@ -22,22 +22,16 @@
 #include "Common.hlsli"
 #include "PostProcessingUtils.hlsli"
 
-struct ColorCopyConstantTable
-{
+TEXTURE_2D_RESOURCE(ColorCopy_SourceTexture); // The texture to be copied
+
+CBUFFER_RESOURCE(ColorCopy,
     GPU_float2 HalfTexelOffset;
     GPU_bool SingleChannelCopy;
     GPU_bool ApplyTonemap;
     GPU_float4 CustomColorModulator;
-};
+);
 
 #ifdef HLSL
-cbuffer ColorCopyResourceTable
-{
-    const sampler2D ColorCopy_SourceTexture; // The texture to be copied
-
-    ColorCopyConstantTable ColorCopyParams;
-};
-
 struct VSOut
 {
     float4  Position  :   SV_POSITION;

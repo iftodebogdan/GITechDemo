@@ -21,34 +21,42 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(DepthCopy_Source);  // Source depth texture
 
+CBUFFER_RESOURCE(DepthCopy,
+    GPU_float2 HalfTexelOffset;
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, out VSOut output)
 {
-    output.f4Position   = f4Position;
-    output.f2TexCoord   = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DepthCopyParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;  // Source depth texture
-
+#ifdef PIXEL
 struct PSOut
 {
-    float4  f4DummyColor    : SV_TARGET;
-    float   fDepth          : SV_DEPTH;
+    float4  DummyColor  : SV_TARGET;
+    float   Depth       : SV_DEPTH;
 };
 
 void psmain(VSOut input, out PSOut output)
 {
-    output.f4DummyColor = float4(1.f, 0.f, 1.f, 1.f);
-    output.fDepth       = tex2D(texSource, input.f2TexCoord).r;
+    output.DummyColor = float4(1.f, 0.f, 1.f, 1.f);
+    output.Depth = tex2D(DepthCopy_Source, input.TexCoord).r;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

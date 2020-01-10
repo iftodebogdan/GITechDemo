@@ -242,7 +242,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
     ResourceMgr->GetTexture(
         VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
         )->SetAddressingMode(SAM_CLAMP);
-    HLSL::ColorCopySourceTexture = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopy_SourceTexture = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
     texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
     texQuarterDepthBuffer = HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
 

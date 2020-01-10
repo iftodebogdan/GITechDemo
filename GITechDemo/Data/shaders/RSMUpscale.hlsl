@@ -25,22 +25,16 @@
 #define RSM_UPSCALE_PASS (1)
 #include "RSMCommon.hlsli"
 
-struct RSMUpscaleConstantTable
-{
+TEXTURE_2D_RESOURCE(RSMUpscale_Source); // The texture to be upsampled
+TEXTURE_2D_RESOURCE(RSMUpscale_DepthBuffer); // G-Buffer depth values
+
+CBUFFER_RESOURCE(RSMUpscale,
     GPU_float2 HalfTexelOffset;
     GPU_float WeightThreshold; // Set a threshold which controls the level of sensitivity of the edge detection.
     GPU_bool DebugUpscalePass; // Shows pixels that could not be interpolated and need reshading
-};
+);
 
 #ifdef HLSL
-cbuffer RSMUpscaleResourceTable
-{
-    sampler2D RSMUpscale_Source;      // The texture to be upsampled
-    sampler2D RSMUpscale_DepthBuffer; // G-Buffer depth values
-
-    RSMUpscaleConstantTable RSMUpscaleParams;
-};
-
 struct VSOut
 {
     float4 Position :   SV_POSITION;

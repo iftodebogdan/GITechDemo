@@ -121,7 +121,7 @@ void MotionBlurPass::ApplyMotionBlur()
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
         );
 
-    HLSL::ColorCopySourceTexture = MotionBlurBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::ColorCopy_SourceTexture = MotionBlurBuffer.GetRenderTarget()->GetColorBuffer();
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

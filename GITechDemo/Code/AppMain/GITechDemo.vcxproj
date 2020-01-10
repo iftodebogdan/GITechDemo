@@ -403,6 +403,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <ClInclude Include="GITechDemo\Resource.h" />
     <ClInclude Include="GITechDemo\Resources\AppResources.h" />
     <ClInclude Include="GITechDemo\Resources\ArtistParameter.h" />
+    <ClInclude Include="GITechDemo\Resources\Shaders.h" />
     <ClInclude Include="GITechDemo\Utilities\GaussianFilter.h" />
     <ClInclude Include="GITechDemo\GITechDemo.h" />
     <ClInclude Include="GITechDemo\Utilities\PerlinNoise.h" />

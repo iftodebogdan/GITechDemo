@@ -70,10 +70,22 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
 #define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f)
 
+#define TEXTURE_1D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler1D)
+#define TEXTURE_2D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler2D)
+#define TEXTURE_3D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler3D)
+#define TEXTURE_CUBE_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSamplerCUBE)
+#define CBUFFER_RESOURCE(CBUFFER_NAME, CBUFFER_BODY) CREATE_SHADER_CONSTANT_OBJECT(CBUFFER_NAME##Params, CBUFFER_NAME##ConstantTable)
+#define GPU_STRUCT(structBody)
+
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
 {
+    //namespace HLSL
+    //{
+        #include "Shaders.h"
+    //}
+
     //////////////////////////////////////////////////////
     // Setup access to externally declared variables    //
     //////////////////////////////////////////////////////
@@ -523,20 +535,23 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(bChromaShift,             bool,           true                    );
     CREATE_SHADER_CONSTANT_OBJECT(fShiftFactor,             float,          1.f                     );
 
+    CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp, Vec2f, Vec2f(0.0001f, 0.75f));
+    CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed, float, 1.f);
+
+    CREATE_SHADER_CONSTANT_OBJECT(LensFlareFeatures, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(LensFlareDirt, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_OBJECT(LensFlareStarBurst, s3dSampler2D);
+
+    /*
     CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurSource, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
 
     CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
 
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareFeatures, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareDirt, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareStarBurst, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(LensFlareApplyParams, LensFlareApplyConstantTable);
 
     // Tone mapping
-    CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp, Vec2f, Vec2f(0.0001f, 0.75f));
-    CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed, float, 1.f);
     CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingSourceTexture, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingAvgLumaTexture, s3dSampler2D);
     CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingColorCorrectionTexture, s3dSampler2D);
@@ -558,7 +573,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(UITextureCube, s3dSamplerCUBE);
     CREATE_SHADER_CONSTANT_OBJECT(UIParams, UIConstantTable);
     //------------------------------------------------------
-
+    */
 
 
     //////////////////////////////////////

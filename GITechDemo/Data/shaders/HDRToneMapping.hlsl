@@ -23,8 +23,11 @@
 #include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
-struct HDRToneMappingConstantTable
-{
+TEXTURE_2D_RESOURCE(HDRToneMapping_SourceTexture);            // Source HDR texture
+TEXTURE_2D_RESOURCE(HDRToneMapping_AvgLumaTexture);           // 1x1 average luma texture
+TEXTURE_3D_RESOURCE(HDRToneMapping_ColorCorrectionTexture);   // Color correction texture
+
+CBUFFER_RESOURCE(HDRToneMapping,
     GPU_float2 HalfTexelOffset;
     GPU_float ExposureBias;      // Exposure amount
     GPU_float ShoulderStrength;  // = 0.15;
@@ -37,18 +40,9 @@ struct HDRToneMappingConstantTable
     GPU_float FrameTime;
     GPU_float FilmGrainAmount;
     GPU_bool ApplyColorCorrection;
-};
+);
 
 #ifdef HLSL
-cbuffer HDRToneMappingResourceTable
-{
-    sampler2D HDRToneMapping_SourceTexture;            // Source HDR texture
-    sampler2D HDRToneMapping_AvgLumaTexture;           // 1x1 average luma texture
-    sampler3D HDRToneMapping_ColorCorrectionTexture;   // Color correction texture
-
-    HDRToneMappingConstantTable HDRToneMappingParams;
-};
-
 struct VSOut
 {
     float4  Position    :   SV_POSITION;

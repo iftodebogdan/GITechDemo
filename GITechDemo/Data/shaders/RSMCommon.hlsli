@@ -25,6 +25,11 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
+TEXTURE_2D_RESOURCE(RSMCommon_RSMFluxBuffer);   // RSM flux data
+TEXTURE_2D_RESOURCE(RSMCommon_RSMNormalBuffer); // RSM normal data
+TEXTURE_2D_RESOURCE(RSMCommon_RSMDepthBuffer);  // RSM depth data
+TEXTURE_2D_RESOURCE(RSMCommon_NormalBuffer);    // G-Buffer view-space normals
+
 struct RSM
 {
     // This kernel is based on a Poisson Disk kernel.
@@ -39,8 +44,7 @@ struct RSM
     static const unsigned int SamplesPerPass = 16; // The number of samples from the RSM in each pass
 };
 
-struct RSMCommonConstantTable
-{
+CBUFFER_RESOURCE(RSMCommon,
     // The kernel for sampling the RSM
     GPU_float3 KernelApplyPass[RSM::SamplesPerPass];
     GPU_float3 KernelUpscalePass[RSM::PassCount * RSM::SamplesPerPass];
@@ -68,20 +72,9 @@ struct RSMCommonConstantTable
     // Composite matrix for transforming from render
     // camera view space to light view space
     GPU_float4x4 ViewToRSMViewMat;
-};
+);
 
 #ifdef HLSL
-cbuffer RSMCommonResourceTable
-{
-    sampler2D RSMCommon_RSMFluxBuffer;   // RSM flux data
-    sampler2D RSMCommon_RSMNormalBuffer; // RSM normal data
-    sampler2D RSMCommon_RSMDepthBuffer;  // RSM depth data
-
-    sampler2D RSMCommon_NormalBuffer;    // G-Buffer view-space normals
-
-    RSMCommonConstantTable RSMCommonParams;
-};
-
 void ApplyRSM(const float2 texCoord, const float depth, out float4 colorOut)
 {
     colorOut = float4(0.f, 0.f, 0.f, 0.f);

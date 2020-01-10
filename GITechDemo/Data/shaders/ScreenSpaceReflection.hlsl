@@ -23,9 +23,13 @@
 #include "Utils.hlsli"
 #include "BRDFUtils.hlsli"
 
-struct ScreenSpaceReflectionConstantTable
-{
+TEXTURE_2D_RESOURCE(ScreenSpaceReflection_HDRSceneTexture); // Scene color buffer
+TEXTURE_2D_RESOURCE(ScreenSpaceReflection_DiffuseBuffer);   // Diffuse color
+TEXTURE_2D_RESOURCE(ScreenSpaceReflection_MaterialBuffer);  // Roughness and material type (metallic/dielectric)
+TEXTURE_2D_RESOURCE(ScreenSpaceReflection_LinDepthBuffer);  // View space linear Z buffer
+TEXTURE_2D_RESOURCE(ScreenSpaceReflection_NormalBuffer);    // View space normal buffer
 
+CBUFFER_RESOURCE(ScreenSpaceReflection,
     GPU_float2 HalfTexelOffset;
     GPU_float4x4 InvProjMat;
 
@@ -40,20 +44,9 @@ struct ScreenSpaceReflectionConstantTable
     GPU_bool UseDither;              // Use dithering on ray starting positions.
 
     GPU_float4x4 ViewToRasterMat; // Projection matrix that maps to pixel coordinates
-};
+);
 
 #ifdef HLSL
-cbuffer ScreenSpaceReflectionResourceTable
-{
-    sampler2D ScreenSpaceReflection_HDRSceneTexture; // Scene color buffer
-    sampler2D ScreenSpaceReflection_DiffuseBuffer;   // Diffuse color
-    sampler2D ScreenSpaceReflection_MaterialBuffer;  // Roughness and material type (metallic/dielectric)
-    sampler2D ScreenSpaceReflection_LinDepthBuffer;  // View space linear Z buffer
-    sampler2D ScreenSpaceReflection_NormalBuffer;    // View space normal buffer
-
-    ScreenSpaceReflectionConstantTable ScreenSpaceReflectionParams;
-};
-
 struct VSOut
 {
     float4  Position  :   SV_POSITION;

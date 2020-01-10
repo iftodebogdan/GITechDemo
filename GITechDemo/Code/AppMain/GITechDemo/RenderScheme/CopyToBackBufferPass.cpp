@@ -93,7 +93,7 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
         m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
     HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / m_pFinalImageBuffer->GetWidth(), 0.5f / m_pFinalImageBuffer->GetHeight());
-    HLSL::ColorCopySourceTexture = m_pFinalImageBuffer->GetColorBuffer(0);
+    HLSL::ColorCopy_SourceTexture = m_pFinalImageBuffer->GetColorBuffer(0);
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     HLSL::ColorCopyParams->ApplyTonemap = false;
@@ -103,12 +103,12 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
     if (GBUFFER_DEBUG_VIEW != -1)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
-        HLSL::ColorCopySourceTexture = GBuffer.GetRenderTarget()->GetColorBuffer(GBUFFER_DEBUG_VIEW);
+        HLSL::ColorCopy_SourceTexture = GBuffer.GetRenderTarget()->GetColorBuffer(GBUFFER_DEBUG_VIEW);
     }
     else if (GBUFFER_DEBUG_VIEW_DEPTH)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetWidth(), 0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetHeight());
-        HLSL::ColorCopySourceTexture = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
+        HLSL::ColorCopy_SourceTexture = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
         HLSL::ColorCopyParams->SingleChannelCopy = true;
         HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f) / fZFar.GetCurrentValue();
     }
@@ -116,13 +116,13 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
     if (DEBUG_CSM_CAMERA)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / ShadowMapDir.GetRenderTarget()->GetWidth(), 0.5f / ShadowMapDir.GetRenderTarget()->GetHeight());
-        HLSL::ColorCopySourceTexture = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
+        HLSL::ColorCopy_SourceTexture = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
         HLSL::ColorCopyParams->SingleChannelCopy = true;
     }
     else if (DEBUG_RSM_CAMERA)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / RSMBuffer.GetRenderTarget()->GetWidth(), 0.5f / RSMBuffer.GetRenderTarget()->GetHeight());
-        HLSL::ColorCopySourceTexture = RSMBuffer.GetRenderTarget()->GetColorBuffer();
+        HLSL::ColorCopy_SourceTexture = RSMBuffer.GetRenderTarget()->GetColorBuffer();
     }
 }
 

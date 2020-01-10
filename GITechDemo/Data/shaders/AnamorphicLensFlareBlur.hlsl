@@ -22,21 +22,15 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-struct AnamorphicLensFlareBlurConstantTable
-{
+TEXTURE_2D_RESOURCE(AnamorphicLensFlareBlur_Source);  // The texture to be blurred
+
+CBUFFER_RESOURCE(AnamorphicLensFlareBlur,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize;     // zw: normalized size of texel
     GPU_int Kernel;          // Kernel size for current pass
-};
+);
 
 #ifdef HLSL
-cbuffer AnamorphicLensFlareBlurResourceTable
-{
-    sampler2D AnamorphicLensFlareBlur_Source;  // The texture to be blurred
-
-    AnamorphicLensFlareBlurConstantTable AnamorphicLensFlareBlurParams;
-};
-
 struct VSOut
 {
     float4  Position    :   SV_POSITION;

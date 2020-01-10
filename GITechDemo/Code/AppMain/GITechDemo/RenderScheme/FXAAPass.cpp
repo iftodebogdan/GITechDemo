@@ -81,11 +81,11 @@ void FXAAPass::Update(const float fDeltaTime)
         1.f / (float)srcRT->GetWidth(),
         1.f / (float)srcRT->GetHeight()
     );
-    HLSL::FXAASourceTexture = srcRT->GetColorBuffer(0);
+    HLSL::FXAA_SourceTexture = srcRT->GetColorBuffer(0);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ResourceMgr->GetTexture(srcRT->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
 
-    HLSL::FXAADepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::FXAA_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
     //HLSL::FXAADepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
 }
 

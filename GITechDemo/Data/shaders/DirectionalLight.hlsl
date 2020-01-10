@@ -24,28 +24,22 @@
 #include "CSMUtils.hlsli"
 #include "BRDFUtils.hlsli"
 
-struct DirectionalLightConstantTable
-{
+TEXTURE_2D_RESOURCE(DirectionalLight_DiffuseBuffer);    // Diffuse color
+TEXTURE_2D_RESOURCE(DirectionalLight_NormalBuffer);     // View-space normals
+TEXTURE_2D_RESOURCE(DirectionalLight_DepthBuffer);      // Depth values
+TEXTURE_2D_RESOURCE(DirectionalLight_MaterialBuffer);   // Roughness and material type (metallic/dielectric)
+TEXTURE_2D_RESOURCE(DirectionalLight_ShadowMap);        // Cascaded shadow maps
+
+CBUFFER_RESOURCE(DirectionalLight,
     GPU_float4x4 InvProjMat;
     GPU_float2 HalfTexelOffset;
 
-    GPU_float2 OneOverShadowMapSize; // 1 / shadow map width/height
-    GPU_float4x4 ScreenToLightViewMat;    // Composite matrix for transforming screen-space coordinates to light-view space
-    GPU_bool DebugCascades; // Visual cascade debug option
-};
+    GPU_float2 OneOverShadowMapSize;    // 1 / shadow map width/height
+    GPU_float4x4 ScreenToLightViewMat;  // Composite matrix for transforming screen-space coordinates to light-view space
+    GPU_bool DebugCascades;             // Visual cascade debug option
+);
 
 #ifdef HLSL
-cbuffer DirectionalLightResourceTable
-{
-    sampler2D DirectionalLight_DiffuseBuffer;   // Diffuse color
-    sampler2D DirectionalLight_NormalBuffer;    // View-space normals
-    sampler2D DirectionalLight_DepthBuffer;     // Depth values
-    sampler2D DirectionalLight_MaterialBuffer;  // Roughness and material type (metallic/dielectric)
-    sampler2D DirectionalLight_ShadowMap;           // Cascaded shadow maps
-
-    DirectionalLightConstantTable DirectionalLightParams;
-};
-
 struct VSOut
 {
     float4 Position   :   SV_POSITION;

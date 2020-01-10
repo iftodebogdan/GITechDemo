@@ -38,20 +38,14 @@ struct CSM
 #endif
 };
 
-struct CSMConstantTable
-{
+CBUFFER_RESOURCE(CSM,
     GPU_float2    CascadeBoundsMin[CSM::CascadeCount]; // Light-view space AABBs corresponding
     GPU_float2    CascadeBoundsMax[CSM::CascadeCount]; // to each shadow cascade
     GPU_float4x4  CascadeProjMat[CSM::CascadeCount]; // light space projection matrix
     GPU_float     CascadeBlendSize; // Size of the blend band for blurring between cascade boundaries
-};
+);
 
 #ifdef HLSL
-cbuffer CSMResourceTable
-{
-    CSMConstantTable CSMParams;
-};
-
 // Calculates the best (i.e. highest detail) valid cascade index from
 // the light view space (not normalized) position of the current sample
 const unsigned int GetCascadeIdx(const float2 lightViewPos)

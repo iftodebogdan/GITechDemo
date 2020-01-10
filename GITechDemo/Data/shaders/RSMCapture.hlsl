@@ -21,20 +21,14 @@
 
 #include "Utils.hlsli"
 
-struct RSMCaptureConstantTable
-{
+TEXTURE_2D_RESOURCE(RSMCapture_Diffuse); // Diffuse color
+
+CBUFFER_RESOURCE(RSMCapture,
     GPU_float4x4 RSMWorldViewProjMat;
     GPU_float4x4 LightWorldViewMat;
-};
+);
 
 #ifdef HLSL
-cbuffer RSMCaptureResourceTable
-{
-    sampler2D RSMCapture_Diffuse; // Diffuse color
-
-    RSMCaptureConstantTable RSMCaptureParams;
-};
-
 struct VSOut
 {
     float4 Position :   SV_POSITION;

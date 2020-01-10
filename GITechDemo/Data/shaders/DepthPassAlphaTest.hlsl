@@ -21,39 +21,47 @@
 
 #include "Utils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float4x4 f44WorldViewProjMat;
+TEXTURE_2D_RESOURCE(DepthPassAlphaTest_Diffuse); // Diffuse color
 
-struct VSIn
-{
-    float4 f4Position   :   POSITION;
-    float2 f2TexCoord   :   TEXCOORD;
-};
+CBUFFER_RESOURCE(DepthPassAlphaTest,
+    GPU_float4x4 WorldViewProjMat;
+);
 
+#ifdef HLSL
 struct VSOut
 {
-    float4 f4Position   :   SV_POSITION;
-    float2 f2TexCoord   :   TEXCOORD0;
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+};
+
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+struct VSIn
+{
+    float4 Position : POSITION;
+    float2 TexCoord : TEXCOORD;
 };
 
 void vsmain(VSIn input, out VSOut output)
 {
-    output.f4Position = mul(f44WorldViewProjMat, input.f4Position);
-    output.f2TexCoord = input.f2TexCoord;
+    output.Position = mul(DepthPassAlphaTestParams.WorldViewProjMat, input.Position);
+    output.TexCoord = input.TexCoord;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texDiffuse; // Diffuse color
-
+#ifdef PIXEL
 float4 psmain(VSOut input) : SV_TARGET
 {
     // Sample the diffuse texture
-    float4 f4DiffuseColor = tex2D(texDiffuse, input.f2TexCoord);
+    float4 diffuseColor = tex2D(DepthPassAlphaTest_Diffuse, input.TexCoord);
 
     // Do an alpha-test
-    ALPHA_TEST(f4DiffuseColor.a, 0.5f);
+    ALPHA_TEST(diffuseColor.a, 0.5f);
 
     return float4(1.f, 0.f, 1.f, 1.f);
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

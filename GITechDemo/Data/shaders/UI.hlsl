@@ -21,26 +21,20 @@
 
 #include "Common.hlsli"
 
-struct UIConstantTable
-{
+TEXTURE_1D_RESOURCE(UI_Texture1D);
+TEXTURE_2D_RESOURCE(UI_Texture2D); // Usually font texture
+TEXTURE_3D_RESOURCE(UI_Texture3D);
+TEXTURE_CUBE_RESOURCE(UI_TextureCube);
+
+CBUFFER_RESOURCE(UI,
     GPU_float4x4 ProjMat;
     GPU_uint TextureSwitch;
     GPU_uint MipLevel;
     GPU_uint FaceIdx;
     GPU_float DepthSlice;
-};
+);
 
 #ifdef HLSL
-cbuffer UIResourceTable
-{
-    sampler1D UI_Texture1D;
-    sampler2D UI_Texture2D; // Usually font texture
-    sampler3D UI_Texture3D;
-    samplerCUBE UI_TextureCube;
-
-    UIConstantTable UIParams;
-};
-
 struct VSOut
 {
     float4  Position  :   SV_POSITION;

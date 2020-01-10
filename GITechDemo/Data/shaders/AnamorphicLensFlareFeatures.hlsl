@@ -21,22 +21,16 @@
 
 #include "PostProcessingUtils.hlsli"
 
-struct AnamorphicLensFlareFeaturesConstantTable
-{
+TEXTURE_2D_RESOURCE(AnamorphicLensFlareFeatures_Source);  // Source texture
+
+CBUFFER_RESOURCE(AnamorphicLensFlareFeatures,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize;     // zw: size of source texture texel
 
     GPU_float AnamorphicIntensity;
-};
+);
 
 #ifdef HLSL
-cbuffer AnamorphicLensFlareFeaturesResourceTable
-{
-    sampler2D AnamorphicLensFlareFeatures_Source;  // Source texture
-
-    AnamorphicLensFlareFeaturesConstantTable AnamorphicLensFlareFeaturesParams;
-};
-
 struct VSOut
 {
     float4  Position        :   SV_POSITION;

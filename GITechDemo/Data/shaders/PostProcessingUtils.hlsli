@@ -24,23 +24,16 @@
 
 #include "Common.hlsli"
 
-struct PostProcessingConstantTable
-{
+TEXTURE_2D_RESOURCE(PostProcessing_DitherMap);   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
+
+CBUFFER_RESOURCE(PostProcessing,
     GPU_float zNear;
     GPU_float zFar;
     GPU_float2 linearDepthEquation;
     GPU_float depthHalfTexelOffset; // Half texel offset of depth buffer
-};
+);
 
 #ifdef HLSL
-
-cbuffer PostProcessingResourceTable
-{
-    sampler2D PostProcessing_DitherMap;   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
-
-    PostProcessingConstantTable PostProcessingParams;
-};
-
 //////////////////////////////////////////////////////////
 // Hardcoded mip level when sampling from textures to   //
 // prevent the GPU from calculating ddx(), ddy() for    //

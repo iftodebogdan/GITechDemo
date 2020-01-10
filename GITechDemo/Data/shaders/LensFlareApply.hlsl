@@ -21,8 +21,11 @@
 
 #include "PostProcessingUtils.hlsli"
 
-struct LensFlareApplyConstantTable
-{
+TEXTURE_2D_RESOURCE(LensFlareApply_Features); // Lens flare effect features
+TEXTURE_2D_RESOURCE(LensFlareApply_Dirt); // Lens dirt texture
+TEXTURE_2D_RESOURCE(LensFlareApply_StarBurst); // Lens star burst texture
+
+CBUFFER_RESOURCE(LensFlareApply,
     GPU_float2 HalfTexelOffset;
     GPU_float DirtIntensity; // Scale factor for lens dirt texture samples
     GPU_float StarBurstIntensity; // Scale factor for lens star burst texture samples
@@ -30,18 +33,9 @@ struct LensFlareApplyConstantTable
     // Transform matrix for the star burst texture coordinates
     // applying a camera dependent rotation
     GPU_float3x3 StarBurstMat;
-};
+);
 
 #ifdef HLSL
-cbuffer LensFlareApplyResourceTable
-{
-    sampler2D LensFlareApply_Features; // Lens flare effect features
-    sampler2D LensFlareApply_Dirt; // Lens dirt texture
-    sampler2D LensFlareApply_StarBurst; // Lens star burst texture
-
-    LensFlareApplyConstantTable LensFlareApplyParams;
-};
-
 struct VSOut
 {
     float4  Position    :   SV_POSITION;

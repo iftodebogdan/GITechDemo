@@ -21,38 +21,41 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(BilateralBlur_Source);      // The texture to be blurred
+TEXTURE_2D_RESOURCE(BilateralBlur_DepthBuffer); // Scene depth
 
+CBUFFER_RESOURCE(BilateralBlur,
+    GPU_float2 HalfTexelOffset;
+    GPU_float2 BlurDir;         // Horizontal or vertical blur
+    GPU_float4 TexSize;         // zw: normalized size of a texel
+    GPU_float BlurDepthFalloff; // Depth threshold for edge detection
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BilateralBlurParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;      // The texture to be blurred
-const sampler2D texDepthBuffer; // Scene depth
-
-const float2 f2BlurDir;             // Horizontal or vertical blur
-const float4 f4TexSize;             // zw: normalized size of a texel
-
-// Depth threshold for edge detection
-const float fBlurDepthFalloff;
-
+#ifdef PIXEL
 // Number of samples on each side of the kernel
 #define NUM_SAMPLES_HALF    (7)
 
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    const float fGaussianFilterWeight[] =
+    const float gaussianFilterWeight[] =
     {
         0.14446445f, 0.13543542f,
         0.11153505f, 0.08055309f,
@@ -60,34 +63,36 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
         0.01332457f, 0.00545096f
     };
 
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
-    float fTotalWeight = 0.f;
+    color = float4(0.f, 0.f, 0.f, 1.f);
+    float totalWeight = 0.f;
 
     // Get reference downsampled depth (center of kernel)
-    const float fRefDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+    const float refDepth = tex2D(BilateralBlur_DepthBuffer, input.TexCoord).r;
 
     UNROLL for (int i = -NUM_SAMPLES_HALF; i <= NUM_SAMPLES_HALF; i++)
     {
         // Calculate coordinates for sampling source texture
-        const float2 f2Offset = i * f2BlurDir * f4TexSize.zw;
-        const float2 f2SampleTexCoord = input.f2TexCoord + f2Offset;
+        const float2 offset = i * BilateralBlurParams.BlurDir * BilateralBlurParams.TexSize.zw;
+        const float2 sampleTexCoord = input.TexCoord + offset;
 
         // Sample source color
-        const float3 f3SampleColor = tex2D(texSource, f2SampleTexCoord).rgb;
+        const float3 sampleColor = tex2D(BilateralBlur_Source, sampleTexCoord).rgb;
         // Calculate downsampled depth for the above sample
-        const float fSampleDepth = tex2D(texDepthBuffer, f2SampleTexCoord).r;
+        const float sampleDepth = tex2D(BilateralBlur_DepthBuffer, sampleTexCoord).r;
 
         // Simple depth-aware filtering
-        const float fDepthDiff = fBlurDepthFalloff * abs(fSampleDepth - fRefDepth);
-        const float fWeight = exp(-fDepthDiff * fDepthDiff) * fGaussianFilterWeight[abs(i)];
+        const float depthDiff = BilateralBlurParams.BlurDepthFalloff * abs(sampleDepth - refDepth);
+        const float weight = exp(-depthDiff * depthDiff) * gaussianFilterWeight[abs(i)];
 
-        f4Color.rgb += fWeight * f3SampleColor;
-        fTotalWeight += fWeight;
+        color.rgb += weight * sampleColor;
+        totalWeight += weight;
     }
 
-    f4Color.rgb /= fTotalWeight;
+    color.rgb /= totalWeight;
 
     // Attempt to save some bandwidth
-    clip(-!any(f4Color.rgb));
+    clip(-!any(color.rgb));
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

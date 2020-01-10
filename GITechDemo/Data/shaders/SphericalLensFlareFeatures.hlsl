@@ -21,8 +21,10 @@
 
 #include "PostProcessingUtils.hlsli"
 
-struct SphericalLensFlareFeaturesConstantTable
-{
+TEXTURE_1D_RESOURCE(SphericalLensFlareFeatures_GhostColorLUT);
+TEXTURE_2D_RESOURCE(SphericalLensFlareFeatures_Source);
+
+CBUFFER_RESOURCE(SphericalLensFlareFeatures,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize; // zw: size of source texture texel
 
@@ -38,17 +40,9 @@ struct SphericalLensFlareFeaturesConstantTable
     // Chromatic aberration feature
     GPU_bool ChromaShift;
     GPU_float ShiftFactor;
-};
+);
 
 #ifdef HLSL
-cbuffer SphericalLensFlareFeaturesResourceTable
-{
-    sampler1D SphericalLensFlareFeatures_GhostColorLUT;
-    sampler2D SphericalLensFlareFeatures_Source;  // Source texture
-
-    SphericalLensFlareFeaturesConstantTable SphericalLensFlareFeaturesParams;
-};
-
 struct VSOut
 {
     float4  Position          :   SV_POSITION;

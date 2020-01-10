@@ -34,25 +34,25 @@
 #define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) namespace HLSL { extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME; }
 #define CREATE_RENDER_TARGET_HANDLE(NAME) extern GITechDemoApp::RenderTarget NAME
 #define SWAP_RENDER_TARGET_HANDLES(RT1, RT2) { GITechDemoApp::RenderTarget* const TEMP = RT1; RT1 = RT2; RT2 = TEMP; }
+
+#define TEXTURE_1D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_HANDLE(textureName, s3dSampler1D)
+#define TEXTURE_2D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_HANDLE(textureName, s3dSampler2D)
+#define TEXTURE_3D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_HANDLE(textureName, s3dSampler3D)
+#define TEXTURE_CUBE_RESOURCE(textureName) CREATE_SHADER_CONSTANT_HANDLE(textureName, s3dSamplerCUBE)
+#define CBUFFER_RESOURCE(CBUFFER_NAME, CBUFFER_BODY) \
+struct CBUFFER_NAME##ConstantTable \
+{ \
+    CBUFFER_BODY \
+}; \
+CREATE_SHADER_CONSTANT_HANDLE(CBUFFER_NAME##Params, GITechDemoApp::CBUFFER_NAME##ConstantTable)
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
 {
-    #include "RSMApply.hlsl"
-    #include "RSMCapture.hlsl"
-    #include "RSMUpscale.hlsl"
-    #include "ScreenSpaceReflection.hlsl"
-    #include "DirectionalLight.hlsl"
-    #include "Skybox.hlsl"
-    #include "SphericalLensFlareFeatures.hlsl"
-    #include "SSAO.hlsl"
-    #include "AnamorphicLensFlareBlur.hlsl"
-    #include "AnamorphicLensFlareFeatures.hlsl"
-    #include "LensFlareApply.hlsl"
-    #include "HDRToneMapping.hlsl"
-    #include "FXAA.hlsl"
-    #include "ColorCopy.hlsl"
-    #include "UI.hlsl"
+    //namespace HLSL
+    //{
+        #include "Shaders.h"
+    //}
 
     using namespace Synesthesia3D;
 
@@ -352,8 +352,19 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fBlurDepthFalloff,        float           );
 
     //  - NearestDepthUpscale.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(fUpsampleDepthThreshold,  float           );
+    CREATE_SHADER_CONSTANT_HANDLE(fUpsampleDepthThreshold, float);
 
+    //  - ScreenSpaceReflection.hlsl
+    CREATE_SHADER_CONSTANT_HANDLE(texHDRSceneTexture, s3dSampler2D);
+    CREATE_SHADER_CONSTANT_HANDLE(fThickness, float);
+    CREATE_SHADER_CONSTANT_HANDLE(fSampleStride, float);
+    CREATE_SHADER_CONSTANT_HANDLE(fMaxSteps, float);
+    CREATE_SHADER_CONSTANT_HANDLE(fMaxRayDist, float);
+    CREATE_SHADER_CONSTANT_HANDLE(f44ViewToRasterMat, Matrix44f);
+    CREATE_SHADER_CONSTANT_HANDLE(bUseDither, bool);
+    CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity, float);
+
+    /*
     //  - AnamorphicLensFlareBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurSource, s3dSampler2D);
     CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
@@ -361,16 +372,6 @@ namespace GITechDemoApp
     //  - AnamorphicLensFlareFeatures.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
     CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
-
-    //  - ScreenSpaceReflection.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(texHDRSceneTexture,       s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_HANDLE(fThickness,               float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fSampleStride,            float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fMaxSteps,                float           );
-    CREATE_SHADER_CONSTANT_HANDLE(fMaxRayDist,              float           );
-    CREATE_SHADER_CONSTANT_HANDLE(f44ViewToRasterMat,       Matrix44f       );
-    CREATE_SHADER_CONSTANT_HANDLE(bUseDither,               bool            );
-    CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity,     float           );
 
     //  - HDRToneMapping.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingSourceTexture, s3dSampler2D);
@@ -394,7 +395,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(UITextureCube, s3dSamplerCUBE);
     CREATE_SHADER_CONSTANT_HANDLE(UIParams, UIConstantTable);
     //-------------------------------------------------------
-
+    */
     #define STRINGIZE_HELPER(x) #x
     #define STRINGIZE(x) STRINGIZE_HELPER(x)
     #define WARNING(desc) message(__FILE__ "(" STRINGIZE(__LINE__) ") : Warning: " #desc)
@@ -425,6 +426,13 @@ namespace GITechDemoApp
 #undef CREATE_SHADER_HANDLE
 #undef CREATE_SHADER_CONSTANT_HANDLE
 #undef CREATE_RENDER_TARGET_HANDLE
+
+#undef TEXTURE_1D_RESOURCE
+#undef TEXTURE_2D_RESOURCE
+#undef TEXTURE_3D_RESOURCE
+#undef TEXTURE_CUBE_RESOURCE
+#undef CBUFFER_RESOURCE
+#undef GPU_STRUCT
 ///////////////////////////////////////////////////////////
 
 #endif // APP_RESOURCES_H_

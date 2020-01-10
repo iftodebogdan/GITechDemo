@@ -270,7 +270,7 @@ void LensFlarePass::GenerateFeatures()
             1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
             );
-        HLSL::AnamorphicLensFlareFeaturesSource = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
+        HLSL::AnamorphicLensFlareFeatures_Source = CurrentLensFlareBuffer[2]->GetRenderTarget()->GetColorBuffer();
 
         AnamorphicLensFlareFeaturesShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -396,7 +396,7 @@ void LensFlarePass::AnamorphicBlur()
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
-        HLSL::AnamorphicLensFlareBlurSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::AnamorphicLensFlareBlur_Source = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
         HLSL::AnamorphicLensFlareBlurParams->Kernel = i;
 
         AnamorphicLensFlareBlurShader.Enable();

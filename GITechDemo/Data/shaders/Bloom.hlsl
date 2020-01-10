@@ -22,35 +22,43 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(Bloom_Source); // The texture to be blurred
 
+CBUFFER_RESOURCE(Bloom,
+    GPU_float2 HalfTexelOffset;
+    GPU_float Strength;         // Intensity of bloom
+    GPU_float Power;            // Exponent of bloom
+    GPU_float4 TexSize;         // zw: normalized size of a texel
+    GPU_int Kernel;             // Kernel size for current pass
+    GPU_bool AdjustIntensity;   // Apply the effects of fBloomStrength and fBloomPower
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BloomParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;      // The texture to be blurred
-const float fBloomStrength;     // Intensity of bloom
-const float fBloomPower;        // Exponent of bloom
-const float4 f4TexSize;         // zw: normalized size of a texel
-const int nKernel;              // Kernel size for current pass
-const bool bAdjustIntensity;    // Apply the effects of fBloomStrength and fBloomPower
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    f4Color = KawaseBlur(texSource, f4TexSize.zw, input.f2TexCoord, nKernel);
+    color = KawaseBlur(Bloom_Source, BloomParams.TexSize.zw, input.TexCoord, BloomParams.Kernel);
 
-    if(bAdjustIntensity)
-        f4Color = pow(abs(f4Color), fBloomPower) * fBloomStrength;
+    if(BloomParams.AdjustIntensity)
+        color = pow(abs(color), BloomParams.Power) * BloomParams.Strength;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL
