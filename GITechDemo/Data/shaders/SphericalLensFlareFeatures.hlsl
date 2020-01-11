@@ -29,7 +29,7 @@ CBUFFER_RESOURCE(SphericalLensFlareFeatures,
     GPU_float4 TexSize; // zw: size of source texture texel
 
     // Ghost features
-    GPU_int GhostSamples;
+    GPU_float GhostSamples;
     GPU_float GhostDispersal;
     GPU_float GhostRadialWeightExp;
 

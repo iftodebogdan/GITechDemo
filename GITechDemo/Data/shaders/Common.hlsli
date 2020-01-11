@@ -83,44 +83,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // These typedefs help with achieving the same memory layout between HLSL and CPP structs.  //
 // They are not required if you don't use structs.                                          //
+// More details in ShaderProgramDX9::GetConstantType() in Synesthesia3D project.            //
 //////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The way FXC for Shader Model 3.0 handles structs with mixed member types (basically bools and floats/ints) is... stupid.
-//
-// They seem to be using different packing rules when counting float register offsets vs bool register offsets.
-// More exactly, a float vector maps to one float register regardless of whether you pack tightly (e.g. float2 + float2,
-// float2 + float + float, etc). However, when counting bool registers, float vectors "map" to the same number of bool
-// registers as its dimensions (e.g. 2 bool registers for a float2). This makes it impossible to map a HLSL struct to a
-// CPP struct w.r.t. memory layout because a float2 will occupy one float register (16 bytes), but will only generate a
-// 2 bool register offset (8 bytes).
-//
-// Even if we order them in such a way as to make it work, you don't have any guarantee bools in your struct will end up in bool registers.
-// It all depends on whether the compiler decides to use an actual flow-control instruction (i.e. somehting like 'if b0 ... else ... endif'), in which case the bool uses up one
-// 4-byte bool register, or it flattens the conditional (i.e. something like 'cmp ##, -c0.x, ##, ##'), in which case it uses a 16-byte float4 register. This means that there's
-// no realiable way of knowing how to setup the memory layout of CPP structs without parsing the output assembly from FXC.
-//
-// As such we have to drop bools from HLSL to force the use of only float registers.
-//
-// Concrete example taken from FXC output, annotated for clarity:
-//
-// Parameters:
-//
-//   struct
-//   {
-//       float2 HalfTexelOffset;        -> (c0) or (b0-b1)
-//       bool SingleChannelCopy;        -> (c1) or (b2)
-//       bool ApplyTonemap;             -> (c2) or (b3)
-//       float4 CustomColorModulator;   -> (c3) or (b4-b7)
-//
-//   } ColorCopyParams;
-//
-// Registers:
-//
-//   Name                   Reg   Size
-//   ---------------------- ----- ----
-//   ColorCopyParams        b0       8 // i.e. 8 x 4-byte bool registers (b#) used when code forced to use all those constants in flow-control instructions
-//   ColorCopyParams        c0       4 // i.e. 4 x 16-byte float4 registers (c#) used when code forced to not use flow-control instructions
-//
 
 typedef float  GPU_bool;
 typedef float1 GPU_bool1;

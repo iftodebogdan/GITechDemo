@@ -27,7 +27,7 @@ TEXTURE_2D_RESOURCE(MotionBlur_DepthBuffer); // Depth buffer
 
 CBUFFER_RESOURCE(MotionBlur,
     GPU_float2 HalfTexelOffset;
-    GPU_int NumSamples;             // The number of samples along the velocity vector
+    GPU_float NumSamples;           // The number of samples along the velocity vector
     GPU_float4x4 InvViewProjMat;    // Inverse view-projection matrix
     GPU_float4x4 PrevViewProjMat;   // Previous frame's view-projection matrix
     GPU_float FrameTime;            // Frame duration
@@ -83,7 +83,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         * MotionBlurParams.Intensity    // Scale velocity by intensity value
         / MotionBlurParams.NumSamples;  // Divide by the number of samples (so that there would be no
                                         // change in perceived intensity if sample count varies)
-    
+
     // Clamp it so as not to ruin the effect at high speed
     velocity = normalize(velocity) * clamp(length(velocity), 0.f, 0.01f);
 

@@ -225,13 +225,70 @@ const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) con
     switch (constDesc.Type)
     {
     case D3DXPT_VOID:
-        // Not sure what else could come through here, but support only non-empty(?) structs
-        if (constDesc.Class == D3DXPC_STRUCT && constDesc.StructMembers > 0)
+        // Not sure what else could come through here, but support only non-empty structs strictly assigned to c# float registers (more details below)
+        if (constDesc.Class == D3DXPC_STRUCT && constDesc.StructMembers > 0 && constDesc.RegisterSet == D3DXRS_FLOAT4)
         {
             return IT_STRUCT;
         }
         else
         {
+            // The way FXC for Shader Model 3.0 handles structs with mixed member types (basically floats in combination with bools/ints) is... stupid.
+            //
+            // They seem to be using different packing rules when counting float register offsets vs bool register offsets.
+            // More exactly, a float vector maps to one float register regardless of whether you pack tightly (e.g. float2 + float2,
+            // float2 + float + float, etc). However, when counting bool registers, float vectors "map" to the same number of bool
+            // registers as its dimensions (e.g. 2 bool registers for a float2). This makes it impossible to map a HLSL struct to a
+            // CPP struct w.r.t. memory layout because a float2 will occupy one float register (16 bytes), but will only generate a
+            // 2 bool register offset (8 bytes).
+            //
+            // Even if we order them in such a way as to make it work, you don't have any guarantee bools in your struct will end up in bool registers.
+            // It all depends on whether the compiler decides to use an actual flow-control instruction (i.e. somehting like 'if b0 ... else ... endif'), in which case the bool uses up one
+            // 4-byte bool register, or it flattens the conditional (i.e. something like 'cmp ##, -c0.x, ##, ##'), in which case it uses a 16-byte float4 register. This means that there's
+            // no realiable way of knowing how to setup the memory layout of CPP structs without parsing the output assembly from FXC.
+            //
+            // As such we have to force the use of only float registers for structs in HLSL, since int registers have the same problem.
+            //
+            // Concrete example taken from FXC output, annotated for clarity:
+            //
+            // Parameters:
+            //
+            //   struct
+            //   {
+            //       float2 HalfTexelOffset;        -> (c0) and (b0-b1)
+            //       bool SingleChannelCopy;        -> (c1) and (b2)
+            //       bool ApplyTonemap;             -> (c2) and (b3)
+            //       float4 CustomColorModulator;   -> (c3) and [optimized out of b# registers]
+            //
+            //   } ColorCopyParams;
+            //
+            // Registers:
+            //
+            //   Name                   Reg   Size
+            //   ---------------------- ----- ----
+            //   ColorCopyParams        b0       4 // i.e. 4 x 4-byte bool registers (b#)
+            //   ColorCopyParams        c0       4 // i.e. 4 x 16-byte float4 registers (c#)
+            //
+            // The reason why CustomColorModulator isn't found in the b# registers is because it wasn't used as an actual bool in the shader code,
+            // so FXC decided to remove it from the b# registers so as not to waste them. Only SingleChannelCopy and ApplyTonemap are used in flow
+            // control instructions in the tested shader code, so they need to be mapped to b# registers. But since HalfTexelOffset appears before
+            // them in the struct declaration, it is also assigned to b# registers (in addition to c# registers), even though they are never used!
+            //
+            // The corresponding memory layout for the two will look like this:
+            //
+            //   ColorCopyParams in c# registers:
+            //                  c0                      c1                  c2                      c3
+            //      | HalfTexelOffset.xy00 | SingleChannelCopy.x000 | ApplyTonemap.x000 | CusomColorModulator.xyzw | => each member is padded to a float4 and stored in a separate float register
+            //
+            //   ColorCopyParams in b# registers:
+            //              b0                  b1                  b2                  b3
+            //      | HalfTexelOffset.x | HalfTexelOffset.y | SingleChannelCopy | ApplyTonemap | => each member is split into separate bool registers
+            //
+            // Each c# float register is 16 bytes, whereas each b# bool register is 4 bytes. So it makes it impossible to map the same constant buffer to
+            // both register sets, because it would need different packing rules. Ideally, FXC would have had better packing for c# registers, such that 
+            // HalfTexelOffset.xy, SingleChannelCopy and ApplyTonemap would have occupied a single c# float register. That would have matched the four b#
+            // registers they also occupy and allow for the same constant buffer to be set directly with one IDirect3DDevice9::SetPixelShaderConstantX()
+            // call for each register set the struct gets assigned to (c# float and b# bool registers in this particular example).
+
             assert(false);
             return IT_NONE;
         }
