@@ -1,3 +1,8 @@
+#include "BokehDoF.hlsl"
+#include "DirectionalLightVolume.hlsl"
+#include "NearestDepthUpscale.hlsl"
+#include "LumaCapture.hlsl"
+#include "Downsample.hlsl"
 #include "MotionBlur.hlsl"
 #include "LumaAdapt.hlsl"
 #include "Bloom.hlsl"

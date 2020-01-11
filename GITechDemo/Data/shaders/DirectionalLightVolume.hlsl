@@ -23,145 +23,145 @@
 #include "Utils.hlsli"
 #include "CSMUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
-const float4 f4TexSize; // xy: size, in texels, of destination texture; zw : normalized texel size
+TEXTURE_2D_RESOURCE(DirectionalLightVolume_ShadowMap); // Cascaded shadow maps
+TEXTURE_2D_RESOURCE(DirectionalLightVolume_DepthBuffer); // Scene depth
+TEXTURE_3D_RESOURCE(DirectionalLightVolume_Noise); // Noise texture (for fog)
 
+CBUFFER_RESOURCE(DirectionalLightVolume,
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize; // xy: size, in texels, of destination texture; zw : normalized texel size
+
+    GPU_float   SampleCount;            // Number of samples along ray
+    GPU_float   SampleDistrib;          // Distribution of samples along ray
+    GPU_float   LightIntensity;         // Intensity of the effect when in direct light
+    GPU_float   MultScatterIntensity;   // Intensity of the effect when in indirect light
+    GPU_float3  FogBox;                 // Bounding box of fog texture in world space coordinates
+    GPU_float3  FogSpeed;               // Fog speed modifier for each axis (world space units / sec)
+    GPU_float   FogVerticalFalloff;     // Vertical fallof factor for the volumetric fog effect
+    GPU_float   DiffuseFactor;          // Scale value for diffuse light
+
+    GPU_float4x4    ScreenToLightViewMat;   // Composite matrix for transforming screen-space coordinates to light-view space
+    GPU_float4x4    InvLightViewMat;        // Light view space to world space matrix
+    GPU_float3      CameraPositionLightVS;  // Light view space position of camera
+    GPU_float       RaymarchDistanceLimit;  // Fallback if we can't find a tighter limit
+    GPU_float       ElapsedTime;            // Elapsed time
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4 f4Position   :   SV_POSITION;
-    float2 f2TexCoord   :   TEXCOORD0;
-    float2 f2ScreenPos  :   TEXCOORD2;
-    float2 f2TexelIdx   :   TEXCOORD3;
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD0;
+    float2 ScreenPos: TEXCOORD2;
+    float2 TexelIdx : TEXCOORD3;
 };
 
-void vsmain(float4 f4Position : POSITION, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, out VSOut output)
 {
-    output.f4Position   = f4Position;
-    output.f2TexCoord   = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
-    output.f2ScreenPos  = f4Position.xy;
-    output.f2TexelIdx   = f4TexSize.xy * (f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f));
+    output.Position   = position;
+    output.TexCoord   = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DirectionalLightVolumeParams.HalfTexelOffset;
+    output.ScreenPos  = position.xy;
+    output.TexelIdx   = DirectionalLightVolumeParams.TexSize.xy * (position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f));
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-
-////////////////////////
-// Tunable parameters //
-////////////////////////
-#define         OFFSET_RAY_SAMPLES      // If defined, scatter multiple ray samples across grid of INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE pixels
-#define         USE_BAYER_MATRIX        // If defined, sample grid offsets from texture, else use procedurally generated values
-#define         FOG_DENSITY_MAP         // If defined, use 3D noise texture as a fog density map
-
-const int       nSampleCount;           // Number of samples along ray
-const float     fSampleDistrib;         // Distribution of samples along ray
-const float     fLightIntensity;        // Intensity of the effect when in direct light
-const float     fMultScatterIntensity;  // Intensity of the effect when in indirect light
-const float3    f3FogBox;               // Bounding box of fog texture in world space coordinates
-const float3    f3FogSpeed;             // Fog speed modifier for each axis (world space units / sec)
-const float     fFogVerticalFalloff;    // Vertical fallof factor for the volumetric fog effect
-const float     fDiffuseFactor;         // Scale value for diffuse light
-////////////////////////
+#ifdef PIXEL
+#define OFFSET_RAY_SAMPLES  // If defined, scatter multiple ray samples across grid of INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE pixels
+#define USE_BAYER_MATRIX    // If defined, sample grid offsets from texture, else use procedurally generated values
+#define FOG_DENSITY_MAP     // If defined, use 3D noise texture as a fog density map
 
 // Radiative transport equation terms (http://sirkan.iit.bme.hu/~szirmay/lightshaft.pdf)
 #define TAU     (0.0001f)   // Probability of collision
 //#define PHI       (1.f)       // Source power of the light
-#define PHI fDiffuseFactor
+#define PHI DirectionalLightVolumeParams.DiffuseFactor
 
-#ifdef FOG_DENSITY_MAP
-// Noise texture (for fog)
-const sampler3D texNoise;
-#endif
-
-const sampler2D texShadowMap;               // Cascaded shadow maps
-const sampler2D texDepthBuffer;             // Scene depth
-const float4x4  f44ScreenToLightViewMat;    // Composite matrix for transforming screen-space coordinates to light-view space
-const float4x4  f44InvLightViewMat;         // Light view space to world space matrix
-const float3    f3CameraPositionLightVS;    // Light view space position of camera
-const float     fRaymarchDistanceLimit;     // Fallback if we can't find a tighter limit
-const float     fElapsedTime;               // Elapsed time
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Based on the work of Benjamin Glatzel <bglatzel@deck13.com>:                                                                             //
     // http://bglatzel.movingblocks.net/wp-content/uploads/2014/05/Volumetric-Lighting-for-Many-Lights-in-Lords-of-the-Fallen-With-Notes.pdf    //
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    f4Color = float4(0.f, 0.f, 0.f, 1.f);
+    color = float4(0.f, 0.f, 0.f, 1.f);
     
     // Intersect ray with scene
-    const float fSceneDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
-    const float4 f4RayPosLightVS = mul(f44ScreenToLightViewMat, float4(input.f2ScreenPos, fSceneDepth, 1.f));
-    float3 f3RayPosLightVS = f4RayPosLightVS.xyz / f4RayPosLightVS.w;
+    const float sceneDepth = tex2D(DirectionalLightVolume_DepthBuffer, input.TexCoord).r;
+    const float4 rayPosLightVSW = mul(DirectionalLightVolumeParams.ScreenToLightViewMat, float4(input.ScreenPos, sceneDepth, 1.f));
+    float3 rayPosLightVS = rayPosLightVSW.xyz / rayPosLightVSW.w;
 
     // Reduce noisiness by truncating the starting position
-    const float3 f3RayLightVS = f3CameraPositionLightVS - f3RayPosLightVS;
-    const float3 f3RayDirLightVS = normalize(f3RayLightVS);
-    float fRaymarchDistance = /*trunc*/(clamp(length(f3RayLightVS), 0.f, fRaymarchDistanceLimit));
+    const float3 rayLightVS = DirectionalLightVolumeParams.CameraPositionLightVS - rayPosLightVS;
+    const float3 rayDirLightVS = normalize(rayLightVS);
+    float raymarchDistance = /*trunc*/(clamp(length(rayLightVS), 0.f, DirectionalLightVolumeParams.RaymarchDistanceLimit));
 
     // Calculate the size of each step
-    const float fStepLen = fRaymarchDistance / (float)nSampleCount;
+    const float stepLen = raymarchDistance / (float)DirectionalLightVolumeParams.SampleCount;
 
     // Calculate the offsets on the ray according to the interleaved sampling pattern
 #ifdef OFFSET_RAY_SAMPLES
 #ifdef USE_BAYER_MATRIX
-    const float fRayStartOffset = GetDitherAmount(input.f2TexCoord, f4TexSize.xy) * fStepLen;
+    const float rayStartOffset = GetDitherAmount(input.TexCoord, DirectionalLightVolumeParams.TexSize.xy) * stepLen;
 #else // USE_BAYER_MATRIX
-    const float2 f2InterleavedPos = fmod(ceil(input.f2TexelIdx), INTERLEAVED_GRID_SIZE);
-    const float fRayStartOffset = (f2InterleavedPos.y * INTERLEAVED_GRID_SIZE + f2InterleavedPos.x) * (fStepLen * INTERLEAVED_GRID_SIZE_SQR_RCP);
+    const float2 interleavedPos = fmod(ceil(input.TexelIdx), INTERLEAVED_GRID_SIZE);
+    const float rayStartOffset = (interleavedPos.y * INTERLEAVED_GRID_SIZE + interleavedPos.x) * (stepLen * INTERLEAVED_GRID_SIZE_SQR_RCP);
 #endif // USE_BAYER_MATRIX
 #else // OFFSET_RAY_SAMPLES
-    const float fRayStartOffset = 0.f;
+    const float rayStartOffset = 0.f;
 #endif // OFFSET_RAY_SAMPLES
 
     // The ray starting position has changed, if the raymarch distance was clamped, and must be updated.
-    //f3RayPosLightVS += fRayStartOffset * f3RayDirLightVS;
-    f3RayPosLightVS = f3CameraPositionLightVS + f3RayDirLightVS * (fRayStartOffset - fRaymarchDistance);
+    //rayPosLightVS += rayStartOffset * rayDirLightVS;
+    rayPosLightVS = DirectionalLightVolumeParams.CameraPositionLightVS + rayDirLightVS * (rayStartOffset - raymarchDistance);
 
     // Calculate ray position in fog texture space for fog effect.
-    const float3 f3FogBoxRcp = rcp(f3FogBox);
-    const float3 f3RayPosWS = mul(f44InvLightViewMat, float4(f3RayPosLightVS, 1.f)).xyz * f3FogBoxRcp;
-    const float3 f3RayDirWS = normalize(mul(f44InvLightViewMat, float4(f3RayDirLightVS, 0.f)).xyz) * f3FogBoxRcp;
-    const float3 f3FogSampleOffset = fElapsedTime * f3FogSpeed * f3FogBoxRcp;
+    const float3 fogBoxRcp = rcp(DirectionalLightVolumeParams.FogBox);
+    const float3 rayPosWS = mul(DirectionalLightVolumeParams.InvLightViewMat, float4(rayPosLightVS, 1.f)).xyz * fogBoxRcp;
+    const float3 rayDirWS = normalize(mul(DirectionalLightVolumeParams.InvLightViewMat, float4(rayDirLightVS, 0.f)).xyz) * fogBoxRcp;
+    const float3 fogSampleOffset = DirectionalLightVolumeParams.ElapsedTime * DirectionalLightVolumeParams.FogSpeed * fogBoxRcp;
 
     // Ray marching (could be optimized with a hardcoded sample count value and unrolling this 'for')
-    LOOP for (int i = 0; i < nSampleCount; i++)
+    LOOP for (int i = 0; i < DirectionalLightVolumeParams.SampleCount; i++)
     {
         // warning X3571: pow(f, e) will not work for negative f, use abs(f) or conditionally handle negative values if you expect them
-        const float fSampleDist = pow(abs((fStepLen * i) / fRaymarchDistance), fSampleDistrib) * fRaymarchDistance;
-        const float3 f3SamplePosLightVS = f3RayPosLightVS + f3RayDirLightVS * fSampleDist;
-        const float3 f3SamplePosWS = f3RayPosWS + f3RayDirWS * fSampleDist;
+        const float sampleDist = pow(abs((stepLen * i) / raymarchDistance), DirectionalLightVolumeParams.SampleDistrib) * raymarchDistance;
+        const float3 samplePosLightVS = rayPosLightVS + rayDirLightVS * sampleDist;
+        const float3 samplePosWS = rayPosWS + rayDirWS * sampleDist;
 
         // Find the best valid cascade
-        const unsigned int nValidCascade = GetCascadeIdx(f3SamplePosLightVS.xy);
+        const unsigned int validCascade = GetCascadeIdx(samplePosLightVS.xy);
 
         // Calculate texture coordinates, then sample from the cascade we found above
-        const float3 f3CascadeTexCoord = GetCascadeSpacePos(f3SamplePosLightVS, nValidCascade);
+        const float3 cascadeTexCoord = GetCascadeSpacePos(samplePosLightVS, validCascade);
 
         // Fetch whether the current position on the ray is visible from the light's perspective - or not
-        const bool bLit = (tex2D(texShadowMap, f3CascadeTexCoord.xy).r > f3CascadeTexCoord.z);
+        const bool lit = (tex2D(DirectionalLightVolume_ShadowMap, cascadeTexCoord.xy).r > cascadeTexCoord.z);
 
         // Distance to the current position on the ray in light view-space
         // NB: We don't want to attenuate the directional light
-        //const float fLightDist = length(f3SamplePosLightVS - float3(f3CameraPositionLightVS.xy, f3CameraPositionLightVS.z - fRaymarchDistanceLimit));
-        //const float fLightDistRcp = rcp(fLightDist);
+        //const float lightDist = length(samplePosLightVS - float3(DirectionalLightVolumeParams.CameraPositionLightVS.xy, DirectionalLightVolumeParams.CameraPositionLightVS.z - DirectionalLightVolumeParams.RaymarchDistanceLimit));
+        //const float lightDistRcp = rcp(lightDist);
 
 #ifdef FOG_DENSITY_MAP
         // Sample the fog/noise texture and apply an exponential vertical falloff
         // NB: ddx()/ddy() (i.e. any texture fetch operation with auto mip selection) requires loop unrolling, so go for tex3Dlod() instead
-        const float fDensity = tex3Dlod(texNoise, float4(f3SamplePosWS + f3FogSampleOffset, 0.f)).r * exp(-f3SamplePosWS.y * f3SamplePosWS.y * fFogVerticalFalloff);
+        const float density = tex3Dlod(DirectionalLightVolume_Noise, float4(samplePosWS + fogSampleOffset, 0.f)).r * exp(-samplePosWS.y * samplePosWS.y * DirectionalLightVolumeParams.FogVerticalFalloff);
 #else // FOG_DENSITY_MAP
-        const float fDensity = exp(-f3SamplePosWS.y * f3SamplePosWS.y * fFogVerticalFalloff);
+        const float density = exp(-samplePosWS.y * samplePosWS.y * DirectionalLightVolumeParams.FogVerticalFalloff);
 #endif
 
         // Calculate the final light contribution for the sample on the ray
         // and add it to the total contribution of the ray
         //f4Color.rgb += TAU * (bLit * (PHI * 0.25f * PI_RCP) * fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU) * exp(-fSampleDist * TAU) * fStepLen;
-        f4Color.rgb += (fMultScatterIntensity + fLightIntensity * bLit) * exp(-fSampleDist * TAU) * fDensity * TAU * (PHI * 0.25f * PI_RCP) * fSampleDist; // * (fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU)
+        color.rgb += (DirectionalLightVolumeParams.MultScatterIntensity + DirectionalLightVolumeParams.LightIntensity * lit) * exp(-sampleDist * TAU) * density * TAU * (PHI * 0.25f * PI_RCP) * sampleDist; // * (lightDistRcp * lightDistRcp) * exp(-lightDist * TAU)
     }
 
     // Moved some calculations outside of the above 'for' as an optimization
-    //f4Color.rgb *= TAU * (PHI * 0.25f * PI_RCP) * fStepLen;
+    //color.rgb *= TAU * (PHI * 0.25f * PI_RCP) * stepLen;
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

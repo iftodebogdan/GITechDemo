@@ -22,33 +22,61 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-// Disable "warning X4122: sum of ... and ... cannot be represented accurately in double precision"
-#pragma warning (disable: 4122)
+TEXTURE_2D_RESOURCE(BokehDoF_Source);       // Source texture to be blurred
+TEXTURE_2D_RESOURCE(BokehDoF_DepthBuffer);  // Source depth buffer
+TEXTURE_2D_RESOURCE(BokehDoF_TargetFocus);  // Used for autofocus
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+CBUFFER_RESOURCE(BokehDoF,
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize; // xy: size, in texels, of source image; zw: normalized size of a texel
 
+    // Camera properties
+    GPU_float FocalDepth;       // Focal distance value in meters (overridden by 'bAutofocus')
+    GPU_float FocalLength;      // Focal length in mm
+    GPU_float FStop;            // F-stop value
+    GPU_float CoC;              // Circle of confusion size in mm (35mm film = 0.03mm)
+    GPU_float ApertureSize;     // Determines size of bokeh
+    GPU_bool  Autofocus;        // Overrides fFocalDepth value with value taken from depth buffer
+    GPU_bool  AnamorphicBokeh;  // Stretch bokeh effect like on an anamorphic lens
+
+    // Brightness filter (directly affects bokeh abundance and prominence)
+    GPU_float HighlightThreshold;   // Brightness-pass filter threshold (higher = sparser bokeh)
+    GPU_float HighlightGain;        // Brightness gain (higher = more prominent bokeh)
+
+    // Vignetting effect
+    GPU_bool  Vignetting;   //  Use optical lens vignetting
+    GPU_float VignOut;      //  Vignetting outer border
+    GPU_float VignIn;       //  Vignetting inner border
+    GPU_float VignFade;     //  F-stops until vignette fades
+
+    // Chromatic aberration
+    GPU_float ChromaShiftAmount; // Color separation factor
+
+    // Lens distortion
+    GPU_float QuarticDistortionCoef;
+    GPU_float CubicDistortionModifier;
+    GPU_float DistortionScale;
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BokehDoFParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;      // Source texture to be blurred
-const sampler2D texDepthBuffer; // Source depth buffer
-const sampler2D texTargetFocus; // Used for autofocus
-
-const float4 f4TexSize; // xy: size, in texels, of source image; zw: normalized size of a texel
-//------------------------------------------
-
+#ifdef PIXEL
 //------------------------------------------
 /*
     Depth of Field with Bokeh shader
@@ -60,51 +88,25 @@ const float4 f4TexSize; // xy: size, in texels, of source image; zw: normalized 
 */
 //------------------------------------------
 
-// Camera properties
 #define APERTURE_BLADE_COUNT (6)
-const float fFocalDepth;        // Focal distance value in meters (overridden by 'bAutofocus')
-const float fFocalLength;       // Focal length in mm
-const float fFStop;             // F-stop value
-const float fCoC;               // Circle of confusion size in mm (35mm film = 0.03mm)
-const float fApertureSize;      // Determines size of bokeh
-const bool  bAutofocus;         // Overrides fFocalDepth value with value taken from depth buffer
-const bool  bAnamorphicBokeh;   // Stretch bokeh effect like on an anamorphic lens
 
-// Brightness filter (directly affects bokeh abundance and prominence)
-const float fHighlightThreshold;    // Brightness-pass filter threshold (higher = sparser bokeh)
-const float fHighlightGain;         // Brightness gain (higher = more prominent bokeh)
-
-// Vignetting effect
-const bool  bVignetting;    //  Use optical lens vignetting
-const float fVignOut;       //  Vignetting outer border
-const float fVignIn;        //  Vignetting inner border
-const float fVignFade;      //  F-stops until vignette fades
-
-// Chromatic aberration
-const float fChromaShiftAmount; // Color separation factor
-
-// Lens distortion
-const float fQuarticDistortionCoef;
-const float fCubicDistortionModifier;
-const float fDistortionScale;
-
-void ApplyLensDistortion(in out float2 f2TexCoord)
+void ApplyLensDistortion(in out float2 texCoord)
 {
-    if (fQuarticDistortionCoef != 0 || fCubicDistortionModifier != 0 || fDistortionScale != 0)
+    if (BokehDoFParams.QuarticDistortionCoef != 0 || BokehDoFParams.CubicDistortionModifier != 0 || BokehDoFParams.DistortionScale != 0)
     {
-        const float fAspectRatioScale = f4TexSize.y * f4TexSize.z; // y / (1 / x)
-        f2TexCoord -= 0.5f;
-        const float r2 = fAspectRatioScale * fAspectRatioScale * f2TexCoord.x * f2TexCoord.x + f2TexCoord.y * f2TexCoord.y;
-        const float f = 1.f + r2 * (fQuarticDistortionCoef + fCubicDistortionModifier * sqrt(r2));
-        f2TexCoord *= f * fDistortionScale;
-        f2TexCoord += 0.5f;
+        const float aspectRatioScale = BokehDoFParams.TexSize.y * BokehDoFParams.TexSize.z; // y / (1 / x)
+        texCoord -= 0.5f;
+        const float r2 = aspectRatioScale * aspectRatioScale * texCoord.x * texCoord.x + texCoord.y * texCoord.y;
+        const float f = 1.f + r2 * (BokehDoFParams.QuarticDistortionCoef + BokehDoFParams.CubicDistortionModifier * sqrt(r2));
+        texCoord *= f * BokehDoFParams.DistortionScale;
+        texCoord += 0.5f;
     }
 }
 
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Offsets for aperture blade shaped blur kernel
-    const float2 f2KernelOffset[APERTURE_BLADE_COUNT] =
+    const float2 kernelOffset[APERTURE_BLADE_COUNT] =
     {
         sin(0.f / APERTURE_BLADE_COUNT * 6.283f), cos(0.f / APERTURE_BLADE_COUNT * 6.283f),
         sin(1.f / APERTURE_BLADE_COUNT * 6.283f), cos(1.f / APERTURE_BLADE_COUNT * 6.283f),
@@ -117,79 +119,81 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
     };
 
     // Apply lens distortion equation to texture coordinates
-    ApplyLensDistortion(input.f2TexCoord);
+    ApplyLensDistortion(input.TexCoord);
 
     // Initial sample
-    const float4    f4CenterSample  = tex2D(texSource, input.f2TexCoord);
-    float           fDofBlurFactor = f4CenterSample.a * 2.f - 1.f;
-    float3          f3AccumSamples  = f4CenterSample.rgb;
-    float           fWeightTotal    = 1.f;
+    const float4 centerSample = tex2D(BokehDoF_Source, input.TexCoord);
+    float dofBlurFactor = centerSample.a * 2.f - 1.f;
+    float3 accumSamples = centerSample.rgb;
+    float weightTotal = 1.f;
 
     // Accumulate the rest of the samples, if required. Otherwise, just calculate blur factor and output it in alpha.
-    if (fApertureSize > 0.f)
+    if (BokehDoFParams.ApertureSize > 0.f)
     {
         // Fix aspect ratio of blur kernel
-        const float fAspectRatioScale = f4TexSize.y * f4TexSize.z;
+        const float aspectRatioScale = BokehDoFParams.TexSize.y * BokehDoFParams.TexSize.z;
 
         for (int i = 0; i < APERTURE_BLADE_COUNT; i++)
         {
             // Retrieve sample color and CoC value
-            const float4 f4Sample = tex2D(texSource, input.f2TexCoord + f2KernelOffset[i] * float2(bAnamorphicBokeh ? 1.f / 2.40f : 1.f, 1.f) * fApertureSize * fDofBlurFactor * float2(fAspectRatioScale, 1.f));
-            const float fSampleDofBlurFactor = f4Sample.a * 2.f - 1.f;
+            const float4 sampleSrc = tex2D(BokehDoF_Source, input.TexCoord + kernelOffset[i] * float2(BokehDoFParams.AnamorphicBokeh ? 1.f / 2.4f : 1.f, 1.f) * BokehDoFParams.ApertureSize * dofBlurFactor * float2(aspectRatioScale, 1.f));
+            const float sampleDofBlurFactor = sampleSrc.a * 2.f - 1.f;
 
             // Calculate sample weight
-            const float fLuma   = dot(f4Sample.rgb, LUMA_COEF);
-            const float fWeight =
-                max((fLuma > fHighlightThreshold) * fHighlightGain * abs(fDofBlurFactor), 1.f) *    // Luma threshold for applying highlight gain (more prominent bokeh)
-                saturate(fSampleDofBlurFactor * fDofBlurFactor);            // Weight based on CoC values of center and sampled points,
-                                                                            // saturated in order to avoid blending front and back out-of-focus areas
+            const float luma   = dot(sampleSrc.rgb, LUMA_COEF);
+            const float weight =
+                max((luma > BokehDoFParams.HighlightThreshold) *            // Luma threshold for applying highlight gain (more prominent bokeh)
+                BokehDoFParams.HighlightGain * abs(dofBlurFactor), 1.f) *   // Weight based on CoC values of center and sampled points,
+                saturate(sampleDofBlurFactor * dofBlurFactor);              // saturated in order to avoid blending front and back out-of-focus areas
 
             // Accumulate current weighted sample
-            f3AccumSamples  += f4Sample.rgb * fWeight;
-            fWeightTotal    += fWeight;
+            accumSamples += sampleSrc.rgb * weight;
+            weightTotal += weight;
         }
     }
     else
     {
         // Calculate the scene depth in world space coordinates
-        const float fLinearDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+        const float linearDepth = tex2D(BokehDoF_DepthBuffer, input.TexCoord).r;
 
         // Calculate focal plane
-        const float fFocalPoint = bAutofocus ? tex2D(texTargetFocus, float2(0.5f, 0.5f)).r : fFocalDepth;
+        const float focalPoint = BokehDoFParams.Autofocus ? tex2D(BokehDoF_TargetFocus, float2(0.5f, 0.5f)).r : BokehDoFParams.FocalDepth;
 
         // Calculate DoF blur factor
-        const float fFocalPointMm   = fFocalPoint   *   1000.f; // Focal point in mm
-        const float fLinearDepthMm  = fLinearDepth  *   1000.f; // Linear depth in mm
-        const float a   =   (fLinearDepthMm *   fFocalLength)   /   (fLinearDepthMm -   fFocalLength);
-        const float b   =   (fFocalPointMm  *   fFocalLength)   /   (fFocalPointMm  -   fFocalLength);
-        const float c   =   (fFocalPointMm  -   fFocalLength)   /   (fFocalPointMm  *   fFStop  *   fCoC);
-        fDofBlurFactor  =   saturate(abs(a - b) * c) * sign(fLinearDepth - fFocalPoint);
+        const float focalPointMm  = focalPoint  * 1000.f; // Focal point in mm
+        const float linearDepthMm = linearDepth * 1000.f; // Linear depth in mm
+        const float a = (linearDepthMm * BokehDoFParams.FocalLength) / (linearDepthMm - BokehDoFParams.FocalLength);
+        const float b = (focalPointMm  * BokehDoFParams.FocalLength) / (focalPointMm  - BokehDoFParams.FocalLength);
+        const float c = (focalPointMm  - BokehDoFParams.FocalLength) / (focalPointMm  * BokehDoFParams.FStop * BokehDoFParams.CoC);
+        dofBlurFactor = saturate(abs(a - b) * c) * sign(linearDepth - focalPoint);
 
         // Apply chromatic aberration effect
-        if (fChromaShiftAmount > 0.f)
+        if (BokehDoFParams.ChromaShiftAmount > 0.f)
         {
             // The effect is more intense towards the exterior of the screen
             // NB: The distance of the screen coordinates from the screen center is normalized
             // by multiplying to the inverse of the length of the screen diagonal in normalized
             // screen space units: 
             // distance * (1.f / (0.5f * sqrt(2.f))) = distance * (2.f / sqrt(2.f)) = distance * sqrt(2.f) = distance * 1.414213562f
-            const float fChromaShiftFactor = smoothstep(0.f, 1.f, distance(input.f2TexCoord, float2(0.5f, 0.5f)) * 1.414213562f);
+            const float chromaShiftFactor = smoothstep(0.f, 1.f, distance(input.TexCoord, float2(0.5f, 0.5f)) * 1.414213562f);
 
             // Apply chromatic aberration effect
-            f3AccumSamples.r = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.f, 1.f)        * f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).r;
-            f3AccumSamples.g = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(-0.866f, -0.5f)  * f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).g;
-            f3AccumSamples.b = tex2D(texSource, input.f2TexCoord + fChromaShiftFactor * float2(0.866f, -0.5f)   * f4TexSize.zw * fChromaShiftAmount * fDofBlurFactor).b;
+            accumSamples.r = tex2D(BokehDoF_Source, input.TexCoord + chromaShiftFactor * float2(0.f, 1.f)       * BokehDoFParams.TexSize.zw * BokehDoFParams.ChromaShiftAmount * dofBlurFactor).r;
+            accumSamples.g = tex2D(BokehDoF_Source, input.TexCoord + chromaShiftFactor * float2(-0.866f, -0.5f) * BokehDoFParams.TexSize.zw * BokehDoFParams.ChromaShiftAmount * dofBlurFactor).g;
+            accumSamples.b = tex2D(BokehDoF_Source, input.TexCoord + chromaShiftFactor * float2(0.866f, -0.5f)  * BokehDoFParams.TexSize.zw * BokehDoFParams.ChromaShiftAmount * dofBlurFactor).b;
         }
 
         // Apply vignetting
-        if (bVignetting)
+        if (BokehDoFParams.Vignetting)
         {
-            const float fFadeFactor = fFStop / fVignFade;
-            f3AccumSamples *= smoothstep(fVignOut + fFadeFactor, fVignIn + fFadeFactor, distance(input.f2TexCoord, float2(0.5f, 0.5f)));
+            const float fadeFactor = BokehDoFParams.FStop / BokehDoFParams.VignFade;
+            accumSamples *= smoothstep(BokehDoFParams.VignOut + fadeFactor, BokehDoFParams.VignIn + fadeFactor, distance(input.TexCoord, float2(0.5f, 0.5f)));
         }
     }
 
     // Output color
-    f4Color = float4(f3AccumSamples / fWeightTotal, fDofBlurFactor * 0.5f + 0.5f);
+    color = float4(accumSamples / weightTotal, dofBlurFactor * 0.5f + 0.5f);
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

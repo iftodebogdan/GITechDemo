@@ -21,42 +21,48 @@
 
 #include "PostProcessingUtils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(NearestDepthUpscale_Source);                // The texture to be upsampled
+TEXTURE_2D_RESOURCE(NearestDepthUpscale_DepthBuffer);           // Scene depth values
+TEXTURE_2D_RESOURCE(NearestDepthUpscale_QuarterDepthBuffer);    // Quarter resolution scene depth values
 
+CBUFFER_RESOURCE(NearestDepthUpscale,
+    GPU_float2 HalfTexelOffset;
+
+    GPU_float4 TexSize; // xy: size of source texture; zw: normalized texel size
+
+    // Set a threshold which controls the level of sensitivity of the edge detection.
+    GPU_float UpsampleDepthThreshold;
+
+    // True if volumetric light accumulation buffer has a single channel
+    GPU_bool SingleChannelCopy;
+
+    // Used to color the volumetric fog
+    GPU_float4 CustomColorModulator;
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + NearestDepthUpscaleParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;              // The texture to be upsampled
-const sampler2D texDepthBuffer;         // Scene depth values
-const sampler2D texQuarterDepthBuffer;  // Quarter resolution scene depth values
-
-const float4 f4TexSize; // xy: size of source texture; zw: normalized texel size
-
-// Set a threshold which controls the level of sensitivity of the edge detection.
-const float fUpsampleDepthThreshold;
-
+#ifdef PIXEL
 // Retrieves the coordinates for each the 4 bilinear samples corresponding to the current fragment
-const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx);
+const float2 GetBilinearSampleCoords(const float2 texCoord, const int idx);
 
-// True if volumetric light accumulation buffer has a single channel
-const bool bSingleChannelCopy;
-
-// Used to color the volumetric fog
-const float4 f4CustomColorModulator;
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Based on "Nearest-Depth Filter" from the paper                                                       //
@@ -66,52 +72,52 @@ void psmain(VSOut input, out float4 f4Color : SV_TARGET)
 
     // Avoid blocky artefacts by using bilinear upsampling,
     // if the current fragment is not located on an edge
-    f4Color = float4(tex2D(texSource, input.f2TexCoord).rgb, 1.f);
+    color = float4(tex2D(NearestDepthUpscale_Source, input.TexCoord).rgb, 1.f);
 
     // If the sample is black we can safely clip this
     // pixel in an attempt to save some bandwidth
-    clip(-!any(f4Color.rgb));
+    clip(-!any(color.rgb));
 
     // Fetch the reference depth for the current high-resolution fragment
-    const float fRefDepth = tex2D(texDepthBuffer, input.f2TexCoord).r;
+    const float refDepth = tex2D(NearestDepthUpscale_DepthBuffer, input.TexCoord).r;
 
-    float fMinDepthDiff = 1.f;
-    int nNearestDepthIndex = 0;
-    bool bEdgeSample = false;
+    float minDepthDiff = 1.f;
+    int nearestDepthIndex = 0;
+    bool edgeSample = false;
 
     UNROLL for (int i = 0; i < 4; i++)
     {
         // Fetch the downsampled depth of the i-th bilinear sample corresponding to the current fragment
-        const float fSampleDepth = tex2D(texQuarterDepthBuffer, GetBilinearSampleCoords(input.f2TexCoord, i)).r;
+        const float sampleDepth = tex2D(NearestDepthUpscale_QuarterDepthBuffer, GetBilinearSampleCoords(input.TexCoord, i)).r;
 
         // Calculate the difference to the reference depth value
-        const float fCurrentDepthDiff = abs(fSampleDepth - fRefDepth);
+        const float currentDepthDiff = abs(sampleDepth - refDepth);
 
         // Reject the sample, if required
-        bEdgeSample = bEdgeSample || (fCurrentDepthDiff > fUpsampleDepthThreshold);
+        edgeSample = edgeSample || (currentDepthDiff > NearestDepthUpscaleParams.UpsampleDepthThreshold);
 
         // Mark the best match we've gotten so far
-        if (fCurrentDepthDiff < fMinDepthDiff)
+        if (currentDepthDiff < minDepthDiff)
         {
-            fMinDepthDiff = fCurrentDepthDiff;
-            nNearestDepthIndex = i;
+            minDepthDiff = currentDepthDiff;
+            nearestDepthIndex = i;
         }
     }
 
     // For edges, simply use the color of the low resolution sample that
     // best matches the full resolution depth value for the current pixel
-    if (bEdgeSample)
-        f4Color.rgb = tex2D(texSource, GetBilinearSampleCoords(input.f2TexCoord, nNearestDepthIndex)).rgb;
+    if (edgeSample)
+        color.rgb = tex2D(NearestDepthUpscale_Source, GetBilinearSampleCoords(input.TexCoord, nearestDepthIndex)).rgb;
 
-    if (bSingleChannelCopy)
-        f4Color.rgb = f4Color.r;
+    if (NearestDepthUpscaleParams.SingleChannelCopy)
+        color.rgb = color.r;
 
-    f4Color *= f4CustomColorModulator;
+    color *= NearestDepthUpscaleParams.CustomColorModulator;
 }
 
-const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx)
+const float2 GetBilinearSampleCoords(const float2 texCoord, const int idx)
 {
-    const float2 f2SampleOffset[] =
+    const float2 sampleOffset[] =
     {
         float2(-1.f, -1.f),
         float2( 1.f, -1.f),
@@ -122,10 +128,12 @@ const float2 GetBilinearSampleCoords(const float2 f2TexCoord, const int nIdx)
     // Calculate the offset for the center of the 4 bilinear samples
     // from the low-resolution texture corresponding to the high-resolution
     // fragment, relative to the current high-resolution fragment's coordinates
-    const float2 f2CenterOffset = (step(float2(0.5f, 0.5f), frac(f2TexCoord * f4TexSize.xy)) * 2.f - 1.f) * f2HalfTexelOffset;
+    const float2 centerOffset = (step(float2(0.5f, 0.5f), frac(texCoord * NearestDepthUpscaleParams.TexSize.xy)) * 2.f - 1.f) * NearestDepthUpscaleParams.HalfTexelOffset;
 
     // Offset the current coordinates to the center of the 4 bilinear samples, then offset
     // it again to the center of the bilinear sample corresponding to the provided index
-    return f2TexCoord + f2CenterOffset + f4TexSize.zw * 0.5f * f2SampleOffset[nIdx];
+    return texCoord + centerOffset + NearestDepthUpscaleParams.TexSize.zw * 0.5f * sampleOffset[idx];
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL

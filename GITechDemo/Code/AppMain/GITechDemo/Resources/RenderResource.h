@@ -134,7 +134,7 @@ namespace GITechDemoApp
         Texture(const char* filePath);
 
         Synesthesia3D::Texture* const       GetTexture() { return pTexture; }
-        const unsigned int  GetTextureIndex() { return nTexIdx; }
+        const unsigned int  GetTextureIndex() const { return nTexIdx; }
 
         const char* GetFilePath() { return szDesc.c_str(); }
 
@@ -175,6 +175,9 @@ namespace GITechDemoApp
         void operator=(const T& value) { currentValue = value; }
         void operator= (const ShaderConstantTemplate& lhs) { currentValue = lhs.currentValue; }
         void operator=(const Synesthesia3D::Texture* tex) { assert(0); }
+        void operator=(const Synesthesia3D::Texture& tex) { assert(0); }
+        void operator=(const Texture* tex) { assert(0); }
+        void operator=(const Texture& tex) { assert(0); }
 
         operator T&() { return currentValue; }
 
@@ -201,7 +204,7 @@ namespace GITechDemoApp
         template<class DATA_TYPE, unsigned SIZE>
         friend Vec<DATA_TYPE, SIZE> operator * (const Vec<DATA_TYPE, SIZE>& lhs, ShaderConstantTemplate<T>& rhs);
     };
-    
+
     template<>
     void ShaderConstantTemplate<s3dSampler>::operator=(const Synesthesia3D::Texture* tex)
     {
@@ -216,6 +219,24 @@ namespace GITechDemoApp
                 break;
             }
         }
+    }
+
+    template<>
+    void ShaderConstantTemplate<s3dSampler>::operator=(const Synesthesia3D::Texture& tex)
+    {
+        operator=(&tex);
+    }
+
+    template<>
+    void ShaderConstantTemplate<s3dSampler>::operator=(const Texture* tex)
+    {
+        currentValue = tex ? tex->GetTextureIndex() : ~0u;
+    }
+
+    template<>
+    void ShaderConstantTemplate<s3dSampler>::operator=(const Texture& tex)
+    {
+        operator=(&tex);
     }
 
     template<class T>

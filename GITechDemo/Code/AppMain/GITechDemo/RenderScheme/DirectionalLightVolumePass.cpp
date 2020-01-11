@@ -83,6 +83,7 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     NoiseTexture.GetTexture()->SetAddressingMode(SAM_WRAP);
     NoiseTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     texNoise = NoiseTexture.GetTextureIndex();
+    HLSL::DirectionalLightVolume_Noise = NoiseTexture;
     fElapsedTime += fDeltaTime;
     f3FogBox = Vec3f(CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH);
 

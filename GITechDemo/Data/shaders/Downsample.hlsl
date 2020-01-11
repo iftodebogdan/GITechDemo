@@ -22,71 +22,79 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 
-// Vertex shader /////////////////////////////////////////////////
-const float2 f2HalfTexelOffset;
+TEXTURE_2D_RESOURCE(Downsample_Source);  // Source texture for downsampling
 
+CBUFFER_RESOURCE(Downsample,
+    GPU_float2 HalfTexelOffset;
+    GPU_float4 TexSize;     // zw: size of source texture texel
+
+    // Color downsampling options
+    GPU_int DownsampleFactor;        // Switch for 2x2 or 4x4 downsampling
+    GPU_bool ApplyBrightnessFilter;  // Switch for whether to apply a brightness pass filter
+    GPU_float BrightnessThreshold;   // Threshold for the brightness pass filter
+
+    // Depth downsampling options
+    GPU_bool DepthDownsample;    // Downsample depth values instead of colors
+    GPU_bool ReconstructDepth;   // Reconstruct camera space depth from hyperbolic depth
+);
+
+#ifdef HLSL
 struct VSOut
 {
-    float4  f4Position  :   SV_POSITION;
-    float2  f2TexCoord  :   TEXCOORD0;
+    float4  Position : SV_POSITION;
+    float2  TexCoord : TEXCOORD0;
 };
 
-void vsmain(float4 f4Position : POSITION, float2 f2TexCoord : TEXCOORD, out VSOut output)
+// Vertex shader /////////////////////////////////////////////////
+#ifdef VERTEX
+void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.f4Position = f4Position;
-    output.f2TexCoord = f4Position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + f2HalfTexelOffset;
+    output.Position = position;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DownsampleParams.HalfTexelOffset;
 }
+#endif // VERTEX
 ////////////////////////////////////////////////////////////////////
 
 // Pixel shader ///////////////////////////////////////////////////
-const sampler2D texSource;  // Source texture for downsampling
-const float4 f4TexSize;     // zw: size of source texture texel
-
-// Color downsampling options
-const int nDownsampleFactor;        // Switch for 2x2 or 4x4 downsampling
-const bool bApplyBrightnessFilter;  // Switch for whether to apply a brightness pass filter
-const float fBrightnessThreshold;   // Threshold for the brightness pass filter
-
-// Depth downsampling options
-const bool bDepthDownsample;    // Downsample depth values instead of colors
-const bool bReconstructDepth;   // Reconstruct camera space depth from hyperbolic depth
-
-void psmain(VSOut input, out float4 f4Color : SV_TARGET)
+#ifdef PIXEL
+void psmain(VSOut input, out float4 color : SV_TARGET)
 {
-    f4Color = float4(0.f, 0.f, 0.f, 0.f);
+    color = float4(0.f, 0.f, 0.f, 0.f);
 
-    if (bDepthDownsample)
+    if (DownsampleParams.DepthDownsample)
     {
-        float fSampleDepth;
+        float sampleDepth;
         
-        if (nDownsampleFactor == 4)
-            fSampleDepth = GetDownsampledDepth(texSource, input.f2TexCoord).r;
+        if (DownsampleParams.DownsampleFactor == 4)
+            sampleDepth = GetDownsampledDepth(Downsample_Source, input.TexCoord).r;
         else
-            fSampleDepth = tex2D(texSource, input.f2TexCoord).r;
+            sampleDepth = tex2D(Downsample_Source, input.TexCoord).r;
         
-        if (bReconstructDepth)
-            f4Color = ReconstructDepth(fSampleDepth);
+        if (DownsampleParams.ReconstructDepth)
+            color = ReconstructDepth(sampleDepth);
         else
-            f4Color = fSampleDepth;
+            color = sampleDepth;
     }
     else
     {
-        if (nDownsampleFactor == 16)
-            f4Color = Downsample4x4(texSource, input.f2TexCoord, f4TexSize.zw);
+        if (DownsampleParams.DownsampleFactor == 16)
+            color = Downsample4x4(Downsample_Source, input.TexCoord, DownsampleParams.TexSize.zw);
 
-        if (nDownsampleFactor == 4)
-            f4Color = Downsample2x2(texSource, input.f2TexCoord, f4TexSize.zw);
+        if (DownsampleParams.DownsampleFactor == 4)
+            color = Downsample2x2(Downsample_Source, input.TexCoord, DownsampleParams.TexSize.zw);
 
-        if (nDownsampleFactor == 1)
-            f4Color = tex2D(texSource, input.f2TexCoord);
+        if (DownsampleParams.DownsampleFactor == 1)
+            color = tex2D(Downsample_Source, input.TexCoord);
 
-        if (bApplyBrightnessFilter)
+        if (DownsampleParams.ApplyBrightnessFilter)
         {
-            const float fBrightness = dot(f4Color.rgb, LUMA_COEF);
-            f4Color.rgb *= step(fBrightnessThreshold, fBrightness);
-            //f4Color.rgb /= fBrightness;
-            f4Color.rgb /= 1.f + fBrightness;
+            const float brightness = dot(color.rgb, LUMA_COEF);
+            color.rgb *= step(DownsampleParams.BrightnessThreshold, brightness);
+            //color.rgb /= brightness;
+            color.rgb /= 1.f + brightness;
         }
     }
 }
+#endif // PIXEL
 ////////////////////////////////////////////////////////////////////
+#endif // HLSL
