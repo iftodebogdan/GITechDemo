@@ -110,7 +110,7 @@ void DirectionalLightPass::Draw()
 
     // Disable environment map reflections if
     // screen space reflections are active.
-    float reflectionFactorBkp = HLSL::BRDFParams->ReflectionFactor[0];
+    float reflectionFactorBkp = HLSL::BRDFParams->ReflectionFactor;
     if (SSR_ENABLED)
         HLSL::BRDFParams->ReflectionFactor = 0.f;
 

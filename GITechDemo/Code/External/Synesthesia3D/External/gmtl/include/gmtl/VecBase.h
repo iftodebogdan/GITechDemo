@@ -306,6 +306,12 @@ public:
 
        return *this;
    }
+
+   inline operator DATA_TYPE&()
+   {
+       return mData[0];
+   }
+
 #endif
 
    /*

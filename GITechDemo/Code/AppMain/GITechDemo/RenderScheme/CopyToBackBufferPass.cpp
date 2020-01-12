@@ -110,7 +110,7 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetWidth(), 0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetHeight());
         HLSL::ColorCopy_SourceTexture = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
         HLSL::ColorCopyParams->SingleChannelCopy = true;
-        HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f) / HLSL::PostProcessingParams->ZFar[0];
+        HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f) / HLSL::PostProcessingParams->ZFar;
     }
 
     if (DEBUG_CSM_CAMERA)

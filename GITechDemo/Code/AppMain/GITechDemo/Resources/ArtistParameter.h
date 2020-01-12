@@ -48,6 +48,7 @@ namespace GITechDemoApp
             APDT_INT,
             //APDT_UINT,
             APDT_BOOL,
+            APDT_GPU_FLOAT,
             APDT_MAX,
             APDT_NOT_SUPPORTED
         };
@@ -57,7 +58,7 @@ namespace GITechDemoApp
                 const string            GetCategoryName() const { return m_szCategory; }
         const ArtistParameterDataType   GetDataType() const;
                 const bool              IsDataType(const ArtistParameterDataType type) const;
-                    float&              GetParameterAsFloat() const { assert(IsDataType(APDT_FLOAT)); return *(float*)m_pParam; }
+                    float&              GetParameterAsFloat() const { assert(IsDataType(APDT_FLOAT) || IsDataType(APDT_GPU_FLOAT)); return *(float*)m_pParam; }
                     int&                GetParameterAsInt() const { assert(IsDataType(APDT_INT)); return *(int*)m_pParam; }
         //        unsigned int&           GetParameterAsUInt() const { assert(IsDataType(APDT_UINT)); return *(unsigned int*)m_pParam; }
                     bool&               GetParameterAsBool() const { assert(IsDataType(APDT_BOOL)); return *(bool*)m_pParam; }
@@ -77,6 +78,7 @@ namespace GITechDemoApp
         float m_fDefaultValue;
 
         static vector<ArtistParameter*> ms_arrParams;
+        static const unsigned long long ms_TypeHash[APDT_MAX];
     };
 }
 

@@ -210,14 +210,14 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         Math::lerp(partitionNear[2],
             CASCADE_SPLIT_FACTOR,
-            HLSL::PostProcessingParams->ZNear[0] + ((float)cascade / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - HLSL::PostProcessingParams->ZNear[0]),
-            HLSL::PostProcessingParams->ZNear[0] * powf(CASCADE_MAX_VIEW_DEPTH / HLSL::PostProcessingParams->ZNear[0], (float)cascade / NUM_CASCADES)
+            (float)HLSL::PostProcessingParams->ZNear + ((float)cascade / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - (float)HLSL::PostProcessingParams->ZNear),
+            (float)HLSL::PostProcessingParams->ZNear * powf(CASCADE_MAX_VIEW_DEPTH / (float)HLSL::PostProcessingParams->ZNear, (float)cascade / NUM_CASCADES)
             );
 
         Math::lerp(partitionFar[2],
             CASCADE_SPLIT_FACTOR,
-            HLSL::PostProcessingParams->ZNear[0] + (((float)cascade + 1.f) / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - HLSL::PostProcessingParams->ZNear[0]),
-            HLSL::PostProcessingParams->ZNear[0] * powf(CASCADE_MAX_VIEW_DEPTH / HLSL::PostProcessingParams->ZNear[0], ((float)cascade + 1.f) / NUM_CASCADES)
+            (float)HLSL::PostProcessingParams->ZNear + (((float)cascade + 1.f) / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - (float)HLSL::PostProcessingParams->ZNear),
+            (float)HLSL::PostProcessingParams->ZNear * powf(CASCADE_MAX_VIEW_DEPTH / (float)HLSL::PostProcessingParams->ZNear, ((float)cascade + 1.f) / NUM_CASCADES)
             );
 
         // Calculate the partition's depth in projective space (viewer camera, i.e. perspective projection)

@@ -35,12 +35,20 @@
 using namespace GITechDemoApp;
 using namespace Synesthesia3D;
 
-vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
-vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistParameter.cpp
-
 //////////////////
 // DO NOT USE!  //
 //////////////////
+
+vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
+vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistParameter.cpp
+const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
+{
+    typeid(float).hash_code(),
+    typeid(int).hash_code(),
+    //typeid(unsigned int).hash_code(),
+    typeid(bool).hash_code(),
+    typeid(Vec4f).hash_code()
+};
 
 #define CONCAT2(x, y) x##y
 #define CONCAT(x, y) CONCAT2(x, y)
@@ -56,17 +64,6 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define RENDER_TARGET_FUNC_THREE(Name, RT0, RT1, RT2, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 3, RT0, RT1, RT2, PF_NONE, (RTType)Width, (RTType)Height, DepthFormat)
 #define RENDER_TARGET_FUNC_FOUR(Name, RT0, RT1, RT2, RT3, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 4, RT0, RT1, RT2, RT3, (RTType)Width, (RTType)Height, DepthFormat)
 #define INFER_RENDER_TARGET_FUNC(_1, _2, _3, _4, _5, _6, _7, _8, Func, ...) Func
-
-namespace GITechDemoApp
-{
-    unsigned long long g_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
-    {
-        typeid(float).hash_code(),
-        typeid(int).hash_code(),
-        //typeid(unsigned int).hash_code(),
-        typeid(bool).hash_code()
-    };
-}
 
 ///////////////////////////////////////////////////////////
 
@@ -460,102 +457,6 @@ namespace GITechDemoApp
 
 
 
-    //////////////////////////////////////
-    // Shader constants - artist driven //
-    //////////////////////////////////////
-
-    /* General parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fZNear,                   float,          10.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fZFar,                    float,          5000.f                  );
-
-    /* Directional light parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fDiffuseFactor,           float,          7.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fSpecFactor,              float,          15.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.15f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,        float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,        float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            HLSL::BRDF::CookTorranceGGX);
-
-    /* Volumetric directional light parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,             int,            32                      );
-    CREATE_SHADER_CONSTANT_OBJECT(fSampleDistrib,           float,          0.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fLightIntensity,          float,          0.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fMultScatterIntensity,    float,          0.05f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(f3FogSpeed,               Vec3f,          Vec3f(25.f, -15.f, 25.f));
-    CREATE_SHADER_CONSTANT_OBJECT(fFogVerticalFalloff,      float,          15.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fBlurDepthFalloff,        float,          0.0025f                 );
-    CREATE_SHADER_CONSTANT_OBJECT(fUpsampleDepthThreshold,  float,          0.0015f                 );
-
-    /* Sun parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fSunRadius,               float,          1000.f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(fSunBrightness,           float,          500.f                   );
-
-    /* Cascaded Shadow Map parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(bDebugCascades,           bool,           false                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fCascadeBlendSize,        float,          50.f                    );
-
-    /* Reflective Shadow Map parameters */
-    CREATE_SHADER_CONSTANT_OBJECT(fRSMIntensity,            float,          200.f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fRSMKernelScale,          float,          0.025f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(fWeightThreshold,         float,          0.002f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(bDebugUpscalePass,        bool,           false                   );
-
-    /* Screen-Space Ambient Occlusion */
-    CREATE_SHADER_CONSTANT_OBJECT(fSSAOSampleRadius,        float,          10.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fSSAOIntensity,           float,          5.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fSSAOScale,               float,          0.05f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fSSAOBias,                float,          0.25f                   );
-
-    /* Screen Space Reflection */
-    CREATE_SHADER_CONSTANT_OBJECT(fReflectionIntensity,     float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fThickness,               float,          100.f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fSampleStride,            float,          25.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fMaxSteps,                float,          200.f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fMaxRayDist,              float,          3000.f                  );
-    CREATE_SHADER_CONSTANT_OBJECT(bUseDither,               bool,           true                    );
-
-    /* Post-processing parameters */
-    // Bloom
-    CREATE_SHADER_CONSTANT_OBJECT(fBrightnessThreshold,     float,          0.2f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fBloomPower,              float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fBloomStrength,           float,          0.75f                   );
-    // DoF
-    CREATE_SHADER_CONSTANT_OBJECT(fFocalDepth,              float,          100.f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fFocalLength,             float,          100.f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fFStop,                   float,          2.8f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fCoC,                     float,          0.03f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(bAutofocus,               bool,           true                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fHighlightThreshold,      float,          3.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fHighlightGain,           float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fApertureSize,            float,          0.0075f                 );
-    CREATE_SHADER_CONSTANT_OBJECT(bAnamorphicBokeh,         bool,           false                   );
-    CREATE_SHADER_CONSTANT_OBJECT(bVignetting,              bool,           true                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fVignOut,                 float,          0.75f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fVignIn,                  float,          0.25f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fVignFade,                float,          15.f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fChromaShiftAmount,       float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fQuarticDistortionCoef,   float,          0.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fCubicDistortionModifier, float,          0.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(fDistortionScale,         float,          1.f                     );
-    // Motion blur
-    CREATE_SHADER_CONSTANT_OBJECT(fMotionBlurIntensity,     float,          0.01f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(nMotionBlurNumSamples,    int,            5                       );
-    // Lens flare
-    CREATE_SHADER_CONSTANT_OBJECT(nGhostSamples,            int,            5                       );
-    CREATE_SHADER_CONSTANT_OBJECT(fGhostDispersal,          float,          0.37f                   );
-    CREATE_SHADER_CONSTANT_OBJECT(fGhostRadialWeightExp,    float,          1.5f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fHaloSize,                float,          0.6f                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fHaloRadialWeightExp,     float,          5.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(bChromaShift,             bool,           true                    );
-    CREATE_SHADER_CONSTANT_OBJECT(fShiftFactor,             float,          1.f                     );
-
-    CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp, Vec2f, Vec2f(0.0001f, 0.75f));
-    CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed, float, 1.f);
-
-    //--------------------------------------------------------------------------
-
-
-
     //////////////////////////////////////////
     // Start adding artist parameters here  //
     //////////////////////////////////////////
@@ -619,7 +520,7 @@ namespace GITechDemoApp
         "Z-Near",
         "Distance to the nearest Z clip plane",
         "Camera",
-        HLSL::PostProcessingParams->ZNear[0],
+        HLSL::PostProcessingParams->ZNear,
         0.1f,
         10.f);
 
@@ -627,7 +528,7 @@ namespace GITechDemoApp
         "Z-Far",
         "Distance to the furthest Z clip plane (if not infinite projection)",
         "Camera",
-        HLSL::PostProcessingParams->ZFar[0],
+        HLSL::PostProcessingParams->ZFar,
         10.f,
         5000.f);
 
@@ -745,7 +646,7 @@ namespace GITechDemoApp
         "BRDF model",
         "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann; 3 - Ashikhmin-Shirley; 4 - Ward",
         "Directional light",
-        HLSL::BRDFParams->BRDFModel[0],
+        HLSL::BRDFParams->BRDFModel,
         1,
         HLSL::BRDF::CookTorranceGGX);
 
@@ -753,7 +654,7 @@ namespace GITechDemoApp
         "Diffuse factor",
         "Scale value for diffuse light equation",
         "Directional light",
-        HLSL::BRDFParams->DiffuseFactor[0],
+        HLSL::BRDFParams->DiffuseFactor,
         0.1f,
         7.5f);
 
@@ -761,7 +662,7 @@ namespace GITechDemoApp
         "Specular factor",
         "Scale value for specular light equation (Blinn-Phong only)",
         "Directional light",
-        HLSL::BRDFParams->SpecFactor[0],
+        HLSL::BRDFParams->SpecFactor,
         0.1f,
         15.f);
 
@@ -769,7 +670,7 @@ namespace GITechDemoApp
         "Ambient factor",
         "Scale value for ambient light equation",
         "Directional light",
-        HLSL::BRDFParams->AmbientFactor[0],
+        HLSL::BRDFParams->AmbientFactor,
         0.1f,
         0.15f);
 
@@ -777,7 +678,7 @@ namespace GITechDemoApp
         "Irradiance factor",
         "Scale value for irradiance map (Cook-Torrance only)",
         "Directional light",
-        HLSL::BRDFParams->IrradianceFactor[0],
+        HLSL::BRDFParams->IrradianceFactor,
         0.1f,
         1.f);
 
@@ -785,7 +686,7 @@ namespace GITechDemoApp
         "Reflection factor",
         "Scale value for reflection map (Cook-Torrance only)",
         "Directional light",
-        HLSL::BRDFParams->ReflectionFactor[0],
+        HLSL::BRDFParams->ReflectionFactor,
         0.1f,
         1.f);
 
@@ -818,14 +719,14 @@ namespace GITechDemoApp
         "Debug cascades",
         "Draw cascades with different colors",
         "Cascaded shadow map",
-        HLSL::DirectionalLightParams->DebugCascades[0],
+        HLSL::DirectionalLightParams->DebugCascades,
         false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Cascade blend size",
         "The size of the blend band between overlapping cascades",
         "Cascaded shadow map",
-        HLSL::CSMParams->CascadeBlendSize[0],
+        HLSL::CSMParams->CascadeBlendSize,
         1.f,
         50.f);
 
@@ -929,7 +830,7 @@ namespace GITechDemoApp
         "Reflection intensity",
         "Scale value for the intensity of reflections",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->ReflectionIntensity[0],
+        HLSL::ScreenSpaceReflectionParams->ReflectionIntensity,
         0.1f,
         1.f);
 
@@ -937,7 +838,7 @@ namespace GITechDemoApp
         "Object thickness",
         "Used to determine if ray hits are valid",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->Thickness[0],
+        HLSL::ScreenSpaceReflectionParams->Thickness,
         1.f,
         100.f);
 
@@ -945,7 +846,7 @@ namespace GITechDemoApp
         "Sample stride",
         "Number of pixels to jump between each ray march iteration",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->SampleStride[0],
+        HLSL::ScreenSpaceReflectionParams->SampleStride,
         10.f,
         25.f);
 
@@ -960,7 +861,7 @@ namespace GITechDemoApp
         "Maximum step count",
         "Maximum number of ray march iterations before returning a miss",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->MaxSteps[0],
+        HLSL::ScreenSpaceReflectionParams->MaxSteps,
         10.f,
         200.f);
 
@@ -968,7 +869,7 @@ namespace GITechDemoApp
         "Maximum ray distance",
         "Maximum distance to ray march before returning a miss",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->MaxRayDist[0],
+        HLSL::ScreenSpaceReflectionParams->MaxRayDist,
         100.f,
         3000.f);
 
@@ -976,7 +877,7 @@ namespace GITechDemoApp
         "Use dithering",
         "Use a bayer matrix to offset the starting positions of rays",
         "Screen space reflections",
-        HLSL::ScreenSpaceReflectionParams->UseDither[0],
+        HLSL::ScreenSpaceReflectionParams->UseDither,
         true);
     //------------------------------------------------------
 
@@ -992,7 +893,7 @@ namespace GITechDemoApp
         "SSAO sample radius",
         "Radius in which occluders are searched for",
         "SSAO",
-        HLSL::SSAOParams->SampleRadius[0],
+        HLSL::SSAOParams->SampleRadius,
         1.f,
         10.f);
 
@@ -1000,7 +901,7 @@ namespace GITechDemoApp
         "SSAO intensity",
         "Intensity of SSAO effect",
         "SSAO",
-        HLSL::SSAOParams->Intensity[0],
+        HLSL::SSAOParams->Intensity,
         1.f,
         5.f);
 
@@ -1008,7 +909,7 @@ namespace GITechDemoApp
         "SSAO scale",
         "Scale for the occlusion attenuation with distance",
         "SSAO",
-        HLSL::SSAOParams->Scale[0],
+        HLSL::SSAOParams->Scale,
         0.01f,
         0.05f);
 
@@ -1016,7 +917,7 @@ namespace GITechDemoApp
         "SSAO bias",
         "Bias for the occlusion attenuation with normal differences",
         "SSAO",
-        HLSL::SSAOParams->Bias[0],
+        HLSL::SSAOParams->Bias,
         0.01f,
         0.25f);
 
@@ -1040,7 +941,7 @@ namespace GITechDemoApp
         "Intensity",
         "The intensity of the indirect light",
         "Reflective shadow map",
-        HLSL::RSMCommonParams->Intensity[0],
+        HLSL::RSMCommonParams->Intensity,
         1.f,
         200.f);
 
@@ -1048,7 +949,7 @@ namespace GITechDemoApp
         "Kernel scale",
         "Scale value for the kernel size for sampling the RSM",
         "Reflective shadow map",
-        HLSL::RSMCommonParams->KernelScale[0],
+        HLSL::RSMCommonParams->KernelScale,
         0.001f,
         0.025f);
 
@@ -1056,7 +957,7 @@ namespace GITechDemoApp
         "Upscale threshold",
         "Affects the number of rejected pixels during upscaling",
         "Reflective shadow map",
-        HLSL::RSMUpscaleParams->WeightThreshold[0],
+        HLSL::RSMUpscaleParams->WeightThreshold,
         0.001f,
         0.002f);
 
@@ -1064,7 +965,7 @@ namespace GITechDemoApp
         "Debug upscale pass",
         "Draws rejected pixels with a red color",
         "Reflective shadow map",
-        HLSL::RSMUpscaleParams->DebugUpscalePass[0],
+        HLSL::RSMUpscaleParams->DebugUpscalePass,
         false);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
@@ -1094,7 +995,7 @@ namespace GITechDemoApp
         "Sun radius",
         "Affects the radius of the sun",
         "Sky",
-        HLSL::SkyboxParams->SunRadius[0],
+        HLSL::SkyboxParams->SunRadius,
         10.f,
         1000.f);
 
@@ -1102,7 +1003,7 @@ namespace GITechDemoApp
         "Sun brightness",
         "Affects the brightness of the sun",
         "Sky",
-        HLSL::SkyboxParams->SunBrightness[0],
+        HLSL::SkyboxParams->SunBrightness,
         10.f,
         500.f);
     //------------------------------------------------------
@@ -1119,7 +1020,7 @@ namespace GITechDemoApp
         "Accumulation sample count",
         "The number of samples taken across the ray's length",
         "Volumetric lights",
-        HLSL::DirectionalLightVolumeParams->SampleCount[0],
+        HLSL::DirectionalLightVolumeParams->SampleCount,
         10.f,
         32);
 
@@ -1127,7 +1028,7 @@ namespace GITechDemoApp
         "Accumulation sample distribution",
         "< 1 means higher density of samples near the camera",
         "Volumetric lights",
-        HLSL::DirectionalLightVolumeParams->SampleDistrib[0],
+        HLSL::DirectionalLightVolumeParams->SampleDistrib,
         0.1f,
         0.5f);
 
@@ -1135,7 +1036,7 @@ namespace GITechDemoApp
         "Accumulation intensity",
         "Intensity of the volumetric effect",
         "Volumetric lights",
-        HLSL::DirectionalLightVolumeParams->LightIntensity[0],
+        HLSL::DirectionalLightVolumeParams->LightIntensity,
         0.1f,
         0.5f);
 
@@ -1143,7 +1044,7 @@ namespace GITechDemoApp
         "Mult. scatter intensity",
         "Intensity of the faked multiple scattering effect",
         "Volumetric lights",
-        HLSL::DirectionalLightVolumeParams->MultScatterIntensity[0],
+        HLSL::DirectionalLightVolumeParams->MultScatterIntensity,
         0.1f,
         0.05f);
 
@@ -1175,7 +1076,7 @@ namespace GITechDemoApp
         "Fog vertical falloff",
         "Factor for the exponential vertical falloff of the fog effect",
         "Volumetric lights",
-        HLSL::DirectionalLightVolumeParams->FogVerticalFalloff[0],
+        HLSL::DirectionalLightVolumeParams->FogVerticalFalloff,
         1.f,
         15.f);
 
@@ -1220,7 +1121,7 @@ namespace GITechDemoApp
         "Blur depth falloff",
         "A scaling factor for the blur weights around edges",
         "Volumetric lights",
-        HLSL::BilateralBlurParams->BlurDepthFalloff[0],
+        HLSL::BilateralBlurParams->BlurDepthFalloff,
         0.0001f,
         0.0025f);
 
@@ -1235,7 +1136,7 @@ namespace GITechDemoApp
         "Upsample depth threshold",
         "A threshold for edge detection used to reduce upscaling artifacts",
         "Volumetric lights",
-        HLSL::NearestDepthUpscaleParams->UpsampleDepthThreshold[0],
+        HLSL::NearestDepthUpscaleParams->UpsampleDepthThreshold,
         0.0001f,
         0.0015f);
 
@@ -1268,7 +1169,7 @@ namespace GITechDemoApp
         "Focal depth",
         "Focal distance value in meters (overridden by autofocus)",
         "Depth of field",
-        HLSL::BokehDoFParams->FocalDepth[0],
+        HLSL::BokehDoFParams->FocalDepth,
         1.f,
         100.f);
 
@@ -1276,7 +1177,7 @@ namespace GITechDemoApp
         "Focal length",
         "Focal length in mm",
         "Depth of field",
-        HLSL::BokehDoFParams->FocalLength[0],
+        HLSL::BokehDoFParams->FocalLength,
         1.f,
         100.f);
 
@@ -1284,7 +1185,7 @@ namespace GITechDemoApp
         "F-stop",
         "F-stop value",
         "Depth of field",
-        HLSL::BokehDoFParams->FStop[0],
+        HLSL::BokehDoFParams->FStop,
         0.1f,
         2.8f);
 
@@ -1292,7 +1193,7 @@ namespace GITechDemoApp
         "Circle of confusion",
         "Circle of confusion size in mm (35mm film = 0.03mm)",
         "Depth of field",
-        HLSL::BokehDoFParams->CoC[0],
+        HLSL::BokehDoFParams->CoC,
         0.1f,
         0.03f);
 
@@ -1300,7 +1201,7 @@ namespace GITechDemoApp
         "Aperture size",
         "Affects size of bokeh",
         "Depth of field",
-        HLSL::BokehDoFParams->ApertureSize[0],
+        HLSL::BokehDoFParams->ApertureSize,
         0.001f,
         0.0075f);
 
@@ -1316,7 +1217,7 @@ namespace GITechDemoApp
         "Highlight threshold",
         "Brightness-pass filter threshold (higher = sparser bokeh)",
         "Depth of field",
-        HLSL::BokehDoFParams->HighlightThreshold[0],
+        HLSL::BokehDoFParams->HighlightThreshold,
         0.1f,
         3.f);
 
@@ -1324,7 +1225,7 @@ namespace GITechDemoApp
         "Highlight gain",
         "Brightness gain (higher = more prominent bokeh)",
         "Depth of field",
-        HLSL::BokehDoFParams->HighlightGain[0],
+        HLSL::BokehDoFParams->HighlightGain,
         0.1f,
         1.f);
 
@@ -1332,14 +1233,14 @@ namespace GITechDemoApp
         "Anamorphic bokeh",
         "Stretch bokeh effect like on an anamorphic lens",
         "Depth of field",
-        HLSL::BokehDoFParams->AnamorphicBokeh[0],
+        HLSL::BokehDoFParams->AnamorphicBokeh,
         false);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Autofocus",
         "Use autofocus",
         "Depth of field",
-        HLSL::BokehDoFParams->Autofocus[0],
+        HLSL::BokehDoFParams->Autofocus,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1356,14 +1257,14 @@ namespace GITechDemoApp
         "Vignetting",
         "Optical lens vignetting effect",
         "Vignetting",
-        HLSL::BokehDoFParams->Vignetting[0],
+        HLSL::BokehDoFParams->Vignetting,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Vignetting out",
         "Vignetting outer border",
         "Vignetting",
-        HLSL::BokehDoFParams->VignOut[0],
+        HLSL::BokehDoFParams->VignOut,
         0.1f,
         0.75f);
 
@@ -1371,7 +1272,7 @@ namespace GITechDemoApp
         "Vignetting in",
         "Vignetting inner border",
         "Vignetting",
-        HLSL::BokehDoFParams->VignIn[0],
+        HLSL::BokehDoFParams->VignIn,
         0.1f,
         0.25f);
 
@@ -1379,7 +1280,7 @@ namespace GITechDemoApp
         "Vignetting fade",
         "F-stops until vignette fades",
         "Vignetting",
-        HLSL::BokehDoFParams->VignFade[0],
+        HLSL::BokehDoFParams->VignFade,
         1.f,
         15.f);
     //------------------------------------------------------
@@ -1389,7 +1290,7 @@ namespace GITechDemoApp
         "Chroma shift amount",
         "The amount of chromatic separation",
         "Chromatic aberration",
-        HLSL::BokehDoFParams->ChromaShiftAmount[0],
+        HLSL::BokehDoFParams->ChromaShiftAmount,
         0.1f,
         1.f);
     //------------------------------------------------------
@@ -1399,7 +1300,7 @@ namespace GITechDemoApp
         "K coefficient",
         "Quartic distortion coefficient",
         "Lens distortion",
-        HLSL::BokehDoFParams->QuarticDistortionCoef[0],
+        HLSL::BokehDoFParams->QuarticDistortionCoef,
         0.1f,
         0.f);
 
@@ -1407,7 +1308,7 @@ namespace GITechDemoApp
         "K cube modifier",
         "Cubic distortion modifier",
         "Lens distortion",
-        HLSL::BokehDoFParams->CubicDistortionModifier[0],
+        HLSL::BokehDoFParams->CubicDistortionModifier,
         0.1f,
         0.f);
 
@@ -1415,7 +1316,7 @@ namespace GITechDemoApp
         "Distortion scale",
         "Scales the screen to compensate for overscan/underscan",
         "Lens distortion",
-        HLSL::BokehDoFParams->DistortionScale[0],
+        HLSL::BokehDoFParams->DistortionScale,
         0.01f,
         1.f);
     //------------------------------------------------------
@@ -1432,7 +1333,7 @@ namespace GITechDemoApp
         "Motion blur intensity",
         "The intensity of the motion blur effect",
         "Motion blur",
-        HLSL::MotionBlurParams->Intensity[0],
+        HLSL::MotionBlurParams->Intensity,
         0.01f,
         0.01f);
 
@@ -1440,7 +1341,7 @@ namespace GITechDemoApp
         "Motion blur sample count",
         "The number of samples along the velocity vector",
         "Motion blur",
-        HLSL::MotionBlurParams->NumSamples[0],
+        HLSL::MotionBlurParams->NumSamples,
         1,
         5);
     //------------------------------------------------------
@@ -1457,7 +1358,7 @@ namespace GITechDemoApp
         "Bloom brightness threshold",
         "Threshold for the low-pass brightness filter",
         "Bloom",
-        HLSL::DownsampleParams->BrightnessThreshold[0],
+        HLSL::DownsampleParams->BrightnessThreshold,
         0.1f,
         0.2f);
 
@@ -1465,7 +1366,7 @@ namespace GITechDemoApp
         "Bloom power",
         "Exponent of bloom intensity value",
         "Bloom",
-        HLSL::BloomParams->Power[0],
+        HLSL::BloomParams->Power,
         0.1f,
         1.f);
 
@@ -1473,7 +1374,7 @@ namespace GITechDemoApp
         "Bloom strength",
         "Strength of bloom intensity value",
         "Bloom",
-        HLSL::BloomParams->Strength[0],
+        HLSL::BloomParams->Strength,
         0.1f,
         0.75f);
     //------------------------------------------------------
@@ -1497,7 +1398,7 @@ namespace GITechDemoApp
         "Anamorphic intensity",
         "Adjust the intensity of the anamophic lens flares",
         "Lens flare",
-        HLSL::AnamorphicLensFlareFeaturesParams->AnamorphicIntensity[0],
+        HLSL::AnamorphicLensFlareFeaturesParams->AnamorphicIntensity,
         1.f,
         5.f);
 
@@ -1513,7 +1414,7 @@ namespace GITechDemoApp
         "Ghost sample count",
         "Number of samples for \"ghost\" features",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->GhostSamples[0],
+        HLSL::SphericalLensFlareFeaturesParams->GhostSamples,
         1.f,
         5.f);
 
@@ -1521,7 +1422,7 @@ namespace GITechDemoApp
         "Ghost dispersion factor",
         "Dispersion factor (distance) for \"ghost\" features",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->GhostDispersal[0],
+        HLSL::SphericalLensFlareFeaturesParams->GhostDispersal,
         0.1f,
         0.37f);
 
@@ -1529,7 +1430,7 @@ namespace GITechDemoApp
         "Ghost radial weight",
         "Falloff factor for bright spots that are near screen edges",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->GhostRadialWeightExp[0],
+        HLSL::SphericalLensFlareFeaturesParams->GhostRadialWeightExp,
         0.1f,
         1.5f);
 
@@ -1537,7 +1438,7 @@ namespace GITechDemoApp
         "Halo size",
         "Halo size scale factor",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->HaloSize[0],
+        HLSL::SphericalLensFlareFeaturesParams->HaloSize,
         0.1f,
         0.6f);
 
@@ -1545,7 +1446,7 @@ namespace GITechDemoApp
         "Halo radial weight",
         "Determines halo thickness",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->HaloRadialWeightExp[0],
+        HLSL::SphericalLensFlareFeaturesParams->HaloRadialWeightExp,
         0.1f,
         5.f);
 
@@ -1553,14 +1454,14 @@ namespace GITechDemoApp
         "Chroma shift enable",
         "Toggle the application of a chromatic aberration effect",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->ChromaShift[0],
+        HLSL::SphericalLensFlareFeaturesParams->ChromaShift,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Chroma shift factor",
         "Intensity of chromatic aberration effect",
         "Lens flare",
-        HLSL::SphericalLensFlareFeaturesParams->ShiftFactor[0],
+        HLSL::SphericalLensFlareFeaturesParams->ShiftFactor,
         0.1f,
         1.f);
 
@@ -1568,7 +1469,7 @@ namespace GITechDemoApp
         "Lens dirt intensity",
         "Scale factor for lens dirt texture samples",
         "Lens flare",
-        HLSL::LensFlareApplyParams->DirtIntensity[0],
+        HLSL::LensFlareApplyParams->DirtIntensity,
         0.1f,
         0.3f);
 
@@ -1576,7 +1477,7 @@ namespace GITechDemoApp
         "Lens star burst intensity",
         "Scale factor for lens star burst texture samples",
         "Lens flare",
-        HLSL::LensFlareApplyParams->StarBurstIntensity[0],
+        HLSL::LensFlareApplyParams->StarBurstIntensity,
         0.1f,
         0.5f);
     //------------------------------------------------------
@@ -1593,7 +1494,7 @@ namespace GITechDemoApp
         "Exposure bias",
         "Scales color intensities before tone mapping",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->ExposureBias[0],
+        HLSL::HDRToneMappingParams->ExposureBias,
         0.1f,
         0.25f);
 
@@ -1617,7 +1518,7 @@ namespace GITechDemoApp
         "Shoulder strength",
         "Strength of the shoulder part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->ShoulderStrength[0],
+        HLSL::HDRToneMappingParams->ShoulderStrength,
         0.1f,
         0.5f);
 
@@ -1625,7 +1526,7 @@ namespace GITechDemoApp
         "Linear strength",
         "Strength of the linear part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->LinearStrength[0],
+        HLSL::HDRToneMappingParams->LinearStrength,
         0.1f,
         0.58f);
 
@@ -1633,7 +1534,7 @@ namespace GITechDemoApp
         "Linear angle",
         "Angle of the linear part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->LinearAngle[0],
+        HLSL::HDRToneMappingParams->LinearAngle,
         0.1f,
         0.35f);
 
@@ -1641,7 +1542,7 @@ namespace GITechDemoApp
         "Toe strength",
         "Strength of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->ToeStrength[0],
+        HLSL::HDRToneMappingParams->ToeStrength,
         0.1f,
         0.48f);
 
@@ -1649,7 +1550,7 @@ namespace GITechDemoApp
         "Toe numerator",
         "Numerator of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->ToeNumerator[0],
+        HLSL::HDRToneMappingParams->ToeNumerator,
         0.01f,
         0.12f);
 
@@ -1657,7 +1558,7 @@ namespace GITechDemoApp
         "Toe denominator",
         "Denominator of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->ToeDenominator[0],
+        HLSL::HDRToneMappingParams->ToeDenominator,
         0.1f,
         0.58f);
 
@@ -1665,7 +1566,7 @@ namespace GITechDemoApp
         "Linear white",
         "Reference linear white value of the filmic tone mapping curve",
         "HDR tone mapping",
-        HLSL::HDRToneMappingParams->LinearWhite[0],
+        HLSL::HDRToneMappingParams->LinearWhite,
         0.1f,
         3.f);
 
@@ -1673,7 +1574,7 @@ namespace GITechDemoApp
         "Exposure adapt speed",
         "Seconds in which the exposure adapts to scene brightness",
         "HDR tone mapping",
-        HLSL::LumaAdaptParams->LumaAdaptSpeed[0],
+        HLSL::LumaAdaptParams->LumaAdaptSpeed,
         0.1f,
         1.f);
     //------------------------------------------------------
@@ -1683,7 +1584,7 @@ namespace GITechDemoApp
         "Apply color correction",
         "Use the provided 3D color lookup table to do color correction",
         "Color correction",
-        HLSL::HDRToneMappingParams->ApplyColorCorrection[0],
+        HLSL::HDRToneMappingParams->ApplyColorCorrection,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
@@ -1699,7 +1600,7 @@ namespace GITechDemoApp
         "Film grain amount",
         "Amount of film grain applied to the image",
         "Film grain",
-        HLSL::HDRToneMappingParams->FilmGrainAmount[0],
+        HLSL::HDRToneMappingParams->FilmGrainAmount,
         0.001f,
         0.001f);
     //------------------------------------------------------
@@ -1716,7 +1617,7 @@ namespace GITechDemoApp
         "Antialiasing factor",
         "Amount of sub-pixel aliasing removal",
         "FXAA",
-        HLSL::FXAAParams->Subpix[0],
+        HLSL::FXAAParams->Subpix,
         0.01f,
         0.75f);
 
@@ -1724,7 +1625,7 @@ namespace GITechDemoApp
         "Edge threshold",
         "Minimum amount of local contrast to apply algorithm",
         "FXAA",
-        HLSL::FXAAParams->EdgeThreshold[0],
+        HLSL::FXAAParams->EdgeThreshold,
         0.01f,
         0.166f);
 
@@ -1732,7 +1633,7 @@ namespace GITechDemoApp
         "Darkness threshold",
         "Keeps the algorithm from processing darks",
         "FXAA",
-        HLSL::FXAAParams->EdgeThresholdMin[0],
+        HLSL::FXAAParams->EdgeThresholdMin,
         0.01f,
         0.0833f);
 
@@ -1740,14 +1641,14 @@ namespace GITechDemoApp
         "Apply FXAA only on edges",
         "Enables depth based edge detection for conditional FXAA application",
         "FXAA",
-        HLSL::FXAAParams->UseEdgeDetection[0],
+        HLSL::FXAAParams->UseEdgeDetection,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge detection threshold",
         "Adjusts threshold of depth based edge detection algorithm",
         "FXAA",
-        HLSL::FXAAParams->EdgeDepthThreshold[0],
+        HLSL::FXAAParams->EdgeDepthThreshold,
         0.0001f,
         0.00025f);
 
@@ -1755,7 +1656,7 @@ namespace GITechDemoApp
         "Debug FXAA edge detection",
         "Highlight pixels that have FXAA applied",
         "FXAA",
-        HLSL::FXAAParams->DebugEdgeDetection[0],
+        HLSL::FXAAParams->DebugEdgeDetection,
         false);
     //------------------------------------------------------
 }

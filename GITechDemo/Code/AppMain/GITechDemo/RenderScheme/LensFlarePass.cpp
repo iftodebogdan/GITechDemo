@@ -178,7 +178,7 @@ void LensFlarePass::ApplyBrightnessFilter()
         HLSL::Downsample_Source = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
     }
 
-    const float bkp = HLSL::DownsampleParams->BrightnessThreshold[0];
+    const float bkp = HLSL::DownsampleParams->BrightnessThreshold;
     HLSL::DownsampleParams->BrightnessThreshold = LENS_FLARE_BRIGHTNESS_THRESHOLD;
 
     DownsampleShader.Enable();

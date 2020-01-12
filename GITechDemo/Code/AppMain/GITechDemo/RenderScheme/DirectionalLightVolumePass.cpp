@@ -83,7 +83,7 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     NoiseTexture.GetTexture()->SetAddressingMode(SAM_WRAP);
     NoiseTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     HLSL::DirectionalLightVolume_Noise = NoiseTexture;
-    HLSL::DirectionalLightVolumeParams->ElapsedTime[0] += fDeltaTime;
+    HLSL::DirectionalLightVolumeParams->ElapsedTime += fDeltaTime;
     HLSL::DirectionalLightVolumeParams->FogBox = Vec3f(CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH);
 
     HLSL::ColorCopyParams->SingleChannelCopy = true;
@@ -134,7 +134,7 @@ void DirectionalLightVolumePass::GatherSamples()
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    const float fBlurDepthFalloffBkp = HLSL::BilateralBlurParams->BlurDepthFalloff[0];
+    const float fBlurDepthFalloffBkp = HLSL::BilateralBlurParams->BlurDepthFalloff;
     if (!DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE)
         HLSL::BilateralBlurParams->BlurDepthFalloff = 0.f;
 

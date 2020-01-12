@@ -136,8 +136,8 @@ void SkyPass::Update(const float fDeltaTime)
             HLSL::SkyboxParams->SkyViewProjMat,
             Math::deg2Rad(CAMERA_FOV),
             (float)GBuffer.GetRenderTarget()->GetWidth() / (float)GBuffer.GetRenderTarget()->GetHeight(),
-            HLSL::PostProcessingParams->ZNear[0],
-            HLSL::PostProcessingParams->ZFar[0]);
+            HLSL::PostProcessingParams->ZNear,
+            HLSL::PostProcessingParams->ZFar);
     }
     else
     {

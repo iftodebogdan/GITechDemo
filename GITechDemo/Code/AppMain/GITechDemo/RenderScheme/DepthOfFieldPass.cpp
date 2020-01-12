@@ -105,9 +105,9 @@ void DepthOfFieldPass::AutofocusPass()
     HLSL::LumaAdapt_LumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::LumaAdapt_LumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-    const float bkp = HLSL::LumaAdaptParams->LumaAdaptSpeed[0];
+    const float bkp = HLSL::LumaAdaptParams->LumaAdaptSpeed;
     HLSL::LumaAdaptParams->LumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
-    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed[0]);
+    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed);
 
     // Reuse the luminance animation shader
     LumaAdaptShader.Enable();
@@ -168,7 +168,7 @@ void DepthOfFieldPass::CalculateBlurFactor()
     PUSH_PROFILE_MARKER("Calculate Blur");
 
     // Set aperture size to 0, so that the shader only calculates CoC values
-    float bkp = HLSL::BokehDoFParams->ApertureSize[0];
+    float bkp = HLSL::BokehDoFParams->ApertureSize;
     HLSL::BokehDoFParams->ApertureSize = 0.f;
 
     DepthOfFieldBuffer[0]->Enable();
@@ -250,14 +250,14 @@ void DepthOfFieldPass::Draw()
 
     CalculateBlurFactor();
 
-    float bkp = HLSL::BokehDoFParams->ApertureSize[0];
+    float bkp = HLSL::BokehDoFParams->ApertureSize;
     for (int i = 0; i < DOF_NUM_PASSES; i++)
     {
         SWAP_RENDER_TARGET_HANDLES(DepthOfFieldBuffer[0], DepthOfFieldBuffer[1]);
         AccumulateDoFEffect();
-        
+
         // Vary aperture size per pass so as to have a better sample distribution
-        HLSL::BokehDoFParams->ApertureSize = HLSL::BokehDoFParams->ApertureSize[0] - bkp / (float)DOF_NUM_PASSES;
+        HLSL::BokehDoFParams->ApertureSize = HLSL::BokehDoFParams->ApertureSize - bkp / (float)DOF_NUM_PASSES;
     }
     HLSL::BokehDoFParams->ApertureSize = bkp;
 

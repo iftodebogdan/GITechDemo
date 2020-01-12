@@ -101,7 +101,7 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
     DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
-    HLSL::BRDFParams->BRDFModel = gmtl::Math::clamp((int)HLSL::BRDFParams->BRDFModel[0], (int)HLSL::BRDF::BlinnPhong, (int)HLSL::BRDF::BRDFModelCount - 1);
+    HLSL::BRDFParams->BRDFModel = gmtl::Math::clamp((int)HLSL::BRDFParams->BRDFModel, (int)HLSL::BRDF::BlinnPhong, (int)HLSL::BRDF::BRDFModelCount - 1);
 }
 
 void GBufferPass::Draw()

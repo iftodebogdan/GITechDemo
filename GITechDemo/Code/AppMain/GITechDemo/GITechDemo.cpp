@@ -678,8 +678,8 @@ void GITechDemo::Update(const float fDeltaTime)
     // Precalculate some parts of the equation for reconstructing
     // linear depth from hyperbolic depth
     HLSL::PostProcessingParams->LinearDepthEquation = Vec2f(
-        HLSL::PostProcessingParams->ZNear[0] * HLSL::PostProcessingParams->ZFar[0] / (HLSL::PostProcessingParams->ZNear[0] - HLSL::PostProcessingParams->ZFar[0]),
-        HLSL::PostProcessingParams->ZFar[0] / (HLSL::PostProcessingParams->ZFar[0] - HLSL::PostProcessingParams->ZNear[0]));
+        (float)HLSL::PostProcessingParams->ZNear * (float)HLSL::PostProcessingParams->ZFar / ((float)HLSL::PostProcessingParams->ZNear - (float)HLSL::PostProcessingParams->ZFar),
+        (float)HLSL::PostProcessingParams->ZFar / ((float)HLSL::PostProcessingParams->ZFar - (float)HLSL::PostProcessingParams->ZNear));
 
     // Calculate world matrix
     HLSL::FrameParams->WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
@@ -689,9 +689,9 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Calculate projection matrix
     if(CAMERA_INFINITE_PROJ)
-        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear[0]);
+        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear);
     else
-        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear[0], HLSL::PostProcessingParams->ZFar[0]);
+        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear, HLSL::PostProcessingParams->ZFar[0]);
     gmtl::invertFull(HLSL::DirectionalLightParams->InvProjMat, HLSL::FrameParams->ProjMat);
     gmtl::invertFull(HLSL::ScreenSpaceReflectionParams->InvProjMat, HLSL::FrameParams->ProjMat);
     gmtl::invertFull(HLSL::SSAOParams->InvProjMat, HLSL::FrameParams->ProjMat);

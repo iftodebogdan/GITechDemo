@@ -28,17 +28,13 @@ using namespace GITechDemoApp;
 
 // Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
 //vector<ArtistParameter*> ArtistParameter::ms_arrParams;
+//const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX];
 
-namespace GITechDemoApp
-{
-    extern unsigned long long g_TypeHash[];
-}
-
-#define PARAM_IS_FLOAT()    (m_nTypeHash == g_TypeHash[APDT_FLOAT])
-#define PARAM_IS_INT()      (m_nTypeHash == g_TypeHash[APDT_INT])
-//#define PARAM_IS_UINT()     (m_nTypeHash == g_TypeHash[APDT_UINT])
-#define PARAM_IS_BOOL()     (m_nTypeHash == g_TypeHash[APDT_BOOL])
-#define PARAM_IS(APDT_TYPE) (m_nTypeHash == g_TypeHash[APDT_TYPE])
+#define PARAM_IS_FLOAT()    (m_nTypeHash == ms_TypeHash[APDT_FLOAT] || m_nTypeHash == ms_TypeHash[APDT_GPU_FLOAT])
+#define PARAM_IS_INT()      (m_nTypeHash == ms_TypeHash[APDT_INT])
+//#define PARAM_IS_UINT()     (m_nTypeHash == ms_TypeHash[APDT_UINT])
+#define PARAM_IS_BOOL()     (m_nTypeHash == ms_TypeHash[APDT_BOOL])
+#define PARAM_IS(APDT_TYPE) (m_nTypeHash == ms_TypeHash[APDT_TYPE])
 
 ArtistParameter::ArtistParameter(
     const char* const name,
@@ -58,21 +54,20 @@ ArtistParameter::ArtistParameter(
 {
     ms_arrParams.push_back(this);
 
-    switch (GetDataType())
+    if (PARAM_IS_FLOAT())
     {
-    case APDT_FLOAT:
         GetParameterAsFloat() = m_fDefaultValue;
-        break;
-
-    case APDT_INT:
-        GetParameterAsInt() = m_fDefaultValue;
-        break;
-
-    case APDT_BOOL:
-        GetParameterAsBool() = m_fDefaultValue;
-        break;
-
-    default:
+    }
+    else if (PARAM_IS_INT())
+    {
+        GetParameterAsInt() = (int)m_fDefaultValue;
+    }
+    else if (PARAM_IS_BOOL())
+    {
+        GetParameterAsBool() = (bool)m_fDefaultValue;
+    }
+    else
+    {
         assert(false);
     }
 }

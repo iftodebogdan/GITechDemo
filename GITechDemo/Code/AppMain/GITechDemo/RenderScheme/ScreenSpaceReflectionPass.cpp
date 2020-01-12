@@ -126,7 +126,7 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     HLSL::ScreenSpaceReflectionParams->ViewToRasterMat = rasterScaleMat * HLSL::FrameParams->ProjMat;
 
     if(!SSR_MANUAL_MAX_STEPS)
-        HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / HLSL::ScreenSpaceReflectionParams->SampleStride[0]);
+        HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / HLSL::ScreenSpaceReflectionParams->SampleStride);
 }
 
 void ScreenSpaceReflectionPass::Draw()
