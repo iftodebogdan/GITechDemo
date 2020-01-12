@@ -42,20 +42,7 @@ namespace GITechDemoApp
 
 HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{
-    ExposureBias = 0.25f;
-    AvgLumaClamp = Vec2f(0.0001f, 0.75f);
-    ShoulderStrength = 0.5f;
-    LinearStrength = 0.58f;
-    LinearAngle = 0.35f;
-    ToeStrength = 0.48f;
-    ToeNumerator = 0.12f;
-    ToeDenominator = 0.58f;
-    LinearWhite = 3.f;
-    LumaAdaptSpeed = 1.f;
-    FilmGrainAmount = 0.001f;
-    ApplyColorCorrection = true;
-}
+{}
 
 HDRToneMappingPass::~HDRToneMappingPass()
 {}
@@ -91,19 +78,6 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     HLSL::LumaAdapt_LumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
-
-    HLSL::HDRToneMappingParams->ExposureBias = ExposureBias;
-    //HLSL::HDRToneMappingParams->AvgLumaClamp = AvgLumaClamp;
-    HLSL::HDRToneMappingParams->ShoulderStrength = ShoulderStrength;
-    HLSL::HDRToneMappingParams->LinearStrength = LinearStrength;
-    HLSL::HDRToneMappingParams->LinearAngle = LinearAngle;
-    HLSL::HDRToneMappingParams->ToeStrength = ToeStrength;
-    HLSL::HDRToneMappingParams->ToeNumerator = ToeNumerator;
-    HLSL::HDRToneMappingParams->ToeDenominator = ToeDenominator;
-    HLSL::HDRToneMappingParams->LinearWhite = LinearWhite;
-    //HLSL::HDRToneMappingParams->LumaAdaptSpeed = LumaAdaptSpeed;
-    HLSL::HDRToneMappingParams->FilmGrainAmount = FilmGrainAmount;
-    HLSL::HDRToneMappingParams->ApplyColorCorrection = ApplyColorCorrection;
 }
 
 // Measure average luminance level of scene

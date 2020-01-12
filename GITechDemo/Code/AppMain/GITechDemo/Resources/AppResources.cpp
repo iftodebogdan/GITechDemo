@@ -57,6 +57,17 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define RENDER_TARGET_FUNC_FOUR(Name, RT0, RT1, RT2, RT3, Width, Height, DepthFormat, RTType) RenderTarget Name(#Name, 4, RT0, RT1, RT2, RT3, (RTType)Width, (RTType)Height, DepthFormat)
 #define INFER_RENDER_TARGET_FUNC(_1, _2, _3, _4, _5, _6, _7, _8, Func, ...) Func
 
+namespace GITechDemoApp
+{
+    unsigned long long g_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
+    {
+        typeid(float).hash_code(),
+        typeid(int).hash_code(),
+        //typeid(unsigned int).hash_code(),
+        typeid(bool).hash_code()
+    };
+}
+
 ///////////////////////////////////////////////////////////
 
 //////////////////////////
@@ -70,8 +81,8 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__));
 #define CREATE_STATIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], Width, Height, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, STATIC_RENDER_TARGET))
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
-#define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
-#define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f)
+#define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal, DefaultVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code(), DefaultVal)
+#define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param, DefaultVal) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f, DefaultVal)
 
 #define TEXTURE_1D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler1D)
 #define TEXTURE_2D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler2D)
@@ -162,18 +173,15 @@ namespace GITechDemoApp
     extern bool BLOOM_ENABLED;
 
     // Lens flare
-    extern LensFlarePass LENS_FLARE_PASS;
     extern bool LENS_FLARE_ENABLED;
     extern float LENS_FLARE_BRIGHTNESS_THRESHOLD;
     extern bool LENS_FLARE_ANAMORPHIC;
 
     // Tone mapping
-    extern HDRToneMappingPass HDR_TONE_MAPPING_PASS;
     extern bool HDR_TONE_MAPPING_ENABLED;
     extern bool SRGB_COLOR_CORRECTION;
 
     // FXAA
-    extern FXAAPass FXAA_PASS;
     extern bool FXAA_ENABLED;
 
     // Window properties
@@ -544,132 +552,6 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(f2AvgLumaClamp, Vec2f, Vec2f(0.0001f, 0.75f));
     CREATE_SHADER_CONSTANT_OBJECT(fLumaAdaptSpeed, float, 1.f);
 
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareFeatures, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareDirt, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareStarBurst, s3dSampler2D);
-
-    /*
-    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurSource, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
-
-    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
-
-    CREATE_SHADER_CONSTANT_OBJECT(LensFlareApplyParams, LensFlareApplyConstantTable);
-
-    // Tone mapping
-    CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingSourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingAvgLumaTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingColorCorrectionTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(HDRToneMappingParams, HDRToneMappingConstantTable);
-
-    // FXAA
-    CREATE_SHADER_CONSTANT_OBJECT(FXAASourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(FXAADepthBuffer, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(FXAAParams, FXAAConstantTable);
-
-    // ColorCopy.hlsl
-    CREATE_SHADER_CONSTANT_OBJECT(ColorCopySourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(ColorCopyParams, ColorCopyConstantTable);
-
-    // UI.hlsl
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture1D, s3dSampler1D);
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture2D, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_OBJECT(UITexture3D, s3dSampler3D);
-    CREATE_SHADER_CONSTANT_OBJECT(UITextureCube, s3dSamplerCUBE);
-    CREATE_SHADER_CONSTANT_OBJECT(UIParams, UIConstantTable);
-    //------------------------------------------------------
-    */
-
-
-    //////////////////////////////////////
-    // Shader constants - code driven   //
-    //////////////////////////////////////
-
-    CREATE_SHADER_CONSTANT_OBJECT(f44WorldMat,                  Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ProjMat,                   Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ViewProjMat,               Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewProjMat,          Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44WorldViewMat,              Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(texDiffuse,                   s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texNormal,                    s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(bHasNormalMap,                bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(texSpec,                      s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(bHasSpecMap,                  bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(texMatType,                   s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texRoughness,                 s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(fSpecIntensity,               float           );
-    CREATE_SHADER_CONSTANT_OBJECT(f2HalfTexelOffset,            Vec2f           );
-    CREATE_SHADER_CONSTANT_OBJECT(texDepthBuffer,               s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texHypDepthBuffer,            s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texLinDepthBuffer,            s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texQuarterDepthBuffer,        s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texMaterialBuffer,            s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texIrradianceMap,             s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_OBJECT(texEnvMap,                    s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_OBJECT(f44SkyViewProjMat,            Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(texSkyCube,                   s3dSamplerCUBE  );
-    CREATE_SHADER_CONSTANT_OBJECT(texDiffuseBuffer,             s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f44InvProjMat,                Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(texNormalBuffer,              s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texShadowMap,                 s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f2OneOverShadowMapSize,       Vec2f           );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ViewMat,                   Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44InvViewMat,                Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44InvViewProjMat,            Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ScreenToLightViewMat,      Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f3LightDir,                   Vec3f           );
-    CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMin,           Vec2f*          );
-    CREATE_SHADER_CONSTANT_OBJECT(f2CascadeBoundsMax,           Vec2f*          );
-    CREATE_SHADER_CONSTANT_OBJECT(f44CascadeProjMat,            Matrix44f*      );
-    CREATE_SHADER_CONSTANT_OBJECT(f2PoissonDisk,                Vec2f*          );
-    CREATE_SHADER_CONSTANT_OBJECT(f44LightViewMat,              Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44InvLightViewMat,           Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewProjMat,     Matrix44f*      );
-    CREATE_SHADER_CONSTANT_OBJECT(f44RSMWorldViewProjMat,       Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44LightWorldViewMat,         Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44LightViewProjMat,          Matrix44f*      );
-    CREATE_SHADER_CONSTANT_OBJECT(texRSMFluxBuffer,             s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texRSMNormalBuffer,           s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texRSMDepthBuffer,            s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f3RSMKernel,                  Vec3f*          );
-    CREATE_SHADER_CONSTANT_OBJECT(f44RSMProjMat,                Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44RSMInvProjMat,             Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRSMViewMat,          Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(texLumaInput,                 s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(bInitialLumaPass,             bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(bFinalLumaPass,               bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(texAvgLuma,                   s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texColorCorrection,           s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_OBJECT(texSource,                    s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(fFrameTime,                   float           );
-    CREATE_SHADER_CONSTANT_OBJECT(texLumaTarget,                s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(bApplyBrightnessFilter,       bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(nKernel,                      int             );
-    CREATE_SHADER_CONSTANT_OBJECT(nDownsampleFactor,            int             );
-    CREATE_SHADER_CONSTANT_OBJECT(bDepthDownsample,             bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(bReconstructDepth,            bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(f4TexSize,                    Vec4f           );
-    CREATE_SHADER_CONSTANT_OBJECT(bAdjustIntensity,             bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(f2LinearDepthEquation,        Vec2f           );
-    CREATE_SHADER_CONSTANT_OBJECT(texTargetFocus,               s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f44PrevViewProjMat,           Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(texGhostColorLUT,             s3dSampler1D    );
-    CREATE_SHADER_CONSTANT_OBJECT(bSingleChannelCopy,           bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(f4CustomColorModulator,       Vec4f           );
-    CREATE_SHADER_CONSTANT_OBJECT(bApplyTonemap,                bool            );
-    CREATE_SHADER_CONSTANT_OBJECT(f3CameraPositionLightVS,      Vec3f           );
-    CREATE_SHADER_CONSTANT_OBJECT(fRaymarchDistanceLimit,       float           );
-    CREATE_SHADER_CONSTANT_OBJECT(texDitherMap,                 s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f2BlurDir,                    Vec2f           );
-    CREATE_SHADER_CONSTANT_OBJECT(f2DepthHalfTexelOffset,       Vec2f           );
-    CREATE_SHADER_CONSTANT_OBJECT(texNoise,                     s3dSampler3D    );
-    CREATE_SHADER_CONSTANT_OBJECT(fElapsedTime,                 float           );
-    CREATE_SHADER_CONSTANT_OBJECT(f3FogBox,                     Vec3f           );
-    CREATE_SHADER_CONSTANT_OBJECT(texHDRSceneTexture,           s3dSampler2D    );
-    CREATE_SHADER_CONSTANT_OBJECT(f44ViewToRasterMat,           Matrix44f       );
-    CREATE_SHADER_CONSTANT_OBJECT(nTexMipCount,                 int             );
-
     //--------------------------------------------------------------------------
 
 
@@ -683,40 +565,46 @@ namespace GITechDemoApp
         "Fullscreen enabled",
         "Toggle between window mode and fulscreen mode",
         "Window",
-        FULLSCREEN_ENABLED);
+        FULLSCREEN_ENABLED,
+        false);
     
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Borderless windowed mode",
         "Toggle between regular windowed and borderless windowed mode",
         "Window",
-        BORDERLESS_ENABLED);
+        BORDERLESS_ENABLED,
+        true);
     
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Resolution X (width)",
         "Set the resolution on the X axis (only affects fullscreen mode)",
         "Window",
         FULLSCREEN_RESOLUTION_X,
-        1.f);
+        1,
+        0);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Resolution Y (height)",
         "Set the resolution on the Y axis (only affects fullscreen mode)",
         "Window",
         FULLSCREEN_RESOLUTION_Y,
-        1.f);
+        1,
+        0);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Refresh rate",
         "Set the refresh rate of the display (only affects fullscreen mode)",
         "Window",
         FULLSCREEN_REFRESH_RATE,
-        1.f);
+        1,
+        0);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "VSync enabled",
         "Synchronizes backbuffer swapping with screen refresh rate",
         "Window",
-        VSYNC_ENABLED);
+        VSYNC_ENABLED,
+        false);
     //------------------------------------------------------
 
     // Camera ----------------------------------------------
@@ -724,48 +612,55 @@ namespace GITechDemoApp
         "Infinite projection",
         "Use a projection matrix with an infinite far plane",
         "Camera",
-        CAMERA_INFINITE_PROJ);
+        CAMERA_INFINITE_PROJ,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Z-Near",
         "Distance to the nearest Z clip plane",
         "Camera",
-        fZNear.GetCurrentValue(),
-        0.1f);
-    
+        HLSL::PostProcessingParams->ZNear[0],
+        0.1f,
+        10.f);
+
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Z-Far",
         "Distance to the furthest Z clip plane (if not infinite projection)",
         "Camera",
-        fZFar.GetCurrentValue(),
-        10.f);
+        HLSL::PostProcessingParams->ZFar[0],
+        10.f,
+        5000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "FOV",
         "Vertical field of view",
         "Camera",
         CAMERA_FOV,
-        1.f);
+        1.f,
+        60.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Movement speed",
         "Camera movement speed",
         "Camera",
         CAMERA_MOVE_SPEED,
-        1.f);
+        1.f,
+        250.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Speed up factor",
         "Camera speed multiplier when pressing the 'speed up' button",
         "Camera",
         CAMERA_SPEED_UP_FACTOR,
-        1.f);
+        1.f,
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slow down factor",
         "Camera speed multiplier when pressing the 'slow down' button",
         "Camera",
         CAMERA_SLOW_DOWN_FACTOR,
+        0.1f,
         0.1f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -773,20 +668,23 @@ namespace GITechDemoApp
         "Camera rotation speed",
         "Camera",
         CAMERA_ROTATE_SPEED,
-        1.f);
+        1.f,
+        75.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Camera animation",
         "Camera animation toggle (no collisions with world geometry)",
         "Camera",
-        CAMERA_ANIMATION_ENABLED);
+        CAMERA_ANIMATION_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Animation timeout",
         "Seconds it takes until the camera animation kicks in",
         "Camera",
         CAMERA_ANIMATION_TIMEOUT_SECONDS,
-        1.f);
+        1,
+        30);
     //------------------------------------------------------
 
     // G-Buffer --------------------------------------------
@@ -794,39 +692,45 @@ namespace GITechDemoApp
         "Z-prepass",
         "Populate the scene's depth buffer before generating the G-Buffer",
         "G-Buffer",
-        GBUFFER_Z_PREPASS);
+        GBUFFER_Z_PREPASS,
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Draw alpha test geometry",
         "Draw geometry that uses alpha testing when Z-prepass is active.",
         "G-Buffer",
-        DRAW_ALPHA_TEST_GEOMETRY);
+        DRAW_ALPHA_TEST_GEOMETRY,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Diffuse anisotropic level",
         "Anisotropic filtering level for diffuse textures",
         "G-Buffer",
         DIFFUSE_ANISOTROPY,
-        1.f);
+        1,
+        MAX_ANISOTROPY);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Use normal maps",
         "Toggles the use of normal maps or vertex normals",
         "G-Buffer",
-        GBUFFER_USE_NORMAL_MAPS);
+        GBUFFER_USE_NORMAL_MAPS,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Debug view G-Buffer",
         "0 - albedo; 1 - normals; 2 - material/roughness; 3 - vertex normals",
         "G-Buffer",
         GBUFFER_DEBUG_VIEW,
-        1.f);
+        1,
+        -1);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug view depth buffer",
         "View the depth buffer (linear, scaled by far plane distance)",
         "G-Buffer",
-        GBUFFER_DEBUG_VIEW_DEPTH);
+        GBUFFER_DEBUG_VIEW_DEPTH,
+        false);
     //------------------------------------------------------
 
     // Directional light -----------------------------------
@@ -834,69 +738,79 @@ namespace GITechDemoApp
         "Directional lights enable",
         "Toggle the rendering of directional lights",
         "Directional light",
-        DIRECTIONAL_LIGHT_ENABLED);
+        DIRECTIONAL_LIGHT_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "BRDF model",
         "0 - Blinn-Phong; 1 - Cook-Torrance GGX; 2 - Cook-Torrance Beckmann; 3 - Ashikhmin-Shirley; 4 - Ward",
         "Directional light",
-        nBRDFModel.GetCurrentValue(),
-        1.f);
+        HLSL::BRDFParams->BRDFModel[0],
+        1,
+        HLSL::BRDF::CookTorranceGGX);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Diffuse factor",
         "Scale value for diffuse light equation",
         "Directional light",
-        fDiffuseFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::BRDFParams->DiffuseFactor[0],
+        0.1f,
+        7.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Specular factor",
         "Scale value for specular light equation (Blinn-Phong only)",
         "Directional light",
-        fSpecFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::BRDFParams->SpecFactor[0],
+        0.1f,
+        15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ambient factor",
         "Scale value for ambient light equation",
         "Directional light",
-        fAmbientFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::BRDFParams->AmbientFactor[0],
+        0.1f,
+        0.15f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Irradiance factor",
         "Scale value for irradiance map (Cook-Torrance only)",
         "Directional light",
-        fIrradianceFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::BRDFParams->IrradianceFactor[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Reflection factor",
         "Scale value for reflection map (Cook-Torrance only)",
         "Directional light",
-        fReflectionFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::BRDFParams->ReflectionFactor[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Light animation",
         "Directional light animation toggle",
         "Directional light",
-        DIRECTIONAL_LIGHT_ANIMATION_ENABLED);
+        DIRECTIONAL_LIGHT_ANIMATION_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Light direction - X axis",
         "Directional light direction on the X axis of the world",
         "Directional light",
-        f3LightDir.GetCurrentValue()[0],
-        0.01f);
+        HLSL::BRDFParams->LightDir[0],
+        0.01f,
+        0.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Light direction - Z axis",
         "Directional light direction on the Z axis of the world",
         "Directional light",
-        f3LightDir.GetCurrentValue()[2],
-        0.01f);
+        HLSL::BRDFParams->LightDir[2],
+        0.01f,
+        0.f);
     //------------------------------------------------------
 
     // CSM -------------------------------------------------
@@ -904,90 +818,103 @@ namespace GITechDemoApp
         "Debug cascades",
         "Draw cascades with different colors",
         "Cascaded shadow map",
-        bDebugCascades.GetCurrentValue());
+        HLSL::DirectionalLightParams->DebugCascades[0],
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Cascade blend size",
         "The size of the blend band between overlapping cascades",
         "Cascaded shadow map",
-        fCascadeBlendSize.GetCurrentValue(),
-        1.f);
+        HLSL::CSMParams->CascadeBlendSize[0],
+        1.f,
+        50.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "CSM distribution",
         "Factor affecting the distribution of shadow map cascades",
         "Cascaded shadow map",
         CASCADE_SPLIT_FACTOR,
-        0.1f);
+        0.1f,
+        0.7f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "CSM range",
         "Shadow draw distance",
         "Cascaded shadow map",
         CASCADE_MAX_VIEW_DEPTH,
-        10.f);
+        10.f,
+        3000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 1",
         "Depth bias for cascade 1",
         "Cascaded shadow map",
         DEPTH_BIAS[0],
-        0.0001f);
+        0.0001f,
+        0.002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 1",
         "Slope scaled depth bias for cascade 1",
         "Cascaded shadow map",
         SLOPE_SCALED_DEPTH_BIAS[0],
-        0.1f);
+        0.1f,
+        2.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 2",
         "Depth bias for cascade 2",
         "Cascaded shadow map",
         DEPTH_BIAS[1],
-        0.0001f);
+        0.0001f,
+        0.002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 2",
         "Slope scaled depth bias for cascade 2",
         "Cascaded shadow map",
         SLOPE_SCALED_DEPTH_BIAS[1],
-        0.1f);
+        0.1f,
+        2.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 3",
         "Depth bias for cascade 3",
         "Cascaded shadow map",
         DEPTH_BIAS[2],
-        0.0001f);
+        0.0001f,
+        0.0015f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 3",
         "Slope scaled depth bias for cascade 3",
         "Cascaded shadow map",
         SLOPE_SCALED_DEPTH_BIAS[2],
-        0.1f);
+        0.1f,
+        2.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 4",
         "Depth bias for cascade 4",
         "Cascaded shadow map",
         DEPTH_BIAS[3],
-        0.0001f);
+        0.0001f,
+        0.001f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 4",
         "Slope scaled depth bias for cascade 4",
         "Cascaded shadow map",
         SLOPE_SCALED_DEPTH_BIAS[3],
-        0.1f);
+        0.1f,
+        1.5f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug CSM camera",
         "Draw the cascaded shadow map on-screen",
         "Cascaded shadow map",
-        DEBUG_CSM_CAMERA);
+        DEBUG_CSM_CAMERA,
+        false);
     //------------------------------------------------------
     
     // Screen space reflections ----------------------------
@@ -995,54 +922,62 @@ namespace GITechDemoApp
         "SSR enable",
         "Toggle the rendering of screen space reflections",
         "Screen space reflections",
-        SSR_ENABLED);
+        SSR_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Reflection intensity",
         "Scale value for the intensity of reflections",
         "Screen space reflections",
-        fReflectionIntensity.GetCurrentValue(),
-        0.1f);
+        HLSL::ScreenSpaceReflectionParams->ReflectionIntensity[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Object thickness",
         "Used to determine if ray hits are valid",
         "Screen space reflections",
-        fThickness.GetCurrentValue(),
-        1.f);
+        HLSL::ScreenSpaceReflectionParams->Thickness[0],
+        1.f,
+        100.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Sample stride",
         "Number of pixels to jump between each ray march iteration",
         "Screen space reflections",
-        fSampleStride.GetCurrentValue(),
-        10.f);
+        HLSL::ScreenSpaceReflectionParams->SampleStride[0],
+        10.f,
+        25.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Manual maximum steps",
         "Manually adjust maximum number of steps, or calculate it dynamically",
         "Screen space reflections",
-        SSR_MANUAL_MAX_STEPS);
+        SSR_MANUAL_MAX_STEPS,
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Maximum step count",
         "Maximum number of ray march iterations before returning a miss",
         "Screen space reflections",
-        fMaxSteps.GetCurrentValue(),
-        10.f);
+        HLSL::ScreenSpaceReflectionParams->MaxSteps[0],
+        10.f,
+        200.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Maximum ray distance",
         "Maximum distance to ray march before returning a miss",
         "Screen space reflections",
-        fMaxRayDist.GetCurrentValue(),
-        100.f);
+        HLSL::ScreenSpaceReflectionParams->MaxRayDist[0],
+        100.f,
+        3000.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Use dithering",
         "Use a bayer matrix to offset the starting positions of rays",
         "Screen space reflections",
-        bUseDither.GetCurrentValue());
+        HLSL::ScreenSpaceReflectionParams->UseDither[0],
+        true);
     //------------------------------------------------------
 
     // SSAO ------------------------------------------------
@@ -1050,41 +985,47 @@ namespace GITechDemoApp
         "SSAO enable",
         "Toggle the rendering of screen space ambient occlusion",
         "SSAO",
-        SSAO_ENABLED);
+        SSAO_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO sample radius",
         "Radius in which occluders are searched for",
         "SSAO",
-        fSSAOSampleRadius.GetCurrentValue(),
-        1.f);
+        HLSL::SSAOParams->SampleRadius[0],
+        1.f,
+        10.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO intensity",
         "Intensity of SSAO effect",
         "SSAO",
-        fSSAOIntensity.GetCurrentValue(),
-        1.f);
+        HLSL::SSAOParams->Intensity[0],
+        1.f,
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO scale",
         "Scale for the occlusion attenuation with distance",
         "SSAO",
-        fSSAOScale.GetCurrentValue(),
-        0.1f);
+        HLSL::SSAOParams->Scale[0],
+        0.01f,
+        0.05f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO bias",
         "Bias for the occlusion attenuation with normal differences",
         "SSAO",
-        fSSAOBias.GetCurrentValue(),
-        0.1f);
+        HLSL::SSAOParams->Bias[0],
+        0.01f,
+        0.25f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Quarter resolution SSAO",
         "Toggle rendering into a quarter resolution buffer",
         "SSAO",
-        SSAO_USE_QUARTER_RESOLUTION_BUFFER);
+        SSAO_USE_QUARTER_RESOLUTION_BUFFER,
+        true);
     //------------------------------------------------------
 
     // RSM -------------------------------------------------
@@ -1092,52 +1033,60 @@ namespace GITechDemoApp
         "Indirect lights enable",
         "Toggle the rendering of indirect lights",
         "Reflective shadow map",
-        INDIRECT_LIGHT_ENABLED);
+        INDIRECT_LIGHT_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Intensity",
         "The intensity of the indirect light",
         "Reflective shadow map",
-        fRSMIntensity.GetCurrentValue(),
-        1.f);
+        HLSL::RSMCommonParams->Intensity[0],
+        1.f,
+        200.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Kernel scale",
         "Scale value for the kernel size for sampling the RSM",
         "Reflective shadow map",
-        fRSMKernelScale.GetCurrentValue(),
-        0.001f);
+        HLSL::RSMCommonParams->KernelScale[0],
+        0.001f,
+        0.025f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upscale threshold",
         "Affects the number of rejected pixels during upscaling",
         "Reflective shadow map",
-        fWeightThreshold.GetCurrentValue(),
-        0.001f);
+        HLSL::RSMUpscaleParams->WeightThreshold[0],
+        0.001f,
+        0.002f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug upscale pass",
         "Draws rejected pixels with a red color",
         "Reflective shadow map",
-        bDebugUpscalePass.GetCurrentValue());
+        HLSL::RSMUpscaleParams->DebugUpscalePass[0],
+        false);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Quarter resolution RSM",
         "Toggle rendering into a quarter resolution buffer",
         "Reflective shadow map",
-        RSM_USE_QUARTER_RESOLUTION_BUFFER);
+        RSM_USE_QUARTER_RESOLUTION_BUFFER,
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Bilateral blur RSM",
         "Toggle blurring of the RSM accumulation buffer",
         "Reflective shadow map",
-        RSM_USE_BILATERAL_BLUR);
+        RSM_USE_BILATERAL_BLUR,
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug RSM camera",
         "Draw the reflective shadow map on-screen",
         "Reflective shadow map",
-        DEBUG_RSM_CAMERA);
+        DEBUG_RSM_CAMERA,
+        false);
     //------------------------------------------------------
 
     // Sky -------------------------------------------------
@@ -1145,15 +1094,17 @@ namespace GITechDemoApp
         "Sun radius",
         "Affects the radius of the sun",
         "Sky",
-        fSunRadius.GetCurrentValue(),
-        10.f);
+        HLSL::SkyboxParams->SunRadius[0],
+        10.f,
+        1000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Sun brightness",
         "Affects the brightness of the sun",
         "Sky",
-        fSunBrightness.GetCurrentValue(),
-        10.f);
+        HLSL::SkyboxParams->SunBrightness[0],
+        10.f,
+        500.f);
     //------------------------------------------------------
 
     // Volumetric lights -----------------------------------
@@ -1161,121 +1112,139 @@ namespace GITechDemoApp
         "Volumetric lights enable",
         "Toggle the rendering of the volumetric lighting effect (directional)",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_ENABLE);
+        DIR_LIGHT_VOLUME_ENABLE,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Accumulation sample count",
         "The number of samples taken across the ray's length",
         "Volumetric lights",
-        nSampleCount.GetCurrentValue(),
-        10.f);
+        HLSL::DirectionalLightVolumeParams->SampleCount[0],
+        10.f,
+        32);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Accumulation sample distribution",
         "< 1 means higher density of samples near the camera",
         "Volumetric lights",
-        fSampleDistrib.GetCurrentValue(),
-        0.1f);
+        HLSL::DirectionalLightVolumeParams->SampleDistrib[0],
+        0.1f,
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Accumulation intensity",
         "Intensity of the volumetric effect",
         "Volumetric lights",
-        fLightIntensity.GetCurrentValue(),
-        0.1f);
+        HLSL::DirectionalLightVolumeParams->LightIntensity[0],
+        0.1f,
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Mult. scatter intensity",
         "Intensity of the faked multiple scattering effect",
         "Volumetric lights",
-        fMultScatterIntensity.GetCurrentValue(),
-        0.1f);
+        HLSL::DirectionalLightVolumeParams->MultScatterIntensity[0],
+        0.1f,
+        0.05f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog color - red",
         "Red color channel value for fog",
         "Volumetric lights",
         DIR_LIGHT_VOLUME_COLOR[0],
-        0.01f);
+        0.01f,
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog color - green",
         "Green color channel value for fog",
         "Volumetric lights",
         DIR_LIGHT_VOLUME_COLOR[1],
-        0.01f);
+        0.01f,
+        0.9f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog color - blue",
         "Blue color channel value for fog",
         "Volumetric lights",
         DIR_LIGHT_VOLUME_COLOR[2],
-        0.01f);
+        0.01f,
+        0.75f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog vertical falloff",
         "Factor for the exponential vertical falloff of the fog effect",
         "Volumetric lights",
-        fFogVerticalFalloff.GetCurrentValue(),
-        1.f);
+        HLSL::DirectionalLightVolumeParams->FogVerticalFalloff[0],
+        1.f,
+        15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog speed X axis",
         "Speed of fog effect on the X axis (world space units / sec)",
         "Volumetric lights",
-        f3FogSpeed.GetCurrentValue()[0],
-        1.f);
+        HLSL::DirectionalLightVolumeParams->FogSpeed[0],
+        1.f,
+        25.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Y axis",
         "Speed of fog effect on the Y axis (world space units / sec)",
         "Volumetric lights",
-        f3FogSpeed.GetCurrentValue()[1],
-        1.f);
+        HLSL::DirectionalLightVolumeParams->FogSpeed[1],
+        1.f,
+        -15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog speed Z axis",
         "Speed of fog effect on the Z axis (world space units / sec)",
         "Volumetric lights",
-        f3FogSpeed.GetCurrentValue()[2],
-        1.f);
+        HLSL::DirectionalLightVolumeParams->FogSpeed[2],
+        1.f,
+        25.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Blur samples",
         "Toggle the use of an additional blur pass",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_BLUR_SAMPLES);
+        DIR_LIGHT_VOLUME_BLUR_SAMPLES,
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Depth-aware blur",
         "Make the blur pass depth-aware so as not to cause light bleeding",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE);
+        DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Blur depth falloff",
         "A scaling factor for the blur weights around edges",
         "Volumetric lights",
-        fBlurDepthFalloff.GetCurrentValue(),
-        0.0001f);
+        HLSL::BilateralBlurParams->BlurDepthFalloff[0],
+        0.0001f,
+        0.0025f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Depth-aware upscaling",
         "Make the upscale pass depth-aware so as not to cause artifacts",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE);
+        DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upsample depth threshold",
         "A threshold for edge detection used to reduce upscaling artifacts",
         "Volumetric lights",
-        fUpsampleDepthThreshold.GetCurrentValue(),
-        0.0001f);
+        HLSL::NearestDepthUpscaleParams->UpsampleDepthThreshold[0],
+        0.0001f,
+        0.0015f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Quarter resolution accumulation",
         "Toggle the use of an intermediary quarter resolution target",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_QUARTER_RES);
+        DIR_LIGHT_VOLUME_QUARTER_RES,
+        true);
     //------------------------------------------------------
 
     // Post-processing -------------------------------------
@@ -1283,7 +1252,8 @@ namespace GITechDemoApp
         "Post-processing enable",
         "Toggle post-processing effects",
         "Post-processing effects",
-        POST_PROCESSING_ENABLED);
+        POST_PROCESSING_ENABLED,
+        true);
     //------------------------------------------------------
 
     // Bokeh DoF -------------------------------------------
@@ -1291,82 +1261,94 @@ namespace GITechDemoApp
         "DoF enable",
         "Toggle the rendering of the depth of field effect",
         "Depth of field",
-        DOF_ENABLED);
+        DOF_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Focal depth",
         "Focal distance value in meters (overridden by autofocus)",
         "Depth of field",
-        fFocalDepth.GetCurrentValue(),
-        1.f);
+        HLSL::BokehDoFParams->FocalDepth[0],
+        1.f,
+        100.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Focal length",
         "Focal length in mm",
         "Depth of field",
-        fFocalLength.GetCurrentValue(),
-        1.f);
+        HLSL::BokehDoFParams->FocalLength[0],
+        1.f,
+        100.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "F-stop",
         "F-stop value",
         "Depth of field",
-        fFStop.GetCurrentValue(),
-        1.f);
+        HLSL::BokehDoFParams->FStop[0],
+        0.1f,
+        2.8f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Circle of confusion",
         "Circle of confusion size in mm (35mm film = 0.03mm)",
         "Depth of field",
-        fCoC.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->CoC[0],
+        0.1f,
+        0.03f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Aperture size",
         "Affects size of bokeh",
         "Depth of field",
-        fApertureSize.GetCurrentValue(),
-        0.001f);
+        HLSL::BokehDoFParams->ApertureSize[0],
+        0.001f,
+        0.0075f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "DoF pass count",
         "The number of times to apply the DoF shader",
         "Depth of field",
         DOF_NUM_PASSES,
-        1.f);
+        1,
+        5);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Highlight threshold",
         "Brightness-pass filter threshold (higher = sparser bokeh)",
         "Depth of field",
-        fHighlightThreshold.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->HighlightThreshold[0],
+        0.1f,
+        3.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Highlight gain",
         "Brightness gain (higher = more prominent bokeh)",
         "Depth of field",
-        fHighlightGain.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->HighlightGain[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Anamorphic bokeh",
         "Stretch bokeh effect like on an anamorphic lens",
         "Depth of field",
-        bAnamorphicBokeh.GetCurrentValue());
+        HLSL::BokehDoFParams->AnamorphicBokeh[0],
+        false);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Autofocus",
         "Use autofocus",
         "Depth of field",
-        bAutofocus.GetCurrentValue());
+        HLSL::BokehDoFParams->Autofocus[0],
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Autofocus time",
         "Autofocus animation duration in seconds",
         "Depth of field",
         DOF_AUTOFOCUS_TIME,
-        1.f);
+        0.1f,
+        0.5f);
     //------------------------------------------------------
 
     // Vignetting (part of DoF shader) ---------------------
@@ -1374,28 +1356,32 @@ namespace GITechDemoApp
         "Vignetting",
         "Optical lens vignetting effect",
         "Vignetting",
-        bVignetting.GetCurrentValue());
+        HLSL::BokehDoFParams->Vignetting[0],
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Vignetting out",
         "Vignetting outer border",
         "Vignetting",
-        fVignOut.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->VignOut[0],
+        0.1f,
+        0.75f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Vignetting in",
         "Vignetting inner border",
         "Vignetting",
-        fVignIn.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->VignIn[0],
+        0.1f,
+        0.25f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Vignetting fade",
         "F-stops until vignette fades",
         "Vignetting",
-        fVignFade.GetCurrentValue(),
-        1.f);
+        HLSL::BokehDoFParams->VignFade[0],
+        1.f,
+        15.f);
     //------------------------------------------------------
 
     // Chromatic aberration (part of DoF shader) -----------
@@ -1403,8 +1389,9 @@ namespace GITechDemoApp
         "Chroma shift amount",
         "The amount of chromatic separation",
         "Chromatic aberration",
-        fChromaShiftAmount.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->ChromaShiftAmount[0],
+        0.1f,
+        1.f);
     //------------------------------------------------------
 
     // Lens distortion (part of DoF shader) ----------------
@@ -1412,22 +1399,25 @@ namespace GITechDemoApp
         "K coefficient",
         "Quartic distortion coefficient",
         "Lens distortion",
-        fQuarticDistortionCoef.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->QuarticDistortionCoef[0],
+        0.1f,
+        0.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "K cube modifier",
         "Cubic distortion modifier",
         "Lens distortion",
-        fCubicDistortionModifier.GetCurrentValue(),
-        0.1f);
+        HLSL::BokehDoFParams->CubicDistortionModifier[0],
+        0.1f,
+        0.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Distortion scale",
         "Scales the screen to compensate for overscan/underscan",
         "Lens distortion",
-        fDistortionScale.GetCurrentValue(),
-        0.01f);
+        HLSL::BokehDoFParams->DistortionScale[0],
+        0.01f,
+        1.f);
     //------------------------------------------------------
 
     // Motion blur -----------------------------------------
@@ -1435,21 +1425,24 @@ namespace GITechDemoApp
         "Motion blur enable",
         "Toggle the rendering of the motion blur effect",
         "Motion blur",
-        MOTION_BLUR_ENABLED);
+        MOTION_BLUR_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Motion blur intensity",
         "The intensity of the motion blur effect",
         "Motion blur",
-        fMotionBlurIntensity.GetCurrentValue(),
+        HLSL::MotionBlurParams->Intensity[0],
+        0.01f,
         0.01f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Motion blur sample count",
         "The number of samples along the velocity vector",
         "Motion blur",
-        nMotionBlurNumSamples.GetCurrentValue(),
-        1.f);
+        HLSL::MotionBlurParams->NumSamples[0],
+        1,
+        5);
     //------------------------------------------------------
 
     // Bloom -----------------------------------------------
@@ -1457,28 +1450,32 @@ namespace GITechDemoApp
         "Bloom enable",
         "Toggle the rendering of the bloom effect",
         "Bloom",
-        BLOOM_ENABLED);
+        BLOOM_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Bloom brightness threshold",
         "Threshold for the low-pass brightness filter",
         "Bloom",
-        fBrightnessThreshold.GetCurrentValue(),
-        0.1f);
+        HLSL::DownsampleParams->BrightnessThreshold[0],
+        0.1f,
+        0.2f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Bloom power",
         "Exponent of bloom intensity value",
         "Bloom",
-        fBloomPower.GetCurrentValue(),
-        0.1f);
+        HLSL::BloomParams->Power[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Bloom strength",
         "Strength of bloom intensity value",
         "Bloom",
-        fBloomStrength.GetCurrentValue(),
-        0.1f);
+        HLSL::BloomParams->Strength[0],
+        0.1f,
+        0.75f);
     //------------------------------------------------------
 
     // Lens flare ------------------------------------------
@@ -1486,89 +1483,102 @@ namespace GITechDemoApp
         "Lens flare enable",
         "Toggle the rendering of the lens flare effect",
         "Lens flare",
-        LENS_FLARE_ENABLED);
+        LENS_FLARE_ENABLED,
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Anamorphic lens flare",
         "Choose between anamorphic and spherical lens flare",
         "Lens flare",
-        LENS_FLARE_ANAMORPHIC);
+        LENS_FLARE_ANAMORPHIC,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Anamorphic intensity",
         "Adjust the intensity of the anamophic lens flares",
         "Lens flare",
-        LENS_FLARE_PASS.AnamorphicIntensity,
-        1.f);
+        HLSL::AnamorphicLensFlareFeaturesParams->AnamorphicIntensity[0],
+        1.f,
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Brigthness threshold",
         "Brightness threshold for lens flare feature generation",
         "Lens flare",
         LENS_FLARE_BRIGHTNESS_THRESHOLD,
-        0.1f);
+        0.1f,
+        3.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost sample count",
         "Number of samples for \"ghost\" features",
         "Lens flare",
-        nGhostSamples.GetCurrentValue(),
-        1.f);
+        HLSL::SphericalLensFlareFeaturesParams->GhostSamples[0],
+        1.f,
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost dispersion factor",
         "Dispersion factor (distance) for \"ghost\" features",
         "Lens flare",
-        fGhostDispersal.GetCurrentValue(),
-        0.1f);
+        HLSL::SphericalLensFlareFeaturesParams->GhostDispersal[0],
+        0.1f,
+        0.37f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost radial weight",
         "Falloff factor for bright spots that are near screen edges",
         "Lens flare",
-        fGhostRadialWeightExp.GetCurrentValue(),
-        0.1f);
+        HLSL::SphericalLensFlareFeaturesParams->GhostRadialWeightExp[0],
+        0.1f,
+        1.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Halo size",
         "Halo size scale factor",
         "Lens flare",
-        fHaloSize.GetCurrentValue(),
-        0.1f);
+        HLSL::SphericalLensFlareFeaturesParams->HaloSize[0],
+        0.1f,
+        0.6f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Halo radial weight",
         "Determines halo thickness",
         "Lens flare",
-        fHaloRadialWeightExp.GetCurrentValue(),
-        0.1f);
+        HLSL::SphericalLensFlareFeaturesParams->HaloRadialWeightExp[0],
+        0.1f,
+        5.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Chroma shift enable",
         "Toggle the application of a chromatic aberration effect",
         "Lens flare",
-        bChromaShift.GetCurrentValue());
+        HLSL::SphericalLensFlareFeaturesParams->ChromaShift[0],
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Chroma shift factor",
         "Intensity of chromatic aberration effect",
         "Lens flare",
-        fShiftFactor.GetCurrentValue(),
-        0.1f);
+        HLSL::SphericalLensFlareFeaturesParams->ShiftFactor[0],
+        0.1f,
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lens dirt intensity",
         "Scale factor for lens dirt texture samples",
         "Lens flare",
-        LENS_FLARE_PASS.DirtIntensity,
-        0.1f);
+        HLSL::LensFlareApplyParams->DirtIntensity[0],
+        0.1f,
+        0.3f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lens star burst intensity",
         "Scale factor for lens star burst texture samples",
         "Lens flare",
-        LENS_FLARE_PASS.StarBurstIntensity,
-        0.1f);
+        HLSL::LensFlareApplyParams->StarBurstIntensity[0],
+        0.1f,
+        0.5f);
     //------------------------------------------------------
 
     // Tone mapping ----------------------------------------
@@ -1576,84 +1586,96 @@ namespace GITechDemoApp
         "Tone mapping enable",
         "Toggle tone mapping",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_ENABLED);
+        HDR_TONE_MAPPING_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Exposure bias",
         "Scales color intensities before tone mapping",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.ExposureBias,
-        0.1f);
+        HLSL::HDRToneMappingParams->ExposureBias[0],
+        0.1f,
+        0.25f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lower luma bound",
         "Minimum average luma clamp used for exposure adjustment",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.AvgLumaClamp[0],
-        0.01f);
+        HLSL::LumaCaptureParams->AvgLumaClamp[0],
+        0.01f,
+        0.0001f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upper luma bound",
         "Maximum average luma clamp used for exposure adjustment",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.AvgLumaClamp[1],
-        0.01f);
+        HLSL::LumaCaptureParams->AvgLumaClamp[1],
+        0.01f,
+        0.75f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Shoulder strength",
         "Strength of the shoulder part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.ShoulderStrength,
-        0.1f);
+        HLSL::HDRToneMappingParams->ShoulderStrength[0],
+        0.1f,
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear strength",
         "Strength of the linear part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.LinearStrength,
-        0.1f);
+        HLSL::HDRToneMappingParams->LinearStrength[0],
+        0.1f,
+        0.58f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear angle",
         "Angle of the linear part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.LinearAngle,
-        0.1f);
+        HLSL::HDRToneMappingParams->LinearAngle[0],
+        0.1f,
+        0.35f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe strength",
         "Strength of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.ToeStrength,
-        0.1f);
+        HLSL::HDRToneMappingParams->ToeStrength[0],
+        0.1f,
+        0.48f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe numerator",
         "Numerator of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.ToeNumerator,
-        0.01f);
+        HLSL::HDRToneMappingParams->ToeNumerator[0],
+        0.01f,
+        0.12f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe denominator",
         "Denominator of the toe part of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.ToeDenominator,
-        0.1f);
+        HLSL::HDRToneMappingParams->ToeDenominator[0],
+        0.1f,
+        0.58f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear white",
         "Reference linear white value of the filmic tone mapping curve",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.LinearWhite,
-        0.1f);
+        HLSL::HDRToneMappingParams->LinearWhite[0],
+        0.1f,
+        3.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Exposure adapt speed",
         "Seconds in which the exposure adapts to scene brightness",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_PASS.LumaAdaptSpeed,
-        0.1f);
+        HLSL::LumaAdaptParams->LumaAdaptSpeed[0],
+        0.1f,
+        1.f);
     //------------------------------------------------------
 
     // Color correction (part of HDR tonemapping shader) ---
@@ -1661,13 +1683,15 @@ namespace GITechDemoApp
         "Apply color correction",
         "Use the provided 3D color lookup table to do color correction",
         "Color correction",
-        HDR_TONE_MAPPING_PASS.ApplyColorCorrection);
+        HLSL::HDRToneMappingParams->ApplyColorCorrection[0],
+        true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "sRGB color lookup table",
         "Apply gamma correction when sampling the 3D color lookup table",
         "Color correction",
-        SRGB_COLOR_CORRECTION);
+        SRGB_COLOR_CORRECTION,
+        true);
     //------------------------------------------------------
 
     // Film grain (part of HDR tonemapping shader) ---------
@@ -1675,7 +1699,8 @@ namespace GITechDemoApp
         "Film grain amount",
         "Amount of film grain applied to the image",
         "Film grain",
-        HDR_TONE_MAPPING_PASS.FilmGrainAmount,
+        HLSL::HDRToneMappingParams->FilmGrainAmount[0],
+        0.001f,
         0.001f);
     //------------------------------------------------------
 
@@ -1684,46 +1709,53 @@ namespace GITechDemoApp
         "FXAA enable",
         "Toggle the FXAA filter",
         "FXAA",
-        FXAA_ENABLED);
+        FXAA_ENABLED,
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Antialiasing factor",
         "Amount of sub-pixel aliasing removal",
         "FXAA",
-        FXAA_PASS.Subpix,
-        0.01f);
+        HLSL::FXAAParams->Subpix[0],
+        0.01f,
+        0.75f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge threshold",
         "Minimum amount of local contrast to apply algorithm",
         "FXAA",
-        FXAA_PASS.EdgeThreshold,
-        0.01f);
+        HLSL::FXAAParams->EdgeThreshold[0],
+        0.01f,
+        0.166f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Darkness threshold",
         "Keeps the algorithm from processing darks",
         "FXAA",
-        FXAA_PASS.EdgeThresholdMin,
-        0.01f);
+        HLSL::FXAAParams->EdgeThresholdMin[0],
+        0.01f,
+        0.0833f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Apply FXAA only on edges",
         "Enables depth based edge detection for conditional FXAA application",
         "FXAA",
-        FXAA_PASS.UseEdgeDetection);
+        HLSL::FXAAParams->UseEdgeDetection[0],
+        true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge detection threshold",
         "Adjusts threshold of depth based edge detection algorithm",
         "FXAA",
-        FXAA_PASS.EdgeDepthThreshold,
-        0.0001f);
+        HLSL::FXAAParams->EdgeDepthThreshold[0],
+        0.0001f,
+        0.00025f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug FXAA edge detection",
         "Highlight pixels that have FXAA applied",
         "FXAA",
-        FXAA_PASS.DebugEdgeDetection);
+        HLSL::FXAAParams->DebugEdgeDetection[0],
+        false);
     //------------------------------------------------------
 }

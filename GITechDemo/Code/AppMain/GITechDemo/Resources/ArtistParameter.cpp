@@ -31,13 +31,7 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    const unsigned long long g_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
-    {
-        typeid(float).hash_code(),
-        typeid(int).hash_code(),
-        //typeid(unsigned int).hash_code(),
-        typeid(bool).hash_code()
-    };
+    extern unsigned long long g_TypeHash[];
 }
 
 #define PARAM_IS_FLOAT()    (m_nTypeHash == g_TypeHash[APDT_FLOAT])
@@ -52,15 +46,35 @@ ArtistParameter::ArtistParameter(
     const char* const category,
     void* const param,
     const float step,
-    const unsigned long long typeHash)
+    const unsigned long long typeHash,
+    const float defaultValue)
     : m_szName(name)
     , m_szDesc(desc)
     , m_szCategory(category)
     , m_pParam(param)
     , m_fStepValue(step)
     , m_nTypeHash(typeHash)
+    , m_fDefaultValue(defaultValue)
 {
     ms_arrParams.push_back(this);
+
+    switch (GetDataType())
+    {
+    case APDT_FLOAT:
+        GetParameterAsFloat() = m_fDefaultValue;
+        break;
+
+    case APDT_INT:
+        GetParameterAsInt() = m_fDefaultValue;
+        break;
+
+    case APDT_BOOL:
+        GetParameterAsBool() = m_fDefaultValue;
+        break;
+
+    default:
+        assert(false);
+    }
 }
 
 ArtistParameter::~ArtistParameter()

@@ -48,11 +48,7 @@ namespace GITechDemoApp
 
 LensFlarePass::LensFlarePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{
-    AnamorphicIntensity = 5.f;
-    DirtIntensity = 0.3f;
-    StarBurstIntensity = 0.5f;
-}
+{}
 
 LensFlarePass::~LensFlarePass()
 {}
@@ -116,9 +112,6 @@ void LensFlarePass::Update(const float fDeltaTime)
         0.f,    0.f,    1.f);
 
     HLSL::LensFlareApplyParams->StarBurstMat = scaleBias2 * rotMat * scaleBias1;
-
-    HLSL::LensFlareApplyParams->DirtIntensity = DirtIntensity;
-    HLSL::LensFlareApplyParams->StarBurstIntensity = StarBurstIntensity;
 
     if (LENS_FLARE_ANAMORPHIC)
         CurrentLensFlareBuffer = AnamorphicLensFlareBuffer;

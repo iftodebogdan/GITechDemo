@@ -40,11 +40,6 @@ namespace GITechDemoApp
         void    UpscaleAndBlend();
 
         RenderTarget** CurrentLensFlareBuffer;
-
-    public:
-        float AnamorphicIntensity;
-        float DirtIntensity;
-        float StarBurstIntensity;
     };
 }
 

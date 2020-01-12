@@ -41,14 +41,7 @@ namespace GITechDemoApp
 
 FXAAPass::FXAAPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
-{
-    Subpix = 0.75f;
-    EdgeThreshold = 0.166f;
-    EdgeThresholdMin = 0.0833f;
-    EdgeDepthThreshold = 0.00025f;
-    UseEdgeDetection = true;
-    DebugEdgeDetection = false;
-}
+{}
 
 FXAAPass::~FXAAPass()
 {}
@@ -62,13 +55,6 @@ void FXAAPass::Update(const float fDeltaTime)
     ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
     if (!ResourceMgr)
         return;
-
-    HLSL::FXAAParams->Subpix = Subpix;
-    HLSL::FXAAParams->EdgeThreshold = EdgeThreshold;
-    HLSL::FXAAParams->EdgeThresholdMin = EdgeThresholdMin;
-    HLSL::FXAAParams->EdgeDepthThreshold = EdgeDepthThreshold;
-    HLSL::FXAAParams->UseEdgeDetection = UseEdgeDetection;
-    HLSL::FXAAParams->DebugEdgeDetection = DebugEdgeDetection;
 
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);

@@ -37,7 +37,8 @@ namespace GITechDemoApp
             const char* const category,
             void* const param,
             const float step,
-            const unsigned long long typeHash);
+            const unsigned long long typeHash,
+            const float defaultValue);
 
         ~ArtistParameter();
 
@@ -61,6 +62,7 @@ namespace GITechDemoApp
         //        unsigned int&           GetParameterAsUInt() const { assert(IsDataType(APDT_UINT)); return *(unsigned int*)m_pParam; }
                     bool&               GetParameterAsBool() const { assert(IsDataType(APDT_BOOL)); return *(bool*)m_pParam; }
                     float               GetStepValue() const { return m_fStepValue; }
+                    float               GetDefaultValue() const { return m_fDefaultValue; }
 
         static ArtistParameter* const   GetParameterByIdx(const unsigned int idx);
         static const unsigned int       GetParameterCount() { return (unsigned int)ms_arrParams.size(); }
@@ -72,6 +74,7 @@ namespace GITechDemoApp
         void* m_pParam;
         float m_fStepValue;
         unsigned long long m_nTypeHash;
+        float m_fDefaultValue;
 
         static vector<ArtistParameter*> ms_arrParams;
     };

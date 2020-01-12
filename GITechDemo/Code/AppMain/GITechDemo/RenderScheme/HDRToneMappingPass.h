@@ -34,20 +34,6 @@ namespace GITechDemoApp
         void LuminanceMeasurementPass();
         void LuminanceAdaptationPass();
         void ToneMappingPass();
-
-    public:
-        float ExposureBias;
-        Vec2f AvgLumaClamp;
-        float ShoulderStrength;
-        float LinearStrength;
-        float LinearAngle;
-        float ToeStrength;
-        float ToeNumerator;
-        float ToeDenominator;
-        float LinearWhite;
-        float LumaAdaptSpeed;
-        float FilmGrainAmount;
-        bool ApplyColorCorrection;
     };
 }
 
