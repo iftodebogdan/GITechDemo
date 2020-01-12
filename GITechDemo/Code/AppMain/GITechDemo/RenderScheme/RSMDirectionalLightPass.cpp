@@ -63,15 +63,15 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(RSMBuffer.GetRenderTarget()->GetDepthBuffer())->SetBorderColor(Vec4f(0.f, 0.f, 0.f, 0.f));
 
     // RSM matrices
-    RenderContext->CreateOrthographicMatrix(f44RSMProjMat,
+    RenderContext->CreateOrthographicMatrix(HLSL::RSMCommonParams->RSMProjMat,
         SceneLightSpaceAABB.mMin[0],
         SceneLightSpaceAABB.mMax[1],
         SceneLightSpaceAABB.mMax[0],
         SceneLightSpaceAABB.mMin[1],
         SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
-    f44RSMWorldViewProjMat = f44RSMProjMat * f44LightWorldViewMat;
-    invertFull((Matrix44f&)f44RSMInvProjMat, (Matrix44f&)f44RSMProjMat);
-    f44ViewToRSMViewMat = f44LightViewMat * f44InvViewMat;
+    HLSL::RSMCaptureParams->RSMWorldViewProjMat = HLSL::RSMCommonParams->RSMProjMat * HLSL::RSMCaptureParams->LightWorldViewMat;
+    invertFull(HLSL::RSMCommonParams->RSMInvProjMat, HLSL::RSMCommonParams->RSMProjMat);
+    HLSL::RSMCommonParams->ViewToRSMViewMat = f44LightViewMat * f44InvViewMat;
 }
 
 void RSMDirectionalLightPass::Draw()
@@ -89,7 +89,7 @@ void RSMDirectionalLightPass::Draw()
 
     for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
     {
-        texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+        HLSL::RSMCapture_Diffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
         RSMCaptureShader.Enable();
         RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);

@@ -612,7 +612,7 @@ void GITechDemo::Update(const float fDeltaTime)
                     ((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2]) * 0.9f
                     );
 
-                Vec3f lookAtPos = f3LightDir.GetCurrentValue() * 1500.f;
+                Vec3f lookAtPos = HLSL::BRDFParams->LightDir[0] * 1500.f;
                 lookAtPos[1] = gmtl::Math::Max(((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) / 1.75f + SceneAABB.getMin()[1]) / 1.75f, -m_tCamera.vPos[1]);
 
                 Vec3f zAxis = makeNormal(Vec3f(lookAtPos + m_tCamera.vPos));
@@ -639,11 +639,11 @@ void GITechDemo::Update(const float fDeltaTime)
         time += fDeltaTime;
         float noiseX = PerlinNoise.Get(time, 0);
         float noiseZ = PerlinNoise.Get(0, time);
-        ((Vec3f&)f3LightDir)[0] = noiseX;
-        ((Vec3f&)f3LightDir)[2] = noiseZ;
-        ((Vec3f&)f3LightDir)[1] = -1.f;
+        HLSL::BRDFParams->LightDir[0] = noiseX;
+        HLSL::BRDFParams->LightDir[2] = noiseZ;
+        HLSL::BRDFParams->LightDir[1] = -1.f;
     }
-    gmtl::normalize((Vec3f&)f3LightDir);
+    gmtl::normalize((Vec3f&)HLSL::BRDFParams->LightDir);
 
 #if 0
     // NaN at this position!
@@ -675,7 +675,7 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Precalculate some parts of the equation for reconstructing
     // linear depth from hyperbolic depth
-    f2LinearDepthEquation = Vec2f(fZNear * fZFar / (fZNear - fZFar), fZFar / (fZFar - fZNear));
+    HLSL::PostProcessingParams->LinearDepthEquation = Vec2f(fZNear * fZFar / (fZNear - fZFar), fZFar / (fZFar - fZNear));
 
     // Calculate world matrix
     f44WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
@@ -692,14 +692,14 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Calculate some composite matrices
     gmtl::invertFull((Matrix44f&)f44InvViewMat, (Matrix44f&)f44ViewMat);
-    f44PrevViewProjMat = f44ViewProjMat; // View-projection matrix from last frame
+    HLSL::MotionBlurParams->PrevViewProjMat = f44ViewProjMat; // View-projection matrix from last frame
     f44ViewProjMat = f44ProjMat * f44ViewMat;
     f44InvViewProjMat = f44InvViewMat * f44InvProjMat;
 
     // For the first frame, set the last frame's view-projection matrix
     // to the current frame's view-projection matrix
-    if (f44PrevViewProjMat.GetCurrentValue() == MAT_IDENTITY44F)
-        f44PrevViewProjMat = f44ViewProjMat;
+    if (HLSL::MotionBlurParams->PrevViewProjMat == MAT_IDENTITY44F)
+        HLSL::MotionBlurParams->PrevViewProjMat = f44ViewProjMat;
 }
 
 void GITechDemo::UpdateUIFocus()

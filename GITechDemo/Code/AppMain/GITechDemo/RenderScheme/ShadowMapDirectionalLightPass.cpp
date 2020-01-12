@@ -140,7 +140,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(ShadowMapDir.GetRenderTarget()->GetDepthBuffer())->SetBorderColor(Vec4f(1.f, 1.f, 1.f, 1.f));
 
     // Calculate directional light camera view matrix
-    Vec3f zAxis = makeNormal((Vec3f&)f3LightDir);
+    Vec3f zAxis = makeNormal((Vec3f&)HLSL::BRDFParams->LightDir);
     // Use the previous frame's up vector to avoid
     // the camera making sudden jumps when rolling over
     static Vec3f upVec = abs(zAxis[1]) == 1.f ? Vec3f(0.f, 0.f, 1.f) : Vec3f(0.f, 1.f, 0.f);
@@ -153,8 +153,8 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         zAxis[0], zAxis[1], zAxis[2], 0.f,
         0.f, 0.f, 0.f, 1.f
         );
-    f44LightWorldViewMat = f44LightViewMat * f44WorldMat;
-    invertFull((Matrix44f&)f44InvLightViewMat, (Matrix44f&)f44LightViewMat);
+    HLSL::RSMCaptureParams->LightWorldViewMat = f44LightViewMat * f44WorldMat;
+    invertFull(HLSL::DirectionalLightVolumeParams->InvLightViewMat, (Matrix44f&)f44LightViewMat);
     f44ScreenToLightViewMat = f44LightViewMat * f44InvViewProjMat;
 
     // Calculate the projection matrices for all shadow map cascades
@@ -175,7 +175,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     for (unsigned int i = 0; i < 8; i++)
     {
         // For each AABB vertex, calculate the corresponding light view space OBB vertex
-        aabbVerts[i] = f44LightWorldViewMat * aabbVerts[i];
+        aabbVerts[i] = HLSL::RSMCaptureParams->LightWorldViewMat * aabbVerts[i];
 
         // Calculate the light view space AABB using the minimum and maximum values
         // on each axis of the light view space OBB
@@ -281,7 +281,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         // Calculate the projection matrix for the current shadow map cascade
         RenderContext->CreateOrthographicMatrix(
-            f44CascadeProjMat[cascade],
+            HLSL::CSMParams->CascadeProjMat[cascade],
             Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[0] - offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
             Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[1]  + offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
             Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[0]  + offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
@@ -289,11 +289,11 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
             SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
 
         // Store the light space coordinates of the bounds of the current shadow map cascade
-        f2CascadeBoundsMin[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMin[0], ViewFrustumPartitionLightSpaceAABB.mMin[1]);
-        f2CascadeBoundsMax[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMax[0], ViewFrustumPartitionLightSpaceAABB.mMax[1]);
+        HLSL::CSMParams->CascadeBoundsMin[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMin[0], ViewFrustumPartitionLightSpaceAABB.mMin[1]);
+        HLSL::CSMParams->CascadeBoundsMax[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMax[0], ViewFrustumPartitionLightSpaceAABB.mMax[1]);
 
         // Calculate the current shadow map cascade's corresponding composite matrices
-        f44LightViewProjMat[cascade] = f44CascadeProjMat[cascade] * f44LightViewMat;
+        f44LightViewProjMat[cascade] = HLSL::CSMParams->CascadeProjMat[cascade] * f44LightViewMat;
         f44LightWorldViewProjMat[cascade] = f44LightViewProjMat[cascade] * f44WorldMat;
     }
 }
@@ -391,12 +391,8 @@ void ShadowMapDirectionalLightPass::Draw()
 
 void ShadowMapDirectionalLightPass::AllocateResources()
 {
-    f44CascadeProjMat = new Matrix44f[NUM_CASCADES];
     f44LightViewProjMat = new Matrix44f[NUM_CASCADES];
     f44LightWorldViewProjMat = new Matrix44f[NUM_CASCADES];
-
-    f2CascadeBoundsMin = new Vec2f[NUM_CASCADES];
-    f2CascadeBoundsMax = new Vec2f[NUM_CASCADES];
 
     // RenderPass::AllocateResources() is called from multiple threads along with the
     // various RenderResource::Init() calls. As such, any RenderResource type that is
@@ -408,10 +404,6 @@ void ShadowMapDirectionalLightPass::AllocateResources()
 
 void ShadowMapDirectionalLightPass::ReleaseResources()
 {
-    delete[] f44CascadeProjMat;
     delete[] f44LightViewProjMat;
     delete[] f44LightWorldViewProjMat;
-
-    delete[] f2CascadeBoundsMin;
-    delete[] f2CascadeBoundsMax;
 }

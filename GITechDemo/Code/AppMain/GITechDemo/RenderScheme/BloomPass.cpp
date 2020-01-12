@@ -65,9 +65,9 @@ void BloomPass::Update(const float fDeltaTime)
         BloomBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
         )->SetAddressingMode(SAM_CLAMP);
 
-    nDownsampleFactor = 1;
-    bApplyBrightnessFilter = true;
-    bDepthDownsample = false;
+    HLSL::DownsampleParams->DownsampleFactor = 1;
+    HLSL::DownsampleParams->ApplyBrightnessFilter = true;
+    HLSL::DownsampleParams->DepthDownsample = false;
 
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
@@ -95,17 +95,17 @@ void BloomPass::BloomBrightnessFilter()
     const SamplerFilter samplerFilter = ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->GetFilter();
     ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
         0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetWidth(),
         0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetHeight()
         );
-    f4TexSize = Vec4f(
+    HLSL::DownsampleParams->TexSize = Vec4f(
         (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
         (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight(),
         1.f / (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
         1.f / (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight()
         );
-    texSource = HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::Downsample_Source = HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0);
 
     DownsampleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -144,25 +144,25 @@ void BloomPass::BloomBlur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        f2HalfTexelOffset = Vec2f(
+        HLSL::BloomParams->HalfTexelOffset = Vec2f(
             0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
         ResourceMgr->GetTexture(
             BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
             )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-        texSource = BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
-        f4TexSize = Vec4f(
+        HLSL::Bloom_Source = BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::BloomParams->TexSize = Vec4f(
             (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight(),
             1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
-        nKernel = BLOOM_BLUR_KERNEL[i];
+        HLSL::BloomParams->Kernel = BLOOM_BLUR_KERNEL[i];
         if (i == BLOOM_BLUR_KERNEL_COUNT - 1)
-            bAdjustIntensity = true;
+            HLSL::BloomParams->AdjustIntensity = true;
         else
-            bAdjustIntensity = false;
+            HLSL::BloomParams->AdjustIntensity = false;
 
         BloomShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);

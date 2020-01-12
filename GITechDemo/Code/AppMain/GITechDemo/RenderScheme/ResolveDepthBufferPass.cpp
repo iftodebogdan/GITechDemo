@@ -41,7 +41,7 @@ ResolveDepthBufferPass::~ResolveDepthBufferPass()
 
 void ResolveDepthBufferPass::Update(float fDeltaTime)
 {
-    texSource = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::DepthCopy_Source = GBuffer.GetRenderTarget()->GetDepthBuffer();
 }
 
 void ResolveDepthBufferPass::Draw()

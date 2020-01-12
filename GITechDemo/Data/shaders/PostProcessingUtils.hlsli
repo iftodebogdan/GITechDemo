@@ -27,10 +27,10 @@
 TEXTURE_2D_RESOURCE(PostProcessing_DitherMap);   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
 
 CBUFFER_RESOURCE(PostProcessing,
-    GPU_float zNear;
-    GPU_float zFar;
-    GPU_float2 linearDepthEquation;
-    GPU_float depthHalfTexelOffset; // Half texel offset of depth buffer
+    GPU_float ZNear;
+    GPU_float ZFar;
+    GPU_float2 LinearDepthEquation;
+    GPU_float DepthHalfTexelOffset; // Half texel offset of depth buffer
 );
 
 #ifdef HLSL
@@ -53,7 +53,7 @@ CBUFFER_RESOURCE(PostProcessing,
 //////////////////////////////////////////////////////////////////////////////////////////
 float ReconstructDepth(float hyperbolicDepth)
 {
-    return PostProcessingParams.linearDepthEquation.x / (hyperbolicDepth - PostProcessingParams.linearDepthEquation.y);
+    return PostProcessingParams.LinearDepthEquation.x / (hyperbolicDepth - PostProcessingParams.LinearDepthEquation.y);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -75,12 +75,12 @@ const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 tex
     return
         DEPTH_DOWNSAMPLE_FUNC(
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[0]).r,
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[1]).r
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[0]).r,
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[1]).r
                 ),
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[2]).r,
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.depthHalfTexelOffset * sampleOffset[3]).r
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[2]).r,
+                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[3]).r
                 )
             );
 }

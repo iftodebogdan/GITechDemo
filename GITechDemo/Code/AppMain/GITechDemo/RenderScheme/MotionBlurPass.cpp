@@ -79,13 +79,13 @@ void MotionBlurPass::CalculateMotionBlur()
     const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::MotionBlurParams->HalfTexelOffset = Vec2f(
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
         );
     ResourceMgr->GetTexture(LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_MIRROR);
-    texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer();
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::MotionBlur_Source = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::MotionBlur_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
     MotionBlurShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

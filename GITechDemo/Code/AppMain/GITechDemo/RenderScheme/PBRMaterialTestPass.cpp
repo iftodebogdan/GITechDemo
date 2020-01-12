@@ -87,17 +87,17 @@ void PBRMaterialTestPass::Draw()
                 }
                 pbrMaterial->GetTexture(PBRMaterial::PBRTT_ALBEDO)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
 
-                texDiffuse = diffuseTexIdx;
-                texNormal = normalTexIdx;
-                bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
+                HLSL::GBufferGeneration_Diffuse = diffuseTexIdx;
+                HLSL::GBufferGeneration_Normal = normalTexIdx;
+                HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
                 // For Blinn-Phong BRDF
-                texSpec = roughnessTexIdx;
-                bHasSpecMap = true;
+                HLSL::GBufferGeneration_Spec = roughnessTexIdx;
+                HLSL::GBufferGenerationParams->HasSpecMap = true;
 
                 // For Cook-Torrance BRDF
-                texMatType = matTexIdx;
-                texRoughness = roughnessTexIdx;
+                HLSL::GBufferGeneration_MatType = matTexIdx;
+                HLSL::GBufferGeneration_Roughness = roughnessTexIdx;
 
                 GBufferGenerationShader.Enable();
 

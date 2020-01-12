@@ -57,9 +57,9 @@ void HDRDownsampleForBloomPass::Update(const float fDeltaTime)
 
     ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-    nDownsampleFactor = 16;
-    bApplyBrightnessFilter = false;
-    bDepthDownsample = false;
+    HLSL::DownsampleParams->DownsampleFactor = 16;
+    HLSL::DownsampleParams->ApplyBrightnessFilter = false;
+    HLSL::DownsampleParams->DepthDownsample = false;
 }
 
 void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
@@ -77,17 +77,17 @@ void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarg
     // Not necessary
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
         0.5f / pDest->GetRenderTarget()->GetWidth(),
         0.5f / pDest->GetRenderTarget()->GetHeight()
         );
-    f4TexSize = Vec4f(
+    HLSL::DownsampleParams->TexSize = Vec4f(
         (float)pSource->GetRenderTarget()->GetWidth(),
         (float)pSource->GetRenderTarget()->GetHeight(),
         1.f / (float)pSource->GetRenderTarget()->GetWidth(),
         1.f / (float)pSource->GetRenderTarget()->GetHeight()
         );
-    texSource = pSource->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::Downsample_Source = pSource->GetRenderTarget()->GetColorBuffer(0);
 
     DownsampleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

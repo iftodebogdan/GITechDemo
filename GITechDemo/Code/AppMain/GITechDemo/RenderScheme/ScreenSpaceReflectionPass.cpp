@@ -95,19 +95,19 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     // roughly the same intensity as the fallback cubemap reflection.
     HLSL::ColorCopyParams->ApplyTonemap = true;
 
-    texHDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
-    texLinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
-    texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
+    HLSL::ScreenSpaceReflection_HDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
+    HLSL::ScreenSpaceReflection_LinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::ScreenSpaceReflection_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
 
-    f4TexSize = Vec4f(
+    HLSL::ScreenSpaceReflectionParams->TexSize = Vec4f(
         (float)ltAccBufCopy->GetWidth(),
         (float)ltAccBufCopy->GetHeight(),
         1.f / (float)ltAccBufCopy->GetWidth(),
         1.f / (float)ltAccBufCopy->GetHeight()
     );
-    nTexMipCount = ltAccBufCopy->GetMipCount();
-    
-    texDitherMap = BayerMatrix.GetTextureIndex();
+    HLSL::ScreenSpaceReflectionParams->TexMipCount = ltAccBufCopy->GetMipCount();
+
+    HLSL::PostProcessing_DitherMap = BayerMatrix;
 
     Synesthesia3D::Texture* const linFullDepthBuf = ResourceMgr->GetTexture(LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer());
     linFullDepthBuf->SetAddressingMode(SAM_BORDER);
@@ -123,10 +123,10 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
          0, -sy, 0, sy,
          0,   0, 1,  0,
          0,   0, 0,  1);
-    f44ViewToRasterMat = rasterScaleMat * f44ProjMat.GetCurrentValue();
+    HLSL::ScreenSpaceReflectionParams->ViewToRasterMat = rasterScaleMat * f44ProjMat.GetCurrentValue();
 
     if(!SSR_MANUAL_MAX_STEPS)
-        fMaxSteps = ceilf(sqrtf(width * width + height * height) / fSampleStride.GetCurrentValue());
+        HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / HLSL::ScreenSpaceReflectionParams->SampleStride[0]);
 }
 
 void ScreenSpaceReflectionPass::Draw()

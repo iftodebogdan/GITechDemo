@@ -19,8 +19,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#ifndef CSMUTILS_HLSLI_
-#define CSMUTILS_HLSLI_
+#ifndef CSMUTILS_HLSLI
+#define CSMUTILS_HLSLI
 
 #include "Common.hlsli"
 
@@ -96,4 +96,4 @@ const float3 GetCascadeSpacePos(const float3 lightViewPos, const unsigned int va
 }
 #endif // HLSL
 
-#endif // CSMUTILS_HLSLI_
+#endif // CSMUTILS_HLSLI

@@ -21,6 +21,9 @@
 
 #include "stdafx.h"
 
+// This will prevent the inclusion of Shaders.h for the moment
+#define INCLUDED_FROM_APP_RESOURCES_CPP
+
 #include "AppResources.h"
 #include "ArtistParameter.h"
 #include "PBRMaterialTestPass.h"
@@ -64,7 +67,7 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define CREATE_TEXTURE_OBJECT(Name, Filepath) Texture Name(Filepath)
 #define CREATE_SHADER_OBJECT(Name, Filepath) Shader Name(Filepath)
 #define CREATE_PBR_MATERIAL(Name, FolderPath) PBRMaterial Name(FolderPath)
-#define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) namespace HLSL { EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__)); }
+#define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__));
 #define CREATE_STATIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], Width, Height, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, STATIC_RENDER_TARGET))
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
 #define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code())
@@ -74,18 +77,21 @@ vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistPara
 #define TEXTURE_2D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler2D)
 #define TEXTURE_3D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler3D)
 #define TEXTURE_CUBE_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSamplerCUBE)
-#define CBUFFER_RESOURCE(CBUFFER_NAME, CBUFFER_BODY) CREATE_SHADER_CONSTANT_OBJECT(CBUFFER_NAME##Params, CBUFFER_NAME##ConstantTable)
-#define GPU_STRUCT(structBody)
+#define CBUFFER_RESOURCE(CBUFFER_NAME, CBUFFER_BODY) \
+struct CBUFFER_NAME##ConstantTable \
+{ \
+    CBUFFER_BODY \
+}; \
+CREATE_SHADER_CONSTANT_OBJECT(CBUFFER_NAME##Params, CBUFFER_NAME##ConstantTable)
 
 ///////////////////////////////////////////////////////////
 
+// We can now include Shaders.h after setting up the above macros.
+// This will now provide shader constants declarations.
+#include "Shaders.h"
+
 namespace GITechDemoApp
 {
-    //namespace HLSL
-    //{
-        #include "Shaders.h"
-    //}
-
     //////////////////////////////////////////////////////
     // Setup access to externally declared variables    //
     //////////////////////////////////////////////////////
@@ -460,7 +466,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_OBJECT(fAmbientFactor,           float,          0.15f                   );
     CREATE_SHADER_CONSTANT_OBJECT(fIrradianceFactor,        float,          1.f                     );
     CREATE_SHADER_CONSTANT_OBJECT(fReflectionFactor,        float,          1.f                     );
-    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            BRDF::CookTorranceGGX   );
+    CREATE_SHADER_CONSTANT_OBJECT(nBRDFModel,               int,            HLSL::BRDF::CookTorranceGGX);
 
     /* Volumetric directional light parameters */
     CREATE_SHADER_CONSTANT_OBJECT(nSampleCount,             int,            32                      );

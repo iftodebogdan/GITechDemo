@@ -79,12 +79,12 @@ void SceneGeometryPass::Draw()
         {
             PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
 
-            texDiffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-            const s3dByte* const texDiffuseData = ResMgr->GetTexture(texDiffuse)->GetMipData();
+            HLSL::DepthPassAlphaTest_Diffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+            const s3dByte* const texDiffuseData = ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetMipData();
 
             // Has at least one A8R8G8B8 pixel
-            assert(ResMgr->GetTexture(texDiffuse)->GetPixelFormat() == PF_A8R8G8B8);
-            assert(ResMgr->GetTexture(texDiffuse)->GetMipSizeBytes() >= 4u);
+            assert(ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetPixelFormat() == PF_A8R8G8B8);
+            assert(ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetMipSizeBytes() >= 4u);
 
             // HACK: if the first alpha value of the texture is 0, then use alpha test shader
             if (texDiffuseData[3] == 0xFF)
@@ -130,22 +130,22 @@ void SceneGeometryPass::Draw()
         const unsigned int matTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
         const unsigned int roughnessTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
-        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || nBRDFModel == BRDF::BlinnPhong))
+        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || HLSL::BRDFParams->BRDFModel[0] == HLSL::BRDF::BlinnPhong))
         {
             RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
 
-            texDiffuse = diffuseTexIdx;
-            texNormal = normalTexIdx;
-            bHasNormalMap = (texNormal != -1) && GBUFFER_USE_NORMAL_MAPS;
+            HLSL::GBufferGeneration_Diffuse = diffuseTexIdx;
+            HLSL::GBufferGeneration_Normal = normalTexIdx;
+            HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && GBUFFER_USE_NORMAL_MAPS;
 
             // For Blinn-Phong BRDF
-            texSpec = specTexIdx;
-            bHasSpecMap = (texSpec != -1);
-            fSpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
+            HLSL::GBufferGeneration_Spec = specTexIdx;
+            HLSL::GBufferGenerationParams->HasSpecMap = (HLSL::GBufferGeneration_Spec != -1);
+            HLSL::GBufferGenerationParams->SpecIntensity = SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->fShininessStrength;
 
             // For Cook-Torrance BRDF
-            texMatType = matTexIdx;
-            texRoughness = roughnessTexIdx;
+            HLSL::GBufferGeneration_MatType = matTexIdx;
+            HLSL::GBufferGeneration_Roughness = roughnessTexIdx;
 
             GBufferGenerationShader.Enable();
             RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);

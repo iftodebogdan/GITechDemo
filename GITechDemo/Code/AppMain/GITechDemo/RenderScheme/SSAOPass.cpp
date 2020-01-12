@@ -58,8 +58,8 @@ void SSAOPass::Update(const float fDeltaTime)
     if (!RenderContext)
         return;
 
-    texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::SSAO_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
+    HLSL::SSAO_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
     if (SSAO_USE_QUARTER_RESOLUTION_BUFFER)
     {
@@ -94,7 +94,7 @@ void SSAOPass::CalculateSSAO()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::SSAOParams->HalfTexelOffset = Vec2f(
         0.5f / GBuffer.GetRenderTarget()->GetWidth(),
         0.5f / GBuffer.GetRenderTarget()->GetHeight()
         );
@@ -139,22 +139,22 @@ void SSAOPass::BlurSSAO()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        f2HalfTexelOffset = Vec2f(
+        HLSL::BloomParams->HalfTexelOffset = Vec2f(
             0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
         ResourceMgr->GetTexture(
             SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
             )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
-        texSource = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
-        f4TexSize = Vec4f(
+        HLSL::Bloom_Source = SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::BloomParams->TexSize = Vec4f(
             (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight(),
             1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
-        nKernel = SSAO_BLUR_KERNEL[i];
-        bAdjustIntensity = false;
+        HLSL::BloomParams->Kernel = SSAO_BLUR_KERNEL[i];
+        HLSL::BloomParams->AdjustIntensity = false;
 
         // Reuse the bloom shader for blurring the ambient occlusion render target
         BloomShader.Enable();

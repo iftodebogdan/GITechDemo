@@ -69,20 +69,20 @@ void LensFlarePass::Update(const float fDeltaTime)
 
     LensFlareGhostColorLUT.GetTexture()->SetAddressingMode(SAM_MIRROR);
     LensFlareGhostColorLUT.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    texGhostColorLUT = LensFlareGhostColorLUT.GetTextureIndex();
+    HLSL::SphericalLensFlareFeatures_GhostColorLUT = LensFlareGhostColorLUT.GetTextureIndex();
 
     LensFlareDirtTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
     LensFlareDirtTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-    LensFlareDirt = LensFlareDirtTexture.GetTextureIndex();
+    HLSL::LensFlareApply_Dirt = LensFlareDirtTexture.GetTextureIndex();
 
     LensFlareStarBurstTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
     LensFlareStarBurstTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-    LensFlareStarBurst = LensFlareStarBurstTexture.GetTextureIndex();
+    HLSL::LensFlareApply_StarBurst = LensFlareStarBurstTexture.GetTextureIndex();
 
-    nDownsampleFactor = 1;
-    bDepthDownsample = false;
-    bApplyBrightnessFilter = true;
-    bAdjustIntensity = false;
+    HLSL::DownsampleParams->DownsampleFactor = 1;
+    HLSL::DownsampleParams->DepthDownsample = false;
+    HLSL::DownsampleParams->ApplyBrightnessFilter = true;
+    HLSL::BloomParams->AdjustIntensity = false;
 
     // Calculate star burst matrix
     const Vec3f camX = Vec3f(
@@ -158,41 +158,41 @@ void LensFlarePass::ApplyBrightnessFilter()
 
     if (!LENS_FLARE_ANAMORPHIC)
     {
-        f2HalfTexelOffset = Vec2f(
+        HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
             0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
             0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::DownsampleParams->TexSize = Vec4f(
             (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
             (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight(),
             1.f / (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
             1.f / (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
             );
-        texSource = HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::Downsample_Source = HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0);
     }
     else
     {
-        f2HalfTexelOffset = Vec2f(
+        HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
             0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
             0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::DownsampleParams->TexSize = Vec4f(
             (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
             (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight(),
             1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
             1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
             );
-        texSource = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::Downsample_Source = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
     }
 
-    const float bkp = fBrightnessThreshold;
-    fBrightnessThreshold = LENS_FLARE_BRIGHTNESS_THRESHOLD;
+    const float bkp = HLSL::DownsampleParams->BrightnessThreshold[0];
+    HLSL::DownsampleParams->BrightnessThreshold = LENS_FLARE_BRIGHTNESS_THRESHOLD;
 
     DownsampleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     DownsampleShader.Disable();
 
-    fBrightnessThreshold = bkp;
+    HLSL::DownsampleParams->BrightnessThreshold = bkp;
 
     if (!LENS_FLARE_ANAMORPHIC)
         CurrentLensFlareBuffer[0]->Disable();
@@ -242,17 +242,17 @@ void LensFlarePass::GenerateFeatures()
 
     if (!LENS_FLARE_ANAMORPHIC)
     {
-        f2HalfTexelOffset = Vec2f(
+        HLSL::SphericalLensFlareFeaturesParams->HalfTexelOffset = Vec2f(
             0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
             0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::SphericalLensFlareFeaturesParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight(),
             1.f / (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
             );
-        texSource = CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer();
+        HLSL::SphericalLensFlareFeatures_Source = CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
         SphericalLensFlareFeaturesShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -321,18 +321,18 @@ void LensFlarePass::Blur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        f2HalfTexelOffset = Vec2f(
+        HLSL::BloomParams->HalfTexelOffset = Vec2f(
             0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
-        f4TexSize = Vec4f(
+        HLSL::BloomParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
-        texSource = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
-        nKernel = LENS_FLARE_BLUR_KERNEL[i];
+        HLSL::Bloom_Source = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
+        HLSL::BloomParams->Kernel = LENS_FLARE_BLUR_KERNEL[i];
 
         // Reuse bloom shader for Kawase blur
         BloomShader.Enable();
@@ -441,7 +441,7 @@ void LensFlarePass::UpscaleAndBlend()
     ResourceMgr->GetTexture(
         CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    LensFlareFeatures = CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer();
+    HLSL::LensFlareApply_Features = CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer();
 
     LensFlareApplyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

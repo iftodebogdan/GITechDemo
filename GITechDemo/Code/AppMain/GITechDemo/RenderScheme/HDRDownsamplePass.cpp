@@ -58,9 +58,9 @@ void HDRDownsamplePass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-    nDownsampleFactor = 4;
-    bApplyBrightnessFilter = false;
-    bDepthDownsample = false;
+    HLSL::DownsampleParams->DownsampleFactor = 4;
+    HLSL::DownsampleParams->ApplyBrightnessFilter = false;
+    HLSL::DownsampleParams->DepthDownsample = false;
 }
 
 void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSource, GITechDemoApp::RenderTarget* const pDest)
@@ -74,17 +74,17 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
     // Not necessary
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
         0.5f / pDest->GetRenderTarget()->GetWidth(),
         0.5f / pDest->GetRenderTarget()->GetHeight()
         );
-    f4TexSize = Vec4f(
+    HLSL::DownsampleParams->TexSize = Vec4f(
         (float)pSource->GetRenderTarget()->GetWidth(),
         (float)pSource->GetRenderTarget()->GetHeight(),
         1.f / (float)pSource->GetRenderTarget()->GetWidth(),
         1.f / (float)pSource->GetRenderTarget()->GetHeight()
         );
-    texSource = pSource->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::Downsample_Source = pSource->GetRenderTarget()->GetColorBuffer(0);
 
     DownsampleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

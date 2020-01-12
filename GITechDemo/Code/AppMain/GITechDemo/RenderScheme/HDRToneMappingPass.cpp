@@ -87,9 +87,9 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
-    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / fLumaAdaptSpeed);
+    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed[0]);
 
-    texLumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::LumaAdapt_LumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
 
     HLSL::HDRToneMappingParams->ExposureBias = ExposureBias;
@@ -144,31 +144,31 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
 
         if (i == 0)
         {
-            f4TexSize = Vec4f(
+            HLSL::LumaCaptureParams->TexSize = Vec4f(
                 (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
                 (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight(),
                 1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
                 1.f / (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
             );
-            texLumaInput = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
-            bInitialLumaPass = true;
-            bFinalLumaPass = false;
+            HLSL::LumaCapture_LumaInput = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
+            HLSL::LumaCaptureParams->InitialLumaPass = true;
+            HLSL::LumaCaptureParams->FinalLumaPass = false;
         }
         else
         {
-            f4TexSize = Vec4f(
+            HLSL::LumaCaptureParams->TexSize = Vec4f(
                 (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(),
                 (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight(),
                 1.f / (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetWidth(),
                 1.f / (float)AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetHeight()
             );
-            texLumaInput = AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetColorBuffer(0);
-            bInitialLumaPass = false;
+            HLSL::LumaCapture_LumaInput = AverageLuminanceBuffer[i - 1]->GetRenderTarget()->GetColorBuffer(0);
+            HLSL::LumaCaptureParams->InitialLumaPass = false;
 
             if (i == 3)
-                bFinalLumaPass = true;
+                HLSL::LumaCaptureParams->FinalLumaPass = true;
             else
-                bFinalLumaPass = false;
+                HLSL::LumaCaptureParams->FinalLumaPass = false;
         }
 
         LumaCaptureShader.Enable();
@@ -194,7 +194,7 @@ void HDRToneMappingPass::LuminanceAdaptationPass()
     AdaptedLuminance[0]->Enable();
 
     HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
-    texLumaInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::LumaAdapt_LumaInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
 
     LumaAdaptShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

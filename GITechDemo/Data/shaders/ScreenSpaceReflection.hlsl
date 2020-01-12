@@ -80,7 +80,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     float2 hitTexelCoord; float3 hitPoint; color = 0;
 
     const float depth = tex2D(ScreenSpaceReflection_LinDepthBuffer, input.TexCoord).r;
-    DEPTH_KILL(depth, PostProcessingParams.zFar * 0.999f);
+    DEPTH_KILL(depth, PostProcessingParams.ZFar * 0.999f);
 
     const float3    materialColor   = tex2D(ScreenSpaceReflection_DiffuseBuffer, input.TexCoord).rgb;
     const float2    material        = tex2D(ScreenSpaceReflection_MaterialBuffer, input.TexCoord).rg;
@@ -134,8 +134,8 @@ bool CastSSRRay(float3 rayOrigin, float3 rayDir, float jitterAmount, out float2 
 {
     // Clip ray to a near plane in 3D (doesn't have to be *the* near plane, although that would be a good idea)
     float rayLength =
-        ((rayOrigin.z + rayDir.z * ScreenSpaceReflectionParams.MaxRayDist) < PostProcessingParams.zNear) ?
-        (rayOrigin.z - PostProcessingParams.zNear) / rayDir.z :
+        ((rayOrigin.z + rayDir.z * ScreenSpaceReflectionParams.MaxRayDist) < PostProcessingParams.ZNear) ?
+        (rayOrigin.z - PostProcessingParams.ZNear) / rayDir.z :
         ScreenSpaceReflectionParams.MaxRayDist;
     float3 csEndPoint = rayDir * rayLength + rayOrigin;
 

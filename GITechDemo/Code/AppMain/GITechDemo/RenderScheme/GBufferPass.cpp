@@ -78,15 +78,15 @@ void GBufferPass::Update(const float fDeltaTime)
     // Kudos to VladC of FUN labs for pointing this out!
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 
-    texSource = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    f4TexSize = Vec4f(
+    HLSL::DepthCopy_Source = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::DownsampleParams->TexSize = Vec4f(
         (float)GBuffer.GetRenderTarget()->GetWidth(),
         (float)GBuffer.GetRenderTarget()->GetHeight(),
         1.f / (float)GBuffer.GetRenderTarget()->GetWidth(),
         1.f / (float)GBuffer.GetRenderTarget()->GetHeight()
     );
-    bDepthDownsample = true;
-    f2DepthHalfTexelOffset = Vec2f(
+    HLSL::DownsampleParams->DepthDownsample = true;
+    HLSL::PostProcessingParams->DepthHalfTexelOffset = Vec2f(
         0.5f / (float)GBuffer.GetRenderTarget()->GetWidth(),
         0.5f / (float)GBuffer.GetRenderTarget()->GetHeight()
     );
@@ -99,7 +99,7 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
     DIFFUSE_ANISOTROPY = Math::clamp(DIFFUSE_ANISOTROPY, 1, (int)MAX_ANISOTROPY);
-    nBRDFModel = gmtl::Math::clamp(nBRDFModel.GetCurrentValue(), (int)BRDF::BlinnPhong, (int)BRDF::BRDFModelCount - 1);
+    HLSL::BRDFParams->BRDFModel = gmtl::Math::clamp((int)HLSL::BRDFParams->BRDFModel[0], (int)HLSL::BRDF::BlinnPhong, (int)HLSL::BRDF::BRDFModelCount - 1);
 }
 
 void GBufferPass::Draw()

@@ -39,7 +39,6 @@ namespace GITechDemoApp
     bool DIRECTIONAL_LIGHT_ENABLED = true;
 
     extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
-    extern const unsigned int PCF_MAX_SAMPLE_COUNT;
     extern bool SSR_ENABLED;
 }
 
@@ -54,11 +53,9 @@ DirectionalLightPass::~DirectionalLightPass()
 
 void DirectionalLightPass::AllocateResources()
 {
-    f2PoissonDisk = new Vec2f[PCF_MAX_SAMPLE_COUNT];
-
     // Generate Poisson-disk sampling pattern
     std::vector<sPoint> poisson;
-    float minDist = sqrt((float)PCF_MAX_SAMPLE_COUNT) / (float)PCF_MAX_SAMPLE_COUNT * 0.8f;
+    float minDist = sqrt((float)HLSL::Utils::PoissonDiskSampleCount) / (float)HLSL::Utils::PoissonDiskSampleCount * 0.8f;
     float oneOverMinDist = 1.f / minDist;
     const float sqrt2 = sqrt(2.f);
     do
@@ -67,41 +64,39 @@ void DirectionalLightPass::AllocateResources()
             GeneratePoissonPoints(
                 minDist,
                 30,
-                PCF_MAX_SAMPLE_COUNT
+                HLSL::Utils::PoissonDiskSampleCount
             );
-    } while (poisson.size() != PCF_MAX_SAMPLE_COUNT);
+    } while (poisson.size() != HLSL::Utils::PoissonDiskSampleCount);
 
     // Normalize the kernel
-    for (unsigned int i = 0; i < PCF_MAX_SAMPLE_COUNT; i++)
+    for (unsigned int i = 0; i < HLSL::Utils::PoissonDiskSampleCount; i++)
     {
-        f2PoissonDisk[i][0] = poisson[i].x * oneOverMinDist * sqrt2;
-        f2PoissonDisk[i][1] = poisson[i].y * oneOverMinDist * sqrt2;
+        HLSL::UtilsParams->PoissonDisk[i][0] = poisson[i].x * oneOverMinDist * sqrt2;
+        HLSL::UtilsParams->PoissonDisk[i][1] = poisson[i].y * oneOverMinDist * sqrt2;
     }
 }
 
 void DirectionalLightPass::ReleaseResources()
 {
-    if (f2PoissonDisk)
-        delete[] f2PoissonDisk;
 }
 
 void DirectionalLightPass::Update(const float fDeltaTime)
 {
-    f2HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
-    texDiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
-    texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    texMaterialBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(2);
-    texShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
-    f2OneOverShadowMapSize = Vec2f(1.f / (float)SHADOW_MAP_SIZE[0], 1.f / (float)SHADOW_MAP_SIZE[1]);
+    HLSL::DirectionalLightParams->HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
+    HLSL::DirectionalLight_DiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::DirectionalLight_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
+    HLSL::DirectionalLight_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::DirectionalLight_MaterialBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(2);
+    HLSL::DirectionalLight_ShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
+    HLSL::DirectionalLightParams->OneOverShadowMapSize = Vec2f(1.f / (float)SHADOW_MAP_SIZE[0], 1.f / (float)SHADOW_MAP_SIZE[1]);
 
     IrradianceTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     IrradianceTexture.GetTexture()->SetSRGBEnabled(true);
     EnvironmentTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     EnvironmentTexture.GetTexture()->SetSRGBEnabled(true);
 
-    texIrradianceMap = IrradianceTexture.GetTextureIndex();
-    texEnvMap = EnvironmentTexture.GetTextureIndex();
+    HLSL::BRDF_IrradianceMap = IrradianceTexture;
+    HLSL::BRDF_EnvMap = EnvironmentTexture;
 }
 
 void DirectionalLightPass::Draw()
@@ -115,13 +110,13 @@ void DirectionalLightPass::Draw()
 
     // Disable environment map reflections if
     // screen space reflections are active.
-    float reflectionFactorBkp = fReflectionFactor;
+    float reflectionFactorBkp = HLSL::BRDFParams->ReflectionFactor[0];
     if (SSR_ENABLED)
-        fReflectionFactor = 0.f;
+        HLSL::BRDFParams->ReflectionFactor = 0.f;
 
     DirectionalLightShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     DirectionalLightShader.Disable();
 
-    fReflectionFactor = reflectionFactorBkp;
+    HLSL::BRDFParams->ReflectionFactor = reflectionFactorBkp;
 }

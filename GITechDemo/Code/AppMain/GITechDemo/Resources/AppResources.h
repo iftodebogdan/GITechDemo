@@ -31,7 +31,7 @@
 #define CREATE_MODEL_HANDLE(NAME) extern GITechDemoApp::Model NAME
 #define CREATE_TEXTURE_HANDLE(NAME) extern GITechDemoApp::Texture NAME
 #define CREATE_SHADER_HANDLE(NAME) extern GITechDemoApp::Shader NAME
-#define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) namespace HLSL { extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME; }
+#define CREATE_SHADER_CONSTANT_HANDLE(NAME, TYPE) extern GITechDemoApp::ShaderConstantTemplate<TYPE> NAME;
 #define CREATE_RENDER_TARGET_HANDLE(NAME) extern GITechDemoApp::RenderTarget NAME
 #define SWAP_RENDER_TARGET_HANDLES(RT1, RT2) { GITechDemoApp::RenderTarget* const TEMP = RT1; RT1 = RT2; RT2 = TEMP; }
 
@@ -44,16 +44,19 @@ struct CBUFFER_NAME##ConstantTable \
 { \
     CBUFFER_BODY \
 }; \
-CREATE_SHADER_CONSTANT_HANDLE(CBUFFER_NAME##Params, GITechDemoApp::CBUFFER_NAME##ConstantTable)
+CREATE_SHADER_CONSTANT_HANDLE(CBUFFER_NAME##Params, CBUFFER_NAME##ConstantTable)
+
+// Only include Shaders.h in translation units other than AppResources.cpp or we won't be able
+// to repurpose the XXX_RESOURCE() macros above to actually declare shader constant and textures.
+// This will provide shader constants definitions.
+#ifndef INCLUDED_FROM_APP_RESOURCES_CPP
+#include "Shaders.h"
+#endif // INCLUDED_SHADERS_H
+
 ///////////////////////////////////////////////////////////
 
 namespace GITechDemoApp
 {
-    //namespace HLSL
-    //{
-        #include "Shaders.h"
-    //}
-
     using namespace Synesthesia3D;
 
     // Shaders
@@ -184,7 +187,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fFrameTime,               float           );
     CREATE_SHADER_CONSTANT_HANDLE(fZNear,                   float           );
     CREATE_SHADER_CONSTANT_HANDLE(fZFar,                    float           );
-
+    /*
     //  - Multiple appearances
     CREATE_SHADER_CONSTANT_HANDLE(f2HalfTexelOffset,        Vec2f           );
     CREATE_SHADER_CONSTANT_HANDLE(f4TexSize,                Vec4f           );
@@ -345,7 +348,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(LensFlareFeatures, s3dSampler2D);
     CREATE_SHADER_CONSTANT_HANDLE(LensFlareDirt, s3dSampler2D);
     CREATE_SHADER_CONSTANT_HANDLE(LensFlareStarBurst, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(LensFlareApplyParams, LensFlareApplyConstantTable);
+    //CREATE_SHADER_CONSTANT_HANDLE(LensFlareApplyParams, LensFlareApplyConstantTable);
 
     //  - BilateralBlur.hlsl
     CREATE_SHADER_CONSTANT_HANDLE(f2BlurDir,                Vec2f           );
@@ -363,61 +366,9 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(f44ViewToRasterMat, Matrix44f);
     CREATE_SHADER_CONSTANT_HANDLE(bUseDither, bool);
     CREATE_SHADER_CONSTANT_HANDLE(fReflectionIntensity, float);
-
-    /*
-    //  - AnamorphicLensFlareBlur.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurSource, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareBlurParams, AnamorphicLensFlareBlurConstantTable);
-
-    //  - AnamorphicLensFlareFeatures.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesSource, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(AnamorphicLensFlareFeaturesParams, AnamorphicLensFlareFeaturesConstantTable);
-
-    //  - HDRToneMapping.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingSourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingAvgLumaTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingColorCorrectionTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(HDRToneMappingParams, HDRToneMappingConstantTable);
-
-    //  - FXAA.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(FXAASourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(FXAADepthBuffer, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(FXAAParams, FXAAConstantTable);
-
-    //  - ColorCopy.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(ColorCopySourceTexture, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(ColorCopyParams, ColorCopyConstantTable);
-
-    //  - UI.hlsl
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture1D, s3dSampler1D);
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture2D, s3dSampler2D);
-    CREATE_SHADER_CONSTANT_HANDLE(UITexture3D, s3dSampler3D);
-    CREATE_SHADER_CONSTANT_HANDLE(UITextureCube, s3dSamplerCUBE);
-    CREATE_SHADER_CONSTANT_HANDLE(UIParams, UIConstantTable);
-    //-------------------------------------------------------
     */
-    #define STRINGIZE_HELPER(x) #x
-    #define STRINGIZE(x) STRINGIZE_HELPER(x)
-    #define WARNING(desc) message(__FILE__ "(" STRINGIZE(__LINE__) ") : Warning: " #desc)
-    #pragma WARNING("Remove this when done refactoring!")
-    using namespace HLSL;
-
     // Used for fullscreen effects, post-processing, etc.
     extern VertexBuffer*    FullScreenTri;
-
-    #pragma WARNING("Also remove this")
-    /*
-    // Used to set the nBRDFModel shader constant
-    enum BRDFModel
-    {
-        BLINN_PHONG = 0,
-        COOK_TORRANCE_GGX,
-        COOK_TORRANCE_BECKMANN,
-        ASHIKHMIN_SHIRLEY,
-        WARD,
-        BRDF_MODEL_MAX
-    };
-    */
 }
 
 ///////////////////////////////////////////////////////////
@@ -432,7 +383,6 @@ namespace GITechDemoApp
 #undef TEXTURE_3D_RESOURCE
 #undef TEXTURE_CUBE_RESOURCE
 #undef CBUFFER_RESOURCE
-#undef GPU_STRUCT
 ///////////////////////////////////////////////////////////
 
 #endif // APP_RESOURCES_H_

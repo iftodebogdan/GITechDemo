@@ -59,8 +59,6 @@ DirectionalIndirectLightPass::~DirectionalIndirectLightPass()
 
 void DirectionalIndirectLightPass::AllocateResources()
 {
-    f3RSMKernel = new Vec3f[RSM_NUM_SAMPLES];
-
     // Generate Poisson-disk sampling pattern
     std::vector<sPoint> poisson;
     float minDist = sqrt((float)RSM_NUM_SAMPLES) / (float)RSM_NUM_SAMPLES * 0.7f;
@@ -78,19 +76,17 @@ void DirectionalIndirectLightPass::AllocateResources()
     for (unsigned int i = 0; i < RSM_NUM_SAMPLES; i++)
     {
         // Increase sample density towards the outside of the kernel
-        f3RSMKernel[i][0] = sqrt(abs(poisson[i].x - 0.5f) * 2.f) * ((poisson[i].x < 0.5f) ? -1.f : 1.f);
-        f3RSMKernel[i][1] = sqrt(abs(poisson[i].y - 0.5f) * 2.f) * ((poisson[i].y < 0.5f) ? -1.f : 1.f);
+        HLSL::RSMCommonParams->KernelUpscalePass[i][0] = sqrt(abs(poisson[i].x - 0.5f) * 2.f) * ((poisson[i].x < 0.5f) ? -1.f : 1.f);
+        HLSL::RSMCommonParams->KernelUpscalePass[i][1] = sqrt(abs(poisson[i].y - 0.5f) * 2.f) * ((poisson[i].y < 0.5f) ? -1.f : 1.f);
 
         // Linear weights combined with non-linear sample density has proven
         // to provide very good quality with very little jitter / noise
-        f3RSMKernel[i][2] = length(Vec2f(poisson[i].x - 0.5f, poisson[i].y - 0.5f)) * 2.f;
+        HLSL::RSMCommonParams->KernelUpscalePass[i][2] = length(Vec2f(poisson[i].x - 0.5f, poisson[i].y - 0.5f)) * 2.f;
     }
 }
 
 void DirectionalIndirectLightPass::ReleaseResources()
 {
-    if (f3RSMKernel)
-        delete[] f3RSMKernel;
 }
 
 void DirectionalIndirectLightPass::Update(const float fDeltaTime)
@@ -103,10 +99,10 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
     if (!ResourceMgr)
         return;
 
-    texRSMFluxBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(0);
-    texRSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);
-    texRSMDepthBuffer = RSMBuffer.GetRenderTarget()->GetDepthBuffer();
-    texNormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(3); // use vertex normals to reduce noise
+    HLSL::RSMCommon_RSMFluxBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::RSMCommon_RSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);
+    HLSL::RSMCommon_RSMDepthBuffer = RSMBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::RSMCommon_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(3); // use vertex normals to reduce noise
 }
 
 void DirectionalIndirectLightPass::Draw()
@@ -130,15 +126,18 @@ void DirectionalIndirectLightPass::Draw()
         RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
     }
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::RSMApplyParams->HalfTexelOffset = Vec2f(
         0.5f / GBuffer.GetRenderTarget()->GetWidth(),
         0.5f / GBuffer.GetRenderTarget()->GetHeight()
     );
 
-    Vec3f* const f3RSMKernelBkp = f3RSMKernel;
-
-    for (unsigned int i = 0; i < RSM_NUM_PASSES; i++, f3RSMKernel += RSM_SAMPLES_PER_PASS)
+    for (unsigned int i = 0; i < RSM_NUM_PASSES; i++)
     {
+        for (unsigned int j = 0; j < HLSL::RSM::SamplesPerPass; j++)
+        {
+            HLSL::RSMCommonParams->KernelApplyPass[j] = HLSL::RSMCommonParams->KernelUpscalePass[j + i * HLSL::RSM::SamplesPerPass];
+        }
+
 #if ENABLE_PROFILE_MARKERS
         char marker[16];
         sprintf_s(marker, "Pass %d", i);
@@ -151,8 +150,6 @@ void DirectionalIndirectLightPass::Draw()
 
         POP_PROFILE_MARKER();
     }
-
-    f3RSMKernel = f3RSMKernelBkp;
 
     POP_PROFILE_MARKER();
 
@@ -184,7 +181,7 @@ void DirectionalIndirectLightPass::Blur()
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    texDepthBuffer = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::BilateralBlur_DepthBuffer = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
 
     PUSH_PROFILE_MARKER("Horizontal");
 
@@ -192,8 +189,8 @@ void DirectionalIndirectLightPass::Blur()
 
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    f2HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight());
-    f4TexSize = Vec4f(
+    HLSL::BilateralBlurParams->HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight());
+    HLSL::BilateralBlurParams->TexSize = Vec4f(
         (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
         1.f / (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
@@ -207,8 +204,8 @@ void DirectionalIndirectLightPass::Blur()
         IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
     )->SetAddressingMode(SAM_CLAMP);
 
-    texSource = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
-    f2BlurDir = Vec2f(1.f, 0.f);
+    HLSL::BilateralBlur_Source = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::BilateralBlurParams->BlurDir = Vec2f(1.f, 0.f);
 
     BilateralBlurShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -222,8 +219,8 @@ void DirectionalIndirectLightPass::Blur()
 
     IndirectLightAccumulationBuffer[0]->Enable();
 
-    f2HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight());
-    f4TexSize = Vec4f(
+    HLSL::BilateralBlurParams->HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight());
+    HLSL::BilateralBlurParams->TexSize = Vec4f(
         (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
         (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight(),
         1.f / (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
@@ -237,8 +234,8 @@ void DirectionalIndirectLightPass::Blur()
         IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
     )->SetAddressingMode(SAM_CLAMP);
 
-    texSource = IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
-    f2BlurDir = Vec2f(0.f, 1.f);
+    HLSL::BilateralBlur_Source = IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::BilateralBlurParams->BlurDir = Vec2f(0.f, 1.f);
 
     BilateralBlurShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -268,7 +265,7 @@ void DirectionalIndirectLightPass::Upscale()
 
     PUSH_PROFILE_MARKER("Upscale");
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::RSMUpscaleParams->HalfTexelOffset = Vec2f(
         0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
@@ -280,8 +277,8 @@ void DirectionalIndirectLightPass::Upscale()
         IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
     )->SetAddressingMode(SAM_CLAMP);
 
-    texDepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    texSource = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::RSMUpscale_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::RSMUpscale_Source = IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
 
     RSMUpscaleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

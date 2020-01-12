@@ -39,7 +39,7 @@ DepthDownsamplePass::~DepthDownsamplePass()
 
 void DepthDownsamplePass::Update(const float fDeltaTime)
 {
-    bDepthDownsample = true;
+    HLSL::DownsampleParams->DepthDownsample = true;
 }
 
 void DepthDownsamplePass::Draw()
@@ -52,24 +52,24 @@ void DepthDownsamplePass::Draw()
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    bReconstructDepth = false;
-    nDownsampleFactor = 4;
+    HLSL::DownsampleParams->ReconstructDepth = false;
+    HLSL::DownsampleParams->DownsampleFactor = 4;
     DownsampleShader.Enable();
     HyperbolicQuarterDepthBuffer.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     HyperbolicQuarterDepthBuffer.Disable();
     DownsampleShader.Disable();
 
-    bReconstructDepth = true;
-    nDownsampleFactor = 1;
+    HLSL::DownsampleParams->ReconstructDepth = true;
+    HLSL::DownsampleParams->DownsampleFactor = 1;
     DownsampleShader.Enable();
     LinearFullDepthBuffer.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     LinearFullDepthBuffer.Disable();
     DownsampleShader.Disable();
 
-    bReconstructDepth = true;
-    nDownsampleFactor = 4;
+    HLSL::DownsampleParams->ReconstructDepth = true;
+    HLSL::DownsampleParams->DownsampleFactor = 4;
     DownsampleShader.Enable();
     LinearQuarterDepthBuffer.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

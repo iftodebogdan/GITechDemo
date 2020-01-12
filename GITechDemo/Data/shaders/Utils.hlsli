@@ -24,6 +24,11 @@
 
 #include "Common.hlsli"
 
+struct Utils
+{
+    static const unsigned int PoissonDiskSampleCount = 16;
+};
+
 CBUFFER_RESOURCE(Utils,
     GPU_float2 PoissonDisk[16];
 );

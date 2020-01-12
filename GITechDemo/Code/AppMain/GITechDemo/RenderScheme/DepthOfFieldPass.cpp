@@ -74,14 +74,14 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
         DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
     )->SetAddressingMode(SAM_CLAMP);
 
-    texDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
+    HLSL::BokehDoF_DepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
 
     ResourceMgr->GetTexture(AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
     SWAP_RENDER_TARGET_HANDLES(AutofocusBuffer[0], AutofocusBuffer[1]);
 
-    texTargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
+    HLSL::BokehDoF_TargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
@@ -94,27 +94,27 @@ void DepthOfFieldPass::AutofocusPass()
     if (!RenderContext)
         return;
 
-    if (!bAutofocus)
+    if (!HLSL::BokehDoFParams->Autofocus[0])
         return;
 
     PUSH_PROFILE_MARKER("Autofocus pass");
 
     AutofocusBuffer[0]->Enable();
 
-    f2HalfTexelOffset = Vec2f(0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetHeight());
-    texLumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
-    texLumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::LumaAdaptParams->HalfTexelOffset = Vec2f(0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetHeight());
+    HLSL::LumaAdapt_LumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::LumaAdapt_LumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-    const float bkp = fLumaAdaptSpeed;
-    fLumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
-    fFrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / fLumaAdaptSpeed);
+    const float bkp = HLSL::LumaAdaptParams->LumaAdaptSpeed[0];
+    HLSL::LumaAdaptParams->LumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
+    fFrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed[0]);
 
     // Reuse the luminance animation shader
     LumaAdaptShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     LumaAdaptShader.Disable();
 
-    fLumaAdaptSpeed = bkp;
+    HLSL::LumaAdaptParams->LumaAdaptSpeed = bkp;
 
     AutofocusBuffer[0]->Disable();
 
@@ -136,17 +136,17 @@ void DepthOfFieldPass::AccumulateDoFEffect()
     const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::BokehDoFParams->HalfTexelOffset = Vec2f(
         0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
         0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
         );
-    f4TexSize = Vec4f(
+    HLSL::BokehDoFParams->TexSize = Vec4f(
         (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
         (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight(),
         1.f / (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
         1.f / (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
     );
-    texSource = DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::BokehDoF_Source = DepthOfFieldBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
 
     BokehDofShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -168,25 +168,25 @@ void DepthOfFieldPass::CalculateBlurFactor()
     PUSH_PROFILE_MARKER("Calculate Blur");
 
     // Set aperture size to 0, so that the shader only calculates CoC values
-    float bkp = fApertureSize;
-    fApertureSize = 0.f;
+    float bkp = HLSL::BokehDoFParams->ApertureSize[0];
+    HLSL::BokehDoFParams->ApertureSize = 0.f;
 
     DepthOfFieldBuffer[0]->Enable();
 
     const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    f2HalfTexelOffset = Vec2f(
+    HLSL::BokehDoFParams->HalfTexelOffset = Vec2f(
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
     );
-    f4TexSize = Vec4f(
+    HLSL::BokehDoFParams->TexSize = Vec4f(
         (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
         1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
     );
-    texSource = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::BokehDoF_Source = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
 
     BokehDofShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -197,7 +197,7 @@ void DepthOfFieldPass::CalculateBlurFactor()
     DepthOfFieldBuffer[0]->Disable();
 
     // Reset aperture size
-    fApertureSize = bkp;
+    HLSL::BokehDoFParams->ApertureSize = bkp;
 
     POP_PROFILE_MARKER();
 }
@@ -221,13 +221,6 @@ void DepthOfFieldPass::ApplyDoF()
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
-
-    f4TexSize = Vec4f(
-        (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-        (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
-        1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-        1.f / (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-    );
 
     HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
         0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
@@ -257,16 +250,16 @@ void DepthOfFieldPass::Draw()
 
     CalculateBlurFactor();
 
-    float bkp = fApertureSize;
+    float bkp = HLSL::BokehDoFParams->ApertureSize[0];
     for (int i = 0; i < DOF_NUM_PASSES; i++)
     {
         SWAP_RENDER_TARGET_HANDLES(DepthOfFieldBuffer[0], DepthOfFieldBuffer[1]);
         AccumulateDoFEffect();
         
         // Vary aperture size per pass so as to have a better sample distribution
-        fApertureSize = fApertureSize - bkp / (float)DOF_NUM_PASSES;
+        HLSL::BokehDoFParams->ApertureSize = HLSL::BokehDoFParams->ApertureSize[0] - bkp / (float)DOF_NUM_PASSES;
     }
-    fApertureSize = bkp;
+    HLSL::BokehDoFParams->ApertureSize = bkp;
 
     ApplyDoF();
 }
