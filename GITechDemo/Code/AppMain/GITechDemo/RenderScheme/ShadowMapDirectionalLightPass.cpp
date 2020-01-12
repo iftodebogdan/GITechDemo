@@ -147,15 +147,17 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     Vec3f xAxis = makeNormal(makeCross(upVec, zAxis));
     Vec3f yAxis = makeCross(zAxis, xAxis);
     upVec = yAxis;
-    ((Matrix44f&)f44LightViewMat).set(
+    HLSL::FrameParams->DirectionalLightViewMat.set(
         xAxis[0], xAxis[1], xAxis[2], 0.f,
         yAxis[0], yAxis[1], yAxis[2], 0.f,
         zAxis[0], zAxis[1], zAxis[2], 0.f,
         0.f, 0.f, 0.f, 1.f
         );
-    HLSL::RSMCaptureParams->LightWorldViewMat = f44LightViewMat * f44WorldMat;
-    invertFull(HLSL::DirectionalLightVolumeParams->InvLightViewMat, (Matrix44f&)f44LightViewMat);
-    f44ScreenToLightViewMat = f44LightViewMat * f44InvViewProjMat;
+    HLSL::RSMCaptureParams->LightWorldViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::FrameParams->WorldMat;
+    invertFull(HLSL::DirectionalLightVolumeParams->InvLightViewMat, HLSL::FrameParams->DirectionalLightViewMat);
+    HLSL::DirectionalLightParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
+    HLSL::DirectionalLightVolumeParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
+    HLSL::RSMCommonParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
 
     // Calculate the projection matrices for all shadow map cascades
     // Start with converting the scene AABB to a light view space OBB
@@ -208,20 +210,20 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         Math::lerp(partitionNear[2],
             CASCADE_SPLIT_FACTOR,
-            fZNear + ((float)cascade / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - fZNear),
-            fZNear * powf(CASCADE_MAX_VIEW_DEPTH / fZNear, (float)cascade / NUM_CASCADES)
+            HLSL::PostProcessingParams->ZNear[0] + ((float)cascade / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - HLSL::PostProcessingParams->ZNear[0]),
+            HLSL::PostProcessingParams->ZNear[0] * powf(CASCADE_MAX_VIEW_DEPTH / HLSL::PostProcessingParams->ZNear[0], (float)cascade / NUM_CASCADES)
             );
 
         Math::lerp(partitionFar[2],
             CASCADE_SPLIT_FACTOR,
-            fZNear + (((float)cascade + 1.f) / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - fZNear),
-            fZNear * powf(CASCADE_MAX_VIEW_DEPTH / fZNear, ((float)cascade + 1.f) / NUM_CASCADES)
+            HLSL::PostProcessingParams->ZNear[0] + (((float)cascade + 1.f) / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - HLSL::PostProcessingParams->ZNear[0]),
+            HLSL::PostProcessingParams->ZNear[0] * powf(CASCADE_MAX_VIEW_DEPTH / HLSL::PostProcessingParams->ZNear[0], ((float)cascade + 1.f) / NUM_CASCADES)
             );
 
         // Calculate the partition's depth in projective space (viewer camera, i.e. perspective projection)
-        partitionNear = f44ProjMat * partitionNear;
+        partitionNear = HLSL::FrameParams->ProjMat * partitionNear;
         partitionNear /= partitionNear[3]; // w-divide
-        partitionFar = f44ProjMat * partitionFar;
+        partitionFar = HLSL::FrameParams->ProjMat * partitionFar;
         partitionFar /= partitionFar[3]; // w-divide
 
         for (unsigned int vert = 0; vert < 8; vert++)
@@ -237,10 +239,10 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
             // then apply the directional light camera's view matrix in order to
             // obtain the light view space coordinates of the partitioned view frustum.
             // This is the light view space OBB of the current view frustum partition.
-            Vec4f viewFrustumVertPreW = f44InvViewProjMat * partitionVert;
+            Vec4f viewFrustumVertPreW = HLSL::MotionBlurParams->InvViewProjMat * partitionVert;
             Vec4f viewFrustumVertPostW = viewFrustumVertPreW / viewFrustumVertPreW[3];
             Vec3f wsFrustumVert = Vec3f(viewFrustumVertPostW[0], viewFrustumVertPostW[1], viewFrustumVertPostW[2]);
-            Vec3f lsFrustumVerts = f44LightViewMat * wsFrustumVert;
+            Vec3f lsFrustumVerts = HLSL::FrameParams->DirectionalLightViewMat * wsFrustumVert;
 
             // Calculate a light view space AABB from the light view space OBB of this view frustum partition.
             // In other words, this light view space AABB is the view frustum (light view space)
@@ -293,8 +295,8 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         HLSL::CSMParams->CascadeBoundsMax[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMax[0], ViewFrustumPartitionLightSpaceAABB.mMax[1]);
 
         // Calculate the current shadow map cascade's corresponding composite matrices
-        f44LightViewProjMat[cascade] = HLSL::CSMParams->CascadeProjMat[cascade] * f44LightViewMat;
-        f44LightWorldViewProjMat[cascade] = f44LightViewProjMat[cascade] * f44WorldMat;
+        HLSL::FrameParams->DirectionalLightViewProjMat[cascade] = HLSL::CSMParams->CascadeProjMat[cascade] * HLSL::FrameParams->DirectionalLightViewMat;
+        HLSL::FrameParams->DirectionalLightWorldViewProjMat[cascade] = HLSL::FrameParams->DirectionalLightViewProjMat[cascade] * HLSL::FrameParams->WorldMat;
     }
 }
 
@@ -337,7 +339,7 @@ void ShadowMapDirectionalLightPass::Draw()
         RenderContext->GetRenderStateManager()->SetDepthBias(DEPTH_BIAS[cascade]);
         RenderContext->GetRenderStateManager()->SetSlopeScaledDepthBias(SLOPE_SCALED_DEPTH_BIAS[cascade]);
 
-        f44WorldViewProjMat = f44LightWorldViewProjMat[cascade];
+        HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightWorldViewProjMat[cascade];
 
         DepthPassShader.Enable();
 
@@ -363,7 +365,7 @@ void ShadowMapDirectionalLightPass::Draw()
 
                 PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
 
-                f44WorldViewProjMat = f44LightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
+                HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
 
                 DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
 
@@ -391,9 +393,6 @@ void ShadowMapDirectionalLightPass::Draw()
 
 void ShadowMapDirectionalLightPass::AllocateResources()
 {
-    f44LightViewProjMat = new Matrix44f[NUM_CASCADES];
-    f44LightWorldViewProjMat = new Matrix44f[NUM_CASCADES];
-
     // RenderPass::AllocateResources() is called from multiple threads along with the
     // various RenderResource::Init() calls. As such, any RenderResource type that is
     // being modified here has to be locked for modification to avoid race conditions.
@@ -404,6 +403,4 @@ void ShadowMapDirectionalLightPass::AllocateResources()
 
 void ShadowMapDirectionalLightPass::ReleaseResources()
 {
-    delete[] f44LightViewProjMat;
-    delete[] f44LightWorldViewProjMat;
 }

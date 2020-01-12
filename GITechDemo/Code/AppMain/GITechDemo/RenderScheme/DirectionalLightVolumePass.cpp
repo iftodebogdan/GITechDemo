@@ -63,7 +63,7 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     else
         VolumetricLightAccumulationBuffer = VolumetricLightFullBuffer;
 
-    Vec4f v4CamPosLightVS = f44ScreenToLightViewMat * Vec4f(0.f, 0.f, 0.f, 1.f);
+    Vec4f v4CamPosLightVS = HLSL::DirectionalLightParams->ScreenToLightViewMat * Vec4f(0.f, 0.f, 0.f, 1.f);
     v4CamPosLightVS /= v4CamPosLightVS[3];
     HLSL::DirectionalLightVolumeParams->CameraPositionLightVS = Vec3f(v4CamPosLightVS[0], v4CamPosLightVS[1], v4CamPosLightVS[2]);
     HLSL::DirectionalLightVolumeParams->RaymarchDistanceLimit = CASCADE_MAX_VIEW_DEPTH;

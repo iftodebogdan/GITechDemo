@@ -86,14 +86,14 @@ void LensFlarePass::Update(const float fDeltaTime)
 
     // Calculate star burst matrix
     const Vec3f camX = Vec3f(
-        f44ViewMat.GetCurrentValue()[0][0],
-        f44ViewMat.GetCurrentValue()[0][1],
-        f44ViewMat.GetCurrentValue()[0][2]);
+        HLSL::BRDFParams->ViewMat[0][0],
+        HLSL::BRDFParams->ViewMat[0][1],
+        HLSL::BRDFParams->ViewMat[0][2]);
     
     const Vec3f camZ = Vec3f(
-        f44ViewMat.GetCurrentValue()[1][0],
-        f44ViewMat.GetCurrentValue()[1][1],
-        f44ViewMat.GetCurrentValue()[1][2]);
+        HLSL::BRDFParams->ViewMat[1][0],
+        HLSL::BRDFParams->ViewMat[1][1],
+        HLSL::BRDFParams->ViewMat[1][2]);
     
     const float camRot = dot(camX, Vec3f(0.f, 0.f, 1.f)) + dot(camZ, Vec3f(0.f, 1.f, 0.f));
 

@@ -192,6 +192,8 @@ bool GITechDemo::Init(void* hWnd)
     m_bLastFrameBorderless = pFW->IsBorderlessWindow();
     m_bLastFrameVSync = RenderContext->GetVSyncStatus();
 
+    HLSL::FrameParams->ViewProjMat = MAT_IDENTITY44F;
+
     return true;
 }
 
@@ -675,31 +677,35 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Precalculate some parts of the equation for reconstructing
     // linear depth from hyperbolic depth
-    HLSL::PostProcessingParams->LinearDepthEquation = Vec2f(fZNear * fZFar / (fZNear - fZFar), fZFar / (fZFar - fZNear));
+    HLSL::PostProcessingParams->LinearDepthEquation = Vec2f(
+        HLSL::PostProcessingParams->ZNear[0] * HLSL::PostProcessingParams->ZFar[0] / (HLSL::PostProcessingParams->ZNear[0] - HLSL::PostProcessingParams->ZFar[0]),
+        HLSL::PostProcessingParams->ZFar[0] / (HLSL::PostProcessingParams->ZFar[0] - HLSL::PostProcessingParams->ZNear[0]));
 
     // Calculate world matrix
-    f44WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
+    HLSL::FrameParams->WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
 
     // Calculate view matrix
-    f44ViewMat = m_tCamera.mRot * makeTrans(m_tCamera.vPos, Type2Type<Matrix44f>());
+    HLSL::BRDFParams->ViewMat = m_tCamera.mRot * makeTrans(m_tCamera.vPos, Type2Type<Matrix44f>());
 
     // Calculate projection matrix
     if(CAMERA_INFINITE_PROJ)
-        RenderContext->CreateInfinitePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear);
+        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear[0]);
     else
-        RenderContext->CreatePerspectiveMatrix(f44ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], fZNear, fZFar);
-    gmtl::invertFull((Matrix44f&)f44InvProjMat, (Matrix44f&)f44ProjMat);
+        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear[0], HLSL::PostProcessingParams->ZFar[0]);
+    gmtl::invertFull(HLSL::DirectionalLightParams->InvProjMat, HLSL::FrameParams->ProjMat);
+    gmtl::invertFull(HLSL::ScreenSpaceReflectionParams->InvProjMat, HLSL::FrameParams->ProjMat);
+    gmtl::invertFull(HLSL::SSAOParams->InvProjMat, HLSL::FrameParams->ProjMat);
 
     // Calculate some composite matrices
-    gmtl::invertFull((Matrix44f&)f44InvViewMat, (Matrix44f&)f44ViewMat);
-    HLSL::MotionBlurParams->PrevViewProjMat = f44ViewProjMat; // View-projection matrix from last frame
-    f44ViewProjMat = f44ProjMat * f44ViewMat;
-    f44InvViewProjMat = f44InvViewMat * f44InvProjMat;
+    gmtl::invertFull(HLSL::BRDFParams->InvViewMat, HLSL::BRDFParams->ViewMat);
+    HLSL::MotionBlurParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat; // View-projection matrix from last frame
+    HLSL::FrameParams->ViewProjMat = HLSL::FrameParams->ProjMat * HLSL::BRDFParams->ViewMat;
+    HLSL::MotionBlurParams->InvViewProjMat = HLSL::BRDFParams->InvViewMat * HLSL::DirectionalLightParams->InvProjMat;
 
     // For the first frame, set the last frame's view-projection matrix
     // to the current frame's view-projection matrix
     if (HLSL::MotionBlurParams->PrevViewProjMat == MAT_IDENTITY44F)
-        HLSL::MotionBlurParams->PrevViewProjMat = f44ViewProjMat;
+        HLSL::MotionBlurParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat;
 }
 
 void GITechDemo::UpdateUIFocus()

@@ -71,7 +71,7 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
         SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
     HLSL::RSMCaptureParams->RSMWorldViewProjMat = HLSL::RSMCommonParams->RSMProjMat * HLSL::RSMCaptureParams->LightWorldViewMat;
     invertFull(HLSL::RSMCommonParams->RSMInvProjMat, HLSL::RSMCommonParams->RSMProjMat);
-    HLSL::RSMCommonParams->ViewToRSMViewMat = f44LightViewMat * f44InvViewMat;
+    HLSL::RSMCommonParams->ViewToRSMViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::BRDFParams->InvViewMat;
 }
 
 void RSMDirectionalLightPass::Draw()

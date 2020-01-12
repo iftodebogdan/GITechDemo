@@ -168,7 +168,7 @@ namespace GITechDemoApp
     extern RenderTarget* AnamorphicLensFlareBuffer[3];
     extern RenderTarget* IndirectLightAccumulationBuffer[2];
     //------------------------------------------------------
-
+    /*
     // Shader constants
     //  - General purpose
     CREATE_SHADER_CONSTANT_HANDLE(f44WorldMat,              Matrix44f       );
@@ -187,7 +187,7 @@ namespace GITechDemoApp
     CREATE_SHADER_CONSTANT_HANDLE(fFrameTime,               float           );
     CREATE_SHADER_CONSTANT_HANDLE(fZNear,                   float           );
     CREATE_SHADER_CONSTANT_HANDLE(fZFar,                    float           );
-    /*
+
     //  - Multiple appearances
     CREATE_SHADER_CONSTANT_HANDLE(f2HalfTexelOffset,        Vec2f           );
     CREATE_SHADER_CONSTANT_HANDLE(f4TexSize,                Vec4f           );

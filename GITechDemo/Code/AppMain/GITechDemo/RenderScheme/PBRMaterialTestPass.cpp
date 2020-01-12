@@ -68,9 +68,11 @@ void PBRMaterialTestPass::Draw()
             PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
 
             // Update matrices
-            f44WorldMat = CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
-            f44WorldViewMat = f44ViewMat * f44WorldMat;
-            f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
+            HLSL::FrameParams->WorldMat = CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
+            HLSL::GBufferGenerationParams->WorldViewMat = HLSL::BRDFParams->ViewMat * HLSL::FrameParams->WorldMat;
+            HLSL::GBufferGenerationParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
+            HLSL::DepthPassAlphaTestParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
+            HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
 
             const unsigned int diffuseTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_ALBEDO);
             const unsigned int normalTexIdx = pbrMaterial->GetTextureIndex(PBRMaterial::PBRTT_NORMAL);

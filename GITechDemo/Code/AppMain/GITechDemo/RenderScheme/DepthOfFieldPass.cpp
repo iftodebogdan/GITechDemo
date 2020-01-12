@@ -107,7 +107,7 @@ void DepthOfFieldPass::AutofocusPass()
 
     const float bkp = HLSL::LumaAdaptParams->LumaAdaptSpeed[0];
     HLSL::LumaAdaptParams->LumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
-    fFrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed[0]);
+    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed[0]);
 
     // Reuse the luminance animation shader
     LumaAdaptShader.Enable();

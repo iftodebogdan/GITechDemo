@@ -27,7 +27,7 @@ TEXTURE_3D_RESOURCE(UI_Texture3D);
 TEXTURE_CUBE_RESOURCE(UI_TextureCube);
 
 CBUFFER_RESOURCE(UI,
-    GPU_float4x4 ProjMat;
+    GPU_float4x4 UIProjMat;
     GPU_uint TextureSwitch;
     GPU_uint MipLevel;
     GPU_uint FaceIdx;
@@ -46,7 +46,7 @@ struct VSOut
 #ifdef VERTEX
 void vsmain(float2 position : POSITION, float4 color : COLOR, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.Position = mul(UIParams.ProjMat, float4(position, 0.f, 1.f));
+    output.Position = mul(UIParams.UIProjMat, float4(position, 0.f, 1.f));
     output.TexCoord = texCoord;
     output.Color = color;
 }

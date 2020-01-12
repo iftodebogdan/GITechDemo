@@ -66,9 +66,9 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetDepthBuffer())->SetAddressingMode(SAM_CLAMP);
 
     // Update matrices
-    f44WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
-    f44WorldViewMat = f44ViewMat * f44WorldMat;
-    f44WorldViewProjMat = f44ProjMat * f44WorldViewMat;
+    HLSL::FrameParams->WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
+    HLSL::GBufferGenerationParams->WorldViewMat = HLSL::BRDFParams->ViewMat * HLSL::FrameParams->WorldMat;
+    HLSL::GBufferGenerationParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
 
     // In order to have better low-intensity precision in the G-Buffer (which is in LDR format, obviously)
     // we need to delay the gamma correction of input textures right up until we need them to be linear,

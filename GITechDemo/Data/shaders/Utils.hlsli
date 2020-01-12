@@ -23,6 +23,16 @@
 #define UTILS_HLSLI
 
 #include "Common.hlsli"
+#include "CSMUtils.hlsli"
+
+CBUFFER_RESOURCE(Frame,
+    GPU_float4x4 WorldMat;
+    GPU_float4x4 ProjMat;
+    GPU_float4x4 ViewProjMat;
+    GPU_float4x4 DirectionalLightViewMat;
+    GPU_float4x4 DirectionalLightViewProjMat[CSM::CascadeCount];
+    GPU_float4x4 DirectionalLightWorldViewProjMat[CSM::CascadeCount];
+);
 
 struct Utils
 {

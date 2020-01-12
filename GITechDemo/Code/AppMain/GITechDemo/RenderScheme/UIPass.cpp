@@ -228,7 +228,7 @@ void UIPass::Update(const float fDeltaTime)
     HLSL::UI_TextureCube = m_nDummyTexCubeIdx;
 
     const float L = 0.5f, R = io.DisplaySize.x + 0.5f, T = 0.5f, B = io.DisplaySize.y + 0.5f;
-    HLSL::UIParams->ProjMat.set(
+    HLSL::UIParams->UIProjMat.set(
         2.0f / (R - L), 0.0f, 0.0f, (L + R) / (L - R),
         0.0f, 2.0f / (T - B), 0.0f, (T + B) / (B - T),
         0.0f, 0.0f, 0.5f, 0.5f,
