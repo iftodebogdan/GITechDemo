@@ -69,7 +69,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     // from ruining mip chain of light accumulation buffer.
     if (ColorCopyParams.ApplyTonemap)
     {
-        color.rgb /= (1.f + dot(LUMA_COEF, color.rgb));
+        color.rgb /= (1.f + dot(PostProcessingUtils::LumaCoef, color.rgb));
         color.rgb = saturate(color.rgb);
     }
 }

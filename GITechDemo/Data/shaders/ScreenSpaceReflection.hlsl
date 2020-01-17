@@ -94,7 +94,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     const float ditherAmount       = ScreenSpaceReflectionParams.UseDither ? GetDitherAmount(input.TexCoord, ScreenSpaceReflectionParams.TexSize.xy) : 0.f;
 
     // Sample the environment map
-    float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflectedRayDir), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb * BRDFParams.ReflectionFactor;
+    float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflectedRayDir), ComputeMipFromRoughness(roughness, BRDF::EnvMapMipCount))).rgb * BRDFParams.ReflectionFactor;
 
     if (CastSSRRay(rayStartPosVS, reflectedRayDir, ditherAmount, hitTexelCoord, hitPoint))
     {

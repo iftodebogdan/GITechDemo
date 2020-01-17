@@ -35,18 +35,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern float CASCADE_MAX_VIEW_DEPTH;
-
-    bool DIR_LIGHT_VOLUME_ENABLE = true;
-    bool DIR_LIGHT_VOLUME_QUARTER_RES = true;
-    bool DIR_LIGHT_VOLUME_BLUR_SAMPLES = true;
-    bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE = true;
-    bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE = true;
-    Vec4f DIR_LIGHT_VOLUME_COLOR = Vec4f(1.f, 0.9f, 0.75f, 1.f);
-}
-
 DirectionalLightVolumePass::DirectionalLightVolumePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {

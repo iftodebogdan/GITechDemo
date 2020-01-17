@@ -34,12 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool HDR_TONE_MAPPING_ENABLED = true;
-    bool SRGB_COLOR_CORRECTION = true;
-}
-
 HDRToneMappingPass::HDRToneMappingPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

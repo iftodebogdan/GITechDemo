@@ -36,6 +36,8 @@ struct BRDF
     static const unsigned int AshikhminShirley = 3;
     static const unsigned int Ward = 4;
     static const unsigned int BRDFModelCount = 5;
+
+    static const unsigned int EnvMapMipCount = 9; // Mip count for texture bound to texEnvMap
 };
 
 CBUFFER_RESOURCE(BRDF,
@@ -45,10 +47,10 @@ CBUFFER_RESOURCE(BRDF,
     GPU_float IrradianceFactor;  // Scale value for irradiance (Cook-Torrance BRDF only)
     GPU_float ReflectionFactor;  // Scale value for reflected light (Cook-Torrance BRDF only)
 
-    GPU_float4x4 ViewMat;     // View matrix
-    GPU_float4x4 InvViewMat;  // The inverse view matrix
+    GPU_float4x4 ViewMat;       // View matrix
+    GPU_float4x4 InvViewMat;    // The inverse view matrix
     
-    GPU_float3 LightDir;     // The direction of the light
+    GPU_float3 LightDir;        // The direction of the light
 
     GPU_uint BRDFModel;
 );
@@ -118,7 +120,7 @@ float GGXDistributionTerm(const float NdotH, const float alpha)
     const float alpha2 = alpha * alpha;
     const float NdotH2 = NdotH * NdotH;
     const float P = NdotH2 * (alpha2 - 1.f) + 1.f;
-    return alpha2 / (PI * P * P);
+    return alpha2 / (Utils::Pi * P * P);
 }
 
 // GGX geometric shadowing term
@@ -136,7 +138,7 @@ float BeckmannDistributionTerm(const float NdotH, const float alpha)
     const float NdotH2 = NdotH * NdotH;
     const float NdotH4 = NdotH2 * NdotH2;
     const float expTerm = exp((NdotH2 - 1.f) / (alpha2 * NdotH2));
-    return expTerm / (PI * alpha2 * NdotH4);
+    return expTerm / (Utils::Pi * alpha2 * NdotH4);
 }
 
 // Beckmann geometric shadowing term
@@ -201,12 +203,12 @@ float3 CookTorrance(const float3 materialColor, const float materialType, const 
     }
 
     // Color components
-    const float3 diffuseColor = diffuseAlbedo / (PI * (1.f - fresnel));
+    const float3 diffuseColor = diffuseAlbedo / (Utils::Pi * (1.f - fresnel));
     const float3 specularColor = distrib * geom * fresnel / (4.f * NdotL * NdotV);
 
     // Handled in ScreenSpaceReflection.hlsl as well, so be careful not to have them both active at the same time
     // (i.e. set fReflectionFactor to 0 for this shader when SSR is active and restore it when rendering with SSR shader)
-    const float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflect(viewVec, normal)), ComputeMipFromRoughness(roughness, ENVIRONMENT_MAP_MIP_COUNT))).rgb;
+    const float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflect(viewVec, normal)), ComputeMipFromRoughness(roughness, BRDF::EnvMapMipCount))).rgb;
     const float3 envFresnel = FresnelRoughnessTerm(specularAlbedo, roughness, normal, viewVec);
 
     const float3 irradiance = texCUBE(BRDF_IrradianceMap, mul((float3x3)BRDFParams.InvViewMat, normal)).rgb;
@@ -248,7 +250,7 @@ float3 AshikhminShirley(const float3 materialColor, const float materialType, co
     const float Nv = Nu; // There is support for anisotropic materials, however, we don't make use of it at the moment
 
     // Diffuse term
-    float Pd = 28.f / (23.f * PI) *
+    float Pd = 28.f / (23.f * Utils::Pi) *
                 (1.f - pow(1.f - NdotL * 0.5f, 5.f)) *
                 (1.f - pow(1.f - NdotV * 0.5f, 5.f));
 
@@ -257,7 +259,7 @@ float3 AshikhminShirley(const float3 materialColor, const float materialType, co
 
     // Specular term
     const float PsNum = sqrt((Nu + 1.f) * (Nv + 1.f)) * pow(NdotH, Nu * TdotH * TdotH + Nv * BdotH * BdotH);
-    const float PsDen = 8.f * PI * LdotH * max(NdotL, NdotV);
+    const float PsDen = 8.f * Utils::Pi * LdotH * max(NdotL, NdotV);
     const float Ps = PsNum / PsDen;
 
     // Ambient term
@@ -287,7 +289,7 @@ float3 Ward(const float3 materialColor, const float materialType, const float ro
 
     // Specular term
     const float PsNum = exp(-pow(tan(acos(NdotH)), 2) / alpha);
-    const float PsDen = 4.f * PI * alpha * sqrt(NdotL * NdotV);
+    const float PsDen = 4.f * Utils::Pi * alpha * sqrt(NdotL * NdotV);
     const float Ps = PsNum / PsDen;
 
     // Ambient term

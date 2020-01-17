@@ -37,6 +37,11 @@ CBUFFER_RESOURCE(Frame,
 struct Utils
 {
     static const unsigned int PoissonDiskSampleCount = 16;
+
+#ifdef HLSL
+    static const float Pi = 3.14159265f;
+    static const float PiRcp = 0.31830988618379067153776752674503f;
+#endif
 };
 
 CBUFFER_RESOURCE(Utils,

@@ -76,7 +76,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                 // hence the scale of the texture coordinates
                 const float2 scaledTexCoord = input.TexCoord;// *float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
                 const float3 sampleSource = tex2D(LumaCapture_LumaInput, scaledTexCoord + kernel * float2(i, j)).rgb;
-                logLumSum += log(dot(sampleSource, LUMA_COEF) + 0.0001f);
+                logLumSum += log(dot(sampleSource, PostProcessingUtils::LumaCoef) + 0.0001f);
             }
 
         logLumSum *= 0.11111111f;

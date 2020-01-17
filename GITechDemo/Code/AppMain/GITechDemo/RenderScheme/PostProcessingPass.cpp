@@ -32,11 +32,6 @@ using namespace Synesthesia3D;
 #include "PostProcessingPass.h"
 using namespace GITechDemoApp;
 
-namespace GITechDemoApp
-{
-    bool POST_PROCESSING_ENABLED = true;
-}
-
 PostProcessingPass::PostProcessingPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {

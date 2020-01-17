@@ -33,12 +33,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool FXAA_ENABLED = true;
-    extern bool HDR_TONE_MAPPING_ENABLED;
-}
-
 FXAAPass::FXAAPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

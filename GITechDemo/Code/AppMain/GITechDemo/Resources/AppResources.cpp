@@ -104,94 +104,110 @@ namespace GITechDemoApp
     // Setup access to externally declared variables    //
     //////////////////////////////////////////////////////
 
-    // Camera
-    extern bool CAMERA_INFINITE_PROJ;
-    extern float CAMERA_FOV;
-    extern float CAMERA_MOVE_SPEED;
-    extern float CAMERA_SPEED_UP_FACTOR;
-    extern float CAMERA_SLOW_DOWN_FACTOR;
-    extern float CAMERA_ROTATE_SPEED;
-    extern bool CAMERA_ANIMATION_ENABLED;
-    extern int CAMERA_ANIMATION_TIMEOUT_SECONDS;
+#error Rename these and move them somewhere where it makes sense - either in individual RenderPasses or create a global render context (or something)
+#if 0
+    bool FULLSCREEN_ENABLED = false;
+    bool BORDERLESS_ENABLED = true;
+    int FULLSCREEN_RESOLUTION_X = 0;
+    int FULLSCREEN_RESOLUTION_Y = 0;
+    int FULLSCREEN_REFRESH_RATE = 0;
+    bool VSYNC_ENABLED = false;
 
-    // G-Buffer
-    extern bool GBUFFER_Z_PREPASS;
-    extern int DIFFUSE_ANISOTROPY;
-    extern bool GBUFFER_USE_NORMAL_MAPS;
-    extern int GBUFFER_DEBUG_VIEW;
-    extern bool GBUFFER_DEBUG_VIEW_DEPTH;
-    extern bool DRAW_ALPHA_TEST_GEOMETRY;
 
-    // Directional light
+
+    bool CAMERA_INFINITE_PROJ = true;
+    float CAMERA_FOV = 60.f;
+    float CAMERA_MOVE_SPEED = 250.f;
+    float CAMERA_SPEED_UP_FACTOR = 5.f;
+    float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
+    float CAMERA_ROTATE_SPEED = 75.f;
+
+    bool CAMERA_ANIMATION_ENABLED = true;
+    int CAMERA_ANIMATION_TIMEOUT_SECONDS = 30;
+
+    bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
+
+    /* G-Buffer generation */
+    bool GBUFFER_Z_PREPASS = true;
+    int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
+    bool GBUFFER_USE_NORMAL_MAPS = true;
+    bool DRAW_ALPHA_TEST_GEOMETRY = true;
+
+    int GBUFFER_DEBUG_VIEW = -1;
+    bool GBUFFER_DEBUG_VIEW_DEPTH = false;
+    bool DEBUG_CSM_CAMERA = false;
+    bool DEBUG_RSM_CAMERA = false;
+
+    bool DIRECTIONAL_LIGHT_ENABLED = true;
+
     extern bool DIRECTIONAL_LIGHT_ENABLED;
-    extern bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED;
-
-    // CSM
-    extern bool DEBUG_CSM_CAMERA;
-    extern float CASCADE_SPLIT_FACTOR;
-    extern float CASCADE_MAX_VIEW_DEPTH;
-    extern float DEPTH_BIAS[];
-    extern float SLOPE_SCALED_DEPTH_BIAS[];
-
-    // RSM
-    extern bool INDIRECT_LIGHT_ENABLED;
-    extern bool RSM_USE_QUARTER_RESOLUTION_BUFFER;
-    extern bool RSM_USE_BILATERAL_BLUR;
-    extern bool DEBUG_RSM_CAMERA;
-
-    // Directional light volumetric effect
     extern bool DIR_LIGHT_VOLUME_ENABLE;
-    extern bool DIR_LIGHT_VOLUME_QUARTER_RES;
-    extern bool DIR_LIGHT_VOLUME_BLUR_SAMPLES;
-    extern bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE;
-    extern bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE;
-    extern Vec4f DIR_LIGHT_VOLUME_COLOR;
 
-    // Post-processing
-    extern bool POST_PROCESSING_ENABLED;
+    // Cascaded Shadow Maps (CSM) and directional light related variables
+    float CASCADE_SPLIT_FACTOR = 0.7f;
+    float CASCADE_MAX_VIEW_DEPTH = 3000.f;
 
-    // SSR
-    extern bool SSR_ENABLED;
-    extern bool SSR_MANUAL_MAX_STEPS;
+    extern const unsigned int PCF_MAX_SAMPLE_COUNT = 16;
+    const unsigned int NUM_CASCADES = 4;
 
-    // SSAO
-    extern bool SSAO_ENABLED;
-    extern bool SSAO_USE_QUARTER_RESOLUTION_BUFFER;
+    extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
 
-    // Bokeh DoF
-    extern bool DOF_ENABLED;
-    extern float DOF_AUTOFOCUS_TIME;
-    extern int DOF_NUM_PASSES;
+    float DEPTH_BIAS[NUM_CASCADES] = { 0.002f,     0.002f,     0.0015f,    0.001f };
+    float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES] = { 2.f,        2.5f,       2.5f,       1.5f };
 
-    // Motion blur
-    extern bool MOTION_BLUR_ENABLED;
+    bool INDIRECT_LIGHT_ENABLED = true;
+    bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
+    bool RSM_USE_BILATERAL_BLUR = true;
 
-    // Bloom
-    extern bool BLOOM_ENABLED;
+    extern const unsigned int RSM_SIZE = 1024;
+    const unsigned int RSM_NUM_PASSES = 4;
+    const unsigned int RSM_SAMPLES_PER_PASS = 16;
+    const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
 
-    // Lens flare
-    extern bool LENS_FLARE_ENABLED;
-    extern float LENS_FLARE_BRIGHTNESS_THRESHOLD;
-    extern bool LENS_FLARE_ANAMORPHIC;
+    bool DIR_LIGHT_VOLUME_ENABLE = true;
+    bool DIR_LIGHT_VOLUME_QUARTER_RES = true;
+    bool DIR_LIGHT_VOLUME_BLUR_SAMPLES = true;
+    bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE = true;
+    bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE = true;
+    Vec4f DIR_LIGHT_VOLUME_COLOR = Vec4f(1.f, 0.9f, 0.75f, 1.f);
 
-    // Tone mapping
-    extern bool HDR_TONE_MAPPING_ENABLED;
-    extern bool SRGB_COLOR_CORRECTION;
+    bool POST_PROCESSING_ENABLED = true;
 
-    // FXAA
-    extern bool FXAA_ENABLED;
+    bool SSR_ENABLED = true;
+    bool SSR_MANUAL_MAX_STEPS = false;
 
-    // Window properties
-    extern bool FULLSCREEN_ENABLED;
-    extern bool BORDERLESS_ENABLED;
-    extern int FULLSCREEN_RESOLUTION_X;
-    extern int FULLSCREEN_RESOLUTION_Y;
-    extern int FULLSCREEN_REFRESH_RATE;
-    extern bool VSYNC_ENABLED;
+    bool SSAO_ENABLED = true;
+    bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
+
+    const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
+    const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
+
+    bool DOF_ENABLED = true;
+    float DOF_AUTOFOCUS_TIME = 0.5f;
+    int DOF_NUM_PASSES = 5;
+
+    bool MOTION_BLUR_ENABLED = true;
+
+    bool BLOOM_ENABLED = true;
+    const unsigned int BLOOM_BLUR_KERNEL_COUNT = 9;
+    const unsigned int BLOOM_BLUR_KERNEL[BLOOM_BLUR_KERNEL_COUNT] = { 0, 1, 2, 3, 4, 4, 5, 6, 7 };
+
+    bool LENS_FLARE_ENABLED = true;
+    float LENS_FLARE_BRIGHTNESS_THRESHOLD = 3.5f;
+    bool LENS_FLARE_ANAMORPHIC = true;
+
+    const unsigned int LENS_FLARE_BLUR_KERNEL_COUNT = 3;
+    const unsigned int LENS_FLARE_BLUR_KERNEL[LENS_FLARE_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
+
+    const unsigned int LENS_FLARE_ANAMORPHIC_BLUR_PASSES = 6;
+
+    bool HDR_TONE_MAPPING_ENABLED = true;
+    bool SRGB_COLOR_CORRECTION = true;
+
+    bool FXAA_ENABLED = true;
+#endif
 
     // Some misc. resources
-    extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
-    extern const unsigned int RSM_SIZE;
     VertexBuffer*   FullScreenTri = nullptr;
 
     //------------------------------------------------------

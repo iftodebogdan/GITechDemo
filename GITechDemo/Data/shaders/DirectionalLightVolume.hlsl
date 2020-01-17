@@ -70,7 +70,7 @@ void vsmain(float4 position : POSITION, out VSOut output)
 
 // Pixel shader ///////////////////////////////////////////////////
 #ifdef PIXEL
-#define OFFSET_RAY_SAMPLES  // If defined, scatter multiple ray samples across grid of INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE pixels
+#define OFFSET_RAY_SAMPLES  // If defined, scatter multiple ray samples across grid of PostProcessingUtils::InterleavedGridSize x PostProcessingUtils::InterleavedGridSize pixels
 #define USE_BAYER_MATRIX    // If defined, sample grid offsets from texture, else use procedurally generated values
 #define FOG_DENSITY_MAP     // If defined, use 3D noise texture as a fog density map
 
@@ -106,8 +106,8 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 #ifdef USE_BAYER_MATRIX
     const float rayStartOffset = GetDitherAmount(input.TexCoord, DirectionalLightVolumeParams.TexSize.xy) * stepLen;
 #else // USE_BAYER_MATRIX
-    const float2 interleavedPos = fmod(ceil(input.TexelIdx), INTERLEAVED_GRID_SIZE);
-    const float rayStartOffset = (interleavedPos.y * INTERLEAVED_GRID_SIZE + interleavedPos.x) * (stepLen * INTERLEAVED_GRID_SIZE_SQR_RCP);
+    const float2 interleavedPos = fmod(ceil(input.TexelIdx), PostProcessingUtils::InterleavedGridSize);
+    const float rayStartOffset = (interleavedPos.y * PostProcessingUtils::InterleavedGridSize + interleavedPos.x) * (stepLen * PostProcessingUtils::InterleavedGridSizeSqrRcp);
 #endif // USE_BAYER_MATRIX
 #else // OFFSET_RAY_SAMPLES
     const float rayStartOffset = 0.f;
@@ -156,7 +156,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         // Calculate the final light contribution for the sample on the ray
         // and add it to the total contribution of the ray
         //f4Color.rgb += TAU * (bLit * (PHI * 0.25f * PI_RCP) * fLightDistRcp * fLightDistRcp) * exp(-fLightDist * TAU) * exp(-fSampleDist * TAU) * fStepLen;
-        color.rgb += (DirectionalLightVolumeParams.MultScatterIntensity + DirectionalLightVolumeParams.LightIntensity * lit) * exp(-sampleDist * TAU) * density * TAU * (PHI * 0.25f * PI_RCP) * sampleDist; // * (lightDistRcp * lightDistRcp) * exp(-lightDist * TAU)
+        color.rgb += (DirectionalLightVolumeParams.MultScatterIntensity + DirectionalLightVolumeParams.LightIntensity * lit) * exp(-sampleDist * TAU) * density * TAU * (PHI * 0.25f * Utils::PiRcp) * sampleDist; // * (lightDistRcp * lightDistRcp) * exp(-lightDist * TAU)
     }
 
     // Moved some calculations outside of the above 'for' as an optimization

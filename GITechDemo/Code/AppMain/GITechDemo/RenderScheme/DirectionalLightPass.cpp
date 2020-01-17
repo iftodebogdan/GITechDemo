@@ -34,14 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool DIRECTIONAL_LIGHT_ENABLED = true;
-
-    extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE;
-    extern bool SSR_ENABLED;
-}
-
 DirectionalLightPass::DirectionalLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {

@@ -36,15 +36,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    /* G-Buffer generation */
-    bool GBUFFER_Z_PREPASS = true;
-    int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
-    bool GBUFFER_USE_NORMAL_MAPS = true;
-    bool DRAW_ALPHA_TEST_GEOMETRY = true;
-}
-
 GBufferPass::GBufferPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

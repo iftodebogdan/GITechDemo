@@ -52,37 +52,12 @@ CREATE_APP(GITechDemo)
 
 namespace GITechDemoApp
 {
+    Perlin PerlinNoise(1, 0.05f, 1.f, *(int*)("GITD") /*(int)time(NULL)*/);
+
     static bool bExtraResInit = false;
 
     extern SkyPass SKY_PASS;
     extern UIPass UI_PASS;
-    extern const char* const ResourceTypeMap[RenderResource::RES_MAX];
-
-    bool FULLSCREEN_ENABLED = false;
-    bool BORDERLESS_ENABLED = true;
-    int FULLSCREEN_RESOLUTION_X = 0;
-    int FULLSCREEN_RESOLUTION_Y = 0;
-    int FULLSCREEN_REFRESH_RATE = 0;
-    bool VSYNC_ENABLED = false;
-}
-
-namespace GITechDemoApp
-{
-    bool CAMERA_ANIMATION_ENABLED = true;
-    int CAMERA_ANIMATION_TIMEOUT_SECONDS = 30;
-
-    bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
-
-    Perlin PerlinNoise(1, 0.05f, 1.f, *(int*)("GITD") /*(int)time(NULL)*/);
-
-    extern AABoxf SceneAABB;
-
-    bool CAMERA_INFINITE_PROJ = true;
-    float CAMERA_FOV = 60.f;
-    float CAMERA_MOVE_SPEED = 250.f;
-    float CAMERA_SPEED_UP_FACTOR = 5.f;
-    float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
-    float CAMERA_ROTATE_SPEED = 75.f;
 }
 
 template <typename T> string tostr(const T& t) {
@@ -233,7 +208,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
                 {
                     std::stringstream msg;
                     msg << "Thread " << thId << " - ";
-                    msg << ResourceTypeMap[resList[i]->GetResourceType()] << ": \"" << resList[i]->GetDesc() << "\"";
+                    msg << RenderResource::ms_ResourceTypeMap[resList[i]->GetResourceType()] << ": \"" << resList[i]->GetDesc() << "\"";
                     cout << msg.str() + " start\n";
                     const unsigned startTicks = pFW->GetTicks();
                     resList[i]->Init();

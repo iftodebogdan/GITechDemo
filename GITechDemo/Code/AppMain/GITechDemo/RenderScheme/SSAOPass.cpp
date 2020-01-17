@@ -34,15 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool SSAO_ENABLED = true;
-    bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
-
-    const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
-    const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
-}
-
 SSAOPass::SSAOPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , SSAOBuffer(SSAOFullBuffer)

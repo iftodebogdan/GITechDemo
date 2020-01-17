@@ -43,7 +43,7 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    extern const char* const ResourceTypeMap[RenderResource::RES_MAX] = {
+    const char* const RenderResource::ms_ResourceTypeMap[] = {
         "",
         "Model",
         "Shader",

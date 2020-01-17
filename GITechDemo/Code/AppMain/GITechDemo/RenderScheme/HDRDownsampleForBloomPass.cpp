@@ -33,11 +33,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern bool BLOOM_ENABLED;
-}
-
 HDRDownsampleForBloomPass::HDRDownsampleForBloomPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

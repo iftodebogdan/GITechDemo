@@ -36,13 +36,6 @@ using namespace GITechDemoApp;
 
 #include "GITechDemo.h"
 
-namespace GITechDemoApp
-{
-    bool DOF_ENABLED = true;
-    float DOF_AUTOFOCUS_TIME = 0.5f;
-    int DOF_NUM_PASSES = 5;
-}
-
 DepthOfFieldPass::DepthOfFieldPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

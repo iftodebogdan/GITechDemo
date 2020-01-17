@@ -24,6 +24,12 @@
 TEXTURE_2D_RESOURCE(BilateralBlur_Source);      // The texture to be blurred
 TEXTURE_2D_RESOURCE(BilateralBlur_DepthBuffer); // Scene depth
 
+struct BilateralBlurUtils
+{
+    static const unsigned int SampleCount = 15;
+    static const unsigned int HalfSampleCount = 7;// Number of samples on each side of the kernel
+};
+
 CBUFFER_RESOURCE(BilateralBlur,
     GPU_float2 HalfTexelOffset;
     GPU_float2 BlurDir;         // Horizontal or vertical blur
@@ -50,9 +56,6 @@ void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut ou
 
 // Pixel shader ///////////////////////////////////////////////////
 #ifdef PIXEL
-// Number of samples on each side of the kernel
-#define NUM_SAMPLES_HALF    (7)
-
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     const float gaussianFilterWeight[] =
@@ -69,7 +72,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     // Get reference downsampled depth (center of kernel)
     const float refDepth = tex2D(BilateralBlur_DepthBuffer, input.TexCoord).r;
 
-    UNROLL for (int i = -NUM_SAMPLES_HALF; i <= NUM_SAMPLES_HALF; i++)
+    UNROLL for (int i = -int(BilateralBlurUtils::HalfSampleCount); i <= int(BilateralBlurUtils::HalfSampleCount); i++)
     {
         // Calculate coordinates for sampling source texture
         const float2 offset = i * BilateralBlurParams.BlurDir * BilateralBlurParams.TexSize.zw;

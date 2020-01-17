@@ -87,6 +87,8 @@ namespace GITechDemoApp
         void        LockRes() { MUTEX_LOCK(mResMutex); }
         void        UnlockRes() { MUTEX_UNLOCK(mResMutex); }
 
+        static const char* const RenderResource::ms_ResourceTypeMap[RenderResource::RES_MAX];
+
     protected:
         RenderResource(const char* filePath, ResourceType resType);
         virtual ~RenderResource();

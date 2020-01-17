@@ -38,12 +38,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern bool CAMERA_INFINITE_PROJ;
-    extern float CAMERA_FOV;
-}
-
 SkyPass::SkyPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , m_pSkyBoxCube(nullptr)

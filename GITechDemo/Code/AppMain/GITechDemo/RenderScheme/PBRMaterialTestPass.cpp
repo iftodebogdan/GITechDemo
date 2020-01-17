@@ -29,13 +29,6 @@
 #include "AppResources.h"
 using namespace GITechDemoApp;
 
-namespace GITechDemoApp
-{
-    extern int DIFFUSE_ANISOTROPY;
-    extern AABoxf SceneAABB;
-    extern bool GBUFFER_USE_NORMAL_MAPS;
-}
-
 PBRMaterialTestPass::PBRMaterialTestPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

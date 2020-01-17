@@ -88,7 +88,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 
         if (DownsampleParams.ApplyBrightnessFilter)
         {
-            const float brightness = dot(color.rgb, LUMA_COEF);
+            const float brightness = dot(color.rgb, PostProcessingUtils::LumaCoef);
             color.rgb *= step(DownsampleParams.BrightnessThreshold, brightness);
             //color.rgb /= brightness;
             color.rgb /= 1.f + brightness;

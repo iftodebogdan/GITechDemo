@@ -258,7 +258,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     // CSM debug
     if (DirectionalLightParams.DebugCascades)
     {
-        const float brightness = dot(color.rgb, LUMA_COEF);
+        const float brightness = dot(color.rgb, PostProcessingUtils::LumaCoef);
         color += float4(validCascade % 3 == 0, validCascade % 3 == 1, validCascade % 3 == 2, 0.f) * brightness * 0.5f;
         if (blendAmount > 0.f)
         {

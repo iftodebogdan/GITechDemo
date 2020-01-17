@@ -23,7 +23,6 @@
 // it is aware that we are in the apply pass (instead of the upscale pass).
 #define RSM_APPLY_PASS (1)
 #include "RSMCommon.hlsli"
-#undef RSM_APPLY_PASS
 
 TEXTURE_2D_RESOURCE(RSMApply_DepthBuffer);
 

@@ -32,29 +32,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    int GBUFFER_DEBUG_VIEW = -1;
-    bool GBUFFER_DEBUG_VIEW_DEPTH = false;
-    bool DEBUG_CSM_CAMERA = false;
-    bool DEBUG_RSM_CAMERA = false;
-
-    extern bool POST_PROCESSING_ENABLED;
-
-    // Tone mapping
-    extern bool HDR_TONE_MAPPING_ENABLED;
-    // Bloom
-    extern bool BLOOM_ENABLED;
-    // FXAA
-    extern bool FXAA_ENABLED;
-    // DoF
-    extern bool DOF_ENABLED;
-    // Motion blur
-    extern bool MOTION_BLUR_ENABLED;
-    // Lens flare
-    extern bool LENS_FLARE_ENABLED;
-}
-
 CopyToBackBufferPass::CopyToBackBufferPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , m_pFinalImageBuffer(nullptr)

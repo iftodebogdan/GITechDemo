@@ -33,11 +33,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern bool HDR_TONE_MAPPING_ENABLED;
-}
-
 HDRDownsamplePass::HDRDownsamplePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

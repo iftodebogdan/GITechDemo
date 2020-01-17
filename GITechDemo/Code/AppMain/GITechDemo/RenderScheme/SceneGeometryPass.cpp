@@ -33,14 +33,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern bool GBUFFER_Z_PREPASS;
-    extern int DIFFUSE_ANISOTROPY;
-    extern bool GBUFFER_USE_NORMAL_MAPS;
-    extern bool DRAW_ALPHA_TEST_GEOMETRY;
-}
-
 SceneGeometryPass::SceneGeometryPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

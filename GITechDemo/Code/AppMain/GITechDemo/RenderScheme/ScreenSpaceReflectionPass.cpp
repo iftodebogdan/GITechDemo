@@ -34,13 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool SSR_ENABLED = true;
-    bool SSR_MANUAL_MAX_STEPS = false;
-    extern float CAMERA_FOV;
-}
-
 ScreenSpaceReflectionPass::ScreenSpaceReflectionPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

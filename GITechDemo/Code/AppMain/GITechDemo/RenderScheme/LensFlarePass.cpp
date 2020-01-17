@@ -34,18 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool LENS_FLARE_ENABLED = true;
-    float LENS_FLARE_BRIGHTNESS_THRESHOLD = 3.5f;
-    bool LENS_FLARE_ANAMORPHIC = true;
-
-    const unsigned int LENS_FLARE_BLUR_KERNEL_COUNT = 3;
-    const unsigned int LENS_FLARE_BLUR_KERNEL[LENS_FLARE_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
-
-    const unsigned int LENS_FLARE_ANAMORPHIC_BLUR_PASSES = 6;
-}
-
 LensFlarePass::LensFlarePass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

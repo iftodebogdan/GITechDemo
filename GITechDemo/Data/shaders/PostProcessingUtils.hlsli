@@ -24,7 +24,28 @@
 
 #include "Common.hlsli"
 
-TEXTURE_2D_RESOURCE(PostProcessing_DitherMap);   // INTERLEAVED_GRID_SIZE x INTERLEAVED_GRID_SIZE texture containing sample offsets
+TEXTURE_2D_RESOURCE(PostProcessing_DitherMap);   // PostProcessingUtils::InterleavedGridSize x PostProcessingUtils::InterleavedGridSize texture containing sample offsets
+
+struct PostProcessingUtils
+{
+    // These must match dither map (Bayer matrix) texture dimensions
+    static const unsigned int InterleavedGridSize = 8;
+    static const unsigned int InterleavedGridSizeSqr = 64;
+
+#ifdef HLSL
+    //////////////////////////////////////////
+    // Luma coefficients                    //
+    // http://stackoverflow.com/a/24213274  //
+    //////////////////////////////////////////
+    static const float3 REC709LumaCoef = float3(0.2126f, 0.7152f, 0.0722f);
+    static const float3 REC601LumaCoef = float3(0.299f, 0.587f, 0.114f);
+    static const float3 LumaCoef = REC601LumaCoef;
+    ////////////////////////////////////////////////////////////////
+
+    static const float InterleavedGridSizeRcp = 0.125f;
+    static const float InterleavedGridSizeSqrRcp = 0.015625f;
+#endif
+};
 
 CBUFFER_RESOURCE(PostProcessing,
     GPU_float ZNear;
@@ -143,34 +164,17 @@ float4 Downsample2x2(sampler2D tex, float2 texCoord, float2 texelSize)
 
 
 
-//////////////////////////////////////////
-// Luma coefficients                    //
-// http://stackoverflow.com/a/24213274  //
-//////////////////////////////////////////
-#define REC709_LUMA_COEF (float3(0.2126f, 0.7152f, 0.0722f))
-#define REC601_LUMA_COEF (float3(0.299f, 0.587f, 0.114f))
-#define LUMA_COEF REC601_LUMA_COEF
-////////////////////////////////////////////////////////////////
-
-
-
 /////////////////////////////////////////////////////
 // Bayer matrix stored in a texture, for dithering //
 /////////////////////////////////////////////////////
-// These must match dither map (Bayer matrix) texture dimensions
-#define INTERLEAVED_GRID_SIZE           (8.f)
-#define INTERLEAVED_GRID_SIZE_RCP       (0.125f)
-#define INTERLEAVED_GRID_SIZE_SQR       (64.f)
-#define INTERLEAVED_GRID_SIZE_SQR_RCP   (0.015625f)
-
 float GetDitherAmount(float2 texCoord, float2 texSize)
 {
-    return tex2D(PostProcessing_DitherMap, texCoord * texSize * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+    return tex2D(PostProcessing_DitherMap, texCoord * texSize * PostProcessingUtils::InterleavedGridSizeRcp).r * (255.f / (PostProcessingUtils::InterleavedGridSizeSqr - 1));
 }
 
 float GetDitherAmount(float2 texelIdx)
 {
-    return tex2D(PostProcessing_DitherMap, texelIdx * INTERLEAVED_GRID_SIZE_RCP).r * (255.f / (INTERLEAVED_GRID_SIZE_SQR - 1));
+    return tex2D(PostProcessing_DitherMap, texelIdx * PostProcessingUtils::InterleavedGridSizeRcp).r * (255.f / (PostProcessingUtils::InterleavedGridSizeSqr - 1));
 }
 
 #endif // HLSL

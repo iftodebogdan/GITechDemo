@@ -34,11 +34,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool MOTION_BLUR_ENABLED = true;
-}
-
 MotionBlurPass::MotionBlurPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

@@ -36,18 +36,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    bool INDIRECT_LIGHT_ENABLED = true;
-    bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
-    bool RSM_USE_BILATERAL_BLUR = true;
-
-    extern const unsigned int RSM_SIZE = 1024;
-    const unsigned int RSM_NUM_PASSES = 4;
-    const unsigned int RSM_SAMPLES_PER_PASS = 16;
-    const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
-}
-
 DirectionalIndirectLightPass::DirectionalIndirectLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {

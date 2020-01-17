@@ -32,12 +32,6 @@ using namespace GITechDemoApp;
 
 #include "AppResources.h"
 
-namespace GITechDemoApp
-{
-    extern bool INDIRECT_LIGHT_ENABLED;
-    extern AABoxf SceneLightSpaceAABB;
-}
-
 RSMDirectionalLightPass::RSMDirectionalLightPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
 {}

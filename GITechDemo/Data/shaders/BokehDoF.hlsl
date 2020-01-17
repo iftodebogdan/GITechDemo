@@ -26,6 +26,11 @@ TEXTURE_2D_RESOURCE(BokehDoF_Source);       // Source texture to be blurred
 TEXTURE_2D_RESOURCE(BokehDoF_DepthBuffer);  // Source depth buffer
 TEXTURE_2D_RESOURCE(BokehDoF_TargetFocus);  // Used for autofocus
 
+struct BokehDofUtils
+{
+    static const unsigned int ApertureBladeCount = 6;
+};
+
 CBUFFER_RESOURCE(BokehDoF,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize; // xy: size, in texels, of source image; zw: normalized size of a texel
@@ -88,8 +93,6 @@ void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut ou
 */
 //------------------------------------------
 
-#define APERTURE_BLADE_COUNT (6)
-
 void ApplyLensDistortion(in out float2 texCoord)
 {
     if (BokehDoFParams.QuarticDistortionCoef != 0 || BokehDoFParams.CubicDistortionModifier != 0 || BokehDoFParams.DistortionScale != 0)
@@ -106,16 +109,16 @@ void ApplyLensDistortion(in out float2 texCoord)
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Offsets for aperture blade shaped blur kernel
-    const float2 kernelOffset[APERTURE_BLADE_COUNT] =
+    const float2 kernelOffset[BokehDofUtils::ApertureBladeCount] =
     {
-        sin(0.f / APERTURE_BLADE_COUNT * 6.283f), cos(0.f / APERTURE_BLADE_COUNT * 6.283f),
-        sin(1.f / APERTURE_BLADE_COUNT * 6.283f), cos(1.f / APERTURE_BLADE_COUNT * 6.283f),
-        sin(2.f / APERTURE_BLADE_COUNT * 6.283f), cos(2.f / APERTURE_BLADE_COUNT * 6.283f),
-        sin(3.f / APERTURE_BLADE_COUNT * 6.283f), cos(3.f / APERTURE_BLADE_COUNT * 6.283f),
-        sin(4.f / APERTURE_BLADE_COUNT * 6.283f), cos(4.f / APERTURE_BLADE_COUNT * 6.283f),
-        sin(5.f / APERTURE_BLADE_COUNT * 6.283f), cos(5.f / APERTURE_BLADE_COUNT * 6.283f),
-        //sin(6.f / APERTURE_BLADE_COUNT * 6.283f), cos(6.f / APERTURE_BLADE_COUNT * 6.283f),
-        //sin(7.f / APERTURE_BLADE_COUNT * 6.283f), cos(7.f / APERTURE_BLADE_COUNT * 6.283f)
+        sin(0.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(0.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        sin(1.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(1.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        sin(2.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(2.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        sin(3.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(3.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        sin(4.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(4.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        sin(5.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(5.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        //sin(6.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(6.f / BokehDofUtils::ApertureBladeCount * 6.283f),
+        //sin(7.f / BokehDofUtils::ApertureBladeCount * 6.283f), cos(7.f / BokehDofUtils::ApertureBladeCount * 6.283f)
     };
 
     // Apply lens distortion equation to texture coordinates
@@ -133,14 +136,14 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         // Fix aspect ratio of blur kernel
         const float aspectRatioScale = BokehDoFParams.TexSize.y * BokehDoFParams.TexSize.z;
 
-        for (int i = 0; i < APERTURE_BLADE_COUNT; i++)
+        for (unsigned int i = 0; i < BokehDofUtils::ApertureBladeCount; i++)
         {
             // Retrieve sample color and CoC value
             const float4 sampleSrc = tex2D(BokehDoF_Source, input.TexCoord + kernelOffset[i] * float2(BokehDoFParams.AnamorphicBokeh ? 1.f / 2.4f : 1.f, 1.f) * BokehDoFParams.ApertureSize * dofBlurFactor * float2(aspectRatioScale, 1.f));
             const float sampleDofBlurFactor = sampleSrc.a * 2.f - 1.f;
 
             // Calculate sample weight
-            const float luma   = dot(sampleSrc.rgb, LUMA_COEF);
+            const float luma   = dot(sampleSrc.rgb, PostProcessingUtils::LumaCoef);
             const float weight =
                 max((luma > BokehDoFParams.HighlightThreshold) *            // Luma threshold for applying highlight gain (more prominent bokeh)
                 BokehDoFParams.HighlightGain * abs(dofBlurFactor), 1.f) *   // Weight based on CoC values of center and sampled points,
