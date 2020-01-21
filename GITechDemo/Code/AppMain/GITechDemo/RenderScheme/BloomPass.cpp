@@ -61,10 +61,12 @@ void BloomPass::Update(const float fDeltaTime)
     HLSL::DownsampleParams->DownsampleFactor = 1;
     HLSL::DownsampleParams->ApplyBrightnessFilter = true;
     HLSL::DownsampleParams->DepthDownsample = false;
+    HLSL::DownsampleParams->BrightnessThreshold = RenderConfig::PostProcessing::Bloom::BrightnessThreshold;
 
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     HLSL::ColorCopyParams->ApplyTonemap = false;
+
 }
 
 // Apply a brightness filter to the downsampled HDR scene color buffer
@@ -124,11 +126,11 @@ void BloomPass::BloomBlur()
 
     PUSH_PROFILE_MARKER("Blur");
 
-    for (unsigned int i = 0; i < BLOOM_BLUR_KERNEL_COUNT; i++)
+    for (unsigned int i = 0; i < RenderConfig::PostProcessing::Bloom::BlurKernelCount; i++)
     {
 #if ENABLE_PROFILE_MARKERS
         char label[10];
-        sprintf_s(label, "Kernel %d", BLOOM_BLUR_KERNEL[i]);
+        sprintf_s(label, "Kernel %d", RenderConfig::PostProcessing::Bloom::BlurKernel[i]);
 #endif
         PUSH_PROFILE_MARKER(label);
 
@@ -151,8 +153,8 @@ void BloomPass::BloomBlur()
             1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
-        HLSL::BloomParams->Kernel = BLOOM_BLUR_KERNEL[i];
-        if (i == BLOOM_BLUR_KERNEL_COUNT - 1)
+        HLSL::BloomParams->Kernel = RenderConfig::PostProcessing::Bloom::BlurKernel[i];
+        if (i == RenderConfig::PostProcessing::Bloom::BlurKernelCount - 1)
             HLSL::BloomParams->AdjustIntensity = true;
         else
             HLSL::BloomParams->AdjustIntensity = false;
@@ -196,11 +198,11 @@ void BloomPass::BloomApply()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetHeight());
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
-        BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0)
+        BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    HLSL::ColorCopy_SourceTexture = BloomBuffer[BLOOM_BLUR_KERNEL_COUNT % 2]->GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ColorCopy_SourceTexture = BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0);
 
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -219,7 +221,7 @@ void BloomPass::BloomApply()
 
 void BloomPass::Draw()
 {
-    if (!BLOOM_ENABLED)
+    if (!RenderConfig::PostProcessing::Bloom::Enabled)
         return;
 
     BloomBrightnessFilter();

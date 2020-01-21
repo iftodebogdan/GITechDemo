@@ -44,26 +44,26 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
 {
     m_pFinalImageBuffer = nullptr;
 
-    if (POST_PROCESSING_ENABLED)
+    if (RenderConfig::PostProcessing::Enabled)
     {
         m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-        if (DOF_ENABLED)
+        if (RenderConfig::PostProcessing::DepthOfField::Enabled)
             m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-        if (MOTION_BLUR_ENABLED)
+        if (RenderConfig::PostProcessing::MotionBlur::Enabled)
             m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-        if (BLOOM_ENABLED)
+        if (RenderConfig::PostProcessing::Bloom::Enabled)
             m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-        if (LENS_FLARE_ENABLED)
+        if (RenderConfig::PostProcessing::LensFlare::Enabled)
             m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
 
-        if (HDR_TONE_MAPPING_ENABLED)
+        if (RenderConfig::PostProcessing::ToneMapping::Enabled)
             m_pFinalImageBuffer = LDRToneMappedImageBuffer.GetRenderTarget();
 
-        if (FXAA_ENABLED)
+        if (RenderConfig::PostProcessing::FastApproximateAntiAliasing::Enabled)
             m_pFinalImageBuffer = LDRFxaaImageBuffer.GetRenderTarget();
     }
     else
@@ -76,13 +76,13 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
     HLSL::ColorCopyParams->ApplyTonemap = false;
 
     // G-Buffer debugging
-    GBUFFER_DEBUG_VIEW = Math::clamp(GBUFFER_DEBUG_VIEW, -1, (int)GBuffer.GetRenderTarget()->GetTargetCount() - 1);
-    if (GBUFFER_DEBUG_VIEW != -1)
+    RenderConfig::GBuffer::DebugViewColor = Math::clamp(RenderConfig::GBuffer::DebugViewColor, -1, (int)GBuffer.GetRenderTarget()->GetTargetCount() - 1);
+    if (RenderConfig::GBuffer::DebugViewColor != -1)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
-        HLSL::ColorCopy_SourceTexture = GBuffer.GetRenderTarget()->GetColorBuffer(GBUFFER_DEBUG_VIEW);
+        HLSL::ColorCopy_SourceTexture = GBuffer.GetRenderTarget()->GetColorBuffer(RenderConfig::GBuffer::DebugViewColor);
     }
-    else if (GBUFFER_DEBUG_VIEW_DEPTH)
+    else if (RenderConfig::GBuffer::DebugViewDepth)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetWidth(), 0.5f / LinearFullDepthBuffer.GetRenderTarget()->GetHeight());
         HLSL::ColorCopy_SourceTexture = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
@@ -90,13 +90,13 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
         HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f) / HLSL::PostProcessingParams->ZFar;
     }
 
-    if (DEBUG_CSM_CAMERA)
+    if (RenderConfig::CascadedShadowMaps::DebugCameraView)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / ShadowMapDir.GetRenderTarget()->GetWidth(), 0.5f / ShadowMapDir.GetRenderTarget()->GetHeight());
         HLSL::ColorCopy_SourceTexture = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
         HLSL::ColorCopyParams->SingleChannelCopy = true;
     }
-    else if (DEBUG_RSM_CAMERA)
+    else if (RenderConfig::ReflectiveShadowMap::DebugCameraView)
     {
         HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / RSMBuffer.GetRenderTarget()->GetWidth(), 0.5f / RSMBuffer.GetRenderTarget()->GetHeight());
         HLSL::ColorCopy_SourceTexture = RSMBuffer.GetRenderTarget()->GetColorBuffer();

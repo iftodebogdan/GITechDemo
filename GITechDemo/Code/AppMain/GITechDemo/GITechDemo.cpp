@@ -142,19 +142,19 @@ bool GITechDemo::Init(void* hWnd)
     {
         if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
         {
-            if ((int)arrSupportedScreenFormats[i].nWidth > FULLSCREEN_RESOLUTION_X ||
-                (int)arrSupportedScreenFormats[i].nHeight > FULLSCREEN_RESOLUTION_Y)
+            if ((int)arrSupportedScreenFormats[i].nWidth > RenderConfig::Window::Resolution[0] ||
+                (int)arrSupportedScreenFormats[i].nHeight > RenderConfig::Window::Resolution[1])
             {
-                FULLSCREEN_RESOLUTION_X = arrSupportedScreenFormats[i].nWidth;
-                FULLSCREEN_RESOLUTION_Y = arrSupportedScreenFormats[i].nHeight;
-                FULLSCREEN_REFRESH_RATE = arrSupportedScreenFormats[i].nRefreshRate;
+                RenderConfig::Window::Resolution[0] = arrSupportedScreenFormats[i].nWidth;
+                RenderConfig::Window::Resolution[1] = arrSupportedScreenFormats[i].nHeight;
+                RenderConfig::Window::RefreshRate = arrSupportedScreenFormats[i].nRefreshRate;
             }
 
-            if ((int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X ||
-                (int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y ||
-                (int)arrSupportedScreenFormats[i].nRefreshRate > FULLSCREEN_REFRESH_RATE)
+            if ((int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] ||
+                (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1] ||
+                (int)arrSupportedScreenFormats[i].nRefreshRate > RenderConfig::Window::RefreshRate)
             {
-                FULLSCREEN_REFRESH_RATE = arrSupportedScreenFormats[i].nRefreshRate;
+                RenderConfig::Window::RefreshRate = arrSupportedScreenFormats[i].nRefreshRate;
             }
         }
     }
@@ -264,184 +264,184 @@ void GITechDemo::Update(const float fDeltaTime)
         m_vLastFrameViewport != Vec2i(-1, -1) ||
         m_nLastFrameRefreshRate != -1)
     {
-        if (FULLSCREEN_RESOLUTION_X > m_nLastFrameResX)
+        if (RenderConfig::Window::Resolution[0] > m_nLastFrameResX)
         {
             // X resolution increased
-            FULLSCREEN_RESOLUTION_X = INT_MAX;
-            FULLSCREEN_RESOLUTION_Y = INT_MAX;
+            RenderConfig::Window::Resolution[0] = INT_MAX;
+            RenderConfig::Window::Resolution[1] = INT_MAX;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
                 {
                     if ((int)arrSupportedScreenFormats[i].nWidth > m_nLastFrameResX &&
-                        (int)arrSupportedScreenFormats[i].nWidth <= FULLSCREEN_RESOLUTION_X)
+                        (int)arrSupportedScreenFormats[i].nWidth <= RenderConfig::Window::Resolution[0])
                     {
-                        FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
-                        FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
+                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
                     }
                 }
             }
-            if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
+            if (RenderConfig::Window::Resolution[0] == INT_MAX && RenderConfig::Window::Resolution[1] == INT_MAX)
             {
-                FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
-                FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
+                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
             }
         }
-        else if (FULLSCREEN_RESOLUTION_X < m_nLastFrameResX)
+        else if (RenderConfig::Window::Resolution[0] < m_nLastFrameResX)
         {
             // X resolution decreased
-            FULLSCREEN_RESOLUTION_X = 0;
-            FULLSCREEN_RESOLUTION_Y = 0;
+            RenderConfig::Window::Resolution[0] = 0;
+            RenderConfig::Window::Resolution[1] = 0;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
                 {
                     if ((int)arrSupportedScreenFormats[i].nWidth < m_nLastFrameResX &&
-                        (int)arrSupportedScreenFormats[i].nWidth >= FULLSCREEN_RESOLUTION_X)
+                        (int)arrSupportedScreenFormats[i].nWidth >= RenderConfig::Window::Resolution[0])
                     {
-                        FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
-                        FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
+                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
                     }
                 }
             }
-            if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+            if (RenderConfig::Window::Resolution[0] == 0 && RenderConfig::Window::Resolution[1] == 0)
             {
-                FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
-                FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
+                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
             }
         }
-        else if (FULLSCREEN_RESOLUTION_Y > m_nLastFrameResY)
+        else if (RenderConfig::Window::Resolution[1] > m_nLastFrameResY)
         {
             // Y resolution increased
-            FULLSCREEN_RESOLUTION_X = INT_MAX;
-            FULLSCREEN_RESOLUTION_Y = INT_MAX;
+            RenderConfig::Window::Resolution[0] = INT_MAX;
+            RenderConfig::Window::Resolution[1] = INT_MAX;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
                 {
                     if ((int)arrSupportedScreenFormats[i].nHeight > m_nLastFrameResY &&
-                        (int)arrSupportedScreenFormats[i].nHeight <= FULLSCREEN_RESOLUTION_Y)
+                        (int)arrSupportedScreenFormats[i].nHeight <= RenderConfig::Window::Resolution[1])
                     {
-                        FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
-                        FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
+                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
                     }
                 }
             }
-            if (FULLSCREEN_RESOLUTION_X == INT_MAX && FULLSCREEN_RESOLUTION_Y == INT_MAX)
+            if (RenderConfig::Window::Resolution[0] == INT_MAX && RenderConfig::Window::Resolution[1] == INT_MAX)
             {
-                FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
-                FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
+                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
             }
         }
-        else if (FULLSCREEN_RESOLUTION_Y < m_nLastFrameResY)
+        else if (RenderConfig::Window::Resolution[1] < m_nLastFrameResY)
         {
             // Y resolution decreased
-            FULLSCREEN_RESOLUTION_X = 0;
-            FULLSCREEN_RESOLUTION_Y = 0;
+            RenderConfig::Window::Resolution[0] = 0;
+            RenderConfig::Window::Resolution[1] = 0;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
                 {
                     if ((int)arrSupportedScreenFormats[i].nHeight < m_nLastFrameResY &&
-                        (int)arrSupportedScreenFormats[i].nHeight >= FULLSCREEN_RESOLUTION_Y)
+                        (int)arrSupportedScreenFormats[i].nHeight >= RenderConfig::Window::Resolution[1])
                     {
-                        FULLSCREEN_RESOLUTION_X = (int)arrSupportedScreenFormats[i].nWidth;
-                        FULLSCREEN_RESOLUTION_Y = (int)arrSupportedScreenFormats[i].nHeight;
+                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
+                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
                     }
                 }
             }
-            if (FULLSCREEN_RESOLUTION_X == 0 && FULLSCREEN_RESOLUTION_Y == 0)
+            if (RenderConfig::Window::Resolution[0] == 0 && RenderConfig::Window::Resolution[1] == 0)
             {
-                FULLSCREEN_RESOLUTION_X = m_nLastFrameResX; // Reset resolution setting in case
-                FULLSCREEN_RESOLUTION_Y = m_nLastFrameResY; // we didn't find another suitable one
+                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
+                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
             }
         }
-        else if (FULLSCREEN_REFRESH_RATE > m_nLastFrameRefreshRate)
+        else if (RenderConfig::Window::RefreshRate > m_nLastFrameRefreshRate)
         {
             // Refresh rate increased
-            FULLSCREEN_REFRESH_RATE = INT_MAX;
+            RenderConfig::Window::RefreshRate = INT_MAX;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
-                    (int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X &&
-                    (int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y)
+                    (int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] &&
+                    (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1])
                 {
                     if ((int)arrSupportedScreenFormats[i].nRefreshRate > m_nLastFrameRefreshRate &&
-                        (int)arrSupportedScreenFormats[i].nRefreshRate <= FULLSCREEN_REFRESH_RATE)
+                        (int)arrSupportedScreenFormats[i].nRefreshRate <= RenderConfig::Window::RefreshRate)
                     {
-                        FULLSCREEN_REFRESH_RATE = (int)arrSupportedScreenFormats[i].nRefreshRate;
+                        RenderConfig::Window::RefreshRate = (int)arrSupportedScreenFormats[i].nRefreshRate;
                     }
                 }
             }
-            if (FULLSCREEN_REFRESH_RATE == INT_MAX)
+            if (RenderConfig::Window::RefreshRate == INT_MAX)
             {
                 // Reset resolution setting in case we didn't find another suitable one
-                FULLSCREEN_REFRESH_RATE = m_nLastFrameRefreshRate;
+                RenderConfig::Window::RefreshRate = m_nLastFrameRefreshRate;
             }
         }
-        else if (FULLSCREEN_REFRESH_RATE < m_nLastFrameRefreshRate)
+        else if (RenderConfig::Window::RefreshRate < m_nLastFrameRefreshRate)
         {
             // Refresh rate decreased
-            FULLSCREEN_REFRESH_RATE = 0;
+            RenderConfig::Window::RefreshRate = 0;
             for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
             {
                 if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
-                    (int)arrSupportedScreenFormats[i].nWidth == FULLSCREEN_RESOLUTION_X &&
-                    (int)arrSupportedScreenFormats[i].nHeight == FULLSCREEN_RESOLUTION_Y)
+                    (int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] &&
+                    (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1])
                 {
                     if ((int)arrSupportedScreenFormats[i].nRefreshRate < m_nLastFrameRefreshRate &&
-                        (int)arrSupportedScreenFormats[i].nRefreshRate >= FULLSCREEN_REFRESH_RATE)
+                        (int)arrSupportedScreenFormats[i].nRefreshRate >= RenderConfig::Window::RefreshRate)
                     {
-                        FULLSCREEN_REFRESH_RATE = (int)arrSupportedScreenFormats[i].nRefreshRate;
+                        RenderConfig::Window::RefreshRate = (int)arrSupportedScreenFormats[i].nRefreshRate;
                     }
                 }
             }
-            if (FULLSCREEN_REFRESH_RATE == 0)
+            if (RenderConfig::Window::RefreshRate == 0)
             {
                 // Reset resolution setting in case we didn't find another suitable one
-                FULLSCREEN_REFRESH_RATE = m_nLastFrameRefreshRate;
+                RenderConfig::Window::RefreshRate = m_nLastFrameRefreshRate;
             }
         }
     }
 
     // Set the size of the backbuffer accordingly
     if (!pFW->IsRenderingPaused() &&
-        (m_nLastFrameResX != FULLSCREEN_RESOLUTION_X ||
-        m_nLastFrameResY != FULLSCREEN_RESOLUTION_Y ||
-        m_nLastFrameRefreshRate != FULLSCREEN_REFRESH_RATE ||
-        (m_vLastFrameViewport != viewportSize && !FULLSCREEN_ENABLED) ||
-        m_bLastFrameFullscreen != FULLSCREEN_ENABLED ||
-        m_bLastFrameBorderless != BORDERLESS_ENABLED ||
-        m_bLastFrameVSync != VSYNC_ENABLED))
+        (m_nLastFrameResX != RenderConfig::Window::Resolution[0] ||
+        m_nLastFrameResY != RenderConfig::Window::Resolution[1] ||
+        m_nLastFrameRefreshRate != RenderConfig::Window::RefreshRate ||
+        (m_vLastFrameViewport != viewportSize && !RenderConfig::Window::Fullscreen) ||
+        m_bLastFrameFullscreen != RenderConfig::Window::Fullscreen ||
+        m_bLastFrameBorderless != RenderConfig::Window::Borderless ||
+        m_bLastFrameVSync != RenderConfig::Window::VSync))
     {
-        if (!m_bLastFrameFullscreen && FULLSCREEN_ENABLED)
+        if (!m_bLastFrameFullscreen && RenderConfig::Window::Fullscreen)
             pFW->OnSwitchToFullscreenMode();
-        else if (m_bLastFrameFullscreen && !FULLSCREEN_ENABLED)
+        else if (m_bLastFrameFullscreen && !RenderConfig::Window::Fullscreen)
         {
-            if (BORDERLESS_ENABLED)
+            if (RenderConfig::Window::Borderless)
                 pFW->OnSwitchToBorderlessWindowedMode();
             else
                 pFW->OnSwitchToWindowedMode();
         }
-        else if (!m_bLastFrameBorderless && BORDERLESS_ENABLED && !FULLSCREEN_ENABLED)
+        else if (!m_bLastFrameBorderless && RenderConfig::Window::Borderless && !RenderConfig::Window::Fullscreen)
             pFW->OnSwitchToBorderlessWindowedMode();
-        else if (m_bLastFrameBorderless && !BORDERLESS_ENABLED && !FULLSCREEN_ENABLED)
+        else if (m_bLastFrameBorderless && !RenderConfig::Window::Borderless && !RenderConfig::Window::Fullscreen)
             pFW->OnSwitchToWindowedMode();
 
         RenderContext->SetDisplayResolution(
-            FULLSCREEN_ENABLED ? Vec2i(FULLSCREEN_RESOLUTION_X, FULLSCREEN_RESOLUTION_Y) : viewportSize,
+            RenderConfig::Window::Fullscreen ? Vec2i(RenderConfig::Window::Resolution[0], RenderConfig::Window::Resolution[1]) : viewportSize,
             Vec2i(0, 0),
-            FULLSCREEN_ENABLED,
-            FULLSCREEN_REFRESH_RATE,
-            VSYNC_ENABLED);
+            RenderConfig::Window::Fullscreen,
+            RenderConfig::Window::RefreshRate,
+            RenderConfig::Window::VSync);
 
-        m_nLastFrameResX = FULLSCREEN_RESOLUTION_X;
-        m_nLastFrameResY = FULLSCREEN_RESOLUTION_Y;
-        m_nLastFrameRefreshRate = FULLSCREEN_REFRESH_RATE;
+        m_nLastFrameResX = RenderConfig::Window::Resolution[0];
+        m_nLastFrameResY = RenderConfig::Window::Resolution[1];
+        m_nLastFrameRefreshRate = RenderConfig::Window::RefreshRate;
         m_vLastFrameViewport = viewportSize;
-        m_bLastFrameFullscreen = FULLSCREEN_ENABLED;
-        m_bLastFrameBorderless = BORDERLESS_ENABLED;
-        m_bLastFrameVSync = VSYNC_ENABLED;
+        m_bLastFrameFullscreen = RenderConfig::Window::Fullscreen;
+        m_bLastFrameBorderless = RenderConfig::Window::Borderless;
+        m_bLastFrameVSync = RenderConfig::Window::VSync;
     }
 
     // Update focus context
@@ -500,7 +500,7 @@ void GITechDemo::Update(const float fDeltaTime)
             m_pInputMap->GetFloat(APP_CMD_ROLL_AXIS)
             );
         rotateDelta -= Vec3f(0.5f - halfPixel[1], 0.5f - halfPixel[0], 0.5f - halfPixel[0]);
-        rotateDelta *= CAMERA_ROTATE_SPEED;
+        rotateDelta *= RenderConfig::Camera::RotationSpeed;
     }
 
     // Update camera rotation matrix
@@ -529,14 +529,14 @@ void GITechDemo::Update(const float fDeltaTime)
         m_tCamera.vMoveVec[0] = 0.f;
 
     if (cmd & APP_CMD_SPEED_UP)
-        m_tCamera.fSpeedFactor = CAMERA_SPEED_UP_FACTOR;
+        m_tCamera.fSpeedFactor = RenderConfig::Camera::SpeedUpFactor;
     else if (cmd & APP_CMD_SLOW_DOWN)
-        m_tCamera.fSpeedFactor = CAMERA_SLOW_DOWN_FACTOR;
+        m_tCamera.fSpeedFactor = RenderConfig::Camera::SlowDownFactor;
     else
         m_tCamera.fSpeedFactor = 1.f;
 
     gmtl::normalize(m_tCamera.vMoveVec);
-    m_tCamera.vMoveVec *= CAMERA_MOVE_SPEED * m_tCamera.fSpeedFactor * pFW->GetDeltaTime();
+    m_tCamera.vMoveVec *= RenderConfig::Camera::MoveSpeed * m_tCamera.fSpeedFactor * pFW->GetDeltaTime();
     m_tCamera.vPos -=
         Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][1] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
         Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
@@ -559,13 +559,13 @@ void GITechDemo::Update(const float fDeltaTime)
     }
 
     // Animate camera
-    if (CAMERA_ANIMATION_ENABLED)
+    if (RenderConfig::Camera::Animation)
     {
         static float lastInput = 0.f;
         if (cmd == APP_CMD_NONE)
         {
             lastInput += fDeltaTime;
-            if (lastInput > CAMERA_ANIMATION_TIMEOUT_SECONDS)
+            if (lastInput > RenderConfig::Camera::AnimationTimeout)
             {
                 static float time = 0.f;
                 time += fDeltaTime;
@@ -584,13 +584,13 @@ void GITechDemo::Update(const float fDeltaTime)
                 perlinPos[2] = perlinPos[2] - floor(perlinPos[2]);
 
                 m_tCamera.vPos = -Vec3f(
-                    ((SceneAABB.getMax()[0] - SceneAABB.getMin()[0]) * perlinPos[0] + SceneAABB.getMin()[0]) * 1.5f,
-                    ((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) * (perlinPos[1] - 0.15f) + SceneAABB.getMin()[1]),
-                    ((SceneAABB.getMax()[2] - SceneAABB.getMin()[2]) * perlinPos[2] + SceneAABB.getMin()[2]) * 0.9f
+                    ((RenderConfig::Scene::WorldSpaceAABB.getMax()[0] - RenderConfig::Scene::WorldSpaceAABB.getMin()[0]) * perlinPos[0] + RenderConfig::Scene::WorldSpaceAABB.getMin()[0]) * 1.5f,
+                    ((RenderConfig::Scene::WorldSpaceAABB.getMax()[1] - RenderConfig::Scene::WorldSpaceAABB.getMin()[1]) * (perlinPos[1] - 0.15f) + RenderConfig::Scene::WorldSpaceAABB.getMin()[1]),
+                    ((RenderConfig::Scene::WorldSpaceAABB.getMax()[2] - RenderConfig::Scene::WorldSpaceAABB.getMin()[2]) * perlinPos[2] + RenderConfig::Scene::WorldSpaceAABB.getMin()[2]) * 0.9f
                     );
 
                 Vec3f lookAtPos = HLSL::BRDFParams->LightDir[0] * 1500.f;
-                lookAtPos[1] = gmtl::Math::Max(((SceneAABB.getMax()[1] - SceneAABB.getMin()[1]) / 1.75f + SceneAABB.getMin()[1]) / 1.75f, -m_tCamera.vPos[1]);
+                lookAtPos[1] = gmtl::Math::Max(((RenderConfig::Scene::WorldSpaceAABB.getMax()[1] - RenderConfig::Scene::WorldSpaceAABB.getMin()[1]) / 1.75f + RenderConfig::Scene::WorldSpaceAABB.getMin()[1]) / 1.75f, -m_tCamera.vPos[1]);
 
                 Vec3f zAxis = makeNormal(Vec3f(lookAtPos + m_tCamera.vPos));
                 Vec3f upVec = Vec3f(0.f, 1.f, 0.f);
@@ -610,7 +610,7 @@ void GITechDemo::Update(const float fDeltaTime)
     }
 
     // Animate directional light using Perlin Noise
-    if (DIRECTIONAL_LIGHT_ANIMATION_ENABLED)
+    if (RenderConfig::DirectionalLight::Animation)
     {
         static float time = 0.f;
         time += fDeltaTime;
@@ -663,10 +663,10 @@ void GITechDemo::Update(const float fDeltaTime)
     HLSL::BRDFParams->ViewMat = m_tCamera.mRot * makeTrans(m_tCamera.vPos, Type2Type<Matrix44f>());
 
     // Calculate projection matrix
-    if(CAMERA_INFINITE_PROJ)
-        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear);
+    if(RenderConfig::Camera::InfiniteProjection)
+        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear);
     else
-        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(CAMERA_FOV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear, HLSL::PostProcessingParams->ZFar[0]);
+        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear, HLSL::PostProcessingParams->ZFar[0]);
     gmtl::invertFull(HLSL::DirectionalLightParams->InvProjMat, HLSL::FrameParams->ProjMat);
     gmtl::invertFull(HLSL::ScreenSpaceReflectionParams->InvProjMat, HLSL::FrameParams->ProjMat);
     gmtl::invertFull(HLSL::SSAOParams->InvProjMat, HLSL::FrameParams->ProjMat);

@@ -118,13 +118,15 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
          0,   0, 0,  1);
     HLSL::ScreenSpaceReflectionParams->ViewToRasterMat = rasterScaleMat * HLSL::FrameParams->ProjMat;
 
-    if(!SSR_MANUAL_MAX_STEPS)
+    if(!RenderConfig::PostProcessing::ScreenSpaceReflections::ManualMaxSteps)
         HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / HLSL::ScreenSpaceReflectionParams->SampleStride);
+
+    HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 }
 
 void ScreenSpaceReflectionPass::Draw()
 {
-    if (!SSR_ENABLED)
+    if (!RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

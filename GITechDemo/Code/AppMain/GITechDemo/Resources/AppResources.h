@@ -171,6 +171,149 @@ namespace GITechDemoApp
 
     // Used for fullscreen effects, post-processing, etc.
     extern VertexBuffer*    FullScreenTri;
+    //------------------------------------------------------
+
+    // Various configurable parameters not used directly in shaders
+    struct RenderConfig
+    {
+        struct Window
+        {
+            static bool Fullscreen;
+            static bool Borderless;
+            static Vec2i Resolution;
+            static int RefreshRate;
+            static bool VSync;
+        };
+
+        struct Camera
+        {
+            static bool InfiniteProjection;
+            static float FoV;
+            static float MoveSpeed;
+            static float SpeedUpFactor;
+            static float SlowDownFactor;
+            static float RotationSpeed;
+            static bool Animation;
+            static int AnimationTimeout;
+        };
+
+        struct Scene
+        {
+            static AABoxf WorldSpaceAABB;
+            static AABoxf LightSpaceAABB;
+        };
+
+        struct GBuffer
+        {
+            static bool ZPrepass;
+            static int DiffuseAnisotropy;
+            static bool UseNormalMaps;
+            static bool DrawAlphaTestGeometry;
+            static int DebugViewColor;
+            static bool DebugViewDepth;
+        };
+
+        struct DirectionalLight
+        {
+            static bool Animation;
+            static bool Enabled;
+            static float ReflectionFactor;
+        };
+
+        struct CascadedShadowMaps
+        {
+            static bool DebugCameraView;
+            static float SplitFactor;
+            static float MaxViewDepth;
+            static const unsigned int PCFMaxSampleCount = 16;
+            static const Vec2i ShadowMapSize;
+            static float DepthBias[];
+            static float SlopeScaledDepthBias[];
+        };
+
+        struct ReflectiveShadowMap
+        {
+            static bool DebugCameraView;
+            static bool Enabled;
+            static bool QuarterResolution;
+            static bool BilateralBlur;
+            static const unsigned int RSMSize = 1024;
+        };
+
+        struct DirectionalLightVolume
+        {
+            static bool Enabled;
+            static bool QuarterResolution;
+            static bool BlurSamples;
+            static bool DepthAwareBlur;
+            static float BlurDepthFalloff;
+            static bool DepthAwareUpscale;
+            static Vec4f LightColor;
+        };
+
+        struct PostProcessing
+        {
+            static bool Enabled;
+
+            struct ScreenSpaceReflections
+            {
+                static bool Enabled;
+                static bool ManualMaxSteps;
+            };
+
+            struct ScreenSpaceAmbientOcclusion
+            {
+                static bool Enabled;
+                static bool QuarterResolution;
+                static const unsigned int BlurKernelCount = 3;
+                static const unsigned int BlurKernel[BlurKernelCount];
+            };
+
+            struct DepthOfField
+            {
+                static bool Enabled;
+                static float AutofocusTime;
+                static int PassCount;
+                static float ApertureSize;
+            };
+
+            struct MotionBlur
+            {
+                static bool Enabled;
+            };
+
+            struct Bloom
+            {
+                static bool Enabled;
+                static const unsigned int BlurKernelCount = 9;
+                static const unsigned int BlurKernel[BlurKernelCount];
+                static float BrightnessThreshold;
+            };
+
+            struct LensFlare
+            {
+                static bool Enabled;
+                static float BrightnessThreshold;
+                static bool Anamorphic;
+                static const unsigned int BlurKernelCount = 3;
+                static const unsigned int BlurKernel[BlurKernelCount];
+                static const unsigned int AnamorphicBlurPassCount = 6;
+            };
+
+            struct ToneMapping
+            {
+                static bool Enabled;
+                static bool sRGBColorCorrectionTexture;
+                static float AutoExposureSpeed;
+            };
+
+            struct FastApproximateAntiAliasing
+            {
+                static bool Enabled;
+            };
+        };
+    };
+    //------------------------------------------------------
 }
 
 ///////////////////////////////////////////////////////////

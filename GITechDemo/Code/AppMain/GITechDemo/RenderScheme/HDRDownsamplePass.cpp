@@ -90,7 +90,7 @@ void HDRDownsamplePass::DownsamplePass(GITechDemoApp::RenderTarget* const pSourc
 
 void HDRDownsamplePass::Draw()
 {
-    if (!HDR_TONE_MAPPING_ENABLED)
+    if (!RenderConfig::PostProcessing::ToneMapping::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

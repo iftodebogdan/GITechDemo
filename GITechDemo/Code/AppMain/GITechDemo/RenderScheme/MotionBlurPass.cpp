@@ -50,7 +50,7 @@ void MotionBlurPass::Update(const float fDeltaTime)
 
 void MotionBlurPass::Draw()
 {
-    if(!MOTION_BLUR_ENABLED)
+    if(!RenderConfig::PostProcessing::MotionBlur::Enabled)
         return;
 
     CalculateMotionBlur();

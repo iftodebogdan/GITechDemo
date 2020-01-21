@@ -37,7 +37,7 @@ using namespace GITechDemoApp;
 SSAOPass::SSAOPass(const char* const passName, RenderPass* const parentPass)
     : RenderPass(passName, parentPass)
     , SSAOBuffer(SSAOFullBuffer)
-    , BlurKernelCount(SSAO_BLUR_KERNEL_COUNT)
+    , BlurKernelCount(RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernelCount)
 {}
 
 SSAOPass::~SSAOPass()
@@ -52,15 +52,15 @@ void SSAOPass::Update(const float fDeltaTime)
     HLSL::SSAO_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
     HLSL::SSAO_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-    if (SSAO_USE_QUARTER_RESOLUTION_BUFFER)
+    if (RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::QuarterResolution)
     {
         SSAOBuffer = SSAOQuarterBuffer;
-        BlurKernelCount = SSAO_BLUR_KERNEL_COUNT - 1;
+        BlurKernelCount = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernelCount - 1;
     }
     else
     {
         SSAOBuffer = SSAOFullBuffer;
-        BlurKernelCount = SSAO_BLUR_KERNEL_COUNT;
+        BlurKernelCount = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernelCount;
     }
 
     HLSL::ColorCopyParams->SingleChannelCopy = true;
@@ -118,7 +118,7 @@ void SSAOPass::BlurSSAO()
     {
 #if ENABLE_PROFILE_MARKERS
         char label[10];
-        sprintf_s(label, "Kernel %d", SSAO_BLUR_KERNEL[i]);
+        sprintf_s(label, "Kernel %d", RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernel[i]);
 #endif
         PUSH_PROFILE_MARKER(label);
 
@@ -144,7 +144,7 @@ void SSAOPass::BlurSSAO()
             1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
             1.f / (float)SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
             );
-        HLSL::BloomParams->Kernel = SSAO_BLUR_KERNEL[i];
+        HLSL::BloomParams->Kernel = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernel[i];
         HLSL::BloomParams->AdjustIntensity = false;
 
         // Reuse the bloom shader for blurring the ambient occlusion render target
@@ -212,7 +212,7 @@ void SSAOPass::ApplySSAO()
 
 void SSAOPass::Draw()
 {
-    if (!SSAO_ENABLED)
+    if (!RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled)
         return;
 
     //Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();

@@ -95,7 +95,7 @@ void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarg
 
 void HDRDownsampleForBloomPass::Draw()
 {
-    if (!BLOOM_ENABLED)
+    if (!RenderConfig::PostProcessing::Bloom::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

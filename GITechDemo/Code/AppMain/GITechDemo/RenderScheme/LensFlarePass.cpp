@@ -101,7 +101,7 @@ void LensFlarePass::Update(const float fDeltaTime)
 
     HLSL::LensFlareApplyParams->StarBurstMat = scaleBias2 * rotMat * scaleBias1;
 
-    if (LENS_FLARE_ANAMORPHIC)
+    if (RenderConfig::PostProcessing::LensFlare::Anamorphic)
         CurrentLensFlareBuffer = AnamorphicLensFlareBuffer;
     else
         CurrentLensFlareBuffer = SphericalLensFlareBuffer;
@@ -109,12 +109,12 @@ void LensFlarePass::Update(const float fDeltaTime)
 
 void LensFlarePass::Draw()
 {
-    if (!LENS_FLARE_ENABLED)
+    if (!RenderConfig::PostProcessing::LensFlare::Enabled)
         return;
 
     ApplyBrightnessFilter();
     GenerateFeatures();
-    if (LENS_FLARE_ANAMORPHIC)
+    if (RenderConfig::PostProcessing::LensFlare::Anamorphic)
         AnamorphicBlur();
     else
         Blur();
@@ -129,7 +129,7 @@ void LensFlarePass::ApplyBrightnessFilter()
 
     PUSH_PROFILE_MARKER("Brightness filter");
 
-    if (!LENS_FLARE_ANAMORPHIC)
+    if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
         CurrentLensFlareBuffer[0]->Enable();
     else
         CurrentLensFlareBuffer[2]->Enable();
@@ -137,7 +137,7 @@ void LensFlarePass::ApplyBrightnessFilter()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    if (!LENS_FLARE_ANAMORPHIC)
+    if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
     {
         HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
             0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
@@ -166,16 +166,13 @@ void LensFlarePass::ApplyBrightnessFilter()
         HLSL::Downsample_Source = HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetColorBuffer(0);
     }
 
-    const float bkp = HLSL::DownsampleParams->BrightnessThreshold;
-    HLSL::DownsampleParams->BrightnessThreshold = LENS_FLARE_BRIGHTNESS_THRESHOLD;
+    HLSL::DownsampleParams->BrightnessThreshold = RenderConfig::PostProcessing::LensFlare::BrightnessThreshold;
 
     DownsampleShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     DownsampleShader.Disable();
 
-    HLSL::DownsampleParams->BrightnessThreshold = bkp;
-
-    if (!LENS_FLARE_ANAMORPHIC)
+    if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
         CurrentLensFlareBuffer[0]->Disable();
     else
         CurrentLensFlareBuffer[2]->Disable();
@@ -195,7 +192,7 @@ void LensFlarePass::GenerateFeatures()
 
     PUSH_PROFILE_MARKER("Feature generation");
 
-    if (!LENS_FLARE_ANAMORPHIC)
+    if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
     {
         ResourceMgr->GetTexture(
             CurrentLensFlareBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
@@ -221,7 +218,7 @@ void LensFlarePass::GenerateFeatures()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    if (!LENS_FLARE_ANAMORPHIC)
+    if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
     {
         HLSL::SphericalLensFlareFeaturesParams->HalfTexelOffset = Vec2f(
             0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
@@ -289,11 +286,11 @@ void LensFlarePass::Blur()
         CurrentLensFlareBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-    for (unsigned int i = 0; i < LENS_FLARE_BLUR_KERNEL_COUNT; i++)
+    for (unsigned int i = 0; i < RenderConfig::PostProcessing::LensFlare::BlurKernelCount; i++)
     {
 #if ENABLE_PROFILE_MARKERS
         char label[10];
-        sprintf_s(label, "Kernel %d", LENS_FLARE_BLUR_KERNEL[i]);
+        sprintf_s(label, "Kernel %d", RenderConfig::PostProcessing::LensFlare::BlurKernel[i]);
 #endif
         PUSH_PROFILE_MARKER(label);
 
@@ -313,7 +310,7 @@ void LensFlarePass::Blur()
             1.f / (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
             );
         HLSL::Bloom_Source = CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetColorBuffer(0);
-        HLSL::BloomParams->Kernel = LENS_FLARE_BLUR_KERNEL[i];
+        HLSL::BloomParams->Kernel = RenderConfig::PostProcessing::LensFlare::BlurKernel[i];
 
         // Reuse bloom shader for Kawase blur
         BloomShader.Enable();
@@ -354,7 +351,7 @@ void LensFlarePass::AnamorphicBlur()
         CurrentLensFlareBuffer[1]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
-    for (unsigned int i = 0; i < LENS_FLARE_ANAMORPHIC_BLUR_PASSES; i++)
+    for (unsigned int i = 0; i < RenderConfig::PostProcessing::LensFlare::AnamorphicBlurPassCount; i++)
     {
 #if ENABLE_PROFILE_MARKERS
         char label[10];
@@ -418,11 +415,11 @@ void LensFlarePass::UpscaleAndBlend()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::LensFlareApplyParams->HalfTexelOffset = Vec2f(0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetWidth(), 0.5f / CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetHeight());
+    HLSL::LensFlareApplyParams->HalfTexelOffset = Vec2f(0.5f / CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetWidth(), 0.5f / CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
-        CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer(0)
+        CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
-    HLSL::LensFlareApply_Features = CurrentLensFlareBuffer[(LENS_FLARE_BLUR_KERNEL_COUNT + 1) % 2]->GetRenderTarget()->GetColorBuffer();
+    HLSL::LensFlareApply_Features = CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetColorBuffer();
 
     LensFlareApplyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

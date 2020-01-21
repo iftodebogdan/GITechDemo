@@ -59,7 +59,7 @@ void SceneGeometryPass::Draw()
     // G-Buffer generation process. It allows us to avoid shading pixels
     // that eventually get overwritten by other pixels that have smaller
     // depth values. We are not fill-rate bound, so the depth prepass is disabled.
-    if (GBUFFER_Z_PREPASS)
+    if (RenderConfig::GBuffer::ZPrepass)
     {
         PUSH_PROFILE_MARKER("Z prepass");
 
@@ -85,7 +85,7 @@ void SceneGeometryPass::Draw()
             }
             else
             {
-                if (DRAW_ALPHA_TEST_GEOMETRY)
+                if (RenderConfig::GBuffer::DrawAlphaTestGeometry)
                 {
                     DepthPassShader.Disable();
                     DepthPassAlphaTestShader.Enable();
@@ -124,11 +124,11 @@ void SceneGeometryPass::Draw()
 
         if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || HLSL::BRDFParams->BRDFModel == HLSL::BRDF::BlinnPhong))
         {
-            RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
+            RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)RenderConfig::GBuffer::DiffuseAnisotropy);
 
             HLSL::GBufferGeneration_Diffuse = diffuseTexIdx;
             HLSL::GBufferGeneration_Normal = normalTexIdx;
-            HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && GBUFFER_USE_NORMAL_MAPS;
+            HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && RenderConfig::GBuffer::UseNormalMaps;
 
             // For Blinn-Phong BRDF
             HLSL::GBufferGeneration_Spec = specTexIdx;
@@ -147,7 +147,7 @@ void SceneGeometryPass::Draw()
         POP_PROFILE_MARKER();
     }
 
-    if (GBUFFER_Z_PREPASS)
+    if (RenderConfig::GBuffer::ZPrepass)
     {
         RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWriteEnabled);
         RenderContext->GetRenderStateManager()->SetZFunc(zFunc);

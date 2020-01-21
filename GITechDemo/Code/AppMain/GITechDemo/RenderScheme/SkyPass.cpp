@@ -124,11 +124,11 @@ void SkyPass::Update(const float fDeltaTime)
 
     // Don't use the infinite projection matrix so as not to cause artifacts due to the sky
     // being placed at depth 1, which is a singularity for the respective projection equation.
-    if (CAMERA_INFINITE_PROJ)
+    if (RenderConfig::Camera::InfiniteProjection)
     {
         RenderContext->CreatePerspectiveMatrix(
             HLSL::SkyboxParams->SkyViewProjMat,
-            Math::deg2Rad(CAMERA_FOV),
+            Math::deg2Rad(RenderConfig::Camera::FoV),
             (float)GBuffer.GetRenderTarget()->GetWidth() / (float)GBuffer.GetRenderTarget()->GetHeight(),
             HLSL::PostProcessingParams->ZNear,
             HLSL::PostProcessingParams->ZFar);

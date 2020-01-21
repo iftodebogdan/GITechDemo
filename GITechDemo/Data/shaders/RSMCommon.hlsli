@@ -42,12 +42,13 @@ struct RSM
     // vary linearly with the samples' offsets.
     static const unsigned int PassCount = 4; // The number of passes
     static const unsigned int SamplesPerPass = 16; // The number of samples from the RSM in each pass
+    static const unsigned int SampleCount = PassCount * SamplesPerPass; // Total number of samples
 };
 
 CBUFFER_RESOURCE(RSMCommon,
     // The kernel for sampling the RSM
     GPU_float3 KernelApplyPass[RSM::SamplesPerPass];
-    GPU_float3 KernelUpscalePass[RSM::PassCount * RSM::SamplesPerPass];
+    GPU_float3 KernelUpscalePass[RSM::SampleCount];
 
     // Intensity of the indirect light
     GPU_float Intensity;
@@ -103,7 +104,7 @@ void ApplyRSM(const float2 texCoord, const float depth, out float4 colorOut)
     const unsigned int endIdx = RSM::SamplesPerPass;
     const float3 kernel[] = RSMCommonParams.KernelApplyPass;
 #elif RSM_UPSCALE_PASS
-    const unsigned int endIdx = RSM::PassCount * RSM::SamplesPerPass;
+    const unsigned int endIdx = RSM::SampleCount;
     const float3 kernel[] = RSMCommonParams.KernelUpscalePass;
 #else
     #error Either RSM_APPLY_PASS or RSM_UPSCALE_PASS must be defined!

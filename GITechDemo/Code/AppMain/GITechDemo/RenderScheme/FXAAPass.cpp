@@ -53,7 +53,7 @@ void FXAAPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(LDRFxaaImageBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 
-    const Synesthesia3D::RenderTarget* const srcRT = HDR_TONE_MAPPING_ENABLED ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
+    const Synesthesia3D::RenderTarget* const srcRT = RenderConfig::PostProcessing::ToneMapping::Enabled ? LDRToneMappedImageBuffer.GetRenderTarget() : LightAccumulationBuffer.GetRenderTarget();
     HLSL::FXAAParams->HalfTexelOffset = Vec2f(0.5f / srcRT->GetWidth(), 0.5f / srcRT->GetHeight());
     HLSL::FXAAParams->TextureSize = Vec4f(
         (float)srcRT->GetWidth(),
@@ -71,7 +71,7 @@ void FXAAPass::Update(const float fDeltaTime)
 
 void FXAAPass::Draw()
 {
-    if (!FXAA_ENABLED)
+    if (!RenderConfig::PostProcessing::FastApproximateAntiAliasing::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

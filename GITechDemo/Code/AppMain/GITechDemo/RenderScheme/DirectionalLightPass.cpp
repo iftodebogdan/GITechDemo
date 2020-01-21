@@ -80,7 +80,7 @@ void DirectionalLightPass::Update(const float fDeltaTime)
     HLSL::DirectionalLight_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
     HLSL::DirectionalLight_MaterialBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(2);
     HLSL::DirectionalLight_ShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
-    HLSL::DirectionalLightParams->OneOverShadowMapSize = Vec2f(1.f / (float)SHADOW_MAP_SIZE[0], 1.f / (float)SHADOW_MAP_SIZE[1]);
+    HLSL::DirectionalLightParams->OneOverShadowMapSize = Vec2f(1.f / (float)RenderConfig::CascadedShadowMaps::ShadowMapSize[0], 1.f / (float)RenderConfig::CascadedShadowMaps::ShadowMapSize[1]);
 
     IrradianceTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
     IrradianceTexture.GetTexture()->SetSRGBEnabled(true);
@@ -93,7 +93,7 @@ void DirectionalLightPass::Update(const float fDeltaTime)
 
 void DirectionalLightPass::Draw()
 {
-    if (!DIRECTIONAL_LIGHT_ENABLED)
+    if (!RenderConfig::DirectionalLight::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();
@@ -102,13 +102,12 @@ void DirectionalLightPass::Draw()
 
     // Disable environment map reflections if
     // screen space reflections are active.
-    float reflectionFactorBkp = HLSL::BRDFParams->ReflectionFactor;
-    if (SSR_ENABLED)
+    if (RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
         HLSL::BRDFParams->ReflectionFactor = 0.f;
+    else
+        HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 
     DirectionalLightShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     DirectionalLightShader.Disable();
-
-    HLSL::BRDFParams->ReflectionFactor = reflectionFactorBkp;
 }

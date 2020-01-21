@@ -58,11 +58,11 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
 
     // RSM matrices
     RenderContext->CreateOrthographicMatrix(HLSL::RSMCommonParams->RSMProjMat,
-        SceneLightSpaceAABB.mMin[0],
-        SceneLightSpaceAABB.mMax[1],
-        SceneLightSpaceAABB.mMax[0],
-        SceneLightSpaceAABB.mMin[1],
-        SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
+        RenderConfig::Scene::LightSpaceAABB.mMin[0],
+        RenderConfig::Scene::LightSpaceAABB.mMax[1],
+        RenderConfig::Scene::LightSpaceAABB.mMax[0],
+        RenderConfig::Scene::LightSpaceAABB.mMin[1],
+        RenderConfig::Scene::LightSpaceAABB.mMin[2], RenderConfig::Scene::LightSpaceAABB.mMax[2]);
     HLSL::RSMCaptureParams->RSMWorldViewProjMat = HLSL::RSMCommonParams->RSMProjMat * HLSL::RSMCaptureParams->LightWorldViewMat;
     invertFull(HLSL::RSMCommonParams->RSMInvProjMat, HLSL::RSMCommonParams->RSMProjMat);
     HLSL::RSMCommonParams->ViewToRSMViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::BRDFParams->InvViewMat;
@@ -70,7 +70,7 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
 
 void RSMDirectionalLightPass::Draw()
 {
-    if (!INDIRECT_LIGHT_ENABLED)
+    if (!RenderConfig::ReflectiveShadowMap::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

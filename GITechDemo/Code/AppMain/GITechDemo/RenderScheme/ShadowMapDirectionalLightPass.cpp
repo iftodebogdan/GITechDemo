@@ -41,9 +41,6 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    AABoxf SceneAABB;
-    AABoxf SceneLightSpaceAABB;
-
     // The vertices corresponding to DX9's clip space cuboid
     // used when partitioning the view frustum for CSM
     const Vec4f cuboidVerts[] =
@@ -71,8 +68,8 @@ void ShadowMapDirectionalLightPass::UpdateSceneAABB()
 {
     // Calculate the scene's AABB
     // This will be used later when calculating the cascade bounds for the CSM
-    SceneAABB.mMin = Vec3f(FLT_MAX, FLT_MAX, FLT_MAX);
-    SceneAABB.mMax = Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+    RenderConfig::Scene::WorldSpaceAABB.mMin = Vec3f(FLT_MAX, FLT_MAX, FLT_MAX);
+    RenderConfig::Scene::WorldSpaceAABB.mMax = Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
     for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
     {
         const VertexBuffer* const vb = SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer;
@@ -80,35 +77,35 @@ void ShadowMapDirectionalLightPass::UpdateSceneAABB()
         {
             Vec3f vertPos = vb->Position<Vec3f>(vert);
 
-            if (vertPos[0] < SceneAABB.mMin[0])
+            if (vertPos[0] < RenderConfig::Scene::WorldSpaceAABB.mMin[0])
             {
-                SceneAABB.mMin[0] = vertPos[0];
+                RenderConfig::Scene::WorldSpaceAABB.mMin[0] = vertPos[0];
             }
-            if (vertPos[1] < SceneAABB.mMin[1])
+            if (vertPos[1] < RenderConfig::Scene::WorldSpaceAABB.mMin[1])
             {
-                SceneAABB.mMin[1] = vertPos[1];
+                RenderConfig::Scene::WorldSpaceAABB.mMin[1] = vertPos[1];
             }
-            if (vertPos[2] < SceneAABB.mMin[2])
+            if (vertPos[2] < RenderConfig::Scene::WorldSpaceAABB.mMin[2])
             {
-                SceneAABB.mMin[2] = vertPos[2];
+                RenderConfig::Scene::WorldSpaceAABB.mMin[2] = vertPos[2];
             }
 
-            if (vertPos[0] > SceneAABB.mMax[0])
+            if (vertPos[0] > RenderConfig::Scene::WorldSpaceAABB.mMax[0])
             {
-                SceneAABB.mMax[0] = vertPos[0];
+                RenderConfig::Scene::WorldSpaceAABB.mMax[0] = vertPos[0];
             }
-            if (vertPos[1] > SceneAABB.mMax[1])
+            if (vertPos[1] > RenderConfig::Scene::WorldSpaceAABB.mMax[1])
             {
-                SceneAABB.mMax[1] = vertPos[1];
+                RenderConfig::Scene::WorldSpaceAABB.mMax[1] = vertPos[1];
             }
-            if (vertPos[2] > SceneAABB.mMax[2])
+            if (vertPos[2] > RenderConfig::Scene::WorldSpaceAABB.mMax[2])
             {
-                SceneAABB.mMax[2] = vertPos[2];
+                RenderConfig::Scene::WorldSpaceAABB.mMax[2] = vertPos[2];
             }
         }
     }
 
-    SceneAABB.setInitialized();
+    RenderConfig::Scene::WorldSpaceAABB.setInitialized();
 }
 
 void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
@@ -148,17 +145,17 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     // Start with converting the scene AABB to a light view space OBB
     // and then calculating its light view space AABB
     Vec3f aabbVerts[8];
-    aabbVerts[0] = SceneAABB.getMin();
-    aabbVerts[1] = Vec3f(SceneAABB.getMin()[0], SceneAABB.getMin()[1], SceneAABB.getMax()[2]);
-    aabbVerts[2] = Vec3f(SceneAABB.getMax()[0], SceneAABB.getMin()[1], SceneAABB.getMax()[2]);
-    aabbVerts[3] = Vec3f(SceneAABB.getMax()[0], SceneAABB.getMin()[1], SceneAABB.getMin()[2]);
-    aabbVerts[4] = Vec3f(SceneAABB.getMin()[0], SceneAABB.getMax()[1], SceneAABB.getMin()[2]);
-    aabbVerts[5] = Vec3f(SceneAABB.getMin()[0], SceneAABB.getMax()[1], SceneAABB.getMax()[2]);
-    aabbVerts[6] = Vec3f(SceneAABB.getMax()[0], SceneAABB.getMax()[1], SceneAABB.getMin()[2]);
-    aabbVerts[7] = SceneAABB.getMax();
+    aabbVerts[0] = RenderConfig::Scene::WorldSpaceAABB.getMin();
+    aabbVerts[1] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMin()[0], RenderConfig::Scene::WorldSpaceAABB.getMin()[1], RenderConfig::Scene::WorldSpaceAABB.getMax()[2]);
+    aabbVerts[2] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMax()[0], RenderConfig::Scene::WorldSpaceAABB.getMin()[1], RenderConfig::Scene::WorldSpaceAABB.getMax()[2]);
+    aabbVerts[3] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMax()[0], RenderConfig::Scene::WorldSpaceAABB.getMin()[1], RenderConfig::Scene::WorldSpaceAABB.getMin()[2]);
+    aabbVerts[4] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMin()[0], RenderConfig::Scene::WorldSpaceAABB.getMax()[1], RenderConfig::Scene::WorldSpaceAABB.getMin()[2]);
+    aabbVerts[5] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMin()[0], RenderConfig::Scene::WorldSpaceAABB.getMax()[1], RenderConfig::Scene::WorldSpaceAABB.getMax()[2]);
+    aabbVerts[6] = Vec3f(RenderConfig::Scene::WorldSpaceAABB.getMax()[0], RenderConfig::Scene::WorldSpaceAABB.getMax()[1], RenderConfig::Scene::WorldSpaceAABB.getMin()[2]);
+    aabbVerts[7] = RenderConfig::Scene::WorldSpaceAABB.getMax();
     // This is the scene AABB in light view space (which is actually the view frustum of the
     // directional light camera) aproximated from the scene's light view space OBB
-    SceneLightSpaceAABB = AABoxf(Vec3f(FLT_MAX, FLT_MAX, FLT_MAX), Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX));
+    RenderConfig::Scene::LightSpaceAABB = AABoxf(Vec3f(FLT_MAX, FLT_MAX, FLT_MAX), Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX));
     for (unsigned int i = 0; i < 8; i++)
     {
         // For each AABB vertex, calculate the corresponding light view space OBB vertex
@@ -166,23 +163,23 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         // Calculate the light view space AABB using the minimum and maximum values
         // on each axis of the light view space OBB
-        if (aabbVerts[i][0] < SceneLightSpaceAABB.getMin()[0])
-            SceneLightSpaceAABB.mMin[0] = aabbVerts[i][0];
-        if (aabbVerts[i][1] < SceneLightSpaceAABB.getMin()[1])
-            SceneLightSpaceAABB.mMin[1] = aabbVerts[i][1];
-        if (aabbVerts[i][2] < SceneLightSpaceAABB.getMin()[2])
-            SceneLightSpaceAABB.mMin[2] = aabbVerts[i][2];
+        if (aabbVerts[i][0] < RenderConfig::Scene::LightSpaceAABB.getMin()[0])
+            RenderConfig::Scene::LightSpaceAABB.mMin[0] = aabbVerts[i][0];
+        if (aabbVerts[i][1] < RenderConfig::Scene::LightSpaceAABB.getMin()[1])
+            RenderConfig::Scene::LightSpaceAABB.mMin[1] = aabbVerts[i][1];
+        if (aabbVerts[i][2] < RenderConfig::Scene::LightSpaceAABB.getMin()[2])
+            RenderConfig::Scene::LightSpaceAABB.mMin[2] = aabbVerts[i][2];
 
-        if (aabbVerts[i][0] > SceneLightSpaceAABB.getMax()[0])
-            SceneLightSpaceAABB.mMax[0] = aabbVerts[i][0];
-        if (aabbVerts[i][1] > SceneLightSpaceAABB.getMax()[1])
-            SceneLightSpaceAABB.mMax[1] = aabbVerts[i][1];
-        if (aabbVerts[i][2] > SceneLightSpaceAABB.getMax()[2])
-            SceneLightSpaceAABB.mMax[2] = aabbVerts[i][2];
+        if (aabbVerts[i][0] > RenderConfig::Scene::LightSpaceAABB.getMax()[0])
+            RenderConfig::Scene::LightSpaceAABB.mMax[0] = aabbVerts[i][0];
+        if (aabbVerts[i][1] > RenderConfig::Scene::LightSpaceAABB.getMax()[1])
+            RenderConfig::Scene::LightSpaceAABB.mMax[1] = aabbVerts[i][1];
+        if (aabbVerts[i][2] > RenderConfig::Scene::LightSpaceAABB.getMax()[2])
+            RenderConfig::Scene::LightSpaceAABB.mMax[2] = aabbVerts[i][2];
     }
 
     // Calculate each cascade properties
-    for (unsigned int cascade = 0; cascade < NUM_CASCADES; cascade++)
+    for (unsigned int cascade = 0; cascade < HLSL::CSM::CascadeCount; cascade++)
     {
         // This is the part of the viewer's view frustum corresponding to the view frustum of the current cascade
         AABoxf ViewFrustumPartitionLightSpaceAABB(Vec3f(FLT_MAX, FLT_MAX, FLT_MAX), Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX));
@@ -194,15 +191,15 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         Vec4f partitionFar(0.f, 0.f, 0.f, 1.f);
 
         Math::lerp(partitionNear[2],
-            CASCADE_SPLIT_FACTOR,
-            (float)HLSL::PostProcessingParams->ZNear + ((float)cascade / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - (float)HLSL::PostProcessingParams->ZNear),
-            (float)HLSL::PostProcessingParams->ZNear * powf(CASCADE_MAX_VIEW_DEPTH / (float)HLSL::PostProcessingParams->ZNear, (float)cascade / NUM_CASCADES)
+            RenderConfig::CascadedShadowMaps::SplitFactor,
+            (float)HLSL::PostProcessingParams->ZNear + ((float)cascade / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
+            (float)HLSL::PostProcessingParams->ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, (float)cascade / HLSL::CSM::CascadeCount)
             );
 
         Math::lerp(partitionFar[2],
-            CASCADE_SPLIT_FACTOR,
-            (float)HLSL::PostProcessingParams->ZNear + (((float)cascade + 1.f) / NUM_CASCADES)*(CASCADE_MAX_VIEW_DEPTH - (float)HLSL::PostProcessingParams->ZNear),
-            (float)HLSL::PostProcessingParams->ZNear * powf(CASCADE_MAX_VIEW_DEPTH / (float)HLSL::PostProcessingParams->ZNear, ((float)cascade + 1.f) / NUM_CASCADES)
+            RenderConfig::CascadedShadowMaps::SplitFactor,
+            (float)HLSL::PostProcessingParams->ZNear + (((float)cascade + 1.f) / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
+            (float)HLSL::PostProcessingParams->ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, ((float)cascade + 1.f) / HLSL::CSM::CascadeCount)
             );
 
         // Calculate the partition's depth in projective space (viewer camera, i.e. perspective projection)
@@ -252,9 +249,9 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         // Enlarge the light view frustum in order to avoid PCF shadow sampling from
         // sampling outside of a shadow map cascade
-        const unsigned int cascadesPerRow = (unsigned int)Math::ceil(Math::sqrt((float)NUM_CASCADES));
-        const unsigned int cascadeSize = SHADOW_MAP_SIZE[0] / cascadesPerRow;
-        float pcfScale = (float)PCF_MAX_SAMPLE_COUNT * 0.5f * sqrt(2.f) / (float)cascadeSize;
+        const unsigned int cascadesPerRow = (unsigned int)Math::ceil(Math::sqrt((float)HLSL::CSM::CascadeCount));
+        const unsigned int cascadeSize = RenderConfig::CascadedShadowMaps::ShadowMapSize[0] / cascadesPerRow;
+        float pcfScale = (float)RenderConfig::CascadedShadowMaps::PCFMaxSampleCount * 0.5f * sqrt(2.f) / (float)cascadeSize;
         Vec3f aabbDiag = ViewFrustumPartitionLightSpaceAABB.mMax - ViewFrustumPartitionLightSpaceAABB.mMin;
         Vec2f offsetForPCF = Vec2f(aabbDiag[0], aabbDiag[1]) * pcfScale;
 
@@ -264,7 +261,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         Vec2f worldUnitsPerTexel = Vec2f(
             ViewFrustumPartitionLightSpaceAABB.mMax[0] - ViewFrustumPartitionLightSpaceAABB.mMin[0] + 2.f * offsetForPCF[0],
             ViewFrustumPartitionLightSpaceAABB.mMax[1] - ViewFrustumPartitionLightSpaceAABB.mMin[1] + 2.f * offsetForPCF[1]) /
-            Math::floor((float)SHADOW_MAP_SIZE[0] / Math::ceil(Math::sqrt((float)NUM_CASCADES))/*cascades per row*/);
+            Math::floor((float)RenderConfig::CascadedShadowMaps::ShadowMapSize[0] / Math::ceil(Math::sqrt((float)HLSL::CSM::CascadeCount))/*cascades per row*/);
 
         // Calculate the projection matrix for the current shadow map cascade
         RenderContext->CreateOrthographicMatrix(
@@ -273,7 +270,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
             Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[1]  + offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
             Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[0]  + offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
             Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[1] - offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
-            SceneLightSpaceAABB.mMin[2], SceneLightSpaceAABB.mMax[2]);
+            RenderConfig::Scene::LightSpaceAABB.mMin[2], RenderConfig::Scene::LightSpaceAABB.mMax[2]);
 
         // Store the light space coordinates of the bounds of the current shadow map cascade
         HLSL::CSMParams->CascadeBoundsMin[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMin[0], ViewFrustumPartitionLightSpaceAABB.mMin[1]);
@@ -287,7 +284,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
 void ShadowMapDirectionalLightPass::Draw()
 {
-    if (!DIRECTIONAL_LIGHT_ENABLED && !DIR_LIGHT_VOLUME_ENABLE)
+    if (!RenderConfig::DirectionalLight::Enabled && !RenderConfig::DirectionalLightVolume::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();
@@ -305,10 +302,10 @@ void ShadowMapDirectionalLightPass::Draw()
 
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    assert(SHADOW_MAP_SIZE[0] == SHADOW_MAP_SIZE[1]);
-    const unsigned int cascadesPerRow = (unsigned int)Math::ceil(Math::sqrt((float)NUM_CASCADES));
-    const unsigned int cascadeSize = SHADOW_MAP_SIZE[0] / cascadesPerRow;
-    for (unsigned int cascade = 0; cascade < NUM_CASCADES; cascade++)
+    assert(RenderConfig::CascadedShadowMaps::ShadowMapSize[0] == RenderConfig::CascadedShadowMaps::ShadowMapSize[1]);
+    const unsigned int cascadesPerRow = (unsigned int)Math::ceil(Math::sqrt((float)HLSL::CSM::CascadeCount));
+    const unsigned int cascadeSize = RenderConfig::CascadedShadowMaps::ShadowMapSize[0] / cascadesPerRow;
+    for (unsigned int cascade = 0; cascade < HLSL::CSM::CascadeCount; cascade++)
     {
 #if ENABLE_PROFILE_MARKERS
         char tmpBuf[16];
@@ -321,8 +318,8 @@ void ShadowMapDirectionalLightPass::Draw()
         RenderContext->SetViewport(size, offset);
         RenderContext->GetRenderStateManager()->SetScissor(size, offset);
 
-        RenderContext->GetRenderStateManager()->SetDepthBias(DEPTH_BIAS[cascade]);
-        RenderContext->GetRenderStateManager()->SetSlopeScaledDepthBias(SLOPE_SCALED_DEPTH_BIAS[cascade]);
+        RenderContext->GetRenderStateManager()->SetDepthBias(RenderConfig::CascadedShadowMaps::DepthBias[cascade]);
+        RenderContext->GetRenderStateManager()->SetSlopeScaledDepthBias(RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[cascade]);
 
         HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightWorldViewProjMat[cascade];
 

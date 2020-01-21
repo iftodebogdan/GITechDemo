@@ -64,11 +64,12 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     ColorCorrectionTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ColorCorrectionTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(SRGB_COLOR_CORRECTION);
+    ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(RenderConfig::PostProcessing::ToneMapping::sRGBColorCorrectionTexture);
 
     SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
-    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed);
+    HLSL::LumaAdaptParams->LumaAdaptSpeed = RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed;
+    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed);
 
     HLSL::LumaAdapt_LumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
@@ -206,7 +207,7 @@ void HDRToneMappingPass::ToneMappingPass()
 
 void HDRToneMappingPass::Draw()
 {
-    if (!HDR_TONE_MAPPING_ENABLED)
+    if (!RenderConfig::PostProcessing::ToneMapping::Enabled)
         return;
 
     LuminanceMeasurementPass();

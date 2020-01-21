@@ -50,7 +50,7 @@ void PostProcessingPass::Update(const float fDeltaTime)
 
 void PostProcessingPass::Draw()
 {
-    if (POST_PROCESSING_ENABLED)
+    if (RenderConfig::PostProcessing::Enabled)
         DrawChildren();
 }
 

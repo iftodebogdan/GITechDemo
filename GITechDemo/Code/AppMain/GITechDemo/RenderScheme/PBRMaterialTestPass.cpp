@@ -80,11 +80,11 @@ void PBRMaterialTestPass::Draw()
                     pbrMaterial->GetTexture((PBRMaterial::PBRTextureType)i)->SetAnisotropy(1u);
                     pbrMaterial->GetTexture((PBRMaterial::PBRTextureType)i)->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
                 }
-                pbrMaterial->GetTexture(PBRMaterial::PBRTT_ALBEDO)->SetAnisotropy((unsigned int)DIFFUSE_ANISOTROPY);
+                pbrMaterial->GetTexture(PBRMaterial::PBRTT_ALBEDO)->SetAnisotropy((unsigned int)RenderConfig::GBuffer::DiffuseAnisotropy);
 
                 HLSL::GBufferGeneration_Diffuse = diffuseTexIdx;
                 HLSL::GBufferGeneration_Normal = normalTexIdx;
-                HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && GBUFFER_USE_NORMAL_MAPS;
+                HLSL::GBufferGenerationParams->HasNormalMap = (HLSL::GBufferGeneration_Normal != -1) && RenderConfig::GBuffer::UseNormalMaps;
 
                 // For Blinn-Phong BRDF
                 HLSL::GBufferGeneration_Spec = roughnessTexIdx;
@@ -129,7 +129,7 @@ Matrix44f PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(const unsigned i
     const unsigned int sphereColIdx = idx % sphereColCount;
     const Vec3f sphereWorldPos = Vec3f(
         ((float)sphereColIdx - (float)sphereColCount * 0.5f) * sphereSpacingX + sphereOffsetX + (idx % 2 ? sphereOffsetOddX : 0.f),
-        600.f,// SceneAABB.getMax()[1] + 100.f,
+        600.f,// AppConfig::Scene::WorldSpaceAABB.getMax()[1] + 100.f,
         ((float)sphereRowIdx - (float)sphereRowCount * 0.5f) * sphereSpacingY + sphereOffsetY
     );
 

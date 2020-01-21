@@ -46,7 +46,7 @@ DirectionalLightVolumePass::~DirectionalLightVolumePass()
 
 void DirectionalLightVolumePass::Update(const float fDeltaTime)
 {
-    if (DIR_LIGHT_VOLUME_QUARTER_RES)
+    if (RenderConfig::DirectionalLightVolume::QuarterResolution)
         VolumetricLightAccumulationBuffer = VolumetricLightQuarterBuffer;
     else
         VolumetricLightAccumulationBuffer = VolumetricLightFullBuffer;
@@ -54,17 +54,17 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     Vec4f v4CamPosLightVS = HLSL::DirectionalLightParams->ScreenToLightViewMat * Vec4f(0.f, 0.f, 0.f, 1.f);
     v4CamPosLightVS /= v4CamPosLightVS[3];
     HLSL::DirectionalLightVolumeParams->CameraPositionLightVS = Vec3f(v4CamPosLightVS[0], v4CamPosLightVS[1], v4CamPosLightVS[2]);
-    HLSL::DirectionalLightVolumeParams->RaymarchDistanceLimit = CASCADE_MAX_VIEW_DEPTH;
+    HLSL::DirectionalLightVolumeParams->RaymarchDistanceLimit = RenderConfig::CascadedShadowMaps::MaxViewDepth;
     HLSL::DirectionalLightVolumeParams->TexSize = Vec4f(
         (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
         1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
-    DIR_LIGHT_VOLUME_COLOR[0] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[0], 0.f, 1.f);
-    DIR_LIGHT_VOLUME_COLOR[1] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[1], 0.f, 1.f);
-    DIR_LIGHT_VOLUME_COLOR[2] = Math::clamp(DIR_LIGHT_VOLUME_COLOR[2], 0.f, 1.f);
-    DIR_LIGHT_VOLUME_COLOR[3] = 1.f;
+    RenderConfig::DirectionalLightVolume::LightColor[0] = Math::clamp(RenderConfig::DirectionalLightVolume::LightColor[0], 0.f, 1.f);
+    RenderConfig::DirectionalLightVolume::LightColor[1] = Math::clamp(RenderConfig::DirectionalLightVolume::LightColor[1], 0.f, 1.f);
+    RenderConfig::DirectionalLightVolume::LightColor[2] = Math::clamp(RenderConfig::DirectionalLightVolume::LightColor[2], 0.f, 1.f);
+    RenderConfig::DirectionalLightVolume::LightColor[3] = 1.f;
     BayerMatrix.GetTexture()->SetAddressingMode(SAM_WRAP);
     BayerMatrix.GetTexture()->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     HLSL::PostProcessing_DitherMap = BayerMatrix.GetTextureIndex();
@@ -72,10 +72,10 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     NoiseTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     HLSL::DirectionalLightVolume_Noise = NoiseTexture;
     HLSL::DirectionalLightVolumeParams->ElapsedTime += fDeltaTime;
-    HLSL::DirectionalLightVolumeParams->FogBox = Vec3f(CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH, CASCADE_MAX_VIEW_DEPTH);
+    HLSL::DirectionalLightVolumeParams->FogBox = Vec3f(RenderConfig::CascadedShadowMaps::MaxViewDepth, RenderConfig::CascadedShadowMaps::MaxViewDepth, RenderConfig::CascadedShadowMaps::MaxViewDepth);
 
     HLSL::ColorCopyParams->SingleChannelCopy = true;
-    HLSL::ColorCopyParams->CustomColorModulator = DIR_LIGHT_VOLUME_COLOR;
+    HLSL::ColorCopyParams->CustomColorModulator = RenderConfig::DirectionalLightVolume::LightColor;
     HLSL::ColorCopyParams->ApplyTonemap = false;
 }
 
@@ -122,9 +122,10 @@ void DirectionalLightVolumePass::GatherSamples()
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    const float fBlurDepthFalloffBkp = HLSL::BilateralBlurParams->BlurDepthFalloff;
-    if (!DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE)
+    if (!RenderConfig::DirectionalLightVolume::DepthAwareBlur)
         HLSL::BilateralBlurParams->BlurDepthFalloff = 0.f;
+    else
+        HLSL::BilateralBlurParams->BlurDepthFalloff = RenderConfig::DirectionalLightVolume::BlurDepthFalloff;
 
     HLSL::BilateralBlur_DepthBuffer = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
 
@@ -187,9 +188,6 @@ void DirectionalLightVolumePass::GatherSamples()
     VolumetricLightAccumulationBuffer[0]->Disable();
 
     POP_PROFILE_MARKER();
-    
-    if (!DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE)
-        HLSL::BilateralBlurParams->BlurDepthFalloff = fBlurDepthFalloffBkp;
 
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(blendEnable);
 
@@ -222,7 +220,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
         VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
         )->SetAddressingMode(SAM_CLAMP);
 
-    if (DIR_LIGHT_VOLUME_QUARTER_RES && DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE)
+    if (RenderConfig::DirectionalLightVolume::QuarterResolution && RenderConfig::DirectionalLightVolume::DepthAwareUpscale)
     {
         HLSL::NearestDepthUpscaleParams->HalfTexelOffset = Vec2f(
             0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
@@ -263,7 +261,7 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 
 void DirectionalLightVolumePass::Draw()
 {
-    if (DIR_LIGHT_VOLUME_ENABLE)
+    if (RenderConfig::DirectionalLightVolume::Enabled)
     {
         //Synesthesia3D::RenderTarget* pCurrRT = Synesthesia3D::RenderTarget::GetActiveRenderTarget();
         //if (pCurrRT)
@@ -271,7 +269,7 @@ void DirectionalLightVolumePass::Draw()
         
         CalculateLightVolume();
 
-        if (DIR_LIGHT_VOLUME_BLUR_SAMPLES)
+        if (RenderConfig::DirectionalLightVolume::BlurSamples)
             GatherSamples();
 
         ApplyLightVolume();

@@ -100,123 +100,112 @@ CREATE_SHADER_CONSTANT_OBJECT(CBUFFER_NAME##Params, CBUFFER_NAME##ConstantTable)
 
 namespace GITechDemoApp
 {
-    //////////////////////////////////////////////////////
-    // Setup access to externally declared variables    //
-    //////////////////////////////////////////////////////
+    //////////////////////////////////////////
+    // Start adding render resources here   //
+    //////////////////////////////////////////
 
-#error Rename these and move them somewhere where it makes sense - either in individual RenderPasses or create a global render context (or something)
-#if 0
-    bool FULLSCREEN_ENABLED = false;
-    bool BORDERLESS_ENABLED = true;
-    int FULLSCREEN_RESOLUTION_X = 0;
-    int FULLSCREEN_RESOLUTION_Y = 0;
-    int FULLSCREEN_REFRESH_RATE = 0;
-    bool VSYNC_ENABLED = false;
+    ////////////////////////////////////////////////////////////////////////////
+    // Various configurable parameters not used directly in shaders.          //
+    // Most values are set by artist parameters below.                        //
+    // Some correspond to the same shader parameter but have different        //
+    // values depending on what render pass the shader is used in.            //
+    // e.g. HLSL::DownsampleParams->BrightnessThreshold has different values  //
+    // between the usages of DownsampleShader in BloomPass and LensFlarePass. //
+    ////////////////////////////////////////////////////////////////////////////
 
+    bool RenderConfig::Window::Fullscreen;
+    bool RenderConfig::Window::Borderless;
+    Vec2i RenderConfig::Window::Resolution;
+    int RenderConfig::Window::RefreshRate;
+    bool RenderConfig::Window::VSync;
 
+    bool RenderConfig::Camera::InfiniteProjection;
+    float RenderConfig::Camera::FoV;
+    float RenderConfig::Camera::MoveSpeed;
+    float RenderConfig::Camera::SpeedUpFactor;
+    float RenderConfig::Camera::SlowDownFactor;
+    float RenderConfig::Camera::RotationSpeed;
+    bool RenderConfig::Camera::Animation;
+    int RenderConfig::Camera::AnimationTimeout;
 
-    bool CAMERA_INFINITE_PROJ = true;
-    float CAMERA_FOV = 60.f;
-    float CAMERA_MOVE_SPEED = 250.f;
-    float CAMERA_SPEED_UP_FACTOR = 5.f;
-    float CAMERA_SLOW_DOWN_FACTOR = 0.1f;
-    float CAMERA_ROTATE_SPEED = 75.f;
+    AABoxf RenderConfig::Scene::WorldSpaceAABB;
+    AABoxf RenderConfig::Scene::LightSpaceAABB;
 
-    bool CAMERA_ANIMATION_ENABLED = true;
-    int CAMERA_ANIMATION_TIMEOUT_SECONDS = 30;
+    bool RenderConfig::GBuffer::ZPrepass;
+    int RenderConfig::GBuffer::DiffuseAnisotropy;
+    bool RenderConfig::GBuffer::UseNormalMaps;
+    bool RenderConfig::GBuffer::DrawAlphaTestGeometry;
+    int RenderConfig::GBuffer::DebugViewColor;
+    bool RenderConfig::GBuffer::DebugViewDepth;
 
-    bool DIRECTIONAL_LIGHT_ANIMATION_ENABLED = true;
+    bool RenderConfig::DirectionalLight::Animation;
+    bool RenderConfig::DirectionalLight::Enabled;
+    float RenderConfig::DirectionalLight::ReflectionFactor;
 
-    /* G-Buffer generation */
-    bool GBUFFER_Z_PREPASS = true;
-    int DIFFUSE_ANISOTROPY = MAX_ANISOTROPY;
-    bool GBUFFER_USE_NORMAL_MAPS = true;
-    bool DRAW_ALPHA_TEST_GEOMETRY = true;
+    bool RenderConfig::CascadedShadowMaps::DebugCameraView;
+    float RenderConfig::CascadedShadowMaps::SplitFactor;
+    float RenderConfig::CascadedShadowMaps::MaxViewDepth;
+    const Vec2i RenderConfig::CascadedShadowMaps::ShadowMapSize = Vec2i(4096, 4096);
+    float RenderConfig::CascadedShadowMaps::DepthBias[HLSL::CSM::CascadeCount];
+    float RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[HLSL::CSM::CascadeCount];
 
-    int GBUFFER_DEBUG_VIEW = -1;
-    bool GBUFFER_DEBUG_VIEW_DEPTH = false;
-    bool DEBUG_CSM_CAMERA = false;
-    bool DEBUG_RSM_CAMERA = false;
+    bool RenderConfig::ReflectiveShadowMap::DebugCameraView;
+    bool RenderConfig::ReflectiveShadowMap::Enabled;
+    bool RenderConfig::ReflectiveShadowMap::QuarterResolution;
+    bool RenderConfig::ReflectiveShadowMap::BilateralBlur;
 
-    bool DIRECTIONAL_LIGHT_ENABLED = true;
+    bool RenderConfig::DirectionalLightVolume::Enabled;
+    bool RenderConfig::DirectionalLightVolume::QuarterResolution;
+    bool RenderConfig::DirectionalLightVolume::BlurSamples;
+    bool RenderConfig::DirectionalLightVolume::DepthAwareBlur;
+    float RenderConfig::DirectionalLightVolume::BlurDepthFalloff;
+    bool RenderConfig::DirectionalLightVolume::DepthAwareUpscale;
+    Vec4f RenderConfig::DirectionalLightVolume::LightColor;
 
-    extern bool DIRECTIONAL_LIGHT_ENABLED;
-    extern bool DIR_LIGHT_VOLUME_ENABLE;
+    bool RenderConfig::PostProcessing::Enabled;
 
-    // Cascaded Shadow Maps (CSM) and directional light related variables
-    float CASCADE_SPLIT_FACTOR = 0.7f;
-    float CASCADE_MAX_VIEW_DEPTH = 3000.f;
+    bool RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled;
+    bool RenderConfig::PostProcessing::ScreenSpaceReflections::ManualMaxSteps;
 
-    extern const unsigned int PCF_MAX_SAMPLE_COUNT = 16;
-    const unsigned int NUM_CASCADES = 4;
+    bool RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled;
+    bool RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::QuarterResolution;
+    const unsigned int RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::BlurKernel[] = { 0, 1, 2 };
 
-    extern const Vec<unsigned int, 2> SHADOW_MAP_SIZE = Vec<unsigned int, 2>(4096, 4096);
+    bool RenderConfig::PostProcessing::DepthOfField::Enabled;
+    float RenderConfig::PostProcessing::DepthOfField::AutofocusTime;
+    int RenderConfig::PostProcessing::DepthOfField::PassCount;
+    float RenderConfig::PostProcessing::DepthOfField::ApertureSize;
 
-    float DEPTH_BIAS[NUM_CASCADES] = { 0.002f,     0.002f,     0.0015f,    0.001f };
-    float SLOPE_SCALED_DEPTH_BIAS[NUM_CASCADES] = { 2.f,        2.5f,       2.5f,       1.5f };
+    bool RenderConfig::PostProcessing::MotionBlur::Enabled;
 
-    bool INDIRECT_LIGHT_ENABLED = true;
-    bool RSM_USE_QUARTER_RESOLUTION_BUFFER = true;
-    bool RSM_USE_BILATERAL_BLUR = true;
+    bool RenderConfig::PostProcessing::Bloom::Enabled;
+    const unsigned int RenderConfig::PostProcessing::Bloom::BlurKernel[] = { 0, 1, 2, 3, 4, 4, 5, 6, 7 };
+    float RenderConfig::PostProcessing::Bloom::BrightnessThreshold;
 
-    extern const unsigned int RSM_SIZE = 1024;
-    const unsigned int RSM_NUM_PASSES = 4;
-    const unsigned int RSM_SAMPLES_PER_PASS = 16;
-    const unsigned int RSM_NUM_SAMPLES = RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS;
+    bool RenderConfig::PostProcessing::LensFlare::Enabled;
+    float RenderConfig::PostProcessing::LensFlare::BrightnessThreshold;
+    bool RenderConfig::PostProcessing::LensFlare::Anamorphic;
+    const unsigned int RenderConfig::PostProcessing::LensFlare::BlurKernel[] = { 0, 1, 2 };
 
-    bool DIR_LIGHT_VOLUME_ENABLE = true;
-    bool DIR_LIGHT_VOLUME_QUARTER_RES = true;
-    bool DIR_LIGHT_VOLUME_BLUR_SAMPLES = true;
-    bool DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE = true;
-    bool DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE = true;
-    Vec4f DIR_LIGHT_VOLUME_COLOR = Vec4f(1.f, 0.9f, 0.75f, 1.f);
+    bool RenderConfig::PostProcessing::ToneMapping::Enabled;
+    bool RenderConfig::PostProcessing::ToneMapping::sRGBColorCorrectionTexture;
+    float RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed;
 
-    bool POST_PROCESSING_ENABLED = true;
-
-    bool SSR_ENABLED = true;
-    bool SSR_MANUAL_MAX_STEPS = false;
-
-    bool SSAO_ENABLED = true;
-    bool SSAO_USE_QUARTER_RESOLUTION_BUFFER = true;
-
-    const unsigned int SSAO_BLUR_KERNEL_COUNT = 3;
-    const unsigned int SSAO_BLUR_KERNEL[SSAO_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
-
-    bool DOF_ENABLED = true;
-    float DOF_AUTOFOCUS_TIME = 0.5f;
-    int DOF_NUM_PASSES = 5;
-
-    bool MOTION_BLUR_ENABLED = true;
-
-    bool BLOOM_ENABLED = true;
-    const unsigned int BLOOM_BLUR_KERNEL_COUNT = 9;
-    const unsigned int BLOOM_BLUR_KERNEL[BLOOM_BLUR_KERNEL_COUNT] = { 0, 1, 2, 3, 4, 4, 5, 6, 7 };
-
-    bool LENS_FLARE_ENABLED = true;
-    float LENS_FLARE_BRIGHTNESS_THRESHOLD = 3.5f;
-    bool LENS_FLARE_ANAMORPHIC = true;
-
-    const unsigned int LENS_FLARE_BLUR_KERNEL_COUNT = 3;
-    const unsigned int LENS_FLARE_BLUR_KERNEL[LENS_FLARE_BLUR_KERNEL_COUNT] = { 0, 1, 2 };
-
-    const unsigned int LENS_FLARE_ANAMORPHIC_BLUR_PASSES = 6;
-
-    bool HDR_TONE_MAPPING_ENABLED = true;
-    bool SRGB_COLOR_CORRECTION = true;
-
-    bool FXAA_ENABLED = true;
-#endif
-
-    // Some misc. resources
-    VertexBuffer*   FullScreenTri = nullptr;
+    bool RenderConfig::PostProcessing::FastApproximateAntiAliasing::Enabled;
 
     //------------------------------------------------------
 
 
 
-    //////////////////////////////////////////
-    // Start adding render resources here   //
-    //////////////////////////////////////////
+    /////////////////////
+    // Misc. resources //
+    /////////////////////
+    
+    VertexBuffer*   FullScreenTri = nullptr;
+
+    //------------------------------------------------------
+
+
 
     //////////////
     // Models   //
@@ -331,7 +320,7 @@ namespace GITechDemoApp
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LinearQuarterDepthBuffer, PF_R32F, 0.5f, 0.5f, PF_NONE);
 
     // Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
-    CREATE_STATIC_RENDER_TARGET_OBJECT(ShadowMapDir, PF_NONE, SHADOW_MAP_SIZE[0], SHADOW_MAP_SIZE[1], PF_INTZ);
+    CREATE_STATIC_RENDER_TARGET_OBJECT(ShadowMapDir, PF_NONE, RenderConfig::CascadedShadowMaps::ShadowMapSize[0], RenderConfig::CascadedShadowMaps::ShadowMapSize[1], PF_INTZ);
 
     // Render target in which we accumulate the light contribution from all light sources (also known as the scene color buffer)
     // It contains a regular depth-stencil surface in which we will copy-resolve our INTZ depth texture from the G-Buffer
@@ -339,7 +328,7 @@ namespace GITechDemoApp
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LightAccumulationBuffer, PF_A16B16G16R16F, 1.f, 1.f, PF_D24S8);
 
     // Reflective Shadow Map render target
-    CREATE_STATIC_RENDER_TARGET_OBJECT(RSMBuffer, PF_A8R8G8B8, PF_G16R16F, RSM_SIZE, RSM_SIZE, PF_INTZ);
+    CREATE_STATIC_RENDER_TARGET_OBJECT(RSMBuffer, PF_A8R8G8B8, PF_G16R16F, RenderConfig::ReflectiveShadowMap::RSMSize, RenderConfig::ReflectiveShadowMap::RSMSize, PF_INTZ);
 
     // Indirect lighting accumulation buffer (quarter resolution)
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(IndirectLightAccumulationBuffer0, PF_A16B16G16R16F, 0.5f, 0.5f, PF_NONE);
@@ -482,21 +471,21 @@ namespace GITechDemoApp
         "Fullscreen enabled",
         "Toggle between window mode and fulscreen mode",
         "Window",
-        FULLSCREEN_ENABLED,
+        RenderConfig::Window::Fullscreen,
         false);
-    
+
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Borderless windowed mode",
         "Toggle between regular windowed and borderless windowed mode",
         "Window",
-        BORDERLESS_ENABLED,
+        RenderConfig::Window::Borderless,
         true);
-    
+
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Resolution X (width)",
         "Set the resolution on the X axis (only affects fullscreen mode)",
         "Window",
-        FULLSCREEN_RESOLUTION_X,
+        RenderConfig::Window::Resolution[0],
         1,
         0);
 
@@ -504,7 +493,7 @@ namespace GITechDemoApp
         "Resolution Y (height)",
         "Set the resolution on the Y axis (only affects fullscreen mode)",
         "Window",
-        FULLSCREEN_RESOLUTION_Y,
+        RenderConfig::Window::Resolution[1],
         1,
         0);
 
@@ -512,7 +501,7 @@ namespace GITechDemoApp
         "Refresh rate",
         "Set the refresh rate of the display (only affects fullscreen mode)",
         "Window",
-        FULLSCREEN_REFRESH_RATE,
+        RenderConfig::Window::RefreshRate,
         1,
         0);
 
@@ -520,7 +509,7 @@ namespace GITechDemoApp
         "VSync enabled",
         "Synchronizes backbuffer swapping with screen refresh rate",
         "Window",
-        VSYNC_ENABLED,
+        RenderConfig::Window::VSync,
         false);
     //------------------------------------------------------
 
@@ -529,7 +518,7 @@ namespace GITechDemoApp
         "Infinite projection",
         "Use a projection matrix with an infinite far plane",
         "Camera",
-        CAMERA_INFINITE_PROJ,
+        RenderConfig::Camera::InfiniteProjection,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -552,7 +541,7 @@ namespace GITechDemoApp
         "FOV",
         "Vertical field of view",
         "Camera",
-        CAMERA_FOV,
+        RenderConfig::Camera::FoV,
         1.f,
         60.f);
 
@@ -560,7 +549,7 @@ namespace GITechDemoApp
         "Movement speed",
         "Camera movement speed",
         "Camera",
-        CAMERA_MOVE_SPEED,
+        RenderConfig::Camera::MoveSpeed,
         1.f,
         250.f);
 
@@ -568,7 +557,7 @@ namespace GITechDemoApp
         "Speed up factor",
         "Camera speed multiplier when pressing the 'speed up' button",
         "Camera",
-        CAMERA_SPEED_UP_FACTOR,
+        RenderConfig::Camera::SpeedUpFactor,
         1.f,
         5.f);
 
@@ -576,7 +565,7 @@ namespace GITechDemoApp
         "Slow down factor",
         "Camera speed multiplier when pressing the 'slow down' button",
         "Camera",
-        CAMERA_SLOW_DOWN_FACTOR,
+        RenderConfig::Camera::SlowDownFactor,
         0.1f,
         0.1f);
 
@@ -584,7 +573,7 @@ namespace GITechDemoApp
         "Rotation speed",
         "Camera rotation speed",
         "Camera",
-        CAMERA_ROTATE_SPEED,
+        RenderConfig::Camera::RotationSpeed,
         1.f,
         75.f);
 
@@ -592,14 +581,14 @@ namespace GITechDemoApp
         "Camera animation",
         "Camera animation toggle (no collisions with world geometry)",
         "Camera",
-        CAMERA_ANIMATION_ENABLED,
+        RenderConfig::Camera::Animation,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Animation timeout",
         "Seconds it takes until the camera animation kicks in",
         "Camera",
-        CAMERA_ANIMATION_TIMEOUT_SECONDS,
+        RenderConfig::Camera::AnimationTimeout,
         1,
         30);
     //------------------------------------------------------
@@ -609,21 +598,21 @@ namespace GITechDemoApp
         "Z-prepass",
         "Populate the scene's depth buffer before generating the G-Buffer",
         "G-Buffer",
-        GBUFFER_Z_PREPASS,
+        RenderConfig::GBuffer::ZPrepass,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Draw alpha test geometry",
         "Draw geometry that uses alpha testing when Z-prepass is active.",
         "G-Buffer",
-        DRAW_ALPHA_TEST_GEOMETRY,
+        RenderConfig::GBuffer::DrawAlphaTestGeometry,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Diffuse anisotropic level",
         "Anisotropic filtering level for diffuse textures",
         "G-Buffer",
-        DIFFUSE_ANISOTROPY,
+        RenderConfig::GBuffer::DiffuseAnisotropy,
         1,
         MAX_ANISOTROPY);
 
@@ -631,14 +620,14 @@ namespace GITechDemoApp
         "Use normal maps",
         "Toggles the use of normal maps or vertex normals",
         "G-Buffer",
-        GBUFFER_USE_NORMAL_MAPS,
+        RenderConfig::GBuffer::UseNormalMaps,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Debug view G-Buffer",
         "0 - albedo; 1 - normals; 2 - material/roughness; 3 - vertex normals",
         "G-Buffer",
-        GBUFFER_DEBUG_VIEW,
+        RenderConfig::GBuffer::DebugViewColor,
         1,
         -1);
 
@@ -646,7 +635,7 @@ namespace GITechDemoApp
         "Debug view depth buffer",
         "View the depth buffer (linear, scaled by far plane distance)",
         "G-Buffer",
-        GBUFFER_DEBUG_VIEW_DEPTH,
+        RenderConfig::GBuffer::DebugViewDepth,
         false);
     //------------------------------------------------------
 
@@ -655,7 +644,7 @@ namespace GITechDemoApp
         "Directional lights enable",
         "Toggle the rendering of directional lights",
         "Directional light",
-        DIRECTIONAL_LIGHT_ENABLED,
+        RenderConfig::DirectionalLight::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -702,7 +691,7 @@ namespace GITechDemoApp
         "Reflection factor",
         "Scale value for reflection map (Cook-Torrance only)",
         "Directional light",
-        HLSL::BRDFParams->ReflectionFactor,
+        RenderConfig::DirectionalLight::ReflectionFactor,
         0.1f,
         1.f);
 
@@ -710,7 +699,7 @@ namespace GITechDemoApp
         "Light animation",
         "Directional light animation toggle",
         "Directional light",
-        DIRECTIONAL_LIGHT_ANIMATION_ENABLED,
+        RenderConfig::DirectionalLight::Animation,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -750,7 +739,7 @@ namespace GITechDemoApp
         "CSM distribution",
         "Factor affecting the distribution of shadow map cascades",
         "Cascaded shadow map",
-        CASCADE_SPLIT_FACTOR,
+        RenderConfig::CascadedShadowMaps::SplitFactor,
         0.1f,
         0.7f);
 
@@ -758,7 +747,7 @@ namespace GITechDemoApp
         "CSM range",
         "Shadow draw distance",
         "Cascaded shadow map",
-        CASCADE_MAX_VIEW_DEPTH,
+        RenderConfig::CascadedShadowMaps::MaxViewDepth,
         10.f,
         3000.f);
 
@@ -766,7 +755,7 @@ namespace GITechDemoApp
         "Depth bias 1",
         "Depth bias for cascade 1",
         "Cascaded shadow map",
-        DEPTH_BIAS[0],
+        RenderConfig::CascadedShadowMaps::DepthBias[0],
         0.0001f,
         0.002f);
 
@@ -774,7 +763,7 @@ namespace GITechDemoApp
         "Slope scaled depth bias 1",
         "Slope scaled depth bias for cascade 1",
         "Cascaded shadow map",
-        SLOPE_SCALED_DEPTH_BIAS[0],
+        RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[0],
         0.1f,
         2.f);
 
@@ -782,7 +771,7 @@ namespace GITechDemoApp
         "Depth bias 2",
         "Depth bias for cascade 2",
         "Cascaded shadow map",
-        DEPTH_BIAS[1],
+        RenderConfig::CascadedShadowMaps::DepthBias[1],
         0.0001f,
         0.002f);
 
@@ -790,7 +779,7 @@ namespace GITechDemoApp
         "Slope scaled depth bias 2",
         "Slope scaled depth bias for cascade 2",
         "Cascaded shadow map",
-        SLOPE_SCALED_DEPTH_BIAS[1],
+        RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[1],
         0.1f,
         2.5f);
 
@@ -798,7 +787,7 @@ namespace GITechDemoApp
         "Depth bias 3",
         "Depth bias for cascade 3",
         "Cascaded shadow map",
-        DEPTH_BIAS[2],
+        RenderConfig::CascadedShadowMaps::DepthBias[2],
         0.0001f,
         0.0015f);
 
@@ -806,7 +795,7 @@ namespace GITechDemoApp
         "Slope scaled depth bias 3",
         "Slope scaled depth bias for cascade 3",
         "Cascaded shadow map",
-        SLOPE_SCALED_DEPTH_BIAS[2],
+        RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[2],
         0.1f,
         2.5f);
 
@@ -814,7 +803,7 @@ namespace GITechDemoApp
         "Depth bias 4",
         "Depth bias for cascade 4",
         "Cascaded shadow map",
-        DEPTH_BIAS[3],
+        RenderConfig::CascadedShadowMaps::DepthBias[3],
         0.0001f,
         0.001f);
 
@@ -822,7 +811,7 @@ namespace GITechDemoApp
         "Slope scaled depth bias 4",
         "Slope scaled depth bias for cascade 4",
         "Cascaded shadow map",
-        SLOPE_SCALED_DEPTH_BIAS[3],
+        RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[3],
         0.1f,
         1.5f);
 
@@ -830,7 +819,7 @@ namespace GITechDemoApp
         "Debug CSM camera",
         "Draw the cascaded shadow map on-screen",
         "Cascaded shadow map",
-        DEBUG_CSM_CAMERA,
+        RenderConfig::CascadedShadowMaps::DebugCameraView,
         false);
     //------------------------------------------------------
     
@@ -839,7 +828,7 @@ namespace GITechDemoApp
         "SSR enable",
         "Toggle the rendering of screen space reflections",
         "Screen space reflections",
-        SSR_ENABLED,
+        RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -870,7 +859,7 @@ namespace GITechDemoApp
         "Manual maximum steps",
         "Manually adjust maximum number of steps, or calculate it dynamically",
         "Screen space reflections",
-        SSR_MANUAL_MAX_STEPS,
+        RenderConfig::PostProcessing::ScreenSpaceReflections::ManualMaxSteps,
         false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -902,7 +891,7 @@ namespace GITechDemoApp
         "SSAO enable",
         "Toggle the rendering of screen space ambient occlusion",
         "SSAO",
-        SSAO_ENABLED,
+        RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -941,7 +930,7 @@ namespace GITechDemoApp
         "Quarter resolution SSAO",
         "Toggle rendering into a quarter resolution buffer",
         "SSAO",
-        SSAO_USE_QUARTER_RESOLUTION_BUFFER,
+        RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::QuarterResolution,
         true);
     //------------------------------------------------------
 
@@ -950,7 +939,7 @@ namespace GITechDemoApp
         "Indirect lights enable",
         "Toggle the rendering of indirect lights",
         "Reflective shadow map",
-        INDIRECT_LIGHT_ENABLED,
+        RenderConfig::ReflectiveShadowMap::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -988,21 +977,21 @@ namespace GITechDemoApp
         "Quarter resolution RSM",
         "Toggle rendering into a quarter resolution buffer",
         "Reflective shadow map",
-        RSM_USE_QUARTER_RESOLUTION_BUFFER,
+        RenderConfig::ReflectiveShadowMap::QuarterResolution,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Bilateral blur RSM",
         "Toggle blurring of the RSM accumulation buffer",
         "Reflective shadow map",
-        RSM_USE_BILATERAL_BLUR,
+        RenderConfig::ReflectiveShadowMap::BilateralBlur,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug RSM camera",
         "Draw the reflective shadow map on-screen",
         "Reflective shadow map",
-        DEBUG_RSM_CAMERA,
+        RenderConfig::ReflectiveShadowMap::DebugCameraView,
         false);
     //------------------------------------------------------
 
@@ -1029,7 +1018,7 @@ namespace GITechDemoApp
         "Volumetric lights enable",
         "Toggle the rendering of the volumetric lighting effect (directional)",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_ENABLE,
+        RenderConfig::DirectionalLightVolume::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1068,7 +1057,7 @@ namespace GITechDemoApp
         "Fog color - red",
         "Red color channel value for fog",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_COLOR[0],
+        RenderConfig::DirectionalLightVolume::LightColor[0],
         0.01f,
         1.f);
 
@@ -1076,7 +1065,7 @@ namespace GITechDemoApp
         "Fog color - green",
         "Green color channel value for fog",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_COLOR[1],
+        RenderConfig::DirectionalLightVolume::LightColor[1],
         0.01f,
         0.9f);
 
@@ -1084,7 +1073,7 @@ namespace GITechDemoApp
         "Fog color - blue",
         "Blue color channel value for fog",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_COLOR[2],
+        RenderConfig::DirectionalLightVolume::LightColor[2],
         0.01f,
         0.75f);
 
@@ -1123,21 +1112,21 @@ namespace GITechDemoApp
         "Blur samples",
         "Toggle the use of an additional blur pass",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_BLUR_SAMPLES,
+        RenderConfig::DirectionalLightVolume::BlurSamples,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Depth-aware blur",
         "Make the blur pass depth-aware so as not to cause light bleeding",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_BLUR_DEPTH_AWARE,
+        RenderConfig::DirectionalLightVolume::DepthAwareBlur,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Blur depth falloff",
         "A scaling factor for the blur weights around edges",
         "Volumetric lights",
-        HLSL::BilateralBlurParams->BlurDepthFalloff,
+        RenderConfig::DirectionalLightVolume::BlurDepthFalloff,
         0.0001f,
         0.0025f);
 
@@ -1145,7 +1134,7 @@ namespace GITechDemoApp
         "Depth-aware upscaling",
         "Make the upscale pass depth-aware so as not to cause artifacts",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_UPSCALE_DEPTH_AWARE,
+        RenderConfig::DirectionalLightVolume::DepthAwareUpscale,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1160,7 +1149,7 @@ namespace GITechDemoApp
         "Quarter resolution accumulation",
         "Toggle the use of an intermediary quarter resolution target",
         "Volumetric lights",
-        DIR_LIGHT_VOLUME_QUARTER_RES,
+        RenderConfig::DirectionalLightVolume::QuarterResolution,
         true);
     //------------------------------------------------------
 
@@ -1169,7 +1158,7 @@ namespace GITechDemoApp
         "Post-processing enable",
         "Toggle post-processing effects",
         "Post-processing effects",
-        POST_PROCESSING_ENABLED,
+        RenderConfig::PostProcessing::Enabled,
         true);
     //------------------------------------------------------
 
@@ -1178,7 +1167,7 @@ namespace GITechDemoApp
         "DoF enable",
         "Toggle the rendering of the depth of field effect",
         "Depth of field",
-        DOF_ENABLED,
+        RenderConfig::PostProcessing::DepthOfField::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1217,7 +1206,7 @@ namespace GITechDemoApp
         "Aperture size",
         "Affects size of bokeh",
         "Depth of field",
-        HLSL::BokehDoFParams->ApertureSize,
+        RenderConfig::PostProcessing::DepthOfField::ApertureSize,
         0.001f,
         0.0075f);
 
@@ -1225,7 +1214,7 @@ namespace GITechDemoApp
         "DoF pass count",
         "The number of times to apply the DoF shader",
         "Depth of field",
-        DOF_NUM_PASSES,
+        RenderConfig::PostProcessing::DepthOfField::PassCount,
         1,
         5);
 
@@ -1263,7 +1252,7 @@ namespace GITechDemoApp
         "Autofocus time",
         "Autofocus animation duration in seconds",
         "Depth of field",
-        DOF_AUTOFOCUS_TIME,
+        RenderConfig::PostProcessing::DepthOfField::AutofocusTime,
         0.1f,
         0.5f);
     //------------------------------------------------------
@@ -1342,7 +1331,7 @@ namespace GITechDemoApp
         "Motion blur enable",
         "Toggle the rendering of the motion blur effect",
         "Motion blur",
-        MOTION_BLUR_ENABLED,
+        RenderConfig::PostProcessing::MotionBlur::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1367,14 +1356,14 @@ namespace GITechDemoApp
         "Bloom enable",
         "Toggle the rendering of the bloom effect",
         "Bloom",
-        BLOOM_ENABLED,
+        RenderConfig::PostProcessing::Bloom::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Bloom brightness threshold",
         "Threshold for the low-pass brightness filter",
         "Bloom",
-        HLSL::DownsampleParams->BrightnessThreshold,
+        RenderConfig::PostProcessing::Bloom::BrightnessThreshold,
         0.1f,
         0.2f);
 
@@ -1400,14 +1389,14 @@ namespace GITechDemoApp
         "Lens flare enable",
         "Toggle the rendering of the lens flare effect",
         "Lens flare",
-        LENS_FLARE_ENABLED,
+        RenderConfig::PostProcessing::LensFlare::Enabled,
         true);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Anamorphic lens flare",
         "Choose between anamorphic and spherical lens flare",
         "Lens flare",
-        LENS_FLARE_ANAMORPHIC,
+        RenderConfig::PostProcessing::LensFlare::Anamorphic,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1422,7 +1411,7 @@ namespace GITechDemoApp
         "Brigthness threshold",
         "Brightness threshold for lens flare feature generation",
         "Lens flare",
-        LENS_FLARE_BRIGHTNESS_THRESHOLD,
+        RenderConfig::PostProcessing::LensFlare::BrightnessThreshold,
         0.1f,
         3.5f);
 
@@ -1503,7 +1492,7 @@ namespace GITechDemoApp
         "Tone mapping enable",
         "Toggle tone mapping",
         "HDR tone mapping",
-        HDR_TONE_MAPPING_ENABLED,
+        RenderConfig::PostProcessing::ToneMapping::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
@@ -1590,7 +1579,7 @@ namespace GITechDemoApp
         "Exposure adapt speed",
         "Seconds in which the exposure adapts to scene brightness",
         "HDR tone mapping",
-        HLSL::LumaAdaptParams->LumaAdaptSpeed,
+        RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed,
         0.1f,
         1.f);
     //------------------------------------------------------
@@ -1607,7 +1596,7 @@ namespace GITechDemoApp
         "sRGB color lookup table",
         "Apply gamma correction when sampling the 3D color lookup table",
         "Color correction",
-        SRGB_COLOR_CORRECTION,
+        RenderConfig::PostProcessing::ToneMapping::sRGBColorCorrectionTexture,
         true);
     //------------------------------------------------------
 
@@ -1626,7 +1615,7 @@ namespace GITechDemoApp
         "FXAA enable",
         "Toggle the FXAA filter",
         "FXAA",
-        FXAA_ENABLED,
+        RenderConfig::PostProcessing::FastApproximateAntiAliasing::Enabled,
         true);
 
     CREATE_ARTIST_PARAMETER_OBJECT(

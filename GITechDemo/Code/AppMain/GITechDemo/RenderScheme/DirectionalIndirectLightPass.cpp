@@ -49,19 +49,19 @@ void DirectionalIndirectLightPass::AllocateResources()
 {
     // Generate Poisson-disk sampling pattern
     std::vector<sPoint> poisson;
-    float minDist = sqrt((float)RSM_NUM_SAMPLES) / (float)RSM_NUM_SAMPLES * 0.7f;
+    float minDist = sqrt((float)HLSL::RSM::SampleCount) / (float)HLSL::RSM::SampleCount * 0.7f;
     do
     {
         poisson =
             GeneratePoissonPoints(
                 minDist,
                 30,
-                RSM_NUM_SAMPLES
+                HLSL::RSM::SampleCount
             );
-    } while (poisson.size() != RSM_NUM_SAMPLES);
+    } while (poisson.size() != HLSL::RSM::SampleCount);
 
     // Warp kernel so as to distribute more samples towards the exterior
-    for (unsigned int i = 0; i < RSM_NUM_SAMPLES; i++)
+    for (unsigned int i = 0; i < HLSL::RSM::SampleCount; i++)
     {
         // Increase sample density towards the outside of the kernel
         HLSL::RSMCommonParams->KernelUpscalePass[i][0] = sqrt(abs(poisson[i].x - 0.5f) * 2.f) * ((poisson[i].x < 0.5f) ? -1.f : 1.f);
@@ -95,7 +95,7 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
 
 void DirectionalIndirectLightPass::Draw()
 {
-    if (!INDIRECT_LIGHT_ENABLED)
+    if (!RenderConfig::ReflectiveShadowMap::Enabled)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();
@@ -108,7 +108,7 @@ void DirectionalIndirectLightPass::Draw()
 
     PUSH_PROFILE_MARKER("Apply");
 
-    if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
+    if (RenderConfig::ReflectiveShadowMap::QuarterResolution)
     {
         IndirectLightAccumulationBuffer[0]->Enable();
         RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
@@ -119,7 +119,7 @@ void DirectionalIndirectLightPass::Draw()
         0.5f / GBuffer.GetRenderTarget()->GetHeight()
     );
 
-    for (unsigned int i = 0; i < RSM_NUM_PASSES; i++)
+    for (unsigned int i = 0; i < HLSL::RSM::PassCount; i++)
     {
         for (unsigned int j = 0; j < HLSL::RSM::SamplesPerPass; j++)
         {
@@ -141,7 +141,7 @@ void DirectionalIndirectLightPass::Draw()
 
     POP_PROFILE_MARKER();
 
-    if (RSM_USE_QUARTER_RESOLUTION_BUFFER)
+    if (RenderConfig::ReflectiveShadowMap::QuarterResolution)
     {
         IndirectLightAccumulationBuffer[0]->Disable();
 
@@ -153,7 +153,7 @@ void DirectionalIndirectLightPass::Draw()
 
 void DirectionalIndirectLightPass::Blur()
 {
-    if (!RSM_USE_BILATERAL_BLUR)
+    if (!RenderConfig::ReflectiveShadowMap::BilateralBlur)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();
@@ -240,7 +240,7 @@ void DirectionalIndirectLightPass::Blur()
 
 void DirectionalIndirectLightPass::Upscale()
 {
-    if (!RSM_USE_QUARTER_RESOLUTION_BUFFER)
+    if (!RenderConfig::ReflectiveShadowMap::QuarterResolution)
         return;
 
     Renderer* RenderContext = Renderer::GetInstance();

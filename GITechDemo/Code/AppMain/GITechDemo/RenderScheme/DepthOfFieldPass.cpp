@@ -98,16 +98,13 @@ void DepthOfFieldPass::AutofocusPass()
     HLSL::LumaAdapt_LumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::LumaAdapt_LumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
-    const float bkp = HLSL::LumaAdaptParams->LumaAdaptSpeed;
-    HLSL::LumaAdaptParams->LumaAdaptSpeed = DOF_AUTOFOCUS_TIME;
-    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / HLSL::LumaAdaptParams->LumaAdaptSpeed);
+    HLSL::LumaAdaptParams->LumaAdaptSpeed = RenderConfig::PostProcessing::DepthOfField::AutofocusTime;
+    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((GITechDemo*)AppMain)->GetDeltaTime(), 0.f, 1.f / RenderConfig::PostProcessing::DepthOfField::AutofocusTime);
 
     // Reuse the luminance animation shader
     LumaAdaptShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     LumaAdaptShader.Disable();
-
-    HLSL::LumaAdaptParams->LumaAdaptSpeed = bkp;
 
     AutofocusBuffer[0]->Disable();
 
@@ -161,7 +158,6 @@ void DepthOfFieldPass::CalculateBlurFactor()
     PUSH_PROFILE_MARKER("Calculate Blur");
 
     // Set aperture size to 0, so that the shader only calculates CoC values
-    float bkp = HLSL::BokehDoFParams->ApertureSize;
     HLSL::BokehDoFParams->ApertureSize = 0.f;
 
     DepthOfFieldBuffer[0]->Enable();
@@ -188,9 +184,6 @@ void DepthOfFieldPass::CalculateBlurFactor()
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(colorBlendEnabled);
 
     DepthOfFieldBuffer[0]->Disable();
-
-    // Reset aperture size
-    HLSL::BokehDoFParams->ApertureSize = bkp;
 
     POP_PROFILE_MARKER();
 }
@@ -236,23 +229,22 @@ void DepthOfFieldPass::ApplyDoF()
 
 void DepthOfFieldPass::Draw()
 {
-    if (!DOF_ENABLED)
+    if (!RenderConfig::PostProcessing::DepthOfField::Enabled)
         return;
 
     AutofocusPass();
 
     CalculateBlurFactor();
 
-    float bkp = HLSL::BokehDoFParams->ApertureSize;
-    for (int i = 0; i < DOF_NUM_PASSES; i++)
+    for (int i = 0; i < RenderConfig::PostProcessing::DepthOfField::PassCount; i++)
     {
-        SWAP_RENDER_TARGET_HANDLES(DepthOfFieldBuffer[0], DepthOfFieldBuffer[1]);
-        AccumulateDoFEffect();
-
         // Vary aperture size per pass so as to have a better sample distribution
-        HLSL::BokehDoFParams->ApertureSize = HLSL::BokehDoFParams->ApertureSize - bkp / (float)DOF_NUM_PASSES;
+        HLSL::BokehDoFParams->ApertureSize = RenderConfig::PostProcessing::DepthOfField::ApertureSize * ((float)RenderConfig::PostProcessing::DepthOfField::PassCount - i) / (float)RenderConfig::PostProcessing::DepthOfField::PassCount;
+
+        SWAP_RENDER_TARGET_HANDLES(DepthOfFieldBuffer[0], DepthOfFieldBuffer[1]);
+
+        AccumulateDoFEffect();
     }
-    HLSL::BokehDoFParams->ApertureSize = bkp;
 
     ApplyDoF();
 }

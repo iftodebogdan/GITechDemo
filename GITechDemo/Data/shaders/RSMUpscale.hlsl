@@ -20,7 +20,7 @@
 =============================================================================*/
 
 // This define will modify the behaviour of the RSMApply() function so that it will
-// perform all RSM_NUM_PASSES * RSM_SAMPLES_PER_PASS texture fetches in a single pass
+// perform all RSM::SampleCount texture fetches in a single pass
 // (As opposed to the apply pass which is a multi-pass approach).
 #define RSM_UPSCALE_PASS (1)
 #include "RSMCommon.hlsli"
