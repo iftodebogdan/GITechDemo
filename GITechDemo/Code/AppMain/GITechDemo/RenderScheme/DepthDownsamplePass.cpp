@@ -23,6 +23,7 @@
 
 #include <Renderer.h>
 #include <RenderState.h>
+#include <RenderTarget.h>
 using namespace Synesthesia3D;
 
 #include "DepthDownsamplePass.h"
@@ -40,6 +41,7 @@ DepthDownsamplePass::~DepthDownsamplePass()
 void DepthDownsamplePass::Update(const float fDeltaTime)
 {
     HLSL::DownsampleParams->DepthDownsample = true;
+    HLSL::Downsample_Source = GBuffer.GetRenderTarget()->GetDepthBuffer();
 }
 
 void DepthDownsamplePass::Draw()

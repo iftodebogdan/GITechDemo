@@ -115,21 +115,21 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     switch (validCascade)
     {
     case 0:
-        percentLit = PCF_SAMPLE0(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
+        percentLit = PCF_SAMPLE0(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
         break;
     case 1:
-        percentLit = PCF_SAMPLE1(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
+        percentLit = PCF_SAMPLE1(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
         break;
     case 2:
-        percentLit = PCF_SAMPLE2(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
+        percentLit = PCF_SAMPLE2(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
         break;
     case 3:
-        percentLit = PCF_SAMPLE3(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
+        percentLit = PCF_SAMPLE3(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
         break;
     }
 #else
     float percentLit = PCF_SAMPLE(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
-    //float percentLit = tex2D(DirectionalLightShadowMap, cascadeTexCoord.xy).r > cascadeTexCoord.z;
+    //float percentLit = tex2D(DirectionalLight_ShadowMap, cascadeTexCoord.xy).r > cascadeTexCoord.z;
 #endif
     
     // If required, blend between cascade seams
@@ -213,13 +213,13 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                 switch (validCascade)
                 {
                 case 0:
-                    percentLitLQ = PCF_SAMPLE1(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
+                    percentLitLQ = PCF_SAMPLE1(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
                     break;
                 case 1:
-                    percentLitLQ = PCF_SAMPLE2(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
+                    percentLitLQ = PCF_SAMPLE2(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
                     break;
                 case 2:
-                    percentLitLQ = PCF_SAMPLE3(DirectionalLightShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
+                    percentLitLQ = PCF_SAMPLE3(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeLQTexCoord.xy, cascadeLQTexCoord.z);
                     break;
                 }
             #else

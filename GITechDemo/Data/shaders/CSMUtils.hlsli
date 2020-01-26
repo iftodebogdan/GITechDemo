@@ -34,7 +34,7 @@ struct CSM
     // application (so that they are known at compile time)
     // NB: Also, we don't want to waste ALU calculating them
     static const int CascadesPerRow = ceil(sqrt(CascadeCount)); // Number of cascades per row
-    static const float CascadeNormSize = 1.f / CascadeCount;    // Normalized size of a cascade, i.e. 1.f / nCascadesPerRow
+    static const float CascadeNormSize = 1.f / CascadesPerRow;    // Normalized size of a cascade, i.e. 1.f / CascadesPerRow
 #endif
 };
 
