@@ -51,7 +51,7 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     else
         VolumetricLightAccumulationBuffer = VolumetricLightFullBuffer;
 
-    Vec4f v4CamPosLightVS = HLSL::DirectionalLightParams->ScreenToLightViewMat * Vec4f(0.f, 0.f, 0.f, 1.f);
+    Vec4f v4CamPosLightVS = HLSL::FrameParams->ScreenToLightViewMat * Vec4f(0.f, 0.f, 0.f, 1.f);
     v4CamPosLightVS /= v4CamPosLightVS[3];
     HLSL::DirectionalLightVolumeParams->CameraPositionLightVS = Vec3f(v4CamPosLightVS[0], v4CamPosLightVS[1], v4CamPosLightVS[2]);
     HLSL::DirectionalLightVolumeParams->RaymarchDistanceLimit = RenderConfig::CascadedShadowMaps::MaxViewDepth;
@@ -74,6 +74,34 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     HLSL::DirectionalLightVolumeParams->ElapsedTime += fDeltaTime;
     HLSL::DirectionalLightVolumeParams->FogBox = Vec3f(RenderConfig::CascadedShadowMaps::MaxViewDepth, RenderConfig::CascadedShadowMaps::MaxViewDepth, RenderConfig::CascadedShadowMaps::MaxViewDepth);
 
+    HLSL::DirectionalLightVolumeParams->HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
+    HLSL::DirectionalLightVolume_ShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
+    HLSL::DirectionalLightVolume_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+
+    HLSL::NearestDepthUpscaleParams->SingleChannelCopy = true;
+    HLSL::NearestDepthUpscaleParams->CustomColorModulator = RenderConfig::DirectionalLightVolume::LightColor;
+
+    HLSL::NearestDepthUpscaleParams->HalfTexelOffset = Vec2f(
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+    );
+    HLSL::NearestDepthUpscale_Source = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+
+    HLSL::NearestDepthUpscaleParams->TexSize = Vec4f(
+        (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
+        1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+    );
+    HLSL::NearestDepthUpscale_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
+    HLSL::NearestDepthUpscale_QuarterDepthBuffer = HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
+
+    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
+        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
+    );
+    HLSL::ColorCopy_SourceTexture = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
+
     HLSL::ColorCopyParams->SingleChannelCopy = true;
     HLSL::ColorCopyParams->CustomColorModulator = RenderConfig::DirectionalLightVolume::LightColor;
     HLSL::ColorCopyParams->ApplyTonemap = false;
@@ -91,10 +119,6 @@ void DirectionalLightVolumePass::CalculateLightVolume()
 
     const bool blendEnable = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
-
-    HLSL::DirectionalLightVolumeParams->HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
-    HLSL::DirectionalLightVolume_ShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
-    HLSL::DirectionalLightVolume_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
     DirectionalLightVolumeShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
@@ -222,33 +246,12 @@ void DirectionalLightVolumePass::ApplyLightVolume()
 
     if (RenderConfig::DirectionalLightVolume::QuarterResolution && RenderConfig::DirectionalLightVolume::DepthAwareUpscale)
     {
-        HLSL::NearestDepthUpscaleParams->HalfTexelOffset = Vec2f(
-            0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-            0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-        );
-        HLSL::NearestDepthUpscale_Source = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
-
-        HLSL::NearestDepthUpscaleParams->TexSize = Vec4f(
-            (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-            (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
-            1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-            1.f / (float)VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
-        );
-        HLSL::NearestDepthUpscale_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
-        HLSL::NearestDepthUpscale_QuarterDepthBuffer = HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer();
-
         NearestDepthUpscaleShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
         NearestDepthUpscaleShader.Disable();
     }
     else
     {
-        HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
-            0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-            0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-        );
-        HLSL::ColorCopy_SourceTexture = VolumetricLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0);
-
         ColorCopyShader.Enable();
         RenderContext->DrawVertexBuffer(FullScreenTri);
         ColorCopyShader.Disable();

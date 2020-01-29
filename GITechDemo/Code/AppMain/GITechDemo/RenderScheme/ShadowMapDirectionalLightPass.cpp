@@ -135,11 +135,9 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
         zAxis[0], zAxis[1], zAxis[2], 0.f,
         0.f, 0.f, 0.f, 1.f
         );
-    HLSL::RSMCaptureParams->LightWorldViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::FrameParams->WorldMat;
-    invertFull(HLSL::DirectionalLightVolumeParams->InvLightViewMat, HLSL::FrameParams->DirectionalLightViewMat);
-    HLSL::DirectionalLightParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
-    HLSL::DirectionalLightVolumeParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
-    HLSL::RSMCommonParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::MotionBlurParams->InvViewProjMat;
+    HLSL::FrameParams->LightWorldViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::FrameParams->WorldMat;
+    invertFull(HLSL::FrameParams->InvLightViewMat, HLSL::FrameParams->DirectionalLightViewMat);
+    HLSL::FrameParams->ScreenToLightViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::FrameParams->InvViewProjMat;
 
     // Calculate the projection matrices for all shadow map cascades
     // Start with converting the scene AABB to a light view space OBB
@@ -159,7 +157,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     for (unsigned int i = 0; i < 8; i++)
     {
         // For each AABB vertex, calculate the corresponding light view space OBB vertex
-        aabbVerts[i] = HLSL::RSMCaptureParams->LightWorldViewMat * aabbVerts[i];
+        aabbVerts[i] = HLSL::FrameParams->LightWorldViewMat * aabbVerts[i];
 
         // Calculate the light view space AABB using the minimum and maximum values
         // on each axis of the light view space OBB
@@ -221,7 +219,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
             // then apply the directional light camera's view matrix in order to
             // obtain the light view space coordinates of the partitioned view frustum.
             // This is the light view space OBB of the current view frustum partition.
-            Vec4f viewFrustumVertPreW = HLSL::MotionBlurParams->InvViewProjMat * partitionVert;
+            Vec4f viewFrustumVertPreW = HLSL::FrameParams->InvViewProjMat * partitionVert;
             Vec4f viewFrustumVertPostW = viewFrustumVertPreW / viewFrustumVertPreW[3];
             Vec3f wsFrustumVert = Vec3f(viewFrustumVertPostW[0], viewFrustumVertPostW[1], viewFrustumVertPostW[2]);
             Vec3f lsFrustumVerts = HLSL::FrameParams->DirectionalLightViewMat * wsFrustumVert;

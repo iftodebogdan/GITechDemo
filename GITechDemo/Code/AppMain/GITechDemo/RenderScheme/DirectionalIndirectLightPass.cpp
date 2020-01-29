@@ -91,6 +91,7 @@ void DirectionalIndirectLightPass::Update(const float fDeltaTime)
     HLSL::RSMCommon_RSMNormalBuffer = RSMBuffer.GetRenderTarget()->GetColorBuffer(1);
     HLSL::RSMCommon_RSMDepthBuffer = RSMBuffer.GetRenderTarget()->GetDepthBuffer();
     HLSL::RSMCommon_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(3); // use vertex normals to reduce noise
+    HLSL::RSMApply_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 }
 
 void DirectionalIndirectLightPass::Draw()

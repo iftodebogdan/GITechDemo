@@ -25,7 +25,6 @@ TEXTURE_2D_RESOURCE(RSMCapture_Diffuse); // Diffuse color
 
 CBUFFER_RESOURCE(RSMCapture,
     GPU_float4x4 RSMWorldViewProjMat;
-    GPU_float4x4 LightWorldViewMat;
 );
 
 #ifdef HLSL
@@ -49,7 +48,7 @@ void vsmain(VSIn input, out VSOut output)
 {
     output.Position = mul(RSMCaptureParams.RSMWorldViewProjMat, input.Position);
     output.TexCoord = input.TexCoord;
-    output.Normal = normalize(mul((float3x3)RSMCaptureParams.LightWorldViewMat, input.Normal));
+    output.Normal = normalize(mul((float3x3)FrameParams.LightWorldViewMat, input.Normal));
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

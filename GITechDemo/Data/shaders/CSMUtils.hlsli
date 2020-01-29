@@ -39,10 +39,10 @@ struct CSM
 };
 
 CBUFFER_RESOURCE(CSM,
-    GPU_float2    CascadeBoundsMin[CSM::CascadeCount]; // Light-view space AABBs corresponding
-    GPU_float2    CascadeBoundsMax[CSM::CascadeCount]; // to each shadow cascade
-    GPU_float4x4  CascadeProjMat[CSM::CascadeCount]; // light space projection matrix
-    GPU_float     CascadeBlendSize; // Size of the blend band for blurring between cascade boundaries
+    GPU_float2      CascadeBoundsMin[CSM::CascadeCount]; // Light-view space AABBs corresponding
+    GPU_float2      CascadeBoundsMax[CSM::CascadeCount]; // to each shadow cascade
+    GPU_float4x4    CascadeProjMat[CSM::CascadeCount]; // light space projection matrix
+    GPU_float       CascadeBlendSize; // Size of the blend band for blurring between cascade boundaries
 );
 
 #ifdef HLSL

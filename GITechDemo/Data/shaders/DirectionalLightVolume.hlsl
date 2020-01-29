@@ -22,6 +22,7 @@
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
 #include "CSMUtils.hlsli"
+#include "BRDFUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(DirectionalLightVolume_ShadowMap); // Cascaded shadow maps
 TEXTURE_2D_RESOURCE(DirectionalLightVolume_DepthBuffer); // Scene depth
@@ -31,17 +32,14 @@ CBUFFER_RESOURCE(DirectionalLightVolume,
     GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize; // xy: size, in texels, of destination texture; zw : normalized texel size
 
-    GPU_float   SampleCount;            // Number of samples along ray
-    GPU_float   SampleDistrib;          // Distribution of samples along ray
-    GPU_float   LightIntensity;         // Intensity of the effect when in direct light
-    GPU_float   MultScatterIntensity;   // Intensity of the effect when in indirect light
-    GPU_float3  FogBox;                 // Bounding box of fog texture in world space coordinates
-    GPU_float3  FogSpeed;               // Fog speed modifier for each axis (world space units / sec)
-    GPU_float   FogVerticalFalloff;     // Vertical fallof factor for the volumetric fog effect
-    GPU_float   DiffuseFactor;          // Scale value for diffuse light
+    GPU_float       SampleCount;            // Number of samples along ray
+    GPU_float       SampleDistrib;          // Distribution of samples along ray
+    GPU_float       LightIntensity;         // Intensity of the effect when in direct light
+    GPU_float       MultScatterIntensity;   // Intensity of the effect when in indirect light
+    GPU_float3      FogBox;                 // Bounding box of fog texture in world space coordinates
+    GPU_float3      FogSpeed;               // Fog speed modifier for each axis (world space units / sec)
+    GPU_float       FogVerticalFalloff;     // Vertical fallof factor for the volumetric fog effect
 
-    GPU_float4x4    ScreenToLightViewMat;   // Composite matrix for transforming screen-space coordinates to light-view space
-    GPU_float4x4    InvLightViewMat;        // Light view space to world space matrix
     GPU_float3      CameraPositionLightVS;  // Light view space position of camera
     GPU_float       RaymarchDistanceLimit;  // Fallback if we can't find a tighter limit
     GPU_float       ElapsedTime;            // Elapsed time
@@ -77,7 +75,7 @@ void vsmain(float4 position : POSITION, out VSOut output)
 // Radiative transport equation terms (http://sirkan.iit.bme.hu/~szirmay/lightshaft.pdf)
 #define TAU     (0.0001f)   // Probability of collision
 //#define PHI       (1.f)       // Source power of the light
-#define PHI DirectionalLightVolumeParams.DiffuseFactor
+#define PHI BRDFParams.DiffuseFactor
 
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
@@ -87,10 +85,10 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     color = float4(0.f, 0.f, 0.f, 1.f);
-    
+
     // Intersect ray with scene
     const float sceneDepth = tex2D(DirectionalLightVolume_DepthBuffer, input.TexCoord).r;
-    const float4 rayPosLightVSW = mul(DirectionalLightVolumeParams.ScreenToLightViewMat, float4(input.ScreenPos, sceneDepth, 1.f));
+    const float4 rayPosLightVSW = mul(FrameParams.ScreenToLightViewMat, float4(input.ScreenPos, sceneDepth, 1.f));
     float3 rayPosLightVS = rayPosLightVSW.xyz / rayPosLightVSW.w;
 
     // Reduce noisiness by truncating the starting position
@@ -119,8 +117,8 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
 
     // Calculate ray position in fog texture space for fog effect.
     const float3 fogBoxRcp = rcp(DirectionalLightVolumeParams.FogBox);
-    const float3 rayPosWS = mul(DirectionalLightVolumeParams.InvLightViewMat, float4(rayPosLightVS, 1.f)).xyz * fogBoxRcp;
-    const float3 rayDirWS = normalize(mul(DirectionalLightVolumeParams.InvLightViewMat, float4(rayDirLightVS, 0.f)).xyz) * fogBoxRcp;
+    const float3 rayPosWS = mul(FrameParams.InvLightViewMat, float4(rayPosLightVS, 1.f)).xyz * fogBoxRcp;
+    const float3 rayDirWS = normalize(mul(FrameParams.InvLightViewMat, float4(rayDirLightVS, 0.f)).xyz) * fogBoxRcp;
     const float3 fogSampleOffset = DirectionalLightVolumeParams.ElapsedTime * DirectionalLightVolumeParams.FogSpeed * fogBoxRcp;
 
     // Ray marching (could be optimized with a hardcoded sample count value and unrolling this 'for')

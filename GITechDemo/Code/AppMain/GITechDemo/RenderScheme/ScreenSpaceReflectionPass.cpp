@@ -89,6 +89,8 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     HLSL::ColorCopyParams->ApplyTonemap = true;
 
     HLSL::ScreenSpaceReflection_HDRSceneTexture = m_pLightAccumulationBufferCopyRT->GetColorBuffer();
+    HLSL::ScreenSpaceReflection_DiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
+    HLSL::ScreenSpaceReflection_MaterialBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(2);
     HLSL::ScreenSpaceReflection_LinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
     HLSL::ScreenSpaceReflection_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
 

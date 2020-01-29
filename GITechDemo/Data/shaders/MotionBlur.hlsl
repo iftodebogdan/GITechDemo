@@ -28,8 +28,6 @@ TEXTURE_2D_RESOURCE(MotionBlur_DepthBuffer); // Depth buffer
 CBUFFER_RESOURCE(MotionBlur,
     GPU_float2 HalfTexelOffset;
     GPU_float NumSamples;           // The number of samples along the velocity vector
-    GPU_float4x4 InvViewProjMat;    // Inverse view-projection matrix
-    GPU_float4x4 PrevViewProjMat;   // Previous frame's view-projection matrix
     GPU_float FrameTime;            // Frame duration
     GPU_float Intensity;            // Intensity of the motion blur effect
 );
@@ -69,11 +67,11 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     const float4 NDCPos = float4(input.ScreenPos, depth, 1.f);
 
     // Compute world space position
-    const float4 worldPosPreW = mul(MotionBlurParams.InvViewProjMat, NDCPos);
+    const float4 worldPosPreW = mul(FrameParams.InvViewProjMat, NDCPos);
     const float4 worldPos = worldPosPreW / worldPosPreW.w;
 
     // Compute last frame NDC space position
-    const float4 prevNDCPosPreW = mul(MotionBlurParams.PrevViewProjMat, worldPos);
+    const float4 prevNDCPosPreW = mul(FrameParams.PrevViewProjMat, worldPos);
     const float4 prevNDCPos = prevNDCPosPreW / prevNDCPosPreW.w;
 
     // Compute pixel velocity

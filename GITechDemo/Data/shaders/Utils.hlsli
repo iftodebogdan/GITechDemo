@@ -29,7 +29,12 @@ CBUFFER_RESOURCE(Frame,
     GPU_float4x4 WorldMat;
     GPU_float4x4 ProjMat;
     GPU_float4x4 ViewProjMat;
+    GPU_float4x4 PrevViewProjMat;   // Previous frame's view-projection matrix
+    GPU_float4x4 InvViewProjMat;    // Inverse view-projection matrix
     GPU_float4x4 DirectionalLightViewMat;
+    GPU_float4x4 InvLightViewMat;        // Light view space to world space matrix
+    GPU_float4x4 LightWorldViewMat;
+    GPU_float4x4 ScreenToLightViewMat;  // Composite matrix for transforming screen-space coordinates to light-view space
     GPU_float4x4 DirectionalLightViewProjMat[CSM::CascadeCount];
     GPU_float4x4 DirectionalLightWorldViewProjMat[CSM::CascadeCount];
 );
@@ -45,7 +50,7 @@ struct Utils
 };
 
 CBUFFER_RESOURCE(Utils,
-    GPU_float2 PoissonDisk[16];
+    GPU_float2 PoissonDisk[Utils::PoissonDiskSampleCount];
 );
 
 #ifdef HLSL

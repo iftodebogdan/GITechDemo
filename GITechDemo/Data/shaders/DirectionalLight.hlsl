@@ -35,7 +35,6 @@ CBUFFER_RESOURCE(DirectionalLight,
     GPU_float2 HalfTexelOffset;
 
     GPU_float2 OneOverShadowMapSize;    // 1 / shadow map width/height
-    GPU_float4x4 ScreenToLightViewMat;  // Composite matrix for transforming screen-space coordinates to light-view space
     GPU_bool DebugCascades;             // Visual cascade debug option
 );
 
@@ -100,7 +99,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ee416307%28v=vs.85%29.aspx  //
     //////////////////////////////////////////////////////////////////////////////////////////
     // Step 1: Calculate light-view space position of current pixel
-    float4 lightViewPos = mul(DirectionalLightParams.ScreenToLightViewMat, float4(input.ScreenPos, depth, 1.f));
+    float4 lightViewPos = mul(FrameParams.ScreenToLightViewMat, float4(input.ScreenPos, depth, 1.f));
     lightViewPos /= lightViewPos.w;
 
     // Step 2: Find the best valid cascade

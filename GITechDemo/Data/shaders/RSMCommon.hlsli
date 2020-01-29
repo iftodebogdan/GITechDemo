@@ -24,6 +24,7 @@
 
 #include "PostProcessingUtils.hlsli"
 #include "Utils.hlsli"
+#include "CSMUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(RSMCommon_RSMFluxBuffer);   // RSM flux data
 TEXTURE_2D_RESOURCE(RSMCommon_RSMNormalBuffer); // RSM normal data
@@ -57,11 +58,6 @@ CBUFFER_RESOURCE(RSMCommon,
     // "concentrated" bounces and larger bounce distances
     GPU_float KernelScale;
 
-    // Composite matrix for transforming coordinates from render
-    // camera projective space to light projective space
-    // NB: perspective divide (i.e. w-divide) required
-    GPU_float4x4 ScreenToLightViewMat;
-
     // Matrix for transforming coordinates from light
     // view space to light projective space
     GPU_float4x4 RSMProjMat;
@@ -88,7 +84,7 @@ void ApplyRSM(const float2 texCoord, const float depth, out float4 colorOut)
     // Calculate normalized device coordinates (NDC) space position of currently shaded pixel
     const float4 screenProjSpacePos = float4(texCoord * float2(2.f, -2.f) - float2(1.f, -1.f), depth, 1.f);
     // Transform pixel coordinates from NDC space to RSM view space
-    const float4 RSMViewSpacePosW = mul(RSMCommonParams.ScreenToLightViewMat, screenProjSpacePos);
+    const float4 RSMViewSpacePosW = mul(FrameParams.ScreenToLightViewMat, screenProjSpacePos);
     // Perspective w-divide
     const float3 RSMViewSpacePos = RSMViewSpacePosW.xyz / RSMViewSpacePosW.w;
     // Sample normal for currently shaded pixel and transform to RSM view space

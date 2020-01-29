@@ -673,14 +673,14 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Calculate some composite matrices
     gmtl::invertFull(HLSL::BRDFParams->InvViewMat, HLSL::BRDFParams->ViewMat);
-    HLSL::MotionBlurParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat; // View-projection matrix from last frame
+    HLSL::FrameParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat; // View-projection matrix from last frame
     HLSL::FrameParams->ViewProjMat = HLSL::FrameParams->ProjMat * HLSL::BRDFParams->ViewMat;
-    HLSL::MotionBlurParams->InvViewProjMat = HLSL::BRDFParams->InvViewMat * HLSL::DirectionalLightParams->InvProjMat;
+    HLSL::FrameParams->InvViewProjMat = HLSL::BRDFParams->InvViewMat * HLSL::DirectionalLightParams->InvProjMat;
 
     // For the first frame, set the last frame's view-projection matrix
     // to the current frame's view-projection matrix
-    if (HLSL::MotionBlurParams->PrevViewProjMat == MAT_IDENTITY44F)
-        HLSL::MotionBlurParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat;
+    if (HLSL::FrameParams->PrevViewProjMat == MAT_IDENTITY44F)
+        HLSL::FrameParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat;
 }
 
 void GITechDemo::UpdateUIFocus()
