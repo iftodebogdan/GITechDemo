@@ -4,7 +4,7 @@
 newmtl leaf
 	Ns 10.0000
 	Ni 1.5000
-	d 1.0000
+	d 0.5000
 	Tr 0.0000
 	Tf 1.0000 1.0000 1.0000 
 	illum 2
@@ -39,7 +39,7 @@ newmtl vase_round
 newmtl Material__57
 	Ns 10.0000
 	Ni 1.5000
-	d 1.0000
+	d 0.5000
 	Tr 0.0000
 	Tf 1.0000 1.0000 1.0000 
 	illum 2
@@ -329,7 +329,7 @@ newmtl fabric_f
 newmtl chain
 	Ns 10.0000
 	Ni 1.5000
-	d 1.0000
+	d 0.5000
 	Tr 0.0000
 	Tf 1.0000 1.0000 1.0000 
 	illum 2

@@ -91,7 +91,8 @@ namespace Synesthesia3D
         D3DFMT_A8,                              // PF_A8
         D3DFMT_L8,                              // PF_L8
         D3DFMT_A8L8,                            // PF_A8L8
-        D3DFMT_X8R8G8B8,                        // PF_R8G8B8
+        D3DFMT_R8G8B8,                          // PF_R8G8B8
+        D3DFMT_X8R8G8B8,                        // PF_X8R8G8B8
         D3DFMT_A8R8G8B8,                        // PF_A8R8G8B8
         D3DFMT_A8B8G8R8,                        // PF_A8B8G8R8
         D3DFMT_L16,                             // PF_L16

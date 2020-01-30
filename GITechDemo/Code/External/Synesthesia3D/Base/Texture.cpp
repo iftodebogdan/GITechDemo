@@ -48,6 +48,7 @@ const bool g_bMipmapable[PF_MAX] =
     true,   // PF_L8
     true,   // PF_A8L8
     true,   // PF_R8G8B8
+    true,   // PF_X8R8G8B8
     true,   // PF_A8R8G8B8
     true,   // PF_A8B8G8R8
     true,   // PF_L16
@@ -76,6 +77,7 @@ const unsigned int g_nBytesPerPixel[PF_MAX] =
     1,  // PF_L8
     2,  // PF_A8L8
     3,  // PF_R8G8B8
+    4,  // PF_X8R8G8B8
     4,  // PF_A8R8G8B8
     4,  // PF_A8B8G8R8
     2,  // PF_L16
@@ -111,6 +113,7 @@ const ComponentOrder g_eComponentOrder[PF_MAX] =
     CO_NONE,    // PF_L8
     CO_ARGB,    // PF_A8L8
     CO_ARGB,    // PF_R8G8B8
+    CO_ARGB,    // PF_X8R8G8B8
     CO_ARGB,    // PF_A8R8G8B8
     CO_ABGR,    // PF_A8B8G8R8
     CO_NONE,    // PF_L16
@@ -139,6 +142,7 @@ const unsigned int g_nComponentCount[PF_MAX] =
     1,  // PF_L8
     2,  // PF_A8L8
     3,  // PF_R8G8B8
+    4,  // PF_X8R8G8B8
     4,  // PF_A8R8G8B8
     4,  // PF_A8B8G8R8
     1,  // PF_L16
@@ -167,6 +171,7 @@ const bool g_bFloatingPoint[PF_MAX] =
     false,  // PF_L8
     false,  // PF_A8L8
     false,  // PF_R8G8B8
+    false,  // PF_X8R8G8B8
     false,  // PF_A8R8G8B8
     false,  // PF_A8B8G8R8
     false,  // PF_L16
@@ -195,6 +200,7 @@ const bool g_bDepthFormat[PF_MAX] =
     false,  // PF_L8
     false,  // PF_A8L8
     false,  // PF_R8G8B8
+    false,  // PF_X8R8G8B8
     false,  // PF_A8R8G8B8
     false,  // PF_A8B8G8R8
     false,  // PF_L16
@@ -223,6 +229,7 @@ const bool g_bHasStencil[PF_MAX] =
     false,  // PF_L8
     false,  // PF_A8L8
     false,  // PF_R8G8B8
+    false,  // PF_X8R8G8B8
     false,  // PF_A8R8G8B8
     false,  // PF_A8B8G8R8
     false,  // PF_L16
@@ -251,6 +258,7 @@ const bool g_bCompressed[PF_MAX] =
     false,  // PF_L8
     false,  // PF_A8L8
     false,  // PF_R8G8B8
+    false,  // PF_X8R8G8B8
     false,  // PF_A8R8G8B8
     false,  // PF_A8B8G8R8
     false,  // PF_L16

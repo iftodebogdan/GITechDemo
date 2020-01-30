@@ -65,40 +65,53 @@ void SceneGeometryPass::Draw()
 
         RenderContext->GetRenderStateManager()->SetColorWriteEnabled(false, false, false, false);
 
+        // Draw solid objects
         DepthPassShader.Enable();
 
         for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
         {
-            PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
+            const unsigned int matIdx = SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx;
+            const s3dSampler2D diffuseTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, matIdx);
+            Synesthesia3D::Texture* const diffuseTex = ResMgr->GetTexture(diffuseTexIdx);
+            const s3dByte* const texDiffuseData = diffuseTex->GetMipData();
 
-            HLSL::DepthPassAlphaTest_Diffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-            const s3dByte* const texDiffuseData = ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetMipData();
+            assert(diffuseTex->GetPixelFormat() == PF_X8R8G8B8 || diffuseTex->GetPixelFormat() == PF_A8R8G8B8);
 
-            // Has at least one A8R8G8B8 pixel
-            assert(ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetPixelFormat() == PF_A8R8G8B8);
-            assert(ResMgr->GetTexture(HLSL::DepthPassAlphaTest_Diffuse)->GetMipSizeBytes() >= 4u);
-
-            // HACK: if the first alpha value of the texture is 0, then use alpha test shader
-            if (texDiffuseData[3] == 0xFF)
+            if (SponzaScene.GetModel()->arrMaterial[matIdx]->fOpacity >= 1.f)
             {
+                PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
                 RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
+                POP_PROFILE_MARKER();
             }
-            else
-            {
-                if (RenderConfig::GBuffer::DrawAlphaTestGeometry)
-                {
-                    DepthPassShader.Disable();
-                    DepthPassAlphaTestShader.Enable();
-                    RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-                    DepthPassAlphaTestShader.Disable();
-                    DepthPassShader.Enable();
-                }
-            }
-
-            POP_PROFILE_MARKER();
         }
 
         DepthPassShader.Disable();
+
+        if (RenderConfig::GBuffer::DrawAlphaTestGeometry)
+        {
+            // Draw alpha test objects
+            DepthPassAlphaTestShader.Enable();
+
+            for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
+            {
+                const unsigned int matIdx = SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx;
+                const s3dSampler2D diffuseTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, matIdx);
+                Synesthesia3D::Texture* const diffuseTex = ResMgr->GetTexture(diffuseTexIdx);
+                const s3dByte* const texDiffuseData = diffuseTex->GetMipData();
+
+                if (SponzaScene.GetModel()->arrMaterial[matIdx]->fOpacity < 1.f)
+                {
+                    HLSL::DepthPassAlphaTest_Diffuse = diffuseTexIdx;
+                    DepthPassAlphaTestShader.CommitShaderInputs();
+
+                    PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
+                    RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
+                    POP_PROFILE_MARKER();
+                }
+            }
+
+            DepthPassAlphaTestShader.Disable();
+        }
 
         RenderContext->GetRenderStateManager()->SetColorWriteEnabled(red, green, blue, alpha);
         RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);

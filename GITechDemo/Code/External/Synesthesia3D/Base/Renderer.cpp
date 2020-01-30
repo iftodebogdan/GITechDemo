@@ -241,6 +241,8 @@ const char* Renderer::GetEnumString(PixelFormat val)
         return "A8L8";
     case PF_R8G8B8:
         return "R8G8B8";
+    case PF_X8R8G8B8:
+        return "X8R8G8B8";
     case PF_A8R8G8B8:
         return "A8R8G8B8";
     case PF_A8B8G8R8:

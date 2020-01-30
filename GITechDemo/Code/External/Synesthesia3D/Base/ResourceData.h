@@ -427,6 +427,7 @@ namespace Synesthesia3D
         PF_L8,              /**< @brief An 8-bit luminance-only format. */
         PF_A8L8,            /**< @brief A 16-bit format that uses 8 bits each for alpha and luminance. */
         PF_R8G8B8,          /**< @brief A 24-bit RGB pixel format that uses 8 bits per channel. */
+        PF_X8R8G8B8,        /**< @brief A 32-bit RGB pixel format that uses 8 bits per channel with a dummy alpha channel. */
         PF_A8R8G8B8,        /**< @brief A 32-bit ARGB pixel format, with alpha, that uses 8 bits per channel. */
         PF_A8B8G8R8,        /**< @brief A 32-bit ABGR pixel format, with alpha, that uses 8 bits per channel. */
 

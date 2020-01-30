@@ -273,6 +273,18 @@ namespace Synesthesia3D
         static SYNESTHESIA3D_DLL void ConvertFromR8G8B8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
         /**
+         * @brief   Decodes a X8R8G8B8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
+         * @note    Output color channels are normalized.
+         *
+         * @param[in]   inData      An array of X8R8G8B8 values (texture data).
+         * @param[out]  outRGBA     Array of decoded floating-point red, green, blue and alpha values (in this order).
+         * @param[in]   width       Texture width.
+         * @param[in]   height      Texture height.
+         * @param[in]   depth       Texture depth.
+         */
+        static SYNESTHESIA3D_DLL void ConvertFromX8R8G8B8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+
+        /**
          * @brief   Decodes a A8R8G8B8 texture buffer to an array of floating-point red, green, blue and alpha values (in this order).
          * @note    Output color channels are normalized.
          *
@@ -519,6 +531,18 @@ namespace Synesthesia3D
          * @param[in]   depth       Texture depth.
          */
         static SYNESTHESIA3D_DLL void ConvertToR8G8B8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
+
+        /**
+         * @brief   Encodes an array of floating-point red, green, blue and alpha values (in this order) into a X8R8G8B8 texture buffer.
+         * @note    Input color channels must be normalized.
+         *
+         * @param[in]   inRGBA      Array of floating-point red, green, blue and alpha values (in this order).
+         * @param[out]  outData     Array of X8R8G8B8 values (texture data).
+         * @param[in]   width       Texture width.
+         * @param[in]   height      Texture height.
+         * @param[in]   depth       Texture depth.
+         */
+        static SYNESTHESIA3D_DLL void ConvertToX8R8G8B8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth = 1);
 
         /**
          * @brief   Encodes an array of floating-point red, green, blue and alpha values (in this order) into a A8R8G8B8 texture buffer.

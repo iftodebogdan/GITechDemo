@@ -67,6 +67,8 @@ PixelFormat TextureCompiler::GetPixelFormat(const ILinfo & info, bool& swizzle)
                 return PF_R5G6B5;
             case 3:
                 return PF_R8G8B8;
+            case 4:
+                return PF_X8R8G8B8;
             default:
                 assert(false);
                 return PF_NONE;
@@ -119,6 +121,8 @@ PixelFormat TextureCompiler::GetPixelFormat(const ILinfo & info, bool& swizzle)
                 return PF_R5G6B5;
             case 3:
                 return PF_R8G8B8;
+            case 4:
+                return PF_X8R8G8B8;
             default:
                 assert(false);
                 return PF_NONE;
@@ -234,6 +238,12 @@ void TextureCompiler::Run(int argc, char* argv[])
                 if (_stricmp(argv[arg], "R8G8B8") == 0)
                 {
                     format = PF_R8G8B8;
+                    continue;
+                }
+
+                if (_stricmp(argv[arg], "X8R8G8B8") == 0)
+                {
+                    format = PF_X8R8G8B8;
                     continue;
                 }
 
@@ -366,7 +376,7 @@ void TextureCompiler::Run(int argc, char* argv[])
 
         cout << "Pixel formats:" << endl;
         cout << "*small-bit color formats: R5G6B5, A1R5G5B5, A4R4G4B4" << endl;
-        cout << "*8-bit integer formats: A8, L8, A8L8, R8G8B8, A8R8G8B8, A8B8G8R8" << endl;
+        cout << "*8-bit integer formats: A8, L8, A8L8, R8G8B8, X8R8G8B8, A8R8G8B8, A8B8G8R8" << endl;
         cout << "*16-bit integer formats: L16, G16R16, A16B16G16R16" << endl;
         cout << "*16-bit floating-point formats: R16F, G16R16F, A16B16G16R16F" << endl;
         cout << "*32-bit floating-point formats: R32F, G32R32F, A32B32G32R32F" << endl;

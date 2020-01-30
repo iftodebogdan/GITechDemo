@@ -39,6 +39,7 @@ ColorUtility::ConvertFromFunc ColorUtility::ConvertFrom[PF_MAX] =
     &ConvertFromL8,             // PF_L8
     &ConvertFromA8L8,           // PF_A8L8
     &ConvertFromR8G8B8,         // PF_R8G8B8
+    &ConvertFromX8R8G8B8,       // PF_X8R8G8B8
     &ConvertFromA8R8G8B8,       // PF_A8R8G8B8
     &ConvertFromA8B8G8R8,       // PF_A8B8G8R8
     &ConvertFromL16,            // PF_L16
@@ -68,6 +69,7 @@ ColorUtility::ConvertToFunc ColorUtility::ConvertTo[PF_MAX] =
     &ConvertToL8,               // PF_L8
     &ConvertToA8L8,             // PF_A8L8
     &ConvertToR8G8B8,           // PF_R8G8B8
+    &ConvertToX8R8G8B8,         // PF_X8R8G8B8
     &ConvertToA8R8G8B8,         // PF_A8R8G8B8
     &ConvertToA8B8G8R8,         // PF_A8B8G8R8
     &ConvertToL16,              // PF_L16
@@ -249,6 +251,20 @@ void ColorUtility::ConvertFromR8G8B8(const s3dByte * const inData, Vec4f * const
         (*texel)[1] = (float)(*src++) / 255.f;
         (*texel)[0] = (float)(*src++) / 255.f;
         (*texel)[3] = 1.0f;
+    }
+}
+
+void ColorUtility::ConvertFromX8R8G8B8(const s3dByte* const inData, Vec4f* const outRGBA, const unsigned int width, const unsigned int height, const unsigned int depth)
+{
+    const unsigned int numTexels = width * height * depth;
+    const s3dByte* src = (const s3dByte*)inData;
+    Vec4f* texel = outRGBA;
+    for (unsigned int i = 0; i < numTexels; ++i, ++texel)
+    {
+        (*texel)[2] = (float)(*src++) / 255.f;
+        (*texel)[1] = (float)(*src++) / 255.f;
+        (*texel)[0] = (float)(*src++) / 255.f;
+        (*texel)[3] = 1.0f; src++; // dummy alpha channel
     }
 }
 
@@ -650,6 +666,20 @@ void ColorUtility::ConvertToR8G8B8(const Vec4f * const inRGBA, s3dByte * const o
         *texel++ = (s3dByte)((*src)[2] * 255.f);
         *texel++ = (s3dByte)((*src)[1] * 255.f);
         *texel++ = (s3dByte)((*src)[0] * 255.f);
+    }
+}
+
+void ColorUtility::ConvertToX8R8G8B8(const Vec4f* const inRGBA, s3dByte* const outData, const unsigned int width, const unsigned int height, const unsigned int depth)
+{
+    const unsigned int numTexels = width * height * depth;
+    const Vec4f* src = inRGBA;
+    s3dByte* texel = (s3dByte*)outData;
+    for (unsigned int i = 0; i < numTexels; ++i, ++src)
+    {
+        *texel++ = (s3dByte)((*src)[2] * 255.f);
+        *texel++ = (s3dByte)((*src)[1] * 255.f);
+        *texel++ = (s3dByte)((*src)[0] * 255.f);
+        *texel++ = (s3dByte)255; // dummy alpha channel aka X8R8G8B8
     }
 }
 
