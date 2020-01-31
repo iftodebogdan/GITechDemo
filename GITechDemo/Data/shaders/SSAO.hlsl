@@ -27,9 +27,6 @@ TEXTURE_2D_RESOURCE(SSAO_DepthBuffer);     // Depth values
 
 CBUFFER_RESOURCE(SSAO,
     GPU_float2 HalfTexelOffset;
-
-    GPU_float4x4 InvProjMat;   // Matrix for inversing the projection transform
-
     GPU_float SampleRadius;  // Radius of the sampling pattern
     GPU_float Intensity;     // Overall intensity of the SSAO effect
     GPU_float Scale;         // Scale for the occlusion attenuation with distance
@@ -72,7 +69,7 @@ float AOCalc(const float2 texCoord, const float2 offset, const float3 position, 
     const float2 sampleScreenPos    = sampleTexCoord * float2(2.f, -2.f) - float2(1.f, -1.f);
     const float sampleDepth         = tex2D(SSAO_DepthBuffer, sampleTexCoord).r;
     const float4 sampleProjPosition = float4(sampleScreenPos, sampleDepth, 1.f);
-    const float4 samplePositionPreW = mul(SSAOParams.InvProjMat, sampleProjPosition);
+    const float4 samplePositionPreW = mul(FrameParams.InvProjMat, sampleProjPosition);
     const float3 samplePosition     = samplePositionPreW.xyz / samplePositionPreW.w;
 
     const float3 posDiff = samplePosition - position;
@@ -96,7 +93,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     DEPTH_KILL(depth, 1.f);
 
     const float4 projPosition = float4(input.ScreenPos, depth, 1.f);
-    const float4 positionPreW = mul(SSAOParams.InvProjMat, projPosition);
+    const float4 positionPreW = mul(FrameParams.InvProjMat, projPosition);
     const float3 position = positionPreW.xyz / positionPreW.w;
     const float3 normal = DecodeNormal(tex2D(SSAO_NormalBuffer, input.TexCoord));
     //const float2 f2Rand = float2(GenerateRandomNumber(input.f2TexCoord.xy), GenerateRandomNumber(input.f2TexCoord.yx));

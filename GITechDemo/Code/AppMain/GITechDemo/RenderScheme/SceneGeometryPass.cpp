@@ -135,9 +135,17 @@ void SceneGeometryPass::Draw()
         const unsigned int matTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_AMBIENT, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
         const unsigned int roughnessTexIdx = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_SHININESS, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
 
-        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || HLSL::BRDFParams->BRDFModel == HLSL::BRDF::BlinnPhong))
+        if (diffuseTexIdx != ~0u && ((matTexIdx != ~0u && roughnessTexIdx != ~0u) || RenderConfig::DirectionalLight::BRDFModel == HLSL::BRDF::BlinnPhong))
         {
             RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetAnisotropy((unsigned int)RenderConfig::GBuffer::DiffuseAnisotropy);
+
+            // Normally, we'd set diffuse textures to linearize sRGB when sampling in the GBuffer generation shader, but actually we want to keep non-linear sRGB data in the GBuffer.
+            // The reason for this is that the albedo buffer is 8bpc and banding is a very real possibility. Keeping sRGB data up until we're actually using the data in calculations
+            // (lighting code) allows us to maintain our light accumulation buffer free of quantization artifacts. We also need to set the albedo buffer as sRGB so that we actually
+            // linearize the data when sampling from the GBuffer during the lighting phase. That is done in GBufferPass.cpp in the Update() function.
+            // Kudos to VladC of FUN labs for pointing this out!
+
+            // RenderContext->GetResourceManager()->GetTexture(diffuseTexIdx)->SetSRGBEnabled(true);
 
             HLSL::GBufferGeneration_Diffuse = diffuseTexIdx;
             HLSL::GBufferGeneration_Normal = normalTexIdx;

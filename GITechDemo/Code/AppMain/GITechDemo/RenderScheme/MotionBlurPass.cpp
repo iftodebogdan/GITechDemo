@@ -43,6 +43,9 @@ MotionBlurPass::~MotionBlurPass()
 
 void MotionBlurPass::Update(const float fDeltaTime)
 {
+    HLSL::MotionBlurParams->Intensity = RenderConfig::PostProcessing::MotionBlur::Intensity;
+    HLSL::MotionBlurParams->NumSamples = RenderConfig::PostProcessing::MotionBlur::NumSamples;
+
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     HLSL::ColorCopyParams->ApplyTonemap = false;

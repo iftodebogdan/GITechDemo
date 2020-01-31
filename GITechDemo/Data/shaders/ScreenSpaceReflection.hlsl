@@ -31,7 +31,6 @@ TEXTURE_2D_RESOURCE(ScreenSpaceReflection_NormalBuffer);    // View space normal
 
 CBUFFER_RESOURCE(ScreenSpaceReflection,
     GPU_float2 HalfTexelOffset;
-    GPU_float4x4 InvProjMat;
 
     GPU_float4 TexSize;   // xy: dimensions of scene/depth texture; zw: normalized texel size (1/xy)
     GPU_int TexMipCount;  // Number of mips the scene texture has
@@ -60,7 +59,7 @@ void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut ou
 {
     output.Position = position;
     output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + ScreenSpaceReflectionParams.HalfTexelOffset;
-    output.ViewVec = mul(ScreenSpaceReflectionParams.InvProjMat, float4(position.xy, 0.f, 1.f)).xyz;
+    output.ViewVec = mul(FrameParams.InvProjMat, float4(position.xy, 0.f, 1.f)).xyz;
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

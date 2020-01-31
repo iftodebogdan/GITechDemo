@@ -31,9 +31,7 @@ TEXTURE_2D_RESOURCE(DirectionalLight_MaterialBuffer);   // Roughness and materia
 TEXTURE_2D_RESOURCE(DirectionalLight_ShadowMap);        // Cascaded shadow maps
 
 CBUFFER_RESOURCE(DirectionalLight,
-    GPU_float4x4 InvProjMat;
     GPU_float2 HalfTexelOffset;
-
     GPU_float2 OneOverShadowMapSize;    // 1 / shadow map width/height
     GPU_bool DebugCascades;             // Visual cascade debug option
 );
@@ -53,7 +51,7 @@ void vsmain(float4 position : POSITION, out VSOut output)
 {
     output.Position   = position;
     output.TexCoord   = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DirectionalLightParams.HalfTexelOffset;
-    output.ViewVec    = mul(DirectionalLightParams.InvProjMat, float4(position.xy, 0.f, 1.f)).xyz;
+    output.ViewVec    = mul(FrameParams.InvProjMat, float4(position.xy, 0.f, 1.f)).xyz;
     output.ScreenPos  = position.xy;
 }
 #endif // VERTEX

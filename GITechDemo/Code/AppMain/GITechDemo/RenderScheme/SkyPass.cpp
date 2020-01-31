@@ -130,8 +130,8 @@ void SkyPass::Update(const float fDeltaTime)
             HLSL::SkyboxParams->SkyViewProjMat,
             Math::deg2Rad(RenderConfig::Camera::FoV),
             (float)GBuffer.GetRenderTarget()->GetWidth() / (float)GBuffer.GetRenderTarget()->GetHeight(),
-            HLSL::PostProcessingParams->ZNear,
-            HLSL::PostProcessingParams->ZFar);
+            RenderConfig::Camera::ZNear,
+            RenderConfig::Camera::ZFar);
     }
     else
     {
@@ -147,6 +147,9 @@ void SkyPass::Update(const float fDeltaTime)
     SkyTexture.GetTexture()->SetSRGBEnabled(true);
 
     HLSL::Skybox_SkyCube = SkyTexture.GetTextureIndex();
+
+    HLSL::SkyboxParams->SunRadius = RenderConfig::SkyBox::SunRadius;
+    HLSL::SkyboxParams->SunBrightness = RenderConfig::SkyBox::SunBrightness;
 }
 
 // Draw a world axis-aligned cube with its' center coinciding with the camera's position.

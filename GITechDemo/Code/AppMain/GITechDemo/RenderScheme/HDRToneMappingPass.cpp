@@ -64,7 +64,7 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     ColorCorrectionTexture.GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
     ColorCorrectionTexture.GetTexture()->SetAddressingMode(SAM_CLAMP);
-    ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(RenderConfig::PostProcessing::ToneMapping::sRGBColorCorrectionTexture);
+    ColorCorrectionTexture.GetTexture()->SetSRGBEnabled(RenderConfig::PostProcessing::ColorCorrection::sRGBColorCorrectionTexture);
 
     SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
@@ -73,6 +73,21 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
 
     HLSL::LumaAdapt_LumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();
+
+    HLSL::LumaCaptureParams->AvgLumaClamp = RenderConfig::PostProcessing::ToneMapping::AvgLumaClamp;
+
+    HLSL::HDRToneMappingParams->ExposureBias = RenderConfig::PostProcessing::ToneMapping::ExposureBias;
+    HLSL::HDRToneMappingParams->ShoulderStrength = RenderConfig::PostProcessing::ToneMapping::ShoulderStrength;
+    HLSL::HDRToneMappingParams->LinearStrength = RenderConfig::PostProcessing::ToneMapping::LinearStrength;
+    HLSL::HDRToneMappingParams->LinearAngle = RenderConfig::PostProcessing::ToneMapping::LinearAngle;
+    HLSL::HDRToneMappingParams->ToeStrength = RenderConfig::PostProcessing::ToneMapping::ToeStrength;
+    HLSL::HDRToneMappingParams->ToeNumerator = RenderConfig::PostProcessing::ToneMapping::ToeNumerator;
+    HLSL::HDRToneMappingParams->ToeDenominator = RenderConfig::PostProcessing::ToneMapping::ToeDenominator;
+    HLSL::HDRToneMappingParams->LinearWhite = RenderConfig::PostProcessing::ToneMapping::LinearWhite;
+
+    HLSL::HDRToneMappingParams->ApplyColorCorrection = RenderConfig::PostProcessing::ColorCorrection::ApplyColorCorrection;
+
+    HLSL::HDRToneMappingParams->FilmGrainAmount = RenderConfig::PostProcessing::FilmGrain::FilmGrainAmount;
 }
 
 // Measure average luminance level of scene

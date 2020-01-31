@@ -66,6 +66,12 @@ void RSMDirectionalLightPass::Update(const float fDeltaTime)
     HLSL::RSMCaptureParams->RSMWorldViewProjMat = HLSL::RSMCommonParams->RSMProjMat * HLSL::FrameParams->LightWorldViewMat;
     invertFull(HLSL::RSMCommonParams->RSMInvProjMat, HLSL::RSMCommonParams->RSMProjMat);
     HLSL::RSMCommonParams->ViewToRSMViewMat = HLSL::FrameParams->DirectionalLightViewMat * HLSL::BRDFParams->InvViewMat;
+
+    HLSL::RSMCommonParams->Intensity = RenderConfig::ReflectiveShadowMap::Intensity;
+    HLSL::RSMCommonParams->KernelScale = RenderConfig::ReflectiveShadowMap::KernelScale;
+    
+    HLSL::RSMUpscaleParams->WeightThreshold = RenderConfig::ReflectiveShadowMap::WeightThreshold;
+    HLSL::RSMUpscaleParams->DebugUpscalePass = RenderConfig::ReflectiveShadowMap::DebugUpscalePass;
 }
 
 void RSMDirectionalLightPass::Draw()

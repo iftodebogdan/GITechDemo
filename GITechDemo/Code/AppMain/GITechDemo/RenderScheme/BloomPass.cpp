@@ -63,6 +63,9 @@ void BloomPass::Update(const float fDeltaTime)
     HLSL::DownsampleParams->DepthDownsample = false;
     HLSL::DownsampleParams->BrightnessThreshold = RenderConfig::PostProcessing::Bloom::BrightnessThreshold;
 
+    HLSL::BloomParams->Power = RenderConfig::PostProcessing::Bloom::Power;
+    HLSL::BloomParams->Strength = RenderConfig::PostProcessing::Bloom::Strength;
+
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     HLSL::ColorCopyParams->ApplyTonemap = false;

@@ -188,6 +188,8 @@ namespace GITechDemoApp
         struct Camera
         {
             static bool InfiniteProjection;
+            static float ZNear;
+            static float ZFar;
             static float FoV;
             static float MoveSpeed;
             static float SpeedUpFactor;
@@ -217,11 +219,19 @@ namespace GITechDemoApp
         {
             static bool Animation;
             static bool Enabled;
+            static int BRDFModel;
+            static float DiffuseFactor;
+            static float SpecFactor;
+            static float AmbientFactor;
+            static float IrradianceFactor;
             static float ReflectionFactor;
+            static Vec3f LightDir;
         };
 
         struct CascadedShadowMaps
         {
+            static bool DebugCascades;
+            static float CascadeBlendSize;
             static bool DebugCameraView;
             static float SplitFactor;
             static float MaxViewDepth;
@@ -235,6 +245,10 @@ namespace GITechDemoApp
         {
             static bool DebugCameraView;
             static bool Enabled;
+            static float Intensity;
+            static float KernelScale;
+            static float WeightThreshold;
+            static bool DebugUpscalePass;
             static bool QuarterResolution;
             static bool BilateralBlur;
             static const unsigned int RSMSize = 1024;
@@ -243,12 +257,25 @@ namespace GITechDemoApp
         struct DirectionalLightVolume
         {
             static bool Enabled;
+            static float SampleCount;
+            static float SampleDistrib;
+            static float LightIntensity;
+            static float MultScatterIntensity;
             static bool QuarterResolution;
             static bool BlurSamples;
             static bool DepthAwareBlur;
             static float BlurDepthFalloff;
             static bool DepthAwareUpscale;
             static Vec4f LightColor;
+            static float FogVerticalFalloff;
+            static Vec4f FogSpeed;
+            static float UpsampleDepthThreshold;
+        };
+
+        struct SkyBox
+        {
+            static float SunRadius;
+            static float SunBrightness;
         };
 
         struct PostProcessing
@@ -258,12 +285,22 @@ namespace GITechDemoApp
             struct ScreenSpaceReflections
             {
                 static bool Enabled;
+                static float ReflectionIntensity;
+                static float Thickness;
+                static float SampleStride;
                 static bool ManualMaxSteps;
+                static float MaxSteps;
+                static float MaxRayDist;
+                static bool UseDither;
             };
 
             struct ScreenSpaceAmbientOcclusion
             {
                 static bool Enabled;
+                static float SampleRadius;
+                static float Intensity;
+                static float Scale;
+                static float Bias;
                 static bool QuarterResolution;
                 static const unsigned int BlurKernelCount = 3;
                 static const unsigned int BlurKernel[BlurKernelCount];
@@ -272,14 +309,44 @@ namespace GITechDemoApp
             struct DepthOfField
             {
                 static bool Enabled;
+                static float FocalDepth;
+                static float FocalLength;
+                static float FStop;
+                static float CoC;
                 static float AutofocusTime;
                 static int PassCount;
+                static float HighlightThreshold;
+                static float HighlightGain;
+                static bool AnamorphicBokeh;
+                static bool Autofocus;
                 static float ApertureSize;
+            };
+
+            struct Vignetting
+            {
+                static bool Enabled;
+                static float VignOut;
+                static float VignIn;
+                static float VignFade;
+            };
+
+            struct ChromaticAberration
+            {
+                static float ChromaShiftAmount;
+            };
+
+            struct LensDistortion
+            {
+                static float QuarticDistortionCoef;
+                static float CubicDistortionModifier;
+                static float DistortionScale;
             };
 
             struct MotionBlur
             {
                 static bool Enabled;
+                static float Intensity;
+                static float NumSamples;
             };
 
             struct Bloom
@@ -288,13 +355,25 @@ namespace GITechDemoApp
                 static const unsigned int BlurKernelCount = 9;
                 static const unsigned int BlurKernel[BlurKernelCount];
                 static float BrightnessThreshold;
+                static float Power;
+                static float Strength;
             };
 
             struct LensFlare
             {
                 static bool Enabled;
-                static float BrightnessThreshold;
                 static bool Anamorphic;
+                static float AnamorphicIntensity;
+                static float BrightnessThreshold;
+                static float GhostSamples;
+                static float GhostDispersal;
+                static float GhostRadialWeightExp;
+                static float HaloSize;
+                static float HaloRadialWeightExp;
+                static bool ChromaShift;
+                static float ShiftFactor;
+                static float DirtIntensity;
+                static float StarBurstIntensity;
                 static const unsigned int BlurKernelCount = 3;
                 static const unsigned int BlurKernel[BlurKernelCount];
                 static const unsigned int AnamorphicBlurPassCount = 6;
@@ -303,13 +382,38 @@ namespace GITechDemoApp
             struct ToneMapping
             {
                 static bool Enabled;
-                static bool sRGBColorCorrectionTexture;
+                static float ExposureBias;
+                static Vec2f AvgLumaClamp;
+                static float ShoulderStrength;
+                static float LinearStrength;
+                static float LinearAngle;
+                static float ToeStrength;
+                static float ToeNumerator;
+                static float ToeDenominator;
+                static float LinearWhite;
                 static float AutoExposureSpeed;
+            };
+
+            struct ColorCorrection
+            {
+                static bool ApplyColorCorrection;
+                static bool sRGBColorCorrectionTexture;
+            };
+
+            struct FilmGrain
+            {
+                static float FilmGrainAmount;
             };
 
             struct FastApproximateAntiAliasing
             {
                 static bool Enabled;
+                static float Subpix;
+                static float EdgeThreshold;
+                static float EdgeThresholdMin;
+                static bool UseEdgeDetection;
+                static float EdgeDepthThreshold;
+                static bool DebugEdgeDetection;
             };
         };
     };

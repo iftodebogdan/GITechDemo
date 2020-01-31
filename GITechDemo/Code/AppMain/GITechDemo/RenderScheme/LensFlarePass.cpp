@@ -101,6 +101,19 @@ void LensFlarePass::Update(const float fDeltaTime)
 
     HLSL::LensFlareApplyParams->StarBurstMat = scaleBias2 * rotMat * scaleBias1;
 
+    HLSL::AnamorphicLensFlareFeaturesParams->AnamorphicIntensity = RenderConfig::PostProcessing::LensFlare::AnamorphicIntensity;
+
+    HLSL::SphericalLensFlareFeaturesParams->GhostSamples = RenderConfig::PostProcessing::LensFlare::GhostSamples;
+    HLSL::SphericalLensFlareFeaturesParams->GhostDispersal = RenderConfig::PostProcessing::LensFlare::GhostDispersal;
+    HLSL::SphericalLensFlareFeaturesParams->GhostRadialWeightExp = RenderConfig::PostProcessing::LensFlare::GhostRadialWeightExp;
+    HLSL::SphericalLensFlareFeaturesParams->HaloSize = RenderConfig::PostProcessing::LensFlare::HaloSize;
+    HLSL::SphericalLensFlareFeaturesParams->HaloRadialWeightExp = RenderConfig::PostProcessing::LensFlare::HaloRadialWeightExp;
+    HLSL::SphericalLensFlareFeaturesParams->ChromaShift = RenderConfig::PostProcessing::LensFlare::ChromaShift;
+    HLSL::SphericalLensFlareFeaturesParams->ShiftFactor = RenderConfig::PostProcessing::LensFlare::ShiftFactor;
+
+    HLSL::LensFlareApplyParams->DirtIntensity = RenderConfig::PostProcessing::LensFlare::DirtIntensity;
+    HLSL::LensFlareApplyParams->StarBurstIntensity = RenderConfig::PostProcessing::LensFlare::StarBurstIntensity;
+
     if (RenderConfig::PostProcessing::LensFlare::Anamorphic)
         CurrentLensFlareBuffer = AnamorphicLensFlareBuffer;
     else

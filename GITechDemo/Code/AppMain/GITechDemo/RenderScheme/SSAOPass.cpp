@@ -52,6 +52,11 @@ void SSAOPass::Update(const float fDeltaTime)
     HLSL::SSAO_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
     HLSL::SSAO_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
+    HLSL::SSAOParams->SampleRadius = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::SampleRadius;
+    HLSL::SSAOParams->Intensity = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Intensity;
+    HLSL::SSAOParams->Scale = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Scale;
+    HLSL::SSAOParams->Bias = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Bias;
+
     if (RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::QuarterResolution)
     {
         SSAOBuffer = SSAOQuarterBuffer;

@@ -76,6 +76,26 @@ void DepthOfFieldPass::Update(const float fDeltaTime)
 
     HLSL::BokehDoF_TargetFocus = AutofocusBuffer[0]->GetRenderTarget()->GetColorBuffer();
 
+    HLSL::BokehDoFParams->FocalDepth = RenderConfig::PostProcessing::DepthOfField::FocalDepth;
+    HLSL::BokehDoFParams->FocalLength = RenderConfig::PostProcessing::DepthOfField::FocalLength;
+    HLSL::BokehDoFParams->FStop = RenderConfig::PostProcessing::DepthOfField::FStop;
+    HLSL::BokehDoFParams->CoC = RenderConfig::PostProcessing::DepthOfField::CoC;
+    HLSL::BokehDoFParams->HighlightThreshold = RenderConfig::PostProcessing::DepthOfField::HighlightThreshold;
+    HLSL::BokehDoFParams->HighlightGain = RenderConfig::PostProcessing::DepthOfField::HighlightGain;
+    HLSL::BokehDoFParams->AnamorphicBokeh = RenderConfig::PostProcessing::DepthOfField::AnamorphicBokeh;
+    HLSL::BokehDoFParams->Autofocus = RenderConfig::PostProcessing::DepthOfField::Autofocus;
+
+    HLSL::BokehDoFParams->Vignetting = RenderConfig::PostProcessing::Vignetting::Enabled;
+    HLSL::BokehDoFParams->VignOut = RenderConfig::PostProcessing::Vignetting::VignOut;
+    HLSL::BokehDoFParams->VignIn = RenderConfig::PostProcessing::Vignetting::VignIn;
+    HLSL::BokehDoFParams->VignFade = RenderConfig::PostProcessing::Vignetting::VignFade;
+
+    HLSL::BokehDoFParams->ChromaShiftAmount = RenderConfig::PostProcessing::ChromaticAberration::ChromaShiftAmount;
+
+    HLSL::BokehDoFParams->QuarticDistortionCoef = RenderConfig::PostProcessing::LensDistortion::QuarticDistortionCoef;
+    HLSL::BokehDoFParams->CubicDistortionModifier = RenderConfig::PostProcessing::LensDistortion::CubicDistortionModifier;
+    HLSL::BokehDoFParams->DistortionScale = RenderConfig::PostProcessing::LensDistortion::DistortionScale;
+
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
     HLSL::ColorCopyParams->ApplyTonemap = false;
@@ -87,7 +107,7 @@ void DepthOfFieldPass::AutofocusPass()
     if (!RenderContext)
         return;
 
-    if (!HLSL::BokehDoFParams->Autofocus[0])
+    if (!RenderConfig::PostProcessing::DepthOfField::Autofocus)
         return;
 
     PUSH_PROFILE_MARKER("Autofocus pass");

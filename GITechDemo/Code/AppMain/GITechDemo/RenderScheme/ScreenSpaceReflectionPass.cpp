@@ -94,6 +94,13 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     HLSL::ScreenSpaceReflection_LinDepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
     HLSL::ScreenSpaceReflection_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
 
+    HLSL::ScreenSpaceReflectionParams->ReflectionIntensity = RenderConfig::PostProcessing::ScreenSpaceReflections::ReflectionIntensity;
+    HLSL::ScreenSpaceReflectionParams->Thickness = RenderConfig::PostProcessing::ScreenSpaceReflections::Thickness;
+    HLSL::ScreenSpaceReflectionParams->SampleStride = RenderConfig::PostProcessing::ScreenSpaceReflections::SampleStride;
+
+    HLSL::ScreenSpaceReflectionParams->MaxRayDist = RenderConfig::PostProcessing::ScreenSpaceReflections::MaxRayDist;
+    HLSL::ScreenSpaceReflectionParams->UseDither = RenderConfig::PostProcessing::ScreenSpaceReflections::UseDither;
+
     HLSL::ScreenSpaceReflectionParams->TexSize = Vec4f(
         (float)ltAccBufCopy->GetWidth(),
         (float)ltAccBufCopy->GetHeight(),
@@ -121,7 +128,7 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     HLSL::ScreenSpaceReflectionParams->ViewToRasterMat = rasterScaleMat * HLSL::FrameParams->ProjMat;
 
     if(!RenderConfig::PostProcessing::ScreenSpaceReflections::ManualMaxSteps)
-        HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / HLSL::ScreenSpaceReflectionParams->SampleStride);
+        HLSL::ScreenSpaceReflectionParams->MaxSteps = ceilf(sqrtf(width * width + height * height) / RenderConfig::PostProcessing::ScreenSpaceReflections::SampleStride);
 
     HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 }

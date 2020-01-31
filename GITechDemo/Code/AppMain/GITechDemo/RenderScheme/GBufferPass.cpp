@@ -63,12 +63,7 @@ void GBufferPass::Update(const float fDeltaTime)
     HLSL::DepthPassAlphaTestParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
     HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->ProjMat * HLSL::GBufferGenerationParams->WorldViewMat;
 
-    // In order to have better low-intensity precision in the G-Buffer (which is in LDR format, obviously)
-    // we need to delay the gamma correction of input textures right up until we need them to be linear,
-    // which is at the lighting stage. To achieve this, we need to keep the G-buffer in sRGB format.
-    // The rest of the rendering pipeline supports HDR, so we keep color information in linear format
-    // up until the tone mapping pass, where we output a LDR sRGB texture.
-    // Kudos to VladC of FUN labs for pointing this out!
+    // There's a good reason why the albedo buffer is sRGB. See the commented SetSRGBEnabled() call in SceneGeometryPass::Draw().
     ResourceMgr->GetTexture(GBuffer.GetRenderTarget()->GetColorBuffer(0))->SetSRGBEnabled(true);
 
     HLSL::DepthCopy_Source = GBuffer.GetRenderTarget()->GetDepthBuffer();
@@ -92,7 +87,8 @@ void GBufferPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(HyperbolicQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
 
     RenderConfig::GBuffer::DiffuseAnisotropy = Math::clamp(RenderConfig::GBuffer::DiffuseAnisotropy, 1, (int)MAX_ANISOTROPY);
-    HLSL::BRDFParams->BRDFModel = gmtl::Math::clamp((int)HLSL::BRDFParams->BRDFModel, (int)HLSL::BRDF::BlinnPhong, (int)HLSL::BRDF::BRDFModelCount - 1);
+    RenderConfig::DirectionalLight::BRDFModel = gmtl::Math::clamp(RenderConfig::DirectionalLight::BRDFModel, (int)HLSL::BRDF::BlinnPhong, (int)HLSL::BRDF::BRDFModelCount - 1);
+    HLSL::BRDFParams->BRDFModel = RenderConfig::DirectionalLight::BRDFModel;
 }
 
 void GBufferPass::Draw()

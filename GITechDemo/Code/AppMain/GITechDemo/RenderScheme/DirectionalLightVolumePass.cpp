@@ -78,6 +78,14 @@ void DirectionalLightVolumePass::Update(const float fDeltaTime)
     HLSL::DirectionalLightVolume_ShadowMap = ShadowMapDir.GetRenderTarget()->GetDepthBuffer();
     HLSL::DirectionalLightVolume_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
 
+    HLSL::DirectionalLightVolumeParams->SampleCount = RenderConfig::DirectionalLightVolume::SampleCount;
+    HLSL::DirectionalLightVolumeParams->SampleDistrib = RenderConfig::DirectionalLightVolume::SampleDistrib;
+    HLSL::DirectionalLightVolumeParams->LightIntensity = RenderConfig::DirectionalLightVolume::LightIntensity;
+    HLSL::DirectionalLightVolumeParams->MultScatterIntensity = RenderConfig::DirectionalLightVolume::MultScatterIntensity;
+    HLSL::DirectionalLightVolumeParams->FogVerticalFalloff = RenderConfig::DirectionalLightVolume::FogVerticalFalloff;
+    HLSL::DirectionalLightVolumeParams->FogSpeed = RenderConfig::DirectionalLightVolume::FogSpeed;
+    
+    HLSL::NearestDepthUpscaleParams->UpsampleDepthThreshold = RenderConfig::DirectionalLightVolume::UpsampleDepthThreshold;
     HLSL::NearestDepthUpscaleParams->SingleChannelCopy = true;
     HLSL::NearestDepthUpscaleParams->CustomColorModulator = RenderConfig::DirectionalLightVolume::LightColor;
 

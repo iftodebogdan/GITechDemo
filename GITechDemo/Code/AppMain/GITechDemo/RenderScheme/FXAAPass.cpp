@@ -67,6 +67,13 @@ void FXAAPass::Update(const float fDeltaTime)
 
     HLSL::FXAA_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();
     //HLSL::FXAADepthBuffer = LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer();
+
+    HLSL::FXAAParams->Subpix = RenderConfig::PostProcessing::FastApproximateAntiAliasing::Subpix;
+    HLSL::FXAAParams->EdgeThreshold = RenderConfig::PostProcessing::FastApproximateAntiAliasing::EdgeThreshold;
+    HLSL::FXAAParams->EdgeThresholdMin = RenderConfig::PostProcessing::FastApproximateAntiAliasing::EdgeThresholdMin;
+    HLSL::FXAAParams->UseEdgeDetection = RenderConfig::PostProcessing::FastApproximateAntiAliasing::UseEdgeDetection;
+    HLSL::FXAAParams->EdgeDepthThreshold = RenderConfig::PostProcessing::FastApproximateAntiAliasing::EdgeDepthThreshold;
+    HLSL::FXAAParams->DebugEdgeDetection = RenderConfig::PostProcessing::FastApproximateAntiAliasing::DebugEdgeDetection;
 }
 
 void FXAAPass::Draw()

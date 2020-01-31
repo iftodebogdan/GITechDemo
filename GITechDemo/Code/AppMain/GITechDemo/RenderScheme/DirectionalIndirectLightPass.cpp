@@ -259,11 +259,6 @@ void DirectionalIndirectLightPass::Upscale()
         0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
 
-    assert(unsigned long long(&HLSL::RSMUpscaleParams.GetCurrentValue()) % 16 == 0);
-    assert(unsigned long long(&HLSL::RSMUpscaleParams->HalfTexelOffset) % 16 == 0);
-    assert(unsigned long long(&HLSL::RSMUpscaleParams->WeightThreshold) % 16 == 0);
-    assert(unsigned long long(&HLSL::RSMUpscaleParams->DebugUpscalePass) % 16 == 0);
-
     ResourceMgr->GetTexture(
         IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetColorBuffer(0)
     )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);

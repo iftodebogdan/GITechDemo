@@ -122,7 +122,7 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(ShadowMapDir.GetRenderTarget()->GetDepthBuffer())->SetBorderColor(Vec4f(1.f, 1.f, 1.f, 1.f));
 
     // Calculate directional light camera view matrix
-    Vec3f zAxis = makeNormal((Vec3f&)HLSL::BRDFParams->LightDir);
+    Vec3f zAxis = makeNormal(RenderConfig::DirectionalLight::LightDir);
     // Use the previous frame's up vector to avoid
     // the camera making sudden jumps when rolling over
     static Vec3f upVec = abs(zAxis[1]) == 1.f ? Vec3f(0.f, 0.f, 1.f) : Vec3f(0.f, 1.f, 0.f);
@@ -190,14 +190,14 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
 
         Math::lerp(partitionNear[2],
             RenderConfig::CascadedShadowMaps::SplitFactor,
-            (float)HLSL::PostProcessingParams->ZNear + ((float)cascade / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
-            (float)HLSL::PostProcessingParams->ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, (float)cascade / HLSL::CSM::CascadeCount)
+            RenderConfig::Camera::ZNear + ((float)cascade / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
+            RenderConfig::Camera::ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, (float)cascade / HLSL::CSM::CascadeCount)
             );
 
         Math::lerp(partitionFar[2],
             RenderConfig::CascadedShadowMaps::SplitFactor,
-            (float)HLSL::PostProcessingParams->ZNear + (((float)cascade + 1.f) / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
-            (float)HLSL::PostProcessingParams->ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, ((float)cascade + 1.f) / HLSL::CSM::CascadeCount)
+            RenderConfig::Camera::ZNear + (((float)cascade + 1.f) / HLSL::CSM::CascadeCount)*(RenderConfig::CascadedShadowMaps::MaxViewDepth - (float)HLSL::PostProcessingParams->ZNear),
+            RenderConfig::Camera::ZNear * powf(RenderConfig::CascadedShadowMaps::MaxViewDepth / (float)HLSL::PostProcessingParams->ZNear, ((float)cascade + 1.f) / HLSL::CSM::CascadeCount)
             );
 
         // Calculate the partition's depth in projective space (viewer camera, i.e. perspective projection)
@@ -269,6 +269,8 @@ void ShadowMapDirectionalLightPass::Update(const float fDeltaTime)
             Math::ceil((ViewFrustumPartitionLightSpaceAABB.mMax[0]  + offsetForPCF[0]) / worldUnitsPerTexel[0]) * worldUnitsPerTexel[0],
             Math::floor((ViewFrustumPartitionLightSpaceAABB.mMin[1] - offsetForPCF[1]) / worldUnitsPerTexel[1]) * worldUnitsPerTexel[1],
             RenderConfig::Scene::LightSpaceAABB.mMin[2], RenderConfig::Scene::LightSpaceAABB.mMax[2]);
+
+        HLSL::CSMParams->CascadeBlendSize = RenderConfig::CascadedShadowMaps::CascadeBlendSize;
 
         // Store the light space coordinates of the bounds of the current shadow map cascade
         HLSL::CSMParams->CascadeBoundsMin[cascade] = Vec2f(ViewFrustumPartitionLightSpaceAABB.mMin[0], ViewFrustumPartitionLightSpaceAABB.mMin[1]);

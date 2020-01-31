@@ -74,6 +74,7 @@ void DirectionalLightPass::ReleaseResources()
 
 void DirectionalLightPass::Update(const float fDeltaTime)
 {
+    HLSL::DirectionalLightParams->DebugCascades = RenderConfig::CascadedShadowMaps::DebugCascades;
     HLSL::DirectionalLightParams->HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
     HLSL::DirectionalLight_DiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
     HLSL::DirectionalLight_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
@@ -89,6 +90,18 @@ void DirectionalLightPass::Update(const float fDeltaTime)
 
     HLSL::BRDF_IrradianceMap = IrradianceTexture;
     HLSL::BRDF_EnvMap = EnvironmentTexture;
+
+    HLSL::BRDFParams->DiffuseFactor = RenderConfig::DirectionalLight::DiffuseFactor;
+    HLSL::BRDFParams->SpecFactor = RenderConfig::DirectionalLight::SpecFactor;
+    HLSL::BRDFParams->AmbientFactor = RenderConfig::DirectionalLight::AmbientFactor;
+    HLSL::BRDFParams->IrradianceFactor = RenderConfig::DirectionalLight::IrradianceFactor;
+
+    // Disable environment map reflections if
+    // screen space reflections are active.
+    if (RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
+        HLSL::BRDFParams->ReflectionFactor = 0.f;
+    else
+        HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 }
 
 void DirectionalLightPass::Draw()
@@ -99,13 +112,6 @@ void DirectionalLightPass::Draw()
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
         return;
-
-    // Disable environment map reflections if
-    // screen space reflections are active.
-    if (RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
-        HLSL::BRDFParams->ReflectionFactor = 0.f;
-    else
-        HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 
     DirectionalLightShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);

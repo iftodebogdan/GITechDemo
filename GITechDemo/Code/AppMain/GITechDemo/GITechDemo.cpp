@@ -589,7 +589,7 @@ void GITechDemo::Update(const float fDeltaTime)
                     ((RenderConfig::Scene::WorldSpaceAABB.getMax()[2] - RenderConfig::Scene::WorldSpaceAABB.getMin()[2]) * perlinPos[2] + RenderConfig::Scene::WorldSpaceAABB.getMin()[2]) * 0.9f
                     );
 
-                Vec3f lookAtPos = HLSL::BRDFParams->LightDir[0] * 1500.f;
+                Vec3f lookAtPos = RenderConfig::DirectionalLight::LightDir[0] * 1500.f;
                 lookAtPos[1] = gmtl::Math::Max(((RenderConfig::Scene::WorldSpaceAABB.getMax()[1] - RenderConfig::Scene::WorldSpaceAABB.getMin()[1]) / 1.75f + RenderConfig::Scene::WorldSpaceAABB.getMin()[1]) / 1.75f, -m_tCamera.vPos[1]);
 
                 Vec3f zAxis = makeNormal(Vec3f(lookAtPos + m_tCamera.vPos));
@@ -616,11 +616,13 @@ void GITechDemo::Update(const float fDeltaTime)
         time += fDeltaTime;
         float noiseX = PerlinNoise.Get(time, 0);
         float noiseZ = PerlinNoise.Get(0, time);
-        HLSL::BRDFParams->LightDir[0] = noiseX;
-        HLSL::BRDFParams->LightDir[2] = noiseZ;
-        HLSL::BRDFParams->LightDir[1] = -1.f;
+        RenderConfig::DirectionalLight::LightDir[0] = noiseX;
+        RenderConfig::DirectionalLight::LightDir[2] = noiseZ;
+        RenderConfig::DirectionalLight::LightDir[1] = -1.f;
     }
-    gmtl::normalize((Vec3f&)HLSL::BRDFParams->LightDir);
+    gmtl::normalize(RenderConfig::DirectionalLight::LightDir);
+
+    HLSL::BRDFParams->LightDir = RenderConfig::DirectionalLight::LightDir;
 
 #if 0
     // NaN at this position!
@@ -650,11 +652,14 @@ void GITechDemo::Update(const float fDeltaTime)
     m_tCamera.mRot.mData[15] = 1.00000000;
 #endif
 
+    HLSL::PostProcessingParams->ZNear = RenderConfig::Camera::ZNear;
+    HLSL::PostProcessingParams->ZFar = RenderConfig::Camera::ZFar;
+
     // Precalculate some parts of the equation for reconstructing
     // linear depth from hyperbolic depth
     HLSL::PostProcessingParams->LinearDepthEquation = Vec2f(
-        (float)HLSL::PostProcessingParams->ZNear * (float)HLSL::PostProcessingParams->ZFar / ((float)HLSL::PostProcessingParams->ZNear - (float)HLSL::PostProcessingParams->ZFar),
-        (float)HLSL::PostProcessingParams->ZFar / ((float)HLSL::PostProcessingParams->ZFar - (float)HLSL::PostProcessingParams->ZNear));
+        (float)RenderConfig::Camera::ZNear * (float)RenderConfig::Camera::ZFar / ((float)RenderConfig::Camera::ZNear - (float)RenderConfig::Camera::ZFar),
+        (float)RenderConfig::Camera::ZFar / ((float)RenderConfig::Camera::ZFar - (float)RenderConfig::Camera::ZNear));
 
     // Calculate world matrix
     HLSL::FrameParams->WorldMat = makeTrans(Vec3f(0, 0, 0), Type2Type<Matrix44f>());
@@ -664,18 +669,16 @@ void GITechDemo::Update(const float fDeltaTime)
 
     // Calculate projection matrix
     if(RenderConfig::Camera::InfiniteProjection)
-        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear);
+        RenderContext->CreateInfinitePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], RenderConfig::Camera::ZNear);
     else
-        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], HLSL::PostProcessingParams->ZNear, HLSL::PostProcessingParams->ZFar[0]);
-    gmtl::invertFull(HLSL::DirectionalLightParams->InvProjMat, HLSL::FrameParams->ProjMat);
-    gmtl::invertFull(HLSL::ScreenSpaceReflectionParams->InvProjMat, HLSL::FrameParams->ProjMat);
-    gmtl::invertFull(HLSL::SSAOParams->InvProjMat, HLSL::FrameParams->ProjMat);
+        RenderContext->CreatePerspectiveMatrix(HLSL::FrameParams->ProjMat, Math::deg2Rad(RenderConfig::Camera::FoV), (float)viewportSize[0] / (float)viewportSize[1], RenderConfig::Camera::ZNear, RenderConfig::Camera::ZFar);
+    gmtl::invertFull(HLSL::FrameParams->InvProjMat, HLSL::FrameParams->ProjMat);
 
     // Calculate some composite matrices
     gmtl::invertFull(HLSL::BRDFParams->InvViewMat, HLSL::BRDFParams->ViewMat);
     HLSL::FrameParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat; // View-projection matrix from last frame
     HLSL::FrameParams->ViewProjMat = HLSL::FrameParams->ProjMat * HLSL::BRDFParams->ViewMat;
-    HLSL::FrameParams->InvViewProjMat = HLSL::BRDFParams->InvViewMat * HLSL::DirectionalLightParams->InvProjMat;
+    HLSL::FrameParams->InvViewProjMat = HLSL::BRDFParams->InvViewMat * HLSL::FrameParams->InvProjMat;
 
     // For the first frame, set the last frame's view-projection matrix
     // to the current frame's view-projection matrix

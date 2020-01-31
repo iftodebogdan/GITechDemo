@@ -28,6 +28,7 @@
 CBUFFER_RESOURCE(Frame,
     GPU_float4x4 WorldMat;
     GPU_float4x4 ProjMat;
+    GPU_float4x4 InvProjMat;   // Matrix for inversing the projection transform
     GPU_float4x4 ViewProjMat;
     GPU_float4x4 PrevViewProjMat;   // Previous frame's view-projection matrix
     GPU_float4x4 InvViewProjMat;    // Inverse view-projection matrix
