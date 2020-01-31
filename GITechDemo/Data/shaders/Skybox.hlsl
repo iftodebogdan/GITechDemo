@@ -20,12 +20,12 @@
 =============================================================================*/
 
 #include "Common.hlsli"
+#include "BRDFUtils.hlsli"
 
 TEXTURE_CUBE_RESOURCE(Skybox_SkyCube);   // Sky cubemap
 
 CBUFFER_RESOURCE(Skybox,
     GPU_float4x4 SkyViewProjMat;
-    GPU_float3 LightDir;    // Direction of sunlight
     GPU_float SunRadius;     // Determines sun radius
     GPU_float SunBrightness; // Determines sun brightness
 );
@@ -53,7 +53,7 @@ void vsmain(float4 position : POSITION, out VSOut output)
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     // Do a dot product of the view direciton and the sunlight direction
-    const float3 sunDir = normalize(-SkyboxParams.LightDir);
+    const float3 sunDir = normalize(-BRDFParams.LightDir);
     const float sunDot  = dot(normalize(input.TexCoord), sunDir);
 
     color  = texCUBE(Skybox_SkyCube, input.TexCoord);

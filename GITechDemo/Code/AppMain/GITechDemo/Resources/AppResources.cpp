@@ -661,7 +661,7 @@ namespace GITechDemoApp
         "Directional light",
         HLSL::BRDFParams->DiffuseFactor,
         0.1f,
-        7.5f);
+        30.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Specular factor",
@@ -677,7 +677,7 @@ namespace GITechDemoApp
         "Directional light",
         HLSL::BRDFParams->AmbientFactor,
         0.1f,
-        0.15f);
+        0.35f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Irradiance factor",
@@ -1365,7 +1365,7 @@ namespace GITechDemoApp
         "Bloom",
         RenderConfig::PostProcessing::Bloom::BrightnessThreshold,
         0.1f,
-        0.2f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Bloom power",
@@ -1381,7 +1381,7 @@ namespace GITechDemoApp
         "Bloom",
         HLSL::BloomParams->Strength,
         0.1f,
-        0.75f);
+        1.f);
     //------------------------------------------------------
 
     // Lens flare ------------------------------------------
@@ -1405,7 +1405,7 @@ namespace GITechDemoApp
         "Lens flare",
         HLSL::AnamorphicLensFlareFeaturesParams->AnamorphicIntensity,
         1.f,
-        5.f);
+        10.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Brigthness threshold",
@@ -1413,7 +1413,7 @@ namespace GITechDemoApp
         "Lens flare",
         RenderConfig::PostProcessing::LensFlare::BrightnessThreshold,
         0.1f,
-        3.5f);
+        15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost sample count",
@@ -1509,7 +1509,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         HLSL::LumaCaptureParams->AvgLumaClamp[0],
         0.01f,
-        0.0001f);
+        0.2f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upper luma bound",
@@ -1517,7 +1517,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         HLSL::LumaCaptureParams->AvgLumaClamp[1],
         0.01f,
-        0.75f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Shoulder strength",
@@ -1607,7 +1607,7 @@ namespace GITechDemoApp
         "Film grain",
         HLSL::HDRToneMappingParams->FilmGrainAmount,
         0.001f,
-        0.001f);
+        0.0025f);
     //------------------------------------------------------
 
     // FXAA ------------------------------------------------

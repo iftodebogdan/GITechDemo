@@ -63,23 +63,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
     , m_pColorSurface(nullptr)
     , m_pDepthSurface(nullptr)
 {
-    HRESULT hr;
-
-    m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
-
-    for (unsigned int i = 0; i < m_nTargetCount; i++)
-    {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
-        assert(SUCCEEDED(hr));
-    }
-
-    if (hasDepthStencil)
-    {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
-        assert(SUCCEEDED(hr));
-    }
+    RetrieveDirect3DSurfaces();
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
@@ -89,23 +73,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
     , m_pColorSurface(nullptr)
     , m_pDepthSurface(nullptr)
 {
-    HRESULT hr;
-
-    m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
-
-    for (unsigned int i = 0; i < m_nTargetCount; i++)
-    {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
-        assert(SUCCEEDED(hr));
-    }
-
-    if (hasDepthStencil)
-    {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
-        hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
-        assert(SUCCEEDED(hr));
-    }
+    RetrieveDirect3DSurfaces();
 }
 
 RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
@@ -115,9 +83,14 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
     , m_pColorSurface(nullptr)
     , m_pDepthSurface(nullptr)
 {
+    RetrieveDirect3DSurfaces();
+}
+
+void RenderTargetDX9::RetrieveDirect3DSurfaces()
+{
     HRESULT hr;
 
-    m_pColorSurface = new IDirect3DSurface9*[m_nTargetCount];
+    m_pColorSurface = new IDirect3DSurface9 * [m_nTargetCount];
 
     for (unsigned int i = 0; i < m_nTargetCount; i++)
     {
@@ -126,7 +99,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
         assert(SUCCEEDED(hr));
     }
 
-    if (hasDepthStencil)
+    if (m_bHasDepthStencil)
     {
         IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
         hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);

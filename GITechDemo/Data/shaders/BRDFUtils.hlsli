@@ -23,6 +23,7 @@
 #define BRDFUTILS_HLSLI_
 
 #include "Common.hlsli"
+#include "Utils.hlsli"
 
 TEXTURE_CUBE_RESOURCE(BRDF_IrradianceMap);   // Irradiance map for Cook-Torrance BRDF
 TEXTURE_CUBE_RESOURCE(BRDF_EnvMap);          // Environment map for Cook-Torrance BRDF

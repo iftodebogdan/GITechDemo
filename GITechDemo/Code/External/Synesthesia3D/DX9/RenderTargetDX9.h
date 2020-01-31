@@ -52,6 +52,8 @@ namespace Synesthesia3D
             const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
         ~RenderTargetDX9();
 
+        void RetrieveDirect3DSurfaces();
+
         IDirect3DSurface9**     m_pColorSurface;
         IDirect3DSurface9*      m_pDepthSurface;
 

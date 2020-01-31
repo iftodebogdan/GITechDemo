@@ -69,12 +69,12 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     {
         const float2 kernel = LumaCaptureParams.TexSize.zw * 0.33333333f;
         float logLumSum = 0.f;
-        UNROLL for (float i = -1.f; i <= 1.f; i++)
-            UNROLL for (float j = -1.f; j <= 1.f; j++)
+        UNROLL for (int i = -1; i <= 1; i++)
+            UNROLL for (int j = -1; j <= 1; j++)
             {
                 // The average luma can be calculated from part of the source image,
                 // hence the scale of the texture coordinates
-                const float2 scaledTexCoord = input.TexCoord;// *float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
+                const float2 scaledTexCoord = input.TexCoord * float2(0.4f, 0.6f) + float2(0.3f, 0.2f);
                 const float3 sampleSource = tex2D(LumaCapture_LumaInput, scaledTexCoord + kernel * float2(i, j)).rgb;
                 logLumSum += log(dot(sampleSource, PostProcessingUtils::LumaCoef) + 0.0001f);
             }
