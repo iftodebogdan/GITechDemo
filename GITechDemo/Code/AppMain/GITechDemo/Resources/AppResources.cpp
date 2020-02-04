@@ -1034,7 +1034,7 @@ namespace GITechDemoApp
         "Reflective shadow map",
         RenderConfig::ReflectiveShadowMap::Intensity,
         1.f,
-        200.f);
+        500.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Kernel scale",
@@ -1595,7 +1595,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::AvgLumaClamp[0],
         0.01f,
-        0.2f);
+        0.175f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upper luma bound",

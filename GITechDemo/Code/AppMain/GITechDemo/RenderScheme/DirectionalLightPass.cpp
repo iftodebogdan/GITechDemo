@@ -96,12 +96,9 @@ void DirectionalLightPass::Update(const float fDeltaTime)
     HLSL::BRDFParams->AmbientFactor = RenderConfig::DirectionalLight::AmbientFactor;
     HLSL::BRDFParams->IrradianceFactor = RenderConfig::DirectionalLight::IrradianceFactor;
 
-    // Disable environment map reflections if
-    // screen space reflections are active.
-    if (RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
-        HLSL::BRDFParams->ReflectionFactor = 0.f;
-    else
-        HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
+    // Disable environment map reflections if screen space reflections are active.
+    HLSL::BRDFParams->SSREnabled = RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled;
+    HLSL::BRDFParams->ReflectionFactor = RenderConfig::DirectionalLight::ReflectionFactor;
 }
 
 void DirectionalLightPass::Draw()

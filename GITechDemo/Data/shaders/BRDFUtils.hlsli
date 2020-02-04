@@ -48,6 +48,8 @@ CBUFFER_RESOURCE(BRDF,
     GPU_float IrradianceFactor;  // Scale value for irradiance (Cook-Torrance BRDF only)
     GPU_float ReflectionFactor;  // Scale value for reflected light (Cook-Torrance BRDF only)
 
+    GPU_bool SSREnabled; // Whether screen space reflections are enabled
+
     GPU_float4x4 ViewMat;       // View matrix
     GPU_float4x4 InvViewMat;    // The inverse view matrix
     
@@ -207,8 +209,7 @@ float3 CookTorrance(const float3 materialColor, const float materialType, const 
     const float3 diffuseColor = diffuseAlbedo / (Utils::Pi * (1.f - fresnel));
     const float3 specularColor = distrib * geom * fresnel / (4.f * NdotL * NdotV);
 
-    // Handled in ScreenSpaceReflection.hlsl as well, so be careful not to have them both active at the same time
-    // (i.e. set fReflectionFactor to 0 for this shader when SSR is active and restore it when rendering with SSR shader)
+    // Handled in ScreenSpaceReflection.hlsl as well, so be careful not to apply them both
     const float3 envAlbedo = texCUBElod(BRDF_EnvMap, float4(mul((float3x3)BRDFParams.InvViewMat, reflect(viewVec, normal)), ComputeMipFromRoughness(roughness, BRDF::EnvMapMipCount))).rgb;
     const float3 envFresnel = FresnelRoughnessTerm(specularAlbedo, roughness, normal, viewVec);
 
@@ -216,7 +217,7 @@ float3 CookTorrance(const float3 materialColor, const float materialType, const 
 
     // Final color
     return NdotL * (diffuseColor * (1.f - specularColor) + specularColor) * BRDFParams.DiffuseFactor * percentLit +
-        envFresnel * envAlbedo * BRDFParams.ReflectionFactor + diffuseAlbedo * irradiance * BRDFParams.IrradianceFactor;
+        envFresnel * envAlbedo * (BRDFParams.SSREnabled ? 0.f : BRDFParams.ReflectionFactor) + diffuseAlbedo * irradiance * BRDFParams.IrradianceFactor;
 }
 
 //////////////////////////////////////////////////////////
