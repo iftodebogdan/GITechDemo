@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{457debdf-a71c-4c9b-8631-455f8c737ef7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Build">
+      <UniqueIdentifier>{b444acb2-7ea9-4b03-881e-a4de0a0df295}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{99143029-9cc7-4db0-bc81-c829d538c047}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Windows">
+      <UniqueIdentifier>{e8b11096-2dc4-49d0-bce9-7d53c9a72842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{20cff519-8a0b-4865-ae53-92501d210e39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Utilities">
+      <UniqueIdentifier>{8b2f638c-941d-405a-ac71-d5a8590e99b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Render Schemes">
+      <UniqueIdentifier>{53f16038-34ba-4203-a613-3399f3ba50ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Resources">
+      <UniqueIdentifier>{65c60b90-aae2-4399-9fee-c58343936ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Windows\Precompiled Headers">
+      <UniqueIdentifier>{8433ffc2-3fbc-4741-a134-1233de8fe1ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Include">
+      <UniqueIdentifier>{fd0b29d0-9f3f-43c0-b8b8-a8c3041fdaf6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\App.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Framework.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\targetver.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\FrameworkWin.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Resource.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\BloomPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\DepthOfFieldPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\DirectionalIndirectLightPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\DirectionalLightPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\DirectionalLightVolumePass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\FXAAPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\GBufferPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\HDRDownsamplePass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\HDRToneMappingPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\LensFlarePass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\LightingPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\MotionBlurPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\PostProcessingPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\RenderPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\RSMDirectionalLightPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\ShadowMapDirectionalLightPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\SkyPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\SSAOPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Resources\ArtistParameter.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Resources\RenderResource.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\RenderScheme.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Utilities\GaussianFilter.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Utilities\PerlinNoise.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Utilities\Poisson.h">
+      <Filter>App\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\stdafx.h">
+      <Filter>Framework\Windows\Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Timestamp.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Resources\AppResources.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\HDRDownsampleForBloomPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\ScreenSpaceReflectionPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\PBRMaterialTestPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\UIPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\CopyToBackBufferPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\ResolveDepthBufferPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\DepthDownsamplePass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\SceneGeometryPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\Resources\Shaders.h">
+      <Filter>App\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualMuseum\VirtualMuseum.h">
+      <Filter>App</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\main.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Windows\FrameworkWin.cpp">
+      <Filter>Framework\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\BloomPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\DepthOfFieldPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\DirectionalIndirectLightPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\DirectionalLightPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\DirectionalLightVolumePass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\FXAAPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\GBufferPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\HDRDownsamplePass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\HDRToneMappingPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\LensFlarePass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\LightingPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\MotionBlurPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\PostProcessingPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\RenderPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\RSMDirectionalLightPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\ShadowMapDirectionalLightPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\SkyPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\SSAOPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Resources\ArtistParameter.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Resources\RenderResource.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\RenderScheme.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Utilities\GaussianFilter.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Utilities\PerlinNoise.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Utilities\Poisson.cpp">
+      <Filter>App\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Windows\stdafx.cpp">
+      <Filter>Framework\Windows\Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Timestamp.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Resources\AppResources.cpp">
+      <Filter>App\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\HDRDownsampleForBloomPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\ScreenSpaceReflectionPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\PBRMaterialTestPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\UIPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\CopyToBackBufferPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\ResolveDepthBufferPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\DepthDownsamplePass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\SceneGeometryPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\VirtualMuseum.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Framework\Windows\Framework.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Framework\Windows\small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\DataSrc\compile_utility_textures.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\DataSrc\compile_sponza_model.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="VirtualMuseum\Framework.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="VirtualMuseum\small.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="VirtualMuseum\UtahTeapot.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Build\build_project_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_tools_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\utils.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Build\build_data_win.py">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\Common.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\CSMUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\PostProcessingUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\RSMCommon.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\Utils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="..\..\Build\build_all.bat">
+      <Filter>Build</Filter>
+    </None>
+    <None Include="..\..\Data\shaders\BRDFUtils.hlsli">
+      <Filter>Shaders\Include</Filter>
+    </None>
+    <None Include="VirtualMuseum.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Framework\Windows\Framework.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="VirtualMuseum\VirtualMuseum.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Data\shaders\Bloom.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\BokehDoF.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\ColorCopy.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DepthCopy.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DepthPass.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\Downsample.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\FXAA.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\GBufferGeneration.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\HDRToneMapping.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMApply.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMCapture.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\RSMUpscale.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\Skybox.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\SSAO.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LensFlareApply.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\MotionBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DirectionalLight.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LumaCapture.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\LumaAdapt.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DirectionalLightVolume.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\BilateralBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\NearestDepthUpscale.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\SphericalLensFlareFeatures.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\AnamorphicLensFlareFeatures.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\AnamorphicLensFlareBlur.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\ScreenSpaceReflection.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\UI.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
