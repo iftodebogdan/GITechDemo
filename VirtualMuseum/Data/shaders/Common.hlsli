@@ -22,6 +22,12 @@
 #ifndef COMMON_HLSLI_
 #define COMMON_HLSLI_
 
+#ifdef __INTELLISENSE__
+#define HLSL
+#define VERTEX
+#define PIXEL
+#endif
+
 #ifdef HLSL
 
 //////////////////////////////////////////////////////////////

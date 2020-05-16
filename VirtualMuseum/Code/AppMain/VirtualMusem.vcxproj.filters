@@ -163,6 +163,9 @@
     <ClInclude Include="VirtualMuseum\VirtualMuseum.h">
       <Filter>App</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\TerrainPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -278,6 +281,9 @@
     </ClCompile>
     <ClCompile Include="VirtualMuseum\VirtualMuseum.cpp">
       <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\TerrainPass.cpp">
+      <Filter>App\Render Schemes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -432,5 +438,6 @@
     <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\Data\shaders\Terrain.hlsl" />
   </ItemGroup>
 </Project>

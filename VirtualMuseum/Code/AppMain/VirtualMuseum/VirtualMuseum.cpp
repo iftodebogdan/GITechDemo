@@ -107,6 +107,9 @@ bool VirtualMuseum::Init(void* hWnd)
          0.f,            0.f,           0.f,            1.f
     );
 
+    //m_tCamera.vPos = Vec3f(0.f, 0.f, 0.f);
+    //m_tCamera.mRot = MAT_IDENTITY44F;
+
     // Setup Gainput
     if (m_pInputManager)
     {

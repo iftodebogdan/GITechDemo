@@ -140,6 +140,9 @@ namespace VirtualMuseumApp
     int RenderConfig::GBuffer::DebugViewColor;
     bool RenderConfig::GBuffer::DebugViewDepth;
 
+    int RenderConfig::Terrain::MaterialIndex;
+    Vec2f RenderConfig::Terrain::TextureMappingScale;
+
     bool RenderConfig::DirectionalLight::Animation;
     bool RenderConfig::DirectionalLight::Enabled;
     int RenderConfig::DirectionalLight::BRDFModel;
@@ -336,6 +339,7 @@ namespace VirtualMuseumApp
     CREATE_SHADER_OBJECT(LensFlareApplyShader,              "shaders/LensFlareApply.hlsl");
     CREATE_SHADER_OBJECT(UIShader,                          "shaders/UI.hlsl");
     CREATE_SHADER_OBJECT(DepthCopyShader,                   "shaders/DepthCopy.hlsl");
+    CREATE_SHADER_OBJECT(TerrainShader,                     "shaders/Terrain.hlsl");
 
     //------------------------------------------------------
 
@@ -723,6 +727,33 @@ namespace VirtualMuseumApp
         "G-Buffer",
         RenderConfig::GBuffer::DebugViewDepth,
         false);
+    //------------------------------------------------------
+
+    // Terrain ---------------------------------------------
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "Terrain material index",
+        "The index of the PBR material used for terrain rendering",
+        "Terrain",
+        RenderConfig::Terrain::MaterialIndex,
+        1,
+        3);
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "Terrain texture scale X",
+        "Scale value for PBR material texture on the X axis",
+        "Terrain",
+        RenderConfig::Terrain::TextureMappingScale[0],
+        0.001f,
+        0.005f);
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "Terrain texture scale Y",
+        "Scale value for PBR material texture on the Y axis",
+        "Terrain",
+        RenderConfig::Terrain::TextureMappingScale[1],
+        0.001f,
+        0.005f);
     //------------------------------------------------------
 
     // Directional light -----------------------------------

@@ -88,6 +88,7 @@ namespace VirtualMuseumApp
     CREATE_SHADER_HANDLE(AnamorphicLensFlareFeaturesShader);
     CREATE_SHADER_HANDLE(AnamorphicLensFlareBlurShader);
     CREATE_SHADER_HANDLE(ScreenSpaceReflectionShader);
+    CREATE_SHADER_HANDLE(TerrainShader);
     //------------------------------------------------------
 
     // Models (manage their own textures, no need to declare them)
@@ -213,6 +214,12 @@ namespace VirtualMuseumApp
             static bool DrawAlphaTestGeometry;
             static int DebugViewColor;
             static bool DebugViewDepth;
+        };
+
+        struct Terrain
+        {
+            static int MaterialIndex;
+            static Vec2f TextureMappingScale;
         };
 
         struct DirectionalLight

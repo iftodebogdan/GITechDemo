@@ -52,6 +52,10 @@ CREATE_ROOT_PASS()
     #include "GBufferPass.h"
     ADD_RENDER_PASS(GBUFFER_PASS, GBufferPass, "G-Buffer", ROOT_PASS)
 
+        // Draw terrain
+        #include "TerrainPass.h"
+        ADD_RENDER_PASS(TERRAIN_PASS, TerrainPass, "Terrain", GBUFFER_PASS);
+
         // Draw scene
         #include "SceneGeometryPass.h"
         ADD_RENDER_PASS(SCENE_GEOMETRY_PASS, SceneGeometryPass, "Scene Geometry", GBUFFER_PASS)

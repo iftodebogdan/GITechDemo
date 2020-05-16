@@ -21,6 +21,7 @@
 
 #ifndef SHADERS_H_
 #define SHADERS_H_
+
 namespace VirtualMuseumApp
 {
     namespace HLSL
@@ -53,6 +54,7 @@ namespace VirtualMuseumApp
         #include "FXAA.hlsl"
         #include "ColorCopy.hlsl"
         #include "UI.hlsl"
+        #include "Terrain.hlsl"
     }
 }
 #endif // SHADERS_H_
