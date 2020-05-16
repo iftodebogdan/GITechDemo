@@ -1,7 +1,7 @@
 version: '{build}'
 branches:
   only:
-  - derivative_works/virtual_museum
+  - master
 image: Visual Studio 2019
 configuration:
   - Debug
