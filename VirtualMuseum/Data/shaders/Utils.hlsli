@@ -211,7 +211,7 @@ float PCF2x2Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
             shadowMap,
             texCoord +
             UtilsParams.PoissonDisk[i] * oneOverShadowMapSize
-            ).r > depthCompare;
+            ).r >= depthCompare;
         percentLit += isLit;
     }
 
@@ -229,7 +229,7 @@ float PCF3x3Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
             shadowMap,
             texCoord +
             UtilsParams.PoissonDisk[i] * oneOverShadowMapSize
-            ).r > depthCompare;
+            ).r >= depthCompare;
         percentLit += isLit;
     }
 
@@ -247,7 +247,7 @@ float PCF12TapPoisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 t
             shadowMap,
             texCoord +
             UtilsParams.PoissonDisk[i] * oneOverShadowMapSize
-            ).r > depthCompare;
+            ).r >= depthCompare;
         percentLit += isLit;
     }
 
@@ -265,7 +265,7 @@ float PCF4x4Poisson(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 tex
             shadowMap,
             texCoord +
             UtilsParams.PoissonDisk[i] * oneOverShadowMapSize
-            ).r > depthCompare;
+            ).r >= depthCompare;
         percentLit += isLit;
     }
 
@@ -284,25 +284,25 @@ float PCF4x4PoissonRotatedx4(sampler2D shadowMap, float2 oneOverShadowMapSize, f
                 shadowMap,
                 texCoord +
                 UtilsParams.PoissonDisk[i].xy * oneOverShadowMapSize
-                ).r > depthCompare;
+                ).r >= depthCompare;
         isLit +=
             tex2D(
                 shadowMap,
                 texCoord +
                 float2(1.f - UtilsParams.PoissonDisk[i].y, UtilsParams.PoissonDisk[i].x) * oneOverShadowMapSize
-                ).r > depthCompare;
+                ).r >= depthCompare;
         isLit +=
             tex2D(
                 shadowMap,
                 texCoord +
                 (float2(1.f, 1.f) - UtilsParams.PoissonDisk[i].xy) * oneOverShadowMapSize
-                ).r > depthCompare;
+                ).r >= depthCompare;
         isLit +=
             tex2D(
                 shadowMap,
                 texCoord +
                 float2(UtilsParams.PoissonDisk[i].y, 1.f - UtilsParams.PoissonDisk[i].x) * oneOverShadowMapSize
-                ).r > depthCompare;
+                ).r >= depthCompare;
         percentLit += isLit;
     }
     

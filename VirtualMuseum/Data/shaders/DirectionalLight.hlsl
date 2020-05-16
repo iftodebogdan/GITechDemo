@@ -126,7 +126,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     }
 #else
     float percentLit = PCF_SAMPLE(DirectionalLight_ShadowMap, DirectionalLightParams.OneOverShadowMapSize, cascadeTexCoord.xy, cascadeTexCoord.z);
-    //float percentLit = tex2D(DirectionalLight_ShadowMap, cascadeTexCoord.xy).r > cascadeTexCoord.z;
+    //float percentLit = tex2D(DirectionalLight_ShadowMap, cascadeTexCoord.xy).r >= cascadeTexCoord.z;
 #endif
     
     // If required, blend between cascade seams
@@ -203,6 +203,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
                     (cascadeLQTexCoord.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f)) *
                     CSM::CascadeNormSize +
                     float2(CSM::CascadeNormSize * fmod(validCascade + 1, CSM::CascadesPerRow), CSM::CascadeNormSize * floor((validCascade + 1) * CSM::CascadeNormSize));
+                cascadeLQTexCoord.z = saturate(cascadeLQTexCoord.z);
 
                 // Sample from the lower quality cascade and blend between samples appropriately
             #if USE_CONDITIONAL_PCF
