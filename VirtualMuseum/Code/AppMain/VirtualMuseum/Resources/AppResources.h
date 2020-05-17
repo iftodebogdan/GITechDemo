@@ -94,6 +94,7 @@ namespace VirtualMuseumApp
     // Models (manage their own textures, no need to declare them)
     CREATE_MODEL_HANDLE(SponzaScene);
     CREATE_MODEL_HANDLE(SphereModel);
+    CREATE_MODEL_HANDLE(DoorModel);
     //------------------------------------------------------
 
     // Textures (not referenced by models, i.e. custom/utility textures, etc.)

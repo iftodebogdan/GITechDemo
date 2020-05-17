@@ -94,7 +94,7 @@ CREATE_ROOT_PASS()
 
         // Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky; moved after SSR to avoid reflecting sun or sky)
         #include "SkyPass.h"
-        ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky", LIGHTING_PASS)
+        //ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky", LIGHTING_PASS)
 
         // Downsample the light accumulation buffer here, because we don't want the volumetric light to be bloomed
         #include "HDRDownsampleForBloomPass.h"

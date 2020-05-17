@@ -302,6 +302,7 @@ namespace VirtualMuseumApp
 
     CREATE_MODEL_OBJECT(SponzaScene,    "models/sponza/sponza.s3dmdl");
     CREATE_MODEL_OBJECT(SphereModel,    "models/pbr-test/sphere.s3dmdl");
+    CREATE_MODEL_OBJECT(DoorModel,      "models/door/door.s3dmdl");
 
     //------------------------------------------------------
 

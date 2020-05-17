@@ -34,6 +34,7 @@
 using namespace Synesthesia3D;
 
 #include "ShadowMapDirectionalLightPass.h"
+#include "SceneGeometryPass.h"
 using namespace VirtualMuseumApp;
 
 #include "AppResources.h"
@@ -55,6 +56,8 @@ namespace VirtualMuseumApp
         Vec4f( 1.f, -1.f,   0.f,    1.f)
     };
     ////////////////////////////////////
+
+    extern SceneGeometryPass SCENE_GEOMETRY_PASS;
 }
 
 ShadowMapDirectionalLightPass::ShadowMapDirectionalLightPass(const char* const passName, RenderPass* const parentPass)
@@ -323,18 +326,10 @@ void ShadowMapDirectionalLightPass::Draw()
 
         HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightWorldViewProjMat[cascade];
 
-        DepthPassShader.Enable();
-
         // Normally, you would only render meshes whose AABB/OBB intersect with the cascade's
         // view frustum, but we don't have a big enough scene to care at the moment
-        for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
-        {
-            PUSH_PROFILE_MARKER(SponzaScene.GetModel()->arrMaterial[SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx]->szName.c_str());
-            RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-            POP_PROFILE_MARKER();
-        }
-
-        DepthPassShader.Disable();
+        //SCENE_GEOMETRY_PASS.DrawModel(SponzaScene, SceneGeometryPass::DM_DEPTH_ONLY);
+        SCENE_GEOMETRY_PASS.DrawModel(DoorModel, SceneGeometryPass::DM_DEPTH_ONLY);
 
         const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
         const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);

@@ -23,12 +23,22 @@
 #define SCENE_GEOMETRY_PASS_H_
 
 #include "RenderPass.h"
+#include "RenderResource.h"
 
 namespace VirtualMuseumApp
 {
     class SceneGeometryPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(SceneGeometryPass)
+
+    public:
+        enum DrawMode
+        {
+            DM_DEPTH_ONLY,
+            DM_DEPTH_ONLY_ALPHA_TEST,
+            DM_COLOR_PASS
+        };
+        void DrawModel(Model& model, DrawMode drawMode);
     };
 }
 
