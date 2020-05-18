@@ -29,6 +29,9 @@
 #include <Profiler.h>
 using namespace Synesthesia3D;
 
+#include "Framework.h"
+using namespace AppFramework;
+
 #include "DepthOfFieldPass.h"
 using namespace VirtualMuseumApp;
 
@@ -110,6 +113,8 @@ void DepthOfFieldPass::AutofocusPass()
     if (!RenderConfig::PostProcessing::DepthOfField::Autofocus)
         return;
 
+    Framework* const pFW = Framework::GetInstance();
+
     PUSH_PROFILE_MARKER("Autofocus pass");
 
     AutofocusBuffer[0]->Enable();
@@ -119,7 +124,7 @@ void DepthOfFieldPass::AutofocusPass()
     HLSL::LumaAdapt_LumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
     HLSL::LumaAdaptParams->LumaAdaptSpeed = RenderConfig::PostProcessing::DepthOfField::AutofocusTime;
-    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(((VirtualMuseum*)AppMain)->GetDeltaTime(), 0.f, 1.f / RenderConfig::PostProcessing::DepthOfField::AutofocusTime);
+    HLSL::LumaAdaptParams->FrameTime = gmtl::Math::clamp(pFW->GetDeltaTime(), 0.f, 1.f / RenderConfig::PostProcessing::DepthOfField::AutofocusTime);
 
     // Reuse the luminance animation shader
     LumaAdaptShader.Enable();

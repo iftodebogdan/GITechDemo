@@ -34,11 +34,17 @@ namespace VirtualMuseumApp
     public:
         enum DrawMode
         {
-            DM_DEPTH_ONLY,
-            DM_DEPTH_ONLY_ALPHA_TEST,
-            DM_COLOR_PASS
+            DEPTH_ONLY,
+            DEPTH_ONLY_ALPHA_TEST,
+            SHADOW,
+            COLOR
         };
-        void DrawModel(Model& model, DrawMode drawMode);
+
+        void DrawModel(Model& model, DrawMode drawMode, Matrix44f* worldMat = nullptr,
+            Matrix44f* viewMat = nullptr, Matrix44f* projMat = nullptr);
+
+        void DrawDoor(DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade = ~0u);
+        void DrawAllDoors(DrawMode drawMode, unsigned int cascade = ~0u);
     };
 }
 

@@ -46,7 +46,7 @@ CREATE_ROOT_PASS()
 
     // Render the reflective shadow map for the directional light
     #include "RSMDirectionalLightPass.h"
-    ADD_RENDER_PASS(RSM_DIRECTIONAL_LIGHT_PASS, RSMDirectionalLightPass, "Reflective Shadow Map for Directional Light", ROOT_PASS)
+    //ADD_RENDER_PASS(RSM_DIRECTIONAL_LIGHT_PASS, RSMDirectionalLightPass, "Reflective Shadow Map for Directional Light", ROOT_PASS)
 
     // Generate the geometry buffer
     #include "GBufferPass.h"
@@ -62,7 +62,7 @@ CREATE_ROOT_PASS()
 
         // Draw PBR material test spheres into the geometry buffer
         #include "PBRMaterialTestPass.h"
-        ADD_RENDER_PASS(PBR_MATERIAL_TEST_PASS, PBRMaterialTestPass, "PBR Material Test Spheres", GBUFFER_PASS)
+        //ADD_RENDER_PASS(PBR_MATERIAL_TEST_PASS, PBRMaterialTestPass, "PBR Material Test Spheres", GBUFFER_PASS)
 
         // Generate the linear and hyperbolic, full and quarter resolution depth buffers
         #include "DepthDownsamplePass.h"
@@ -90,7 +90,7 @@ CREATE_ROOT_PASS()
 
         // Compute indirect light contribution from the directional light (1 unoccluded bounce)
         #include "DirectionalIndirectLightPass.h"
-        ADD_RENDER_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Indirect Light", LIGHTING_PASS)
+        //ADD_RENDER_PASS(DIRECTIONAL_INDIRECT_LIGHT_PASS, DirectionalIndirectLightPass, "Indirect Light", LIGHTING_PASS)
 
         // Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky; moved after SSR to avoid reflecting sun or sky)
         #include "SkyPass.h"

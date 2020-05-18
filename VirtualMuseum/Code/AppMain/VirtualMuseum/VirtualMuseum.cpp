@@ -99,18 +99,8 @@ bool VirtualMuseum::Init(void* hWnd)
         return false;
 
     // Set initial camera position
-    //m_tCamera.vPos = Vec3f(-828.031738f, -651.508972f, -100.693771f);
-    m_tCamera.vPos = Vec3f(-80.f, -50.f, 0.f);
-    //m_tCamera.mRot.set(
-    //     0.524057686f,   0.0577781796f, 0.849711359f,   0.f,
-    //    -0.155855492f,   0.987355292f,  0.0289840195f,  0.f,
-    //    -0.837296307f,  -0.147619948f,  0.526430249f,   0.f,
-    //     0.f,            0.f,           0.f,            1.f
-    //);
-    m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(90.f), 0.f), Type2Type<Matrix44f>());
-
-    //m_tCamera.vPos = Vec3f(0.f, 0.f, 0.f);
-    //m_tCamera.mRot = MAT_IDENTITY44F;
+    m_tCamera.vPos = Vec3f(-110.f, -55.f, 70.f);
+    m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, 0.4f, 0.f), Type2Type<Matrix44f>());
 
     // Setup Gainput
     if (m_pInputManager)

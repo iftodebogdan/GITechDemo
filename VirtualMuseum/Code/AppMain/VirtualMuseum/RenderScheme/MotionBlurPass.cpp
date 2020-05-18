@@ -29,6 +29,9 @@
 #include <Profiler.h>
 using namespace Synesthesia3D;
 
+#include "Framework.h"
+using namespace AppFramework;
+
 #include "MotionBlurPass.h"
 using namespace VirtualMuseumApp;
 
@@ -43,8 +46,11 @@ MotionBlurPass::~MotionBlurPass()
 
 void MotionBlurPass::Update(const float fDeltaTime)
 {
+    Framework* const pFW = Framework::GetInstance();
+
     HLSL::MotionBlurParams->Intensity = RenderConfig::PostProcessing::MotionBlur::Intensity;
     HLSL::MotionBlurParams->NumSamples = RenderConfig::PostProcessing::MotionBlur::NumSamples;
+    HLSL::MotionBlurParams->FrameTime = pFW->GetDeltaTime();
 
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);

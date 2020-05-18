@@ -70,7 +70,7 @@ void vsmain(float4 position : POSITION, out VSOut output)
 #ifdef PIXEL
 #define OFFSET_RAY_SAMPLES  // If defined, scatter multiple ray samples across grid of PostProcessingUtils::InterleavedGridSize x PostProcessingUtils::InterleavedGridSize pixels
 #define USE_BAYER_MATRIX    // If defined, sample grid offsets from texture, else use procedurally generated values
-#define FOG_DENSITY_MAP     // If defined, use 3D noise texture as a fog density map
+//#define FOG_DENSITY_MAP     // If defined, use 3D noise texture as a fog density map
 
 // Radiative transport equation terms (http://sirkan.iit.bme.hu/~szirmay/lightshaft.pdf)
 #define TAU     (0.0001f)   // Probability of collision

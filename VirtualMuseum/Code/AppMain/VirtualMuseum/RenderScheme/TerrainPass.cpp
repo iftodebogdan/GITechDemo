@@ -61,7 +61,7 @@ void TerrainPass::Update(const float fDeltaTime)
 
     const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
     const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
-    RenderConfig::Terrain::MaterialIndex = gmtl::Math::Min(RenderConfig::Terrain::MaterialIndex, (int)pbrMaterialCount - 1);
+    RenderConfig::Terrain::MaterialIndex = gmtl::Math::clamp(RenderConfig::Terrain::MaterialIndex, 0, (int)pbrMaterialCount - 1);
 
     for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
     {

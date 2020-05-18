@@ -158,7 +158,7 @@ namespace VirtualMuseumApp
     bool RenderConfig::CascadedShadowMaps::DebugCameraView;
     float RenderConfig::CascadedShadowMaps::SplitFactor;
     float RenderConfig::CascadedShadowMaps::MaxViewDepth;
-    const Vec2i RenderConfig::CascadedShadowMaps::ShadowMapSize = Vec2i(4096, 4096);
+    const Vec2i RenderConfig::CascadedShadowMaps::ShadowMapSize = Vec2i(2048, 2048);
     float RenderConfig::CascadedShadowMaps::DepthBias[HLSL::CSM::CascadeCount];
     float RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[HLSL::CSM::CascadeCount];
 
@@ -618,7 +618,7 @@ namespace VirtualMuseumApp
         "Camera",
         RenderConfig::Camera::ZNear,
         0.1f,
-        10.f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Z-Far",
@@ -626,7 +626,7 @@ namespace VirtualMuseumApp
         "Camera",
         RenderConfig::Camera::ZFar,
         10.f,
-        5000.f);
+        1000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "FOV",
@@ -642,7 +642,7 @@ namespace VirtualMuseumApp
         "Camera",
         RenderConfig::Camera::MoveSpeed,
         1.f,
-        250.f);
+        50.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Speed up factor",
@@ -673,7 +673,7 @@ namespace VirtualMuseumApp
         "Camera animation toggle (no collisions with world geometry)",
         "Camera",
         RenderConfig::Camera::Animation,
-        true);
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Animation timeout",
@@ -738,7 +738,7 @@ namespace VirtualMuseumApp
         "Terrain",
         RenderConfig::Terrain::MaterialIndex,
         1,
-        3);
+        4);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Terrain texture scale X",
@@ -746,7 +746,7 @@ namespace VirtualMuseumApp
         "Terrain",
         RenderConfig::Terrain::TextureMappingScale[0],
         0.001f,
-        0.005f);
+        0.01f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Terrain texture scale Y",
@@ -754,7 +754,7 @@ namespace VirtualMuseumApp
         "Terrain",
         RenderConfig::Terrain::TextureMappingScale[1],
         0.001f,
-        0.005f);
+        0.01f);
     //------------------------------------------------------
 
     // Directional light -----------------------------------
@@ -803,7 +803,7 @@ namespace VirtualMuseumApp
         "Directional light",
         RenderConfig::DirectionalLight::IrradianceFactor,
         0.1f,
-        1.f);
+        15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Reflection factor",
@@ -811,14 +811,14 @@ namespace VirtualMuseumApp
         "Directional light",
         RenderConfig::DirectionalLight::ReflectionFactor,
         0.1f,
-        1.f);
+        15.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Light animation",
         "Directional light animation toggle",
         "Directional light",
         RenderConfig::DirectionalLight::Animation,
-        true);
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Light direction - X axis",
@@ -826,7 +826,7 @@ namespace VirtualMuseumApp
         "Directional light",
         RenderConfig::DirectionalLight::LightDir[0],
         0.01f,
-        0.f);
+        0.3f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Light direction - Z axis",
@@ -834,7 +834,7 @@ namespace VirtualMuseumApp
         "Directional light",
         RenderConfig::DirectionalLight::LightDir[2],
         0.01f,
-        0.f);
+        0.953114f);
     //------------------------------------------------------
 
     // CSM -------------------------------------------------
@@ -859,7 +859,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::SplitFactor,
         0.1f,
-        0.7f);
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "CSM range",
@@ -867,7 +867,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::MaxViewDepth,
         10.f,
-        3000.f);
+        1000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 1",
@@ -875,7 +875,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::DepthBias[0],
         0.0001f,
-        0.002f);
+        0.0002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 1",
@@ -883,7 +883,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[0],
         0.1f,
-        2.f);
+        0.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 2",
@@ -891,7 +891,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::DepthBias[1],
         0.0001f,
-        0.002f);
+        0.0002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 2",
@@ -899,7 +899,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[1],
         0.1f,
-        2.5f);
+        0.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 3",
@@ -907,7 +907,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::DepthBias[2],
         0.0001f,
-        0.0015f);
+        0.0002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 3",
@@ -915,7 +915,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[2],
         0.1f,
-        2.5f);
+        2.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Depth bias 4",
@@ -923,7 +923,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::DepthBias[3],
         0.0001f,
-        0.001f);
+        0.0002f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slope scaled depth bias 4",
@@ -931,7 +931,7 @@ namespace VirtualMuseumApp
         "Cascaded shadow map",
         RenderConfig::CascadedShadowMaps::SlopeScaledDepthBias[3],
         0.1f,
-        1.5f);
+        2.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Debug CSM camera",
@@ -955,7 +955,7 @@ namespace VirtualMuseumApp
         "Screen space reflections",
         RenderConfig::PostProcessing::ScreenSpaceReflections::ReflectionIntensity,
         0.1f,
-        1.f);
+        3.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Object thickness",
@@ -994,7 +994,7 @@ namespace VirtualMuseumApp
         "Screen space reflections",
         RenderConfig::PostProcessing::ScreenSpaceReflections::MaxRayDist,
         100.f,
-        3000.f);
+        250.f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Use dithering",
@@ -1018,7 +1018,7 @@ namespace VirtualMuseumApp
         "SSAO",
         RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::SampleRadius,
         1.f,
-        10.f);
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO intensity",
@@ -1026,7 +1026,7 @@ namespace VirtualMuseumApp
         "SSAO",
         RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Intensity,
         1.f,
-        5.f);
+        2.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "SSAO scale",
@@ -1145,7 +1145,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::SampleCount,
         10.f,
-        32);
+        16);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Accumulation sample distribution",
@@ -1153,7 +1153,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::SampleDistrib,
         0.1f,
-        0.5f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Accumulation intensity",
@@ -1161,7 +1161,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::LightIntensity,
         0.1f,
-        0.5f);
+        2.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Mult. scatter intensity",
@@ -1169,7 +1169,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::MultScatterIntensity,
         0.1f,
-        0.05f);
+        0.25f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Fog color - red",
@@ -1211,7 +1211,8 @@ namespace VirtualMuseumApp
         1.f,
         25.f);
 
-    CREATE_ARTIST_PARAMETER_OBJECT("Fog speed Y axis",
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "Fog speed Y axis",
         "Speed of fog effect on the Y axis (world space units / sec)",
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::FogSpeed[1],
@@ -1246,7 +1247,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::BlurDepthFalloff,
         0.0001f,
-        0.0025f);
+        0.025f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Depth-aware upscaling",
@@ -1294,7 +1295,7 @@ namespace VirtualMuseumApp
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::FocalDepth,
         1.f,
-        100.f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Focal length",
@@ -1302,7 +1303,7 @@ namespace VirtualMuseumApp
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::FocalLength,
         1.f,
-        100.f);
+        35.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "F-stop",
@@ -1317,8 +1318,8 @@ namespace VirtualMuseumApp
         "Circle of confusion size in mm (35mm film = 0.03mm)",
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::CoC,
-        0.1f,
-        0.03f);
+        0.001f,
+        0.005f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Aperture size",
@@ -1326,7 +1327,7 @@ namespace VirtualMuseumApp
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::ApertureSize,
         0.001f,
-        0.0075f);
+        0.005f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "DoF pass count",
@@ -1334,7 +1335,7 @@ namespace VirtualMuseumApp
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::PassCount,
         1,
-        5);
+        4);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Highlight threshold",
@@ -1372,7 +1373,7 @@ namespace VirtualMuseumApp
         "Depth of field",
         RenderConfig::PostProcessing::DepthOfField::AutofocusTime,
         0.1f,
-        0.5f);
+        0.25f);
     //------------------------------------------------------
 
     // Vignetting (part of DoF shader) ---------------------
@@ -1415,7 +1416,7 @@ namespace VirtualMuseumApp
         "Chromatic aberration",
         RenderConfig::PostProcessing::ChromaticAberration::ChromaShiftAmount,
         0.1f,
-        1.f);
+        3.f);
     //------------------------------------------------------
 
     // Lens distortion (part of DoF shader) ----------------
@@ -1458,7 +1459,7 @@ namespace VirtualMuseumApp
         "Motion blur",
         RenderConfig::PostProcessing::MotionBlur::Intensity,
         0.01f,
-        0.01f);
+        0.005f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Motion blur sample count",
@@ -1523,7 +1524,7 @@ namespace VirtualMuseumApp
         "Lens flare",
         RenderConfig::PostProcessing::LensFlare::AnamorphicIntensity,
         1.f,
-        10.f);
+        15.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Brigthness threshold",
@@ -1531,7 +1532,7 @@ namespace VirtualMuseumApp
         "Lens flare",
         RenderConfig::PostProcessing::LensFlare::BrightnessThreshold,
         0.1f,
-        15.f);
+        5.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost sample count",
@@ -1594,7 +1595,7 @@ namespace VirtualMuseumApp
         "Lens flare",
         RenderConfig::PostProcessing::LensFlare::DirtIntensity,
         0.1f,
-        0.3f);
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lens star burst intensity",
@@ -1619,7 +1620,7 @@ namespace VirtualMuseumApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ExposureBias,
         0.1f,
-        0.25f);
+        0.1f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lower luma bound",
@@ -1715,7 +1716,7 @@ namespace VirtualMuseumApp
         "Apply gamma correction when sampling the 3D color lookup table",
         "Color correction",
         RenderConfig::PostProcessing::ColorCorrection::sRGBColorCorrectionTexture,
-        true);
+        false);
     //------------------------------------------------------
 
     // Film grain (part of HDR tonemapping shader) ---------
@@ -1725,7 +1726,7 @@ namespace VirtualMuseumApp
         "Film grain",
         RenderConfig::PostProcessing::FilmGrain::FilmGrainAmount,
         0.001f,
-        0.0025f);
+        0.005f);
     //------------------------------------------------------
 
     // FXAA ------------------------------------------------
@@ -1765,7 +1766,7 @@ namespace VirtualMuseumApp
         "Enables depth based edge detection for conditional FXAA application",
         "FXAA",
         RenderConfig::PostProcessing::FastApproximateAntiAliasing::UseEdgeDetection,
-        true);
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge detection threshold",

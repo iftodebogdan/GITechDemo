@@ -329,7 +329,7 @@ void ShadowMapDirectionalLightPass::Draw()
         // Normally, you would only render meshes whose AABB/OBB intersect with the cascade's
         // view frustum, but we don't have a big enough scene to care at the moment
         //SCENE_GEOMETRY_PASS.DrawModel(SponzaScene, SceneGeometryPass::DM_DEPTH_ONLY);
-        SCENE_GEOMETRY_PASS.DrawModel(DoorModel, SceneGeometryPass::DM_DEPTH_ONLY);
+        SCENE_GEOMETRY_PASS.DrawAllDoors(SceneGeometryPass::DrawMode::SHADOW, cascade);
 
         const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
         const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
