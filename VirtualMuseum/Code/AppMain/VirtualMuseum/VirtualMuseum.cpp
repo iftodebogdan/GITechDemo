@@ -46,6 +46,7 @@ using namespace AppFramework;
 #include "ArtistParameter.h"
 #include "SkyPass.h"
 #include "UIPass.h"
+#include "Audio.h"
 using namespace VirtualMuseumApp;
 
 CREATE_APP(VirtualMuseum)
@@ -83,6 +84,8 @@ VirtualMuseum::~VirtualMuseum()
 bool VirtualMuseum::Init(void* hWnd)
 {
     Framework* const pFW = Framework::GetInstance();
+
+    Audio::CreateInstance();
 
     // Renderer MUST be initialized on the SAME thread as the target window
     Renderer::CreateInstance(API_DX9);
@@ -181,6 +184,8 @@ void VirtualMuseum::Release()
 
     RenderResource::FreeAll();
     Renderer::DestroyInstance();
+
+    Audio::DestoryInstance();
 }
 
 void VirtualMuseum::LoadResources(unsigned int thId, unsigned int thCount)

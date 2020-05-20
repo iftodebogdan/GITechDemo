@@ -35,6 +35,9 @@
     <Filter Include="Shaders\Include">
       <UniqueIdentifier>{fd0b29d0-9f3f-43c0-b8b8-a8c3041fdaf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Audio">
+      <UniqueIdentifier>{0ed2844c-1694-4bc4-bd33-67230d04e33a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.h">
@@ -166,6 +169,9 @@
     <ClInclude Include="VirtualMuseum\RenderScheme\TerrainPass.h">
       <Filter>App\Render Schemes</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualMuseum\Audio\Audio.h">
+      <Filter>App\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -284,6 +290,9 @@
     </ClCompile>
     <ClCompile Include="VirtualMuseum\RenderScheme\TerrainPass.cpp">
       <Filter>App\Render Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Audio\Audio.cpp">
+      <Filter>App\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
