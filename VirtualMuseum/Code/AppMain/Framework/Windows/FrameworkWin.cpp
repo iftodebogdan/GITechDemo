@@ -498,6 +498,11 @@ void FrameworkWin::GetWindowArea(int& left, int& top, int& right, int& bottom)
     bottom  = rc.bottom;
 }
 
+void FrameworkWin::CreateMessageBox(const char* const title, const char* const body)
+{
+    MessageBox(NULL, body, title, MB_OK);
+}
+
 unsigned int FrameworkWin::GetTicks()
 {
     DWORD now = 0;

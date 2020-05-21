@@ -188,7 +188,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -236,7 +236,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -287,7 +287,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -337,7 +337,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -389,7 +389,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -440,7 +440,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>dummy</Outputs>
+      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>

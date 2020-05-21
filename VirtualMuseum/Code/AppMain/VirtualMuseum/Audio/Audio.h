@@ -38,11 +38,16 @@ namespace VirtualMuseumApp
         Audio();
         ~Audio();
 
-        const bool CreateDevice(const char* const deviceName = nullptr);
+        void SetupALSoftLocalPath();
+        void CreateDevice();
+        void InitializeExtensions();
         void DestroyDevice();
 
         ALCdevice* m_pAudioDevice;
         ALCcontext* m_pAudioContext;
+
+        bool m_bHasHRTFExtension;
+        bool m_bHasStereoAnglesExtension;
 
         static Audio* ms_pInstance;
     };

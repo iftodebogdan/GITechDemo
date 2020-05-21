@@ -447,6 +447,8 @@
     <CustomBuild Include="..\..\Data\shaders\DepthPassAlphaTest.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Data\shaders\Terrain.hlsl" />
+    <CustomBuild Include="..\..\Data\shaders\Terrain.hlsl">
+      <Filter>Shaders</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

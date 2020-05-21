@@ -46,6 +46,7 @@ namespace AppFramework
         void SetCursorAtPos(const int x, const int y);
         void GetClientArea(int& left, int& top, int& right, int& bottom);
         void GetWindowArea(int& left, int& top, int& right, int& bottom);
+        void CreateMessageBox(const char* const title, const char* const body);
 
         unsigned int    GetTicks(); // in microseconds
         void            Sleep(const unsigned int miliseconds);
