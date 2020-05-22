@@ -47,6 +47,7 @@ using namespace AppFramework;
 #include "SkyPass.h"
 #include "UIPass.h"
 #include "Audio.h"
+#include "Scene.h"
 using namespace VirtualMuseumApp;
 
 CREATE_APP(VirtualMuseum)
@@ -72,6 +73,7 @@ VirtualMuseum::VirtualMuseum()
     , m_fDeltaTime(0.f)
     , m_pInputMap(nullptr)
     , m_bUIHasFocus(false)
+    , m_pScene(nullptr)
 {
     MUTEX_INIT(mResInitMutex);
 }
@@ -167,11 +169,20 @@ bool VirtualMuseum::Init(void* hWnd)
 
     HLSL::FrameParams->ViewProjMat = MAT_IDENTITY44F;
 
+    m_pScene = new Scene();
+    assert(m_pScene);
+
     return true;
 }
 
 void VirtualMuseum::Release()
 {
+    if (m_pScene)
+    {
+        delete m_pScene;
+        m_pScene = nullptr;
+    }
+
     if (m_pInputMap)
     {
         delete m_pInputMap;
@@ -235,6 +246,12 @@ void VirtualMuseum::LoadResources(unsigned int thId, unsigned int thCount)
             // Misc. resources
             RenderScheme::AllocateResources();
 
+            // Scene setup
+            if (m_pScene)
+            {
+                m_pScene->SetupScene();
+            }
+
             bExtraResInit = true;
 
             cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
@@ -245,28 +262,6 @@ void VirtualMuseum::LoadResources(unsigned int thId, unsigned int thCount)
 
 void VirtualMuseum::Update(const float fDeltaTime)
 {
-    // TODO: remove this
-    // TEST ------------------------------------------------
-    Audio::GetInstance()->BeginUpdate();
-    static Audio::SoundSource* sndSrc = nullptr;
-    if (!sndSrc)
-    {
-        sndSrc = Audio::GetInstance()->CreateSoundSource();;
-        sndSrc->SetSoundFile("sounds/wave1.wav");
-        sndSrc->Play(true);
-    }
-    if(sndSrc)
-    {
-        static float angle = 0;
-        angle += gmtl::Math::PI * 0.5f * fDeltaTime;
-        if (angle > gmtl::Math::PI)
-            angle -= gmtl::Math::PI * 2.0;
-
-        sndSrc->SetPosition(Vec3f(Math::sin(angle), 0.f, -cos(angle)));
-    }
-    Audio::GetInstance()->EndUpdate();
-    // -----------------------------------------------------
-
     m_fDeltaTime = fDeltaTime;
     
     Renderer* RenderContext = Renderer::GetInstance();
@@ -706,6 +701,13 @@ void VirtualMuseum::Update(const float fDeltaTime)
     // to the current frame's view-projection matrix
     if (HLSL::FrameParams->PrevViewProjMat == MAT_IDENTITY44F)
         HLSL::FrameParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat;
+
+    Audio::GetInstance()->BeginUpdate();
+    if (m_pScene)
+    {
+        m_pScene->Update(fDeltaTime);
+    }
+    Audio::GetInstance()->EndUpdate();
 }
 
 void VirtualMuseum::UpdateUIFocus()

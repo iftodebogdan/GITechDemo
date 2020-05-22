@@ -37,6 +37,7 @@ namespace gainput
 namespace VirtualMuseumApp
 {
     class RenderPass;
+    class Scene;
 
     class VirtualMuseum : public App
     {
@@ -56,6 +57,8 @@ namespace VirtualMuseumApp
         Camera& GetCamera() { return m_tCamera; }
         const float GetDeltaTime() const { return m_fDeltaTime; }
         const bool IsUIInFocus() const { return m_bUIHasFocus; }
+
+        Scene* const GetScene() const { return m_pScene; }
 
     private:
         void UpdateUIFocus();
@@ -86,6 +89,8 @@ namespace VirtualMuseumApp
             APP_CMD_SPEED_UP    = APP_CMD_RIGHT         << 1,   // Enable faster moving camera
             APP_CMD_SLOW_DOWN   = APP_CMD_SPEED_UP      << 1    // Enable slower moving camera
         };
+
+        Scene* m_pScene;
     };
 }
 #endif // VIRTUALMUSEUM_H_

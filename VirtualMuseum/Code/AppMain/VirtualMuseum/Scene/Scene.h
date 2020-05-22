@@ -2,7 +2,7 @@
  * This file is part of the "VirtualMuseum" application
  * Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *      File:   Audio.h
+ *      File:   Scene.h
  *      Author: Bogdan Iftode
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,57 +19,51 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#ifndef AUDIO_H_
-#define AUDIO_H_
+#ifndef SCENE_H_
+#define SCENE_H_
 
 #include <vector>
 using namespace std;
 
-#include <gmtl/gmtl.h>
-using namespace gmtl;
-
 namespace VirtualMuseumApp
 {
-    class Audio
+    class Scene
     {
     public:
-        static void CreateInstance();
-        static void DestoryInstance();
-        static Audio* const GetInstance();
+        virtual ~Scene();
 
-        class SoundSource
+        class Actor
         {
         public:
-            virtual void SetSoundFile(const char* const sndFileName) = 0;
-            virtual void SetPosition(const Vec3f position) = 0;
+            Actor();
+            virtual ~Actor() {}
 
-            virtual void Play(const bool repeat = false) = 0;
-            virtual void Pause() = 0;
-            virtual void Stop() = 0;
+            enum DrawMode
+            {
+                DEPTH_ONLY,
+                DEPTH_ONLY_ALPHA_TEST,
+                SHADOW,
+                COLOR
+            };
+
+            virtual void Update(const float deltaTime) = 0;
+            virtual void Draw(DrawMode drawMode, const unsigned int cascade = ~0u) = 0;
+
+            void SetPosition(Vec3f pos) { m_vPosition = pos; }
+            void SetOrientation(float angle) { m_fOrientation = angle; }
 
         protected:
-            SoundSource() {}
-            virtual ~SoundSource() {}
-
-            virtual void Update() = 0;
-
-            friend class Audio;
+            Vec3f m_vPosition;
+            float m_fOrientation;
         };
 
-        SoundSource* CreateSoundSource();
-        void RemoveSoundSource(SoundSource*& soundSource);
-
-        virtual void BeginUpdate() = 0;
-        virtual void EndUpdate() = 0;
+        void SetupScene();
+        void Update(const float deltaTime);
+        void Draw(Actor::DrawMode drawMode, unsigned int cascade = ~0u);
 
     protected:
-        Audio() {}
-        virtual ~Audio();
-
-        static Audio* ms_pInstance;
-
-        vector<SoundSource*> m_pSoundSource;
+        vector<Actor*> m_pActors;
     };
 }
 
-#endif // AUDIO_H_
+#endif // SCENE_H_

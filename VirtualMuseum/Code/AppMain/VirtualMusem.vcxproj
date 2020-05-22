@@ -150,7 +150,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -199,7 +199,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -251,7 +251,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -304,7 +304,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -356,7 +356,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -410,7 +410,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(ProjectDir)VirtualMuseum\Scene;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -492,6 +492,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClInclude Include="VirtualMuseum\Resources\AppResources.h" />
     <ClInclude Include="VirtualMuseum\Resources\ArtistParameter.h" />
     <ClInclude Include="VirtualMuseum\Resources\Shaders.h" />
+    <ClInclude Include="VirtualMuseum\Scene\Scene.h" />
     <ClInclude Include="VirtualMuseum\Utilities\GaussianFilter.h" />
     <ClInclude Include="VirtualMuseum\VirtualMuseum.h" />
     <ClInclude Include="VirtualMuseum\Utilities\PerlinNoise.h" />
@@ -534,6 +535,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClCompile Include="VirtualMuseum\RenderScheme\SkyPass.cpp" />
     <ClCompile Include="VirtualMuseum\Resources\AppResources.cpp" />
     <ClCompile Include="VirtualMuseum\Resources\ArtistParameter.cpp" />
+    <ClCompile Include="VirtualMuseum\Scene\Scene.cpp" />
     <ClCompile Include="VirtualMuseum\Utilities\GaussianFilter.cpp" />
     <ClCompile Include="Framework\main.cpp" />
     <ClCompile Include="VirtualMuseum\VirtualMuseum.cpp" />

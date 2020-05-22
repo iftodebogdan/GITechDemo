@@ -38,6 +38,9 @@
     <Filter Include="App\Audio">
       <UniqueIdentifier>{0ed2844c-1694-4bc4-bd33-67230d04e33a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Scene">
+      <UniqueIdentifier>{2d5eef29-5567-4e61-9fd6-de680730ba4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\App.h">
@@ -172,6 +175,9 @@
     <ClInclude Include="VirtualMuseum\Audio\Audio.h">
       <Filter>App\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualMuseum\Scene\Scene.h">
+      <Filter>App\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -293,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="VirtualMuseum\Audio\Audio.cpp">
       <Filter>App\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Scene\Scene.cpp">
+      <Filter>App\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

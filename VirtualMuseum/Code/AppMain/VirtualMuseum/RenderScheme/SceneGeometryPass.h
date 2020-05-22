@@ -30,21 +30,6 @@ namespace VirtualMuseumApp
     class SceneGeometryPass : public RenderPass
     {
         IMPLEMENT_RENDER_PASS(SceneGeometryPass)
-
-    public:
-        enum DrawMode
-        {
-            DEPTH_ONLY,
-            DEPTH_ONLY_ALPHA_TEST,
-            SHADOW,
-            COLOR
-        };
-
-        void DrawModel(Model& model, DrawMode drawMode, Matrix44f* worldMat = nullptr,
-            Matrix44f* viewMat = nullptr, Matrix44f* projMat = nullptr);
-
-        void DrawDoor(DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade = ~0u);
-        void DrawAllDoors(DrawMode drawMode, unsigned int cascade = ~0u);
     };
 }
 

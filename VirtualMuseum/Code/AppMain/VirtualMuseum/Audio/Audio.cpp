@@ -638,6 +638,7 @@ Audio::SoundSource* Audio::CreateSoundSource()
 void Audio::RemoveSoundSource(SoundSource*& soundSource)
 {
     m_pSoundSource.erase(std::remove(m_pSoundSource.begin(), m_pSoundSource.end(), soundSource), m_pSoundSource.end());
+    delete soundSource;
     soundSource = nullptr;
 }
 
