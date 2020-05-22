@@ -22,8 +22,11 @@
 #ifndef AUDIO_H_
 #define AUDIO_H_
 
-struct ALCdevice;
-struct ALCcontext;
+#include <vector>
+using namespace std;
+
+#include <gmtl/gmtl.h>
+using namespace gmtl;
 
 namespace VirtualMuseumApp
 {
@@ -34,22 +37,38 @@ namespace VirtualMuseumApp
         static void DestoryInstance();
         static Audio* const GetInstance();
 
+        class SoundSource
+        {
+        public:
+            virtual void SetSoundFile(const char* const sndFileName) = 0;
+            virtual void SetPosition(const Vec3f position) = 0;
+
+            virtual void Play(const bool repeat = false) = 0;
+            virtual void Pause() = 0;
+            virtual void Stop() = 0;
+
+        protected:
+            SoundSource() {}
+            ~SoundSource() {}
+
+            virtual void Update() = 0;
+
+            friend class Audio;
+        };
+
+        SoundSource* CreateSoundSource();
+        void RemoveSoundSource(SoundSource*& soundSource);
+
+        virtual void BeginUpdate() = 0;
+        virtual void EndUpdate() = 0;
+
     protected:
-        Audio();
+        Audio() {}
         ~Audio();
 
-        void SetupALSoftLocalPath();
-        void CreateDevice();
-        void InitializeExtensions();
-        void DestroyDevice();
-
-        ALCdevice* m_pAudioDevice;
-        ALCcontext* m_pAudioContext;
-
-        bool m_bHasHRTFExtension;
-        bool m_bHasStereoAnglesExtension;
-
         static Audio* ms_pInstance;
+
+        vector<SoundSource*> m_pSoundSource;
     };
 }
 

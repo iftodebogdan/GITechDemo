@@ -245,6 +245,28 @@ void VirtualMuseum::LoadResources(unsigned int thId, unsigned int thCount)
 
 void VirtualMuseum::Update(const float fDeltaTime)
 {
+    // TODO: remove this
+    // TEST ------------------------------------------------
+    Audio::GetInstance()->BeginUpdate();
+    static Audio::SoundSource* sndSrc = nullptr;
+    if (!sndSrc)
+    {
+        sndSrc = Audio::GetInstance()->CreateSoundSource();;
+        sndSrc->SetSoundFile("sounds/wave1.wav");
+        sndSrc->Play(true);
+    }
+    if(sndSrc)
+    {
+        static float angle = 0;
+        angle += gmtl::Math::PI * 0.5f * fDeltaTime;
+        if (angle > gmtl::Math::PI)
+            angle -= gmtl::Math::PI * 2.0;
+
+        sndSrc->SetPosition(Vec3f(Math::sin(angle), 0.f, -cos(angle)));
+    }
+    Audio::GetInstance()->EndUpdate();
+    // -----------------------------------------------------
+
     m_fDeltaTime = fDeltaTime;
     
     Renderer* RenderContext = Renderer::GetInstance();

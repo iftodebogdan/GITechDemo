@@ -21,6 +21,9 @@
 
 #include "stdafx.h"
 
+#include <map>
+
+#include <sndfile.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
 
@@ -32,7 +35,7 @@ using namespace VirtualMuseumApp;
 
 #include "AppResources.h"
 
-Audio* Audio::ms_pInstance = nullptr;
+// OpenAL configuration ----------------------------------------------------------------
 
 // The preferred audio device - OpenAL Soft supports binaural sound synthesis via HRTFs
 #define PREFERRED_AUDIO_DEVICE "OpenAL Soft"
@@ -52,6 +55,8 @@ Audio* Audio::ms_pInstance = nullptr;
 
 // HRTF config
 #define HRTF_DATA_SET_RELATIVE_PATH "hrtfs"
+#define PREFERRED_HRTF 1 // IRC_1049
+
 static const unsigned int HRTFNameCount = 3;
 static const char* const HRTFName[HRTFNameCount] =
 {
@@ -67,30 +72,112 @@ static const ALCint HRTFFreq[HRTFFreqCount] =
     48000
 };
 
-#define HRTF_COUNT (HRTFNameCount * HRTFFreqCount)
-#define PREFERRED_HRTF 1 // IRC_1049
+static const unsigned int HRTFCount = HRTFNameCount * HRTFFreqCount;
+
+// -------------------------------------------------------------------------------------
 
 // OpenAL Soft extension functions
 static LPALCGETSTRINGISOFT alcGetStringiSOFT = nullptr;
 static LPALCRESETDEVICESOFT alcResetDeviceSOFT = nullptr;
 
-Audio::Audio()
+// Wrapper for OpenAL - abstracts and hides the library implementation from the rest of the project code
+class AudioImplement : public Audio
+{
+public:
+    AudioImplement();
+    ~AudioImplement();
+
+    static AudioImplement* const GetInstance() { return (AudioImplement*)Audio::GetInstance(); }
+
+    void BeginUpdate();
+    void EndUpdate();
+
+    class SoundSourceImplement : public Audio::SoundSource
+    {
+    public:
+        void SetSoundFile(const char* const sndFileName);
+        void SetPosition(const Vec3f position);
+
+        void Play(const bool repeat = false);
+        void Pause();
+        void Stop();
+
+    protected:
+        SoundSourceImplement();
+        ~SoundSourceImplement();
+
+        void Update();
+
+        ALuint m_alSource;
+        bool m_bRepeat;
+
+        friend class Audio;
+        friend class AudioImplement;
+    };
+
+protected:
+    void SetupALSoftLocalPath();
+    void CreateDevice();
+    void InitializeExtensions();
+    void DestroyDevice();
+
+    ALCdevice* const GetAudioDevice() const { return m_pAudioDevice; }
+    ALCcontext* const GetAudioContext() const { return m_pAudioContext; }
+
+    const bool HasHRTFExtension() const { return m_bHasHRTFExtension; }
+
+    ALuint GetOrLoadSound(const char* const fileName);
+
+    ALCdevice* m_pAudioDevice;
+    ALCcontext* m_pAudioContext;
+
+    bool m_bHasHRTFExtension;
+
+    typedef map<string, ALuint> ALBufferMap;
+    ALBufferMap m_alBuffers;
+};
+
+
+AudioImplement::AudioImplement()
     : m_pAudioDevice(nullptr)
     , m_pAudioContext(nullptr)
     , m_bHasHRTFExtension(false)
-    , m_bHasStereoAnglesExtension(false)
 {
     SetupALSoftLocalPath();
     CreateDevice();
     InitializeExtensions();
 }
 
-Audio::~Audio()
+AudioImplement::~AudioImplement()
 {
     DestroyDevice();
 }
 
-void Audio::SetupALSoftLocalPath()
+void AudioImplement::BeginUpdate()
+{
+    alcSuspendContext(GetAudioContext());
+
+    ALCenum error = alcGetError(GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::EndUpdate()
+{
+    for (unsigned int i = 0; i < m_pSoundSource.size(); i++)
+    {
+        if (m_pSoundSource[i])
+        {
+            ((SoundSourceImplement*)m_pSoundSource[i])->Update();
+        }
+    }
+
+    alcProcessContext(GetAudioContext());
+
+    ALCenum error = alcGetError(GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SetupALSoftLocalPath()
 {
     // This is the cleanest way I've found to set the path where OpenAL searches for HRTF data sets
     // Alternatives (that I'm aware of) are:
@@ -106,7 +193,7 @@ void Audio::SetupALSoftLocalPath()
     _putenv(envVar);
 }
 
-void Audio::CreateDevice()
+void AudioImplement::CreateDevice()
 {
     Framework* const pFW = Framework::GetInstance();
     assert(pFW);
@@ -205,7 +292,7 @@ void Audio::CreateDevice()
     }
 }
 
-void Audio::InitializeExtensions()
+void AudioImplement::InitializeExtensions()
 {
     if (!m_pAudioDevice)
         return;
@@ -285,7 +372,11 @@ void Audio::InitializeExtensions()
                 // "fixes" this but at the cost of not being able to have both x86 and x64 DLLs in the same folder.
                 // It possibly has something to do with how the "official" OpenAL32.dll from Creative Labs does the "routing"
                 // to the OpenAL Soft DLL, but I can't keep looking into this considering I sort of have a deadline...
-                if (!hrtfNamesExist && hrtfCount == HRTF_COUNT + 1) // +1 being the built-in HRTF... I hope...
+                // I ended up hacking my way to a solution by modifying the name of the DLL referenced in the x64 .lib file
+                // that was provided with the OpenAL Soft SDK. Now it's looking for OpenAL32.dll on x86 and OpenAL64.dll on x64.
+                // This allowed me to have both DLLs in the same folder with the build executables AND have a functioning
+                // HRTF extension - i.e. alcResetDeviceSOFT() and alcGetStringiSOFT() seem to work correctly now.
+                if (!hrtfNamesExist && hrtfCount == HRTFCount + 1) // +1 being the built-in HRTF... I hope...
                 {
                     // I'm going to assume they are in the same order as they appear in alsoft-config.exe
                     selectedHRTF = PREFERRED_HRTF * HRTFFreqCount;
@@ -312,7 +403,7 @@ void Audio::InitializeExtensions()
                 }
 
                 ALCboolean reset = ALC_FALSE;
-                if ((hrtfNamesExist && hrtfNameFound) || (!hrtfNamesExist && hrtfCount == HRTF_COUNT + 1))
+                if ((hrtfNamesExist && hrtfNameFound) || (!hrtfNamesExist && hrtfCount == HRTFCount + 1))
                 {
                     const ALCint attrList[] =
                     {
@@ -374,20 +465,16 @@ void Audio::InitializeExtensions()
     {
         pFW->CreateMessageBox("Error", "HRTF extension was not found. Binaural sound synthesis will be disabled.");
     }
-
-    // Check for stereo source rotation extension
-    if (alIsExtensionPresent(AL_EXT_STEREO_ANGLES_EXTENSION_NAME))
-    {
-        m_bHasStereoAnglesExtension = true;
-    }
-    else
-    {
-        pFW->CreateMessageBox("Error", "Stereo source rotation extension not found.");
-    }
 }
 
-void Audio::DestroyDevice()
+void AudioImplement::DestroyDevice()
 {
+    while (m_alBuffers.size())
+    {
+        alDeleteBuffers(1, &m_alBuffers.begin()->second);
+        m_alBuffers.erase(m_alBuffers.begin());
+    }
+
     alcMakeContextCurrent(nullptr);
 
     if (m_pAudioContext)
@@ -403,6 +490,277 @@ void Audio::DestroyDevice()
     }
 }
 
+ALuint AudioImplement::GetOrLoadSound(const char* const fileName)
+{
+    assert(GetAudioContext() && GetAudioDevice());
+    if (!GetAudioContext() || !GetAudioDevice())
+        return AL_INVALID;
+
+    ALBufferMap::iterator it = m_alBuffers.find(string(fileName));
+    if (it != m_alBuffers.end())
+    {
+        return it->second;
+    }
+
+    Framework* const pFW = Framework::GetInstance();
+    assert(pFW);
+    if (!pFW)
+        return AL_INVALID;
+
+    SF_INFO sfInfo;
+    SNDFILE* sndFile = sf_open(fileName, SFM_READ, &sfInfo);
+
+    // Open sound file
+    if (!sndFile)
+    {
+        char errorMsg[256];
+        sprintf_s(errorMsg, "Could not open audio file %s", fileName);
+        pFW->CreateMessageBox("Error", errorMsg);
+
+        return AL_INVALID;
+    }
+
+    // Check sound file integrity
+    if (sfInfo.frames < 1 || sfInfo.frames >(sf_count_t)(INT_MAX / sizeof(short)) / sfInfo.channels)
+    {
+        char errorMsg[256];
+        sprintf_s(errorMsg, "Bas sample count in %s: %llu", fileName, sfInfo.frames);
+        pFW->CreateMessageBox("Error", errorMsg);
+
+        sf_close(sndFile);
+        sndFile = nullptr;
+
+        return AL_INVALID;
+    }
+
+    // Determine sound format
+    ALenum sndFormat = AL_INVALID;
+    switch (sfInfo.channels)
+    {
+    case 1:
+        if (sfInfo.format & SF_FORMAT_PCM_S8 || sfInfo.format & SF_FORMAT_PCM_U8)
+        {
+            sndFormat = AL_FORMAT_MONO8;
+        }
+        else if (sfInfo.format & SF_FORMAT_PCM_16)
+        {
+            sndFormat = AL_FORMAT_MONO16;
+        }
+        break;
+
+    case 2:
+        if (sfInfo.format & SF_FORMAT_PCM_S8 || sfInfo.format & SF_FORMAT_PCM_U8)
+        {
+            sndFormat = AL_FORMAT_STEREO8;
+        }
+        else if (sfInfo.format & SF_FORMAT_PCM_16)
+        {
+            sndFormat = AL_FORMAT_STEREO16;
+        }
+        break;
+    }
+
+    if (sndFormat == AL_INVALID)
+    {
+        char errorMsg[256];
+        sprintf_s(errorMsg, "Unsupported sound format for %s", fileName);
+        pFW->CreateMessageBox("Error", errorMsg);
+
+        sf_close(sndFile);
+        sndFile = nullptr;
+
+        return AL_INVALID;
+    }
+
+    short* sndBuffer = (short* const)malloc((size_t)(sfInfo.frames * sfInfo.channels) * sizeof(short));
+
+    // Decode audio file to buffer
+    sf_count_t frameCount = sf_readf_short(sndFile, sndBuffer, sfInfo.frames);
+    if (frameCount < 1)
+    {
+        char errorMsg[256];
+        sprintf_s(errorMsg, "Failed to read %llu samples from %s", frameCount, fileName);
+        pFW->CreateMessageBox("Error", errorMsg);
+
+        free(sndBuffer);
+        sndBuffer = nullptr;
+
+        sf_close(sndFile);
+        sndFile = nullptr;
+
+        return AL_INVALID;
+    }
+
+    const ALsizei byteCount = (ALsizei)(frameCount * sfInfo.channels) * (ALsizei)sizeof(short);
+
+    // Create the OpenAL buffer
+    ALuint alBuffer = AL_INVALID;
+    alGenBuffers(1, &alBuffer);
+    alBufferData(alBuffer, sndFormat, sndBuffer, byteCount, sfInfo.samplerate);
+
+    free(sndBuffer);
+    sndBuffer = nullptr;
+
+    sf_close(sndFile);
+    sndFile = nullptr;
+
+    // Check for errors
+    ALCenum error = alcGetError(GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+
+    if (error != AL_NO_ERROR)
+    {
+        char errorMsg[256];
+        sprintf_s(errorMsg, "Could not create OpenAL buffer for %s", fileName);
+        pFW->CreateMessageBox("Error", errorMsg);
+
+        if (alBuffer && alIsBuffer(alBuffer))
+        {
+            alDeleteBuffers(1, &alBuffer);
+            alBuffer = AL_INVALID;
+        }
+
+        return AL_INVALID;
+    }
+
+    m_alBuffers.insert(make_pair(string(fileName), alBuffer));
+
+    return alBuffer;
+}
+
+Audio::SoundSource* Audio::CreateSoundSource()
+{
+    SoundSource* source = new AudioImplement::SoundSourceImplement();
+    m_pSoundSource.push_back(source);
+    return source;
+}
+
+void Audio::RemoveSoundSource(SoundSource*& soundSource)
+{
+    m_pSoundSource.erase(std::remove(m_pSoundSource.begin(), m_pSoundSource.end(), soundSource), m_pSoundSource.end());
+    soundSource = nullptr;
+}
+
+AudioImplement::SoundSourceImplement::SoundSourceImplement()
+    : m_alSource(AL_INVALID)
+    , m_bRepeat(false)
+{
+    assert(AudioImplement::GetInstance());
+    if (!AudioImplement::GetInstance())
+        return;
+
+    alGenSources(1, &m_alSource);
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+
+    if (m_alSource == AL_INVALID)
+        return;
+
+    alSourcei(m_alSource, AL_SOURCE_RELATIVE, AL_TRUE);
+
+    error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+AudioImplement::SoundSourceImplement::~SoundSourceImplement()
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alDeleteSources(1, &m_alSource);
+    m_alSource = AL_INVALID;
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::SetSoundFile(const char* const sndFileName)
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alSourcei(m_alSource, AL_BUFFER, AudioImplement::GetInstance()->GetOrLoadSound(sndFileName));
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::SetPosition(const Vec3f position)
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alSource3f(m_alSource, AL_POSITION, position[0], position[1], position[2]);
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::Play(const bool repeat /* = false */)
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alSourcePlay(m_alSource);
+    m_bRepeat = repeat;
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::Pause()
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alSourcePause(m_alSource);
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::Stop()
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    alSourceStop(m_alSource);
+    m_bRepeat = false;
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::Update()
+{
+    assert(AudioImplement::GetInstance() && m_alSource != AL_INVALID);
+    if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
+        return;
+
+    if (m_bRepeat)
+    {
+        ALenum sourceState;
+        alGetSourcei(m_alSource, AL_SOURCE_STATE, &sourceState);
+
+        ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+        assert(error == ALC_NO_ERROR);
+
+        if (alGetError() == AL_NO_ERROR && sourceState == AL_STOPPED)
+        {
+            Play(m_bRepeat);
+        }
+    }
+}
+
+Audio* Audio::ms_pInstance = nullptr;
+
 void Audio::CreateInstance()
 {
     assert(ms_pInstance == nullptr);
@@ -410,7 +768,7 @@ void Audio::CreateInstance()
     if (ms_pInstance != nullptr)
         return;
 
-    ms_pInstance = new Audio();
+    ms_pInstance = new AudioImplement();
 }
 
 void Audio::DestoryInstance()
@@ -427,4 +785,13 @@ void Audio::DestoryInstance()
 Audio* const Audio::GetInstance()
 {
     return ms_pInstance;
+}
+
+Audio::~Audio()
+{
+    while (m_pSoundSource.size())
+    {
+        delete m_pSoundSource.back();
+        m_pSoundSource.pop_back();
+    }
 }

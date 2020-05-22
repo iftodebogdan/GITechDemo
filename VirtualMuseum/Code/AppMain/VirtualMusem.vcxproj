@@ -102,7 +102,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -110,7 +110,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -118,7 +118,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,7 +126,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -134,7 +134,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -142,7 +142,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>PreBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,13 +150,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
@@ -165,7 +165,8 @@
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -182,13 +183,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -197,13 +199,13 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -211,7 +213,8 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -230,13 +233,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -247,14 +251,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
       <DelayLoadDLLs>
@@ -264,7 +268,8 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -281,13 +286,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -298,14 +304,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
@@ -314,7 +320,8 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -331,13 +338,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -348,16 +356,16 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
@@ -366,7 +374,8 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -383,13 +392,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -400,16 +410,16 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(Platform)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)VirtualMuseum;$(ProjectDir)VirtualMuseum\RenderScheme;$(ProjectDir)VirtualMuseum\Resources;$(ProjectDir)VirtualMuseum\Utilities;$(ProjectDir)VirtualMuseum\Audio;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\;$(SolutionDir)..\External\OpenALSoft\include;$(SolutionDir)..\External\libsndfile\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\External\OpenALSoft\lib\$(Platform);$(ProjectDir)..\External\libsndfile\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Profile>true</Profile>
-      <AdditionalDependencies>Winmm.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;OpenAL$(PlatformArchitecture).lib;libsndfile$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
     </Link>
@@ -417,7 +427,8 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\soft_$(Platform)_oal.dll" "$(OutDir)"
+      <Command>xcopy /y /d "$(ProjectDir)..\External\OpenALSoft\bin\$(Platform)\OpenAL$(PlatformArchitecture).dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)..\External\libsndfile\bin\$(Platform)\libsndfile$(PlatformArchitecture).dll" "$(OutDir)"
 cd "$(SolutionDir)..\..\Build"
 call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools_win.py" $(Platform)
 echo.
@@ -434,13 +445,14 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)soft_$(Platform)_oal.dll"</Command>
+      <Command>DEL /F /Q "$(OutDir)OpenAL$(PlatformArchitecture).dll"
+DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Deleting DLL dependencies</Message>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(OutDir)soft_$(Platform)_oal.dll</Outputs>
+      <Outputs>$(OutDir)OpenAL$(PlatformArchitecture).dll</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
