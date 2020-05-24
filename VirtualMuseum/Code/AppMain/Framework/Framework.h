@@ -36,6 +36,7 @@ namespace AppFramework
             , m_fDeltaTime(0.f)
             , m_eWindowMode(WM_WINDOWED)
             , m_szTitle("PLACEHOLDER")
+            , m_bIsFocused(false)
         { m_pInstance = this; };
         virtual ~Framework() { m_pInstance = nullptr; };
 
@@ -48,6 +49,8 @@ namespace AppFramework
         const bool  IsFullscreen() const { return m_eWindowMode == WM_FULLSCREEN; }
         const bool  IsWindowed() const { return m_eWindowMode == WM_WINDOWED; }
         const bool  IsBorderlessWindow() const { return m_eWindowMode == WM_BORDERLESS; }
+
+        const bool  IsInFocus() const { return m_bIsFocused; }
 
         // Low level, platform specific functionality required by the application
         virtual void ShowCursor(const bool bShow) = 0;
@@ -83,6 +86,7 @@ namespace AppFramework
 
         virtual float CalculateDeltaTime() = 0; // in seconds
 
+        bool m_bIsFocused;
         bool m_bQuit;
         bool m_bPauseRendering; // Pause rendering when not in focus
         bool m_bPauseUpdate;

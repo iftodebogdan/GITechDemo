@@ -97,8 +97,8 @@ void PBRMaterialTestPass::Draw()
                 GBufferGenerationShader.Enable();
 
                 // It should have only one mesh, but in case we ever change that...
-                for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
-                    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+                //for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+                //    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
 
                 GBufferGenerationShader.Disable();
             }

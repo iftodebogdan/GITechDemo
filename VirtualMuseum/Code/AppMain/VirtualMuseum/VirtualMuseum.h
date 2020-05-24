@@ -50,6 +50,7 @@ namespace VirtualMuseumApp
 
             Vec3f vPos;
             Matrix44f mRot;
+            Vec3f vRot;
             Vec3f vMoveVec;
             float fSpeedFactor;
         };
@@ -60,19 +61,8 @@ namespace VirtualMuseumApp
 
         Scene* const GetScene() const { return m_pScene; }
 
-    private:
-        void UpdateUIFocus();
-
-        Camera m_tCamera;
-        float m_fDeltaTime;
-        gainput::InputMap* m_pInputMap;
-        int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
-        Vec2i m_vLastFrameViewport;
-        bool m_bLastFrameFullscreen, m_bLastFrameBorderless, m_bLastFrameVSync;
-        bool m_bUIHasFocus;
-
-        MUTEX mResInitMutex;
-
+        gainput::InputMap* GetInput() const { return m_pInputMap; }
+        
         enum Command
         {
             APP_CMD_NONE        =           0,                  // No input
@@ -87,8 +77,23 @@ namespace VirtualMuseumApp
             APP_CMD_LEFT        = APP_CMD_BACKWARD      << 1,   // Camera move left
             APP_CMD_RIGHT       = APP_CMD_LEFT          << 1,   // Camera move right
             APP_CMD_SPEED_UP    = APP_CMD_RIGHT         << 1,   // Enable faster moving camera
-            APP_CMD_SLOW_DOWN   = APP_CMD_SPEED_UP      << 1    // Enable slower moving camera
+            APP_CMD_SLOW_DOWN   = APP_CMD_SPEED_UP      << 1,   // Enable slower moving camera
+            APP_CMD_FOCUS_UI    = APP_CMD_SLOW_DOWN     << 1,
+            APP_CMD_INTERACT    = APP_CMD_FOCUS_UI      << 1
         };
+
+    private:
+        void UpdateUIFocus();
+
+        Camera m_tCamera;
+        float m_fDeltaTime;
+        gainput::InputMap* m_pInputMap;
+        int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
+        Vec2i m_vLastFrameViewport;
+        bool m_bLastFrameFullscreen, m_bLastFrameBorderless, m_bLastFrameVSync;
+        bool m_bUIHasFocus;
+
+        MUTEX mResInitMutex;
 
         Scene* m_pScene;
     };

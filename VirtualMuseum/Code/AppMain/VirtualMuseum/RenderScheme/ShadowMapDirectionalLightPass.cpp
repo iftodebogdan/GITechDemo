@@ -75,41 +75,43 @@ void ShadowMapDirectionalLightPass::UpdateSceneAABB()
     // This will be used later when calculating the cascade bounds for the CSM
     RenderConfig::Scene::WorldSpaceAABB.mMin = Vec3f(FLT_MAX, FLT_MAX, FLT_MAX);
     RenderConfig::Scene::WorldSpaceAABB.mMax = Vec3f(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-    for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
-    {
-        const VertexBuffer* const vb = SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer;
-        for (unsigned int vert = 0; vert < vb->GetElementCount(); vert++)
-        {
-            Vec3f vertPos = vb->Position<Vec3f>(vert);
+    //for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
+    //{
+    //    const VertexBuffer* const vb = SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer;
+    //    for (unsigned int vert = 0; vert < vb->GetElementCount(); vert++)
+    //    {
+    //        Vec3f vertPos = vb->Position<Vec3f>(vert);
+    //
+    //        if (vertPos[0] < RenderConfig::Scene::WorldSpaceAABB.mMin[0])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMin[0] = vertPos[0];
+    //        }
+    //        if (vertPos[1] < RenderConfig::Scene::WorldSpaceAABB.mMin[1])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMin[1] = vertPos[1];
+    //        }
+    //        if (vertPos[2] < RenderConfig::Scene::WorldSpaceAABB.mMin[2])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMin[2] = vertPos[2];
+    //        }
+    //
+    //        if (vertPos[0] > RenderConfig::Scene::WorldSpaceAABB.mMax[0])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMax[0] = vertPos[0];
+    //        }
+    //        if (vertPos[1] > RenderConfig::Scene::WorldSpaceAABB.mMax[1])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMax[1] = vertPos[1];
+    //        }
+    //        if (vertPos[2] > RenderConfig::Scene::WorldSpaceAABB.mMax[2])
+    //        {
+    //            RenderConfig::Scene::WorldSpaceAABB.mMax[2] = vertPos[2];
+    //        }
+    //    }
+    //}
 
-            if (vertPos[0] < RenderConfig::Scene::WorldSpaceAABB.mMin[0])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMin[0] = vertPos[0];
-            }
-            if (vertPos[1] < RenderConfig::Scene::WorldSpaceAABB.mMin[1])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMin[1] = vertPos[1];
-            }
-            if (vertPos[2] < RenderConfig::Scene::WorldSpaceAABB.mMin[2])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMin[2] = vertPos[2];
-            }
-
-            if (vertPos[0] > RenderConfig::Scene::WorldSpaceAABB.mMax[0])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMax[0] = vertPos[0];
-            }
-            if (vertPos[1] > RenderConfig::Scene::WorldSpaceAABB.mMax[1])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMax[1] = vertPos[1];
-            }
-            if (vertPos[2] > RenderConfig::Scene::WorldSpaceAABB.mMax[2])
-            {
-                RenderConfig::Scene::WorldSpaceAABB.mMax[2] = vertPos[2];
-            }
-        }
-    }
-
+    RenderConfig::Scene::WorldSpaceAABB.setMin(Point3f(-10.f, 0.f, -10.f));
+    RenderConfig::Scene::WorldSpaceAABB.setMax(Point3f(10.f, 2.f, 10.f));
     RenderConfig::Scene::WorldSpaceAABB.setInitialized();
 }
 
@@ -348,8 +350,8 @@ void ShadowMapDirectionalLightPass::Draw()
                 DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
 
                 // It should have only one mesh, but in case we ever change that...
-                for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
-                    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+                //for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+                //    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
 
                 DepthPassShader.Disable();
 
@@ -374,9 +376,9 @@ void ShadowMapDirectionalLightPass::AllocateResources()
     // RenderPass::AllocateResources() is called from multiple threads along with the
     // various RenderResource::Init() calls. As such, any RenderResource type that is
     // being modified here has to be locked for modification to avoid race conditions.
-    SponzaScene.LockRes();
+    //SponzaScene.LockRes();
     UpdateSceneAABB();
-    SponzaScene.UnlockRes();
+    //SponzaScene.UnlockRes();
 }
 
 void ShadowMapDirectionalLightPass::ReleaseResources()

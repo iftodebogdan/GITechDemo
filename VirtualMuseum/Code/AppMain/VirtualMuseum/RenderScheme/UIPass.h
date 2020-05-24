@@ -120,6 +120,8 @@ namespace VirtualMuseumApp
     public:
         void SetupInput(gainput::InputManager* pInputManager);
 
+        void AddTooltip(const char* const tip, const Vec2f screenPos);
+
     private:
         void SetupUI();
         void GenerateDrawData();
@@ -178,6 +180,14 @@ namespace VirtualMuseumApp
         gainput::InputDeviceMouse* m_pMouseDevice;
 
         GPUProfileMarkerResultHistory m_tGPUProfileMarkerResultHistory;
+
+        struct Tooltip
+        {
+            Tooltip(const char* const tip, const Vec2f screenPos) : text(tip), pos(screenPos) {}
+            std::string text;
+            Vec2f pos;
+        };
+        std::vector<Tooltip> m_tooltips;
     };
 }
 

@@ -89,6 +89,9 @@ public:
 
     static AudioImplement* const GetInstance() { return (AudioImplement*)Audio::GetInstance(); }
 
+    void SetListenerPosition(const Vec3f position);
+    void SetListenerOrientation(const Vec3f lookAt, const Vec3f up);
+
     void BeginUpdate();
     void EndUpdate();
 
@@ -101,6 +104,8 @@ public:
         void Play(const bool repeat = false);
         void Pause();
         void Stop();
+
+        Status GetStatus();
 
     protected:
         SoundSourceImplement();
@@ -151,6 +156,25 @@ AudioImplement::AudioImplement()
 AudioImplement::~AudioImplement()
 {
     DestroyDevice();
+}
+
+void AudioImplement::SetListenerPosition(const Vec3f position)
+{
+    alListenerfv(AL_POSITION, position.getData());
+
+    ALCenum error = alcGetError(GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SetListenerOrientation(const Vec3f lookAt, const Vec3f up)
+{
+    ALfloat orientation[6];
+    memcpy(orientation, lookAt.getData(), sizeof(ALfloat) * 3);
+    memcpy(orientation + 3, up.getData(), sizeof(ALfloat) * 3);
+    alListenerfv(AL_ORIENTATION, orientation);
+
+    ALCenum error = alcGetError(GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
 }
 
 void AudioImplement::BeginUpdate()
@@ -658,7 +682,7 @@ AudioImplement::SoundSourceImplement::SoundSourceImplement()
     if (m_alSource == AL_INVALID)
         return;
 
-    alSourcei(m_alSource, AL_SOURCE_RELATIVE, AL_TRUE);
+    alSourcei(m_alSource, AL_SOURCE_RELATIVE, AL_FALSE);
 
     error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
     assert(error == ALC_NO_ERROR);
@@ -737,6 +761,33 @@ void AudioImplement::SoundSourceImplement::Stop()
 
     ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
     assert(error == ALC_NO_ERROR);
+}
+
+Audio::SoundSource::Status AudioImplement::SoundSourceImplement::GetStatus()
+{
+    ALenum sourceState;
+    alGetSourcei(m_alSource, AL_SOURCE_STATE, &sourceState);
+
+    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    assert(error == ALC_NO_ERROR);
+
+    if (alGetError() == AL_NO_ERROR)
+    {
+        switch (sourceState)
+        {
+        case AL_PLAYING:
+            return PLAYING;
+        case AL_PAUSED:
+            return PAUSED;
+        case AL_STOPPED:
+        case AL_INITIAL:
+            return STOPPED;
+        default:
+            assert(0);
+        }
+    }
+
+    return STOPPED;
 }
 
 void AudioImplement::SoundSourceImplement::Update()

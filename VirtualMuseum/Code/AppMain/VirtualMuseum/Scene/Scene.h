@@ -50,16 +50,26 @@ namespace VirtualMuseumApp
             virtual void Draw(DrawMode drawMode, const unsigned int cascade = ~0u) = 0;
 
             void SetPosition(Vec3f pos) { m_vPosition = pos; }
-            void SetOrientation(float angle) { m_fOrientation = angle; }
+            void SetOrientation(float angle);
+
+            Vec3f GetPosition() const { return m_vPosition; }
+            float GetOrientation() const { return m_fOrientation; }
+
+            virtual void Interact() { m_bIsInteracting = true; }
+            const bool IsInteracting() const { return m_bIsInteracting; }
 
         protected:
             Vec3f m_vPosition;
             float m_fOrientation;
+            bool m_bIsInteracting;
         };
 
         void SetupScene();
         void Update(const float deltaTime);
         void Draw(Actor::DrawMode drawMode, unsigned int cascade = ~0u);
+
+        const vector<Actor*>& GetActors() const { return m_pActors; }
+        const bool IsInteracting() const;
 
     protected:
         vector<Actor*> m_pActors;

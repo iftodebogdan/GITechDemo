@@ -34,10 +34,13 @@ using namespace Synesthesia3D;
 #include "AppResources.h"
 #include "Audio.h"
 #include "VirtualMuseum.h"
+#include "UIPass.h"
 using namespace VirtualMuseumApp;
 
 namespace VirtualMuseumApp
 {
+    extern UIPass UI_PASS;
+
     class Door : public Scene::Actor
     {
     public:
@@ -47,6 +50,8 @@ namespace VirtualMuseumApp
         void Update(const float deltaTime);
         void Draw(DrawMode drawMode, unsigned int cascade = ~0u);
 
+        void Interact();
+
     protected:
         void DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat = nullptr,
             Matrix44f* viewMat = nullptr, Matrix44f* projMat = nullptr);
@@ -55,7 +60,159 @@ namespace VirtualMuseumApp
         Model* m_pModel;
         Audio::SoundSource* m_pOpenSound;
         float m_fDoorAnimation;
+        float m_fInteractAccum;
+        Vec3f m_vPlayerInitialPos;
+        Vec3f m_vPlayerInitialRot;
+        float m_fInitialFoV;
+        float m_fInitialLight;
     };
+
+    class Player : public Scene::Actor
+    {
+    public:
+        Player();
+        ~Player();
+
+        void Update(const float deltaTime);
+        void Draw(DrawMode drawMode, unsigned int cascade = ~0u) {}
+
+        void Interact() {}
+
+    protected:
+        Audio::SoundSource* m_pFootstepsSound;
+    };
+}
+
+Player::Player()
+    : Actor()
+    , m_pFootstepsSound(nullptr)
+{
+    m_pFootstepsSound = Audio::GetInstance()->CreateSoundSource();
+    m_pFootstepsSound->SetSoundFile("sounds/footsteps.wav");
+}
+
+Player::~Player()
+{
+    Audio::GetInstance()->RemoveSoundSource(m_pFootstepsSound);
+}
+
+void Player::Update(const float deltaTime)
+{
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    gainput::InputMap* input = ((VirtualMuseum*)AppMain)->GetInput();
+    auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
+
+    Vec4f pos(0.f, 0.f, 0.f, 1.f);
+    Vec4f lookAt(0.f, 0.f, 1.f, 0.f);
+    Vec4f up(0.f, 1.f, 0.f, 0.f);
+
+    pos = HLSL::BRDFParams->InvViewMat * pos;
+    lookAt = HLSL::BRDFParams->InvViewMat * lookAt;
+    up = HLSL::BRDFParams->InvViewMat * up;
+
+    Audio::GetInstance()->SetListenerPosition(Vec3f(pos[0], pos[1], -pos[2]));
+    Audio::GetInstance()->SetListenerOrientation(
+        makeNormal(Vec3f(lookAt[0], lookAt[1], -lookAt[2])),
+        makeNormal(Vec3f(up[0], up[1], -up[2]))
+    );
+
+    if (!((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
+    {
+        if (input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_FORWARD) ||
+            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_BACKWARD) ||
+            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_LEFT) ||
+            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_RIGHT))
+        {
+            if (m_pFootstepsSound->GetStatus() != Audio::SoundSource::PLAYING)
+            {
+                m_pFootstepsSound->Play(true);
+            }
+        }
+
+        if (!input->GetBool(VirtualMuseum::Command::APP_CMD_FORWARD) &&
+            !input->GetBool(VirtualMuseum::Command::APP_CMD_BACKWARD) &&
+            !input->GetBool(VirtualMuseum::Command::APP_CMD_LEFT) &&
+            !input->GetBool(VirtualMuseum::Command::APP_CMD_RIGHT))
+        {
+            m_pFootstepsSound->Stop();
+        }
+    }
+    else
+    {
+        m_pFootstepsSound->Stop();
+    }
+
+    m_pFootstepsSound->SetPosition(Vec3f(pos[0], 0.f, -pos[2]));
+
+    // "Collision"
+    for (unsigned int i = 0; i < actors.size(); i++)
+    {
+        if (actors[i] != this)
+        {
+            Vec3f posDiff = Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]) - actors[i]->GetPosition();
+            if (lengthSquared(posDiff) < 1)
+            {
+                normalize(posDiff);
+                ((VirtualMuseum*)AppMain)->GetCamera().vPos[0] = -(actors[i]->GetPosition() + posDiff)[0];
+                ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -(actors[i]->GetPosition() + posDiff)[2];
+            }
+        }
+    }
+
+    // Leash
+    const float leashDist = 50.f;
+    if (lengthSquared(Vec3f(pos[0], 0.f, pos[2])) > leashDist * leashDist)
+    {
+        Vec3f leashVec = makeNormal(Vec3f(pos[0], 0.f, pos[2])) * leashDist;
+        ((VirtualMuseum*)AppMain)->GetCamera().vPos[0] = -leashVec[0];
+        ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -leashVec[2];
+    }
+
+    // Interact
+    if (!((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
+    {
+        for (unsigned int i = 0; i < actors.size(); i++)
+        {
+            if (actors[i] != this)
+            {
+                Vec4f actorLookAtWS = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(actors[i]->GetOrientation() - 90.f), 0.f), Type2Type<Matrix44f>()) * Vec4f(0.f, 0.f, 1.f, 0.f);
+                Vec4f actorLookAtVS = HLSL::BRDFParams->ViewMat * actorLookAtWS;
+                float lookAtDot = dot(Vec3f(0.f, 0.f, 1.f), Vec3f(actorLookAtVS[0], actorLookAtVS[1], actorLookAtVS[2]));
+                float actorDot = dot(
+                    Vec3f(actorLookAtWS[0], actorLookAtWS[1], actorLookAtWS[2]),
+                    makeNormal(Vec3f(actors[i]->GetPosition() - Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]))));
+
+                Vec3f posDiff = Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]) - actors[i]->GetPosition();
+                if (lengthSquared(posDiff) <= 1.1f && lookAtDot > 0.5f && actorDot > 0.5f)
+                {
+                    Vec4f tooltipPos =
+                        HLSL::FrameParams->ViewProjMat *
+                        Vec4f(actors[i]->GetPosition()[0], pos[1], actors[i]->GetPosition()[2], 1.f);
+                    tooltipPos = tooltipPos / tooltipPos[3];
+                    if (tooltipPos[0] > -1.f && tooltipPos[0] < 1.f &&
+                        tooltipPos[1] > -1.f && tooltipPos[1] < 1.f &&
+                        tooltipPos[2] > 0.f && tooltipPos[2] < 1.f)
+                    {
+                        tooltipPos *= 0.5f;
+                        tooltipPos[0] += 0.5f;
+                        tooltipPos[1] += 0.5f;
+                        Vec2f finalPos = Vec2f(
+                            tooltipPos[0] * (float)RenderContext->GetDisplayResolution()[0],
+                            (1.f - tooltipPos[1]) * (float)RenderContext->GetDisplayResolution()[1]);
+                        UI_PASS.AddTooltip("Press E to interact", finalPos);
+
+                        if (input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_INTERACT))
+                        {
+                            actors[i]->Interact();
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 Door::Door()
@@ -63,11 +220,15 @@ Door::Door()
     , m_pModel(nullptr)
     , m_pOpenSound(nullptr)
     , m_fDoorAnimation(0.f)
+    , m_fInteractAccum(0.f)
+    , m_vPlayerInitialPos(0.f, 0.f, 0.f)
+    , m_vPlayerInitialRot(0.f, 0.f, 0.f)
+    , m_fInitialFoV(0.f)
+    , m_fInitialLight(0.f)
 {
     m_pModel = &DoorModel;
     m_pOpenSound = Audio::GetInstance()->CreateSoundSource();
     m_pOpenSound->SetSoundFile("sounds/open_door.wav");
-    m_pOpenSound->Play(true);
 }
 
 Door::~Door()
@@ -77,13 +238,64 @@ Door::~Door()
 
 void Door::Update(const float deltaTime)
 {
-    m_fDoorAnimation += deltaTime;
-    m_vPosition[0] = 100.f * sin(m_fDoorAnimation);
-    Vec4f position = m_vPosition;
-    position[3] = 1.f;
-    position = HLSL::BRDFParams->ViewMat * position;
-    position /= 20.f;
-    m_pOpenSound->SetPosition(Vec3f(position[0], position[1], -position[2]));
+    m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
+
+    if (IsInteracting())
+    {
+        m_fInteractAccum += deltaTime;
+
+        const float lerpVal = gmtl::Math::clamp(m_fInteractAccum / 4.4f, 0.f, 1.f);
+        gmtl::Math::lerp(RenderConfig::Camera::FoV, lerpVal, m_fInitialFoV, 1.f);
+
+        if (m_fInteractAccum >= 1.4f)
+        {
+            m_fDoorAnimation += deltaTime / 3.f;
+
+            const float lerpVal = gmtl::Math::clamp(Math::pow(m_fDoorAnimation, 5.f), 0.f, 1.f);
+            gmtl::Math::lerp(RenderConfig::DirectionalLightVolume::MultScatterIntensity, lerpVal, m_fInitialLight, 10000.f);
+        }
+        else
+        {
+            const float lerpVal = gmtl::Math::clamp(m_fInteractAccum, 0.f, 1.f);
+
+            // Adjust position
+            Vec3f targetPos;
+            Vec4f lookAt = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(GetOrientation() + 90.f), 0.f), Type2Type<Matrix44f>()) * Vec4f(0.f, 0.f, 1.f, 0.f);
+            Vec3f finalPos = GetPosition() + Vec3f(lookAt[0], lookAt[1], lookAt[2]);
+            targetPos[1] = m_vPlayerInitialPos[1];
+            gmtl::Math::lerp(targetPos[0], lerpVal, m_vPlayerInitialPos[0], finalPos[0]);
+            gmtl::Math::lerp(targetPos[2], lerpVal, m_vPlayerInitialPos[2], finalPos[2]);
+            ((VirtualMuseum*)AppMain)->GetCamera().vPos = -targetPos;
+
+            // Adjust rotation
+            Vec3f targetRot;
+            gmtl::Math::lerp(targetRot[0], lerpVal, m_vPlayerInitialRot[0], 0.f);
+            gmtl::Math::lerp(targetRot[1], lerpVal, m_vPlayerInitialRot[1], m_fOrientation >= -90.f ? m_fOrientation - 90.f : m_fOrientation + 270.f);
+            ((VirtualMuseum*)AppMain)->GetCamera().vRot = Vec3f(targetRot[0], targetRot[1], 0.f);
+        }
+
+        if (m_fDoorAnimation > 1.f)
+        {
+            m_fDoorAnimation = 0.f;
+            m_bIsInteracting = false;
+            RenderConfig::Camera::FoV = m_fInitialFoV;
+            RenderConfig::DirectionalLightVolume::MultScatterIntensity = m_fInitialLight;
+        }
+    }
+}
+
+void Door::Interact()
+{
+    Actor::Interact();
+
+    m_fInteractAccum = 0.f;
+    m_fDoorAnimation = 0.f;
+    m_pOpenSound->Play(false);
+
+    m_vPlayerInitialPos = -((VirtualMuseum*)AppMain)->GetCamera().vPos;
+    m_vPlayerInitialRot = ((VirtualMuseum*)AppMain)->GetCamera().vRot;
+    m_fInitialFoV = RenderConfig::Camera::FoV;
+    m_fInitialLight = RenderConfig::DirectionalLightVolume::MultScatterIntensity;
 }
 
 void Door::Draw(DrawMode drawMode, unsigned int cascade)
@@ -91,7 +303,7 @@ void Door::Draw(DrawMode drawMode, unsigned int cascade)
     assert(m_pModel);
     if (m_pModel)
     {
-        DrawDoor(m_pModel, drawMode, m_vPosition, m_fOrientation, (gmtl::Math::sin(m_fDoorAnimation) + 1.f) * 0.25f, cascade);
+        DrawDoor(m_pModel, drawMode, m_vPosition, m_fOrientation, m_fDoorAnimation, cascade);
     }
 }
 
@@ -278,6 +490,7 @@ void Door::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, fl
         case 1:
             worldMat[mesh] =
                 makeTrans(pos, Type2Type<Matrix44f>()) * // position door
+                makeScale(1.f / 45.f, Type2Type<Matrix44f>()) * // scale to realistic size
                 makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(rotDeg), 0.f), Type2Type<Matrix44f>()) * // rotate door
                 makeTrans(Vec3f(0, 0, 18.413f), Type2Type<Matrix44f>()) * // revert origin
                 makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(90.f * openDoor), 0.f), Type2Type<Matrix44f>()) * // rotate around hinge
@@ -290,6 +503,7 @@ void Door::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, fl
         default:
             worldMat[mesh] =
                 makeTrans(pos, Type2Type<Matrix44f>()) * // position door
+                makeScale(1.f / 45.f, Type2Type<Matrix44f>()) * // scale to realistic size
                 makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(rotDeg), 0.f), Type2Type<Matrix44f>()); // rotate door
             viewMat[mesh] = currViewMat;
             projMat[mesh] = currProjMat;
@@ -305,20 +519,22 @@ void Door::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, fl
 
 void Scene::SetupScene()
 {
-    // Door 1
-    m_pActors.push_back(new Door());
-    m_pActors.back()->SetPosition(Vec3f(0.f, 0.f, 0.f));
-    m_pActors.back()->SetOrientation(0.f);
+    // Player
+    m_pActors.push_back(new Player());
 
-    // Door 2
-    //m_pActors.push_back(new Door());
-    //m_pActors.back()->SetPosition(Vec3f(0.f, 0.f, 100.f));
-    //m_pActors.back()->SetOrientation(45.f);
-
-    // Door 3
-    //m_pActors.push_back(new Door());
-    //m_pActors.back()->SetPosition(Vec3f(100.f, 0.f, 0.f));
-    //m_pActors.back()->SetOrientation(90.f);
+    // Doors
+    const unsigned int numDoors = 5;
+    const float doorDist = 15.f;
+    const float doorRotRad = Math::PI;
+    for (unsigned int i = 0; i < numDoors; i++)
+    {
+        m_pActors.push_back(new Door());
+        m_pActors.back()->SetPosition(doorDist * Vec3f(
+            Math::sin(doorRotRad * ((float)i / (float)(numDoors - 1)) - doorRotRad * 0.5f),
+            0.f,
+            Math::cos(doorRotRad * ((float)i / (float)(numDoors - 1)) - doorRotRad * 0.5f)));
+        m_pActors.back()->SetOrientation(Math::rad2Deg(doorRotRad) * ((float)i / (float)(numDoors - 1)));
+    }
 }
 
 void Scene::Update(const float deltaTime)
@@ -349,4 +565,34 @@ Scene::~Scene()
 Scene::Actor::Actor()
     : m_vPosition(0.f, 0.f, 0.f)
     , m_fOrientation(0.f)
+    , m_bIsInteracting(false)
 {}
+
+void Scene::Actor::SetOrientation(float angle)
+{
+    while (angle >= 180.f)
+    {
+        angle -= 360.f;
+    }
+
+    while (angle < -180.f)
+    {
+        angle += 360.f;
+    }
+
+    m_fOrientation = angle;
+}
+
+const bool Scene::IsInteracting() const
+{
+    auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
+    for (unsigned int i = 0; i < actors.size(); i++)
+    {
+        if (actors[i]->IsInteracting())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}

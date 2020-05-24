@@ -515,6 +515,21 @@ void UIPass::SetupUI()
     // ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     // ImGui::ShowTestWindow(&show_test_window);
 
+    // Tooltips
+    for (unsigned int i = 0; i < m_tooltips.size(); i++)
+    {
+        ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize;
+        bool showTooltip = true;
+        if (ImGui::Begin("Tooltip", &showTooltip, flags))
+        {
+            //ImGui::SetWindowPos(ImVec2(m_tooltips[i].pos[0], m_tooltips[i].pos[1]));
+            ImGui::TextUnformatted(m_tooltips[i].text.c_str());
+            ImGui::SetWindowPos(ImVec2(m_tooltips[i].pos[0] - (style.WindowPadding.x + ImGui::GetWindowWidth()) * 0.5f, m_tooltips[i].pos[1] - (style.WindowPadding.y + ImGui::GetWindowHeight()) * 0.5f));
+            ImGui::End();
+        }
+    }
+    m_tooltips.clear();
+
     // Main menu + title bar
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_fAlpha);
     if (ImGui::BeginMainMenuBar())
@@ -1291,6 +1306,11 @@ void UIPass::ReleaseResources()
         ResMgr->ReleaseTexture(m_nDummyTexCubeIdx);
         m_pDummyTexCube = nullptr;
     }
+}
+
+void UIPass::AddTooltip(const char* const tip, const Vec2f screenPos)
+{
+    m_tooltips.push_back(Tooltip(tip, screenPos));
 }
 
 void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)

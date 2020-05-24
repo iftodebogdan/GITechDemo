@@ -104,8 +104,10 @@ bool VirtualMuseum::Init(void* hWnd)
         return false;
 
     // Set initial camera position
-    m_tCamera.vPos = Vec3f(-110.f, -55.f, 70.f);
-    m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, 0.4f, 0.f), Type2Type<Matrix44f>());
+    //m_tCamera.vPos = Vec3f(-6.f, -1.5f, 2.f);
+    //m_tCamera.vRot = Vec3f(0.f, -Math::rad2Deg(0.65f), 0.f);
+    m_tCamera.vPos = Vec3f(0.f, -1.5f, 0.f);
+    m_tCamera.vRot = Vec3f(0.f, 0.f, 0.f);
 
     // Setup Gainput
     if (m_pInputManager)
@@ -129,6 +131,8 @@ bool VirtualMuseum::Init(void* hWnd)
             m_pInputMap->MapBool(APP_CMD_RIGHT, keyboardId, gainput::KeyD);
             m_pInputMap->MapBool(APP_CMD_SPEED_UP, keyboardId, gainput::KeyShiftL);
             m_pInputMap->MapBool(APP_CMD_SLOW_DOWN, keyboardId, gainput::KeyCtrlL);
+            m_pInputMap->MapBool(APP_CMD_FOCUS_UI, keyboardId, gainput::KeyMenu);
+            m_pInputMap->MapBool(APP_CMD_INTERACT, keyboardId, gainput::KeyE);
         }
 
         // Setup UI key bindings
@@ -466,7 +470,7 @@ void VirtualMuseum::Update(const float fDeltaTime)
 
     // Handle user input
     unsigned int cmd = APP_CMD_NONE;
-    if (m_pInputManager && m_pInputMap && !IsUIInFocus())
+    if (m_pInputManager && m_pInputMap && !IsUIInFocus() && !((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
     {
         // Handle user input for camera movement
         if (m_pInputMap->GetBool(APP_CMD_FORWARD))
@@ -483,12 +487,14 @@ void VirtualMuseum::Update(const float fDeltaTime)
             cmd |= APP_CMD_SLOW_DOWN;
 
         // Handle user input for camera rotation
-        if (m_pInputMap->GetBool(APP_CMD_CTRL_YAW))
-            cmd |= APP_CMD_CTRL_YAW;
-        if (m_pInputMap->GetBool(APP_CMD_CTRL_PITCH))
-            cmd |= APP_CMD_CTRL_PITCH;
-        if (m_pInputMap->GetBool(APP_CMD_CTRL_ROLL))
-            cmd |= APP_CMD_CTRL_ROLL;
+        //if (m_pInputMap->GetBool(APP_CMD_CTRL_YAW))
+        //    cmd |= APP_CMD_CTRL_YAW;
+        //if (m_pInputMap->GetBool(APP_CMD_CTRL_PITCH))
+        //    cmd |= APP_CMD_CTRL_PITCH;
+        //if (m_pInputMap->GetBool(APP_CMD_CTRL_ROLL))
+        //    cmd |= APP_CMD_CTRL_ROLL;
+
+        cmd |= APP_CMD_CTRL_YAW | APP_CMD_CTRL_PITCH | APP_CMD_CTRL_ROLL;
     }
 
     // If any mouse button was just pressed, the mouse is unlikely to be in
@@ -521,14 +527,28 @@ void VirtualMuseum::Update(const float fDeltaTime)
     }
 
     // Update camera rotation matrix
-    if (cmd & APP_CMD_CTRL_PITCH)
-        m_tCamera.mRot = makeRot(EulerAngleXYZf(Math::deg2Rad(-rotateDelta[0]), 0.f, 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+    static bool wasInFocus = false;
+    if (pFW->IsInFocus() && wasInFocus)
+    {
+        if (cmd & APP_CMD_CTRL_PITCH || cmd & APP_CMD_CTRL_YAW || cmd & APP_CMD_CTRL_ROLL)
+        {
+            m_tCamera.vRot += rotateDelta;
 
-    if (cmd & APP_CMD_CTRL_YAW)
-        m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(-rotateDelta[1]), 0.f), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+            while (m_tCamera.vRot[1] >= 180.f)
+            {
+                m_tCamera.vRot[1] -= 360.f;
+            }
 
-    if (cmd & APP_CMD_CTRL_ROLL)
-        m_tCamera.mRot = makeRot(EulerAngleXYZf(0.f, 0.f, Math::deg2Rad(rotateDelta[2])), Type2Type<Matrix44f>()) * m_tCamera.mRot;
+            while (m_tCamera.vRot[1] < -180.f)
+            {
+                m_tCamera.vRot[1] += 360.f;
+            }
+
+            m_tCamera.vRot[0] = gmtl::Math::clamp(m_tCamera.vRot[0], -60.f, 60.f);
+        }
+    }
+    wasInFocus = pFW->IsInFocus() && !IsUIInFocus();
+    m_tCamera.mRot = makeRot(EulerAngleXYZf(Math::deg2Rad(-m_tCamera.vRot[0]), Math::deg2Rad(-m_tCamera.vRot[1]), 0.f), Type2Type<Matrix44f>());
 
     // Update camera position vector
     if (cmd & APP_CMD_FORWARD)
@@ -553,13 +573,15 @@ void VirtualMuseum::Update(const float fDeltaTime)
         m_tCamera.fSpeedFactor = 1.f;
 
     gmtl::normalize(m_tCamera.vMoveVec);
+    m_tCamera.vMoveVec =
+        Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], 0.f, m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
+        Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], 0.f, m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
+    normalize(m_tCamera.vMoveVec);
     m_tCamera.vMoveVec *= RenderConfig::Camera::MoveSpeed * m_tCamera.fSpeedFactor * pFW->GetDeltaTime();
-    m_tCamera.vPos -=
-        Vec3f(m_tCamera.mRot[2][0] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][1] * m_tCamera.vMoveVec[2], m_tCamera.mRot[2][2] * m_tCamera.vMoveVec[2]) +
-        Vec3f(m_tCamera.mRot[0][0] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][1] * m_tCamera.vMoveVec[0], m_tCamera.mRot[0][2] * m_tCamera.vMoveVec[0]);
+    m_tCamera.vPos -= m_tCamera.vMoveVec;
 
     // Update mouse cursor
-    if (cmd & (APP_CMD_CTRL_PITCH | APP_CMD_CTRL_YAW | APP_CMD_CTRL_ROLL))
+    if (pFW->IsInFocus() && !IsUIInFocus())
     {
         int wLeft, wTop, wRight, wBottom;
         pFW->GetWindowArea(wLeft, wTop, wRight, wBottom);
@@ -731,22 +753,27 @@ void VirtualMuseum::UpdateUIFocus()
             }
         }
 
-        if (numButtonsDown == 0)
+        //if (numButtonsDown == 0)
+        //{
+        //    if (IsUIInFocus())
+        //    {
+        //        if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemActive())
+        //        {
+        //            m_bUIHasFocus = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (ImGui::IsAnyWindowHovered() || ImGui::IsAnyItemActive())
+        //        {
+        //            m_bUIHasFocus = true;
+        //        }
+        //    }
+        //}
+
+        if (m_pInputMap->GetBoolIsNew(APP_CMD_FOCUS_UI))
         {
-            if (IsUIInFocus())
-            {
-                if (!ImGui::IsAnyWindowHovered() && !ImGui::IsAnyItemActive())
-                {
-                    m_bUIHasFocus = false;
-                }
-            }
-            else
-            {
-                if (ImGui::IsAnyWindowHovered() || ImGui::IsAnyItemActive())
-                {
-                    m_bUIHasFocus = true;
-                }
-            }
+            m_bUIHasFocus = !m_bUIHasFocus;
         }
     }
 

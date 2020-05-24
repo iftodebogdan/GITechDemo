@@ -111,9 +111,9 @@ void psmain(VSOut input, out PSOut output)
     const float distFactor = smoothstep(PostProcessingParams.ZFar, 0, t);
 
     output.Diffuse = tex2D(Terrain_Diffuse, texCoord) * distFactor;
-    output.Normal = EncodeNormal(lerp(float3(0, 1, 0), normal, distFactor));
-    output.Material = lerp(float4(0, 1, 0, 0), float4(tex2D(Terrain_MatType, texCoord).r, tex2D(Terrain_Roughness, texCoord).r, 0.f, 0.f), distFactor);
-    output.VertexNormal = EncodeNormal(lerp(float3(0, 1, 0), input.Normal, distFactor));
+    output.Normal = EncodeNormal(normal); // EncodeNormal(lerp(float3(0, 1, 0), normal, distFactor));
+    output.Material = float4(tex2D(Terrain_MatType, texCoord).r, lerp(1, tex2D(Terrain_Roughness, texCoord).r, distFactor), 0.f, 0.f); // lerp(float4(0, 1, 0, 0), float4(tex2D(Terrain_MatType, texCoord).r, tex2D(Terrain_Roughness, texCoord).r, 0.f, 0.f), distFactor);
+    output.VertexNormal = EncodeNormal(input.Normal); // EncodeNormal(lerp(float3(0, 1, 0), input.Normal, distFactor));
     output.Depth = terrainPosProj.z;
 }
 #endif // PIXEL

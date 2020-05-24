@@ -47,6 +47,15 @@ namespace VirtualMuseumApp
             virtual void Pause() = 0;
             virtual void Stop() = 0;
 
+            enum Status
+            {
+                PLAYING,
+                PAUSED,
+                STOPPED
+            };
+
+            virtual Status GetStatus() = 0;
+
         protected:
             SoundSource() {}
             virtual ~SoundSource() {}
@@ -58,6 +67,9 @@ namespace VirtualMuseumApp
 
         SoundSource* CreateSoundSource();
         void RemoveSoundSource(SoundSource*& soundSource);
+
+        virtual void SetListenerPosition(const Vec3f position) = 0;
+        virtual void SetListenerOrientation(const Vec3f lookAt, const Vec3f up) = 0;
 
         virtual void BeginUpdate() = 0;
         virtual void EndUpdate() = 0;

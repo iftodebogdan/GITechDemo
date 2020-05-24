@@ -87,14 +87,14 @@ void RSMDirectionalLightPass::Draw()
 
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
-    {
-        HLSL::RSMCapture_Diffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
-
-        RSMCaptureShader.Enable();
-        RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
-        RSMCaptureShader.Disable();
-    }
+    //for (unsigned int mesh = 0; mesh < SponzaScene.GetModel()->arrMesh.size(); mesh++)
+    //{
+    //    HLSL::RSMCapture_Diffuse = SponzaScene.GetTexture(Synesthesia3D::Model::TextureDesc::TT_DIFFUSE, SponzaScene.GetModel()->arrMesh[mesh]->nMaterialIdx);
+    //
+    //    RSMCaptureShader.Enable();
+    //    RenderContext->DrawVertexBuffer(SponzaScene.GetModel()->arrMesh[mesh]->pVertexBuffer);
+    //    RSMCaptureShader.Disable();
+    //}
 
     RSMBuffer.Disable();
 }

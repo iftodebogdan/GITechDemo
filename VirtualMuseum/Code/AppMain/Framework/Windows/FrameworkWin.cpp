@@ -402,13 +402,13 @@ LRESULT CALLBACK FrameworkWin::WndProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_SETFOCUS:
     case WM_ACTIVATE:
     {
-        bool bOutOfFocus = (message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
+        m_bIsFocused = !(message == WM_KILLFOCUS || (message == WM_ACTIVATE && LOWORD(wParam) == WA_INACTIVE));
 #if !defined(_DEBUG) && !defined(_PROFILE)
-        PauseRendering(bOutOfFocus);
+        PauseRendering(!m_bIsFocused);
 #endif
-        if (IsFullscreen() && bOutOfFocus)
+        if (IsFullscreen() && !m_bIsFocused)
             OnSetWindowedCursor();
-        else if (IsFullscreen() && !bOutOfFocus)
+        else if (IsFullscreen() && m_bIsFocused)
             OnSetFullscreenCursor();
 
         // Pass focus messages to input handler so that it resets input state
