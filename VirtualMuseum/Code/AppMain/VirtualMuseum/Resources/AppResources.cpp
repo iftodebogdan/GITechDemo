@@ -350,26 +350,26 @@ namespace VirtualMuseumApp
     // PBR Materials //
     ///////////////////
 
-    CREATE_PBR_MATERIAL(BambooWood,                     "bamboo_wood");
-    CREATE_PBR_MATERIAL(CrateredRock,                   "cratered_rock");
-    CREATE_PBR_MATERIAL(DirtySlightlyPittedConcrete,    "dirty_slightly_pitted_concrete");
-    CREATE_PBR_MATERIAL(DryBrownDirt,                   "dry_brown_dirt");
+    //CREATE_PBR_MATERIAL(BambooWood,                     "bamboo_wood");
+    //CREATE_PBR_MATERIAL(CrateredRock,                   "cratered_rock");
+    //CREATE_PBR_MATERIAL(DirtySlightlyPittedConcrete,    "dirty_slightly_pitted_concrete");
+    //CREATE_PBR_MATERIAL(DryBrownDirt,                   "dry_brown_dirt");
     CREATE_PBR_MATERIAL(GreasyWornMetal,                "greasy_worn_metal");
-    CREATE_PBR_MATERIAL(OctogonStoneCobble,             "octogon_stone_cobble");
-    CREATE_PBR_MATERIAL(PaintPeelingConcrete,           "paint_peeling_concrete");
-    CREATE_PBR_MATERIAL(PolishedGranite,                "polished_granite");
-    CREATE_PBR_MATERIAL(PolishedSpeckledMarble,         "polished_speckled_marble");
-    CREATE_PBR_MATERIAL(RockInfusedWithCopper,          "rock_infused_with_copper");
-    CREATE_PBR_MATERIAL(RustedStreakedIron,             "rusted_streaked_iron");
-    CREATE_PBR_MATERIAL(RustedIron,                     "rusted_iron");
-    CREATE_PBR_MATERIAL(ScuffedAluminum,                "scuffed_aluminum");
-    CREATE_PBR_MATERIAL(ScuffedCopper,                  "scuffed_copper");
-    CREATE_PBR_MATERIAL(ScuffedGold,                    "scuffed_gold");
-    CREATE_PBR_MATERIAL(ScuffedIron,                    "scuffed_iron");
-    CREATE_PBR_MATERIAL(ScuffedTitanium,                "scuffed_titanium");
-    CREATE_PBR_MATERIAL(WornOutOldBrickWall,            "worn_out_old_brick_wall");
-    CREATE_PBR_MATERIAL(WornPaintedCement,              "worn_painted_cement");
-    CREATE_PBR_MATERIAL(WornScuffedPlastic,             "worn_scuffed_plastic");
+    //CREATE_PBR_MATERIAL(OctogonStoneCobble,             "octogon_stone_cobble");
+    //CREATE_PBR_MATERIAL(PaintPeelingConcrete,           "paint_peeling_concrete");
+    //CREATE_PBR_MATERIAL(PolishedGranite,                "polished_granite");
+    //CREATE_PBR_MATERIAL(PolishedSpeckledMarble,         "polished_speckled_marble");
+    //CREATE_PBR_MATERIAL(RockInfusedWithCopper,          "rock_infused_with_copper");
+    //CREATE_PBR_MATERIAL(RustedStreakedIron,             "rusted_streaked_iron");
+    //CREATE_PBR_MATERIAL(RustedIron,                     "rusted_iron");
+    //CREATE_PBR_MATERIAL(ScuffedAluminum,                "scuffed_aluminum");
+    //CREATE_PBR_MATERIAL(ScuffedCopper,                  "scuffed_copper");
+    //CREATE_PBR_MATERIAL(ScuffedGold,                    "scuffed_gold");
+    //CREATE_PBR_MATERIAL(ScuffedIron,                    "scuffed_iron");
+    //CREATE_PBR_MATERIAL(ScuffedTitanium,                "scuffed_titanium");
+    //CREATE_PBR_MATERIAL(WornOutOldBrickWall,            "worn_out_old_brick_wall");
+    //CREATE_PBR_MATERIAL(WornPaintedCement,              "worn_painted_cement");
+    //CREATE_PBR_MATERIAL(WornScuffedPlastic,             "worn_scuffed_plastic");
 
     //------------------------------------------------------
 
@@ -738,7 +738,7 @@ namespace VirtualMuseumApp
         "Terrain",
         RenderConfig::Terrain::MaterialIndex,
         1,
-        4);
+        0);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Terrain texture scale X",

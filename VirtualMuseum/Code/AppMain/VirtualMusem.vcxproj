@@ -263,6 +263,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <LargeAddressAware>true</LargeAddressAware>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
+      <ImageHasSafeExceptionHandlers />
     </Link>
     <CustomBuildStep />
     <CustomBuildStep />
@@ -369,6 +370,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
       <LargeAddressAware>true</LargeAddressAware>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
+      <ImageHasSafeExceptionHandlers />
     </Link>
     <CustomBuildStep />
     <CustomBuildStep />

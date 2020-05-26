@@ -334,30 +334,30 @@ void ShadowMapDirectionalLightPass::Draw()
         // view frustum, but we don't have a big enough scene to care at the moment
         ((VirtualMuseum*)AppMain)->GetScene()->Draw(Scene::Actor::SHADOW, cascade);
 
-        const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
-        const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
-
-        for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
-        {
-            if (arrRenderResourceList[resIdx] && arrRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
-            {
-                const PBRMaterial* const pbrMaterial = (PBRMaterial*)arrRenderResourceList[resIdx];
-
-                PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
-
-                HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
-
-                DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
-
-                // It should have only one mesh, but in case we ever change that...
-                //for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
-                //    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
-
-                DepthPassShader.Disable();
-
-                POP_PROFILE_MARKER();
-            }
-        }
+        //const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
+        //const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
+        //
+        //for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
+        //{
+        //    if (arrRenderResourceList[resIdx] && arrRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
+        //    {
+        //        const PBRMaterial* const pbrMaterial = (PBRMaterial*)arrRenderResourceList[resIdx];
+        //
+        //        PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
+        //
+        //        HLSL::DepthPassParams->WorldViewProjMat = HLSL::FrameParams->DirectionalLightViewProjMat[cascade] * PBRMaterialTestPass::CalculateWorldMatrixForSphereIdx(pbrMatIdx++, pbrMaterialCount);
+        //
+        //        DepthPassShader.Enable(); // Set the shader again in order to update f44WorldViewProjMat
+        //
+        //        // It should have only one mesh, but in case we ever change that...
+        //        //for (unsigned int mesh = 0; mesh < SphereModel.GetModel()->arrMesh.size(); mesh++)
+        //        //    RenderContext->DrawVertexBuffer(SphereModel.GetModel()->arrMesh[mesh]->pVertexBuffer);
+        //
+        //        DepthPassShader.Disable();
+        //
+        //        POP_PROFILE_MARKER();
+        //    }
+        //}
 
         POP_PROFILE_MARKER();
     }
