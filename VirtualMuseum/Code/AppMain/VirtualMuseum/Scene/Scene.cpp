@@ -29,6 +29,7 @@ using namespace gmtl;
 using namespace Synesthesia3D;
 
 #include "Scene.h"
+#include "SceneData.h"
 
 #include "RenderResource.h"
 #include "AppResources.h"
@@ -44,7 +45,7 @@ namespace VirtualMuseumApp
     class Door : public Scene::Actor
     {
     public:
-        Door();
+        Door(const unsigned int doorId);
         ~Door();
 
         void Update(const float deltaTime);
@@ -57,14 +58,25 @@ namespace VirtualMuseumApp
             Matrix44f* viewMat = nullptr, Matrix44f* projMat = nullptr);
         void DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade = ~0u);
 
+        enum InteractState
+        {
+            IS_ADJUST_PLAYER,
+            IS_OPEN_DOOR,
+            IS_FADE_FROM_WHITE
+        };
+
         Model* m_pModel;
         Audio::SoundSource* m_pOpenSound;
+        Audio::SoundSource* m_pHallSound;
         float m_fDoorAnimation;
         float m_fInteractAccum;
         Vec3f m_vPlayerInitialPos;
         Vec3f m_vPlayerInitialRot;
         float m_fInitialFoV;
         float m_fInitialLight;
+        InteractState m_eInteractState;
+        bool m_bIsInRoom;
+        float m_fHallSoundGain;
     };
 
     class Player : public Scene::Actor
@@ -105,30 +117,27 @@ void Player::Update(const float deltaTime)
     gainput::InputMap* input = ((VirtualMuseum*)AppMain)->GetInput();
     auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
 
-    Vec4f pos(0.f, 0.f, 0.f, 1.f);
-    Vec4f lookAt(0.f, 0.f, 1.f, 0.f);
-    Vec4f up(0.f, 1.f, 0.f, 0.f);
-
-    pos = HLSL::BRDFParams->InvViewMat * pos;
-    lookAt = HLSL::BRDFParams->InvViewMat * lookAt;
-    up = HLSL::BRDFParams->InvViewMat * up;
-
-    Audio::GetInstance()->SetListenerPosition(Vec3f(pos[0], pos[1], -pos[2]));
-    Audio::GetInstance()->SetListenerOrientation(
-        makeNormal(Vec3f(lookAt[0], lookAt[1], -lookAt[2])),
-        makeNormal(Vec3f(up[0], up[1], -up[2]))
-    );
+    Vec3f pos = -((VirtualMuseum*)AppMain)->GetCamera().vPos;
 
     if (!((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
     {
-        if (input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_FORWARD) ||
-            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_BACKWARD) ||
-            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_LEFT) ||
-            input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_RIGHT))
+        if (input->GetBool(VirtualMuseum::Command::APP_CMD_FORWARD) ||
+            input->GetBool(VirtualMuseum::Command::APP_CMD_BACKWARD) ||
+            input->GetBool(VirtualMuseum::Command::APP_CMD_LEFT) ||
+            input->GetBool(VirtualMuseum::Command::APP_CMD_RIGHT))
         {
             if (m_pFootstepsSound->GetStatus() != Audio::SoundSource::PLAYING)
             {
                 m_pFootstepsSound->Play(true);
+            }
+
+            if (input->GetBool(VirtualMuseum::Command::APP_CMD_SPEED_UP))
+            {
+                m_pFootstepsSound->SetPitch(2.f);
+            }
+            else
+            {
+                m_pFootstepsSound->SetPitch(1.f);
             }
         }
 
@@ -150,7 +159,7 @@ void Player::Update(const float deltaTime)
     // "Collision"
     for (unsigned int i = 0; i < actors.size(); i++)
     {
-        if (actors[i] != this)
+        if (actors[i]->IsActive())
         {
             Vec3f posDiff = Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]) - actors[i]->GetPosition();
             if (lengthSquared(posDiff) < 1)
@@ -158,12 +167,13 @@ void Player::Update(const float deltaTime)
                 normalize(posDiff);
                 ((VirtualMuseum*)AppMain)->GetCamera().vPos[0] = -(actors[i]->GetPosition() + posDiff)[0];
                 ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -(actors[i]->GetPosition() + posDiff)[2];
+                m_pFootstepsSound->Stop();
             }
         }
     }
 
     // Leash
-    const float leashDist = 50.f;
+    const float leashDist = 25.f;
     if (lengthSquared(Vec3f(pos[0], 0.f, pos[2])) > leashDist * leashDist)
     {
         Vec3f leashVec = makeNormal(Vec3f(pos[0], 0.f, pos[2])) * leashDist;
@@ -171,12 +181,26 @@ void Player::Update(const float deltaTime)
         ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -leashVec[2];
     }
 
+    // Listener pos and rot
+    pos = -((VirtualMuseum*)AppMain)->GetCamera().vPos;
+    Vec4f lookAt(0.f, 0.f, 1.f, 0.f);
+    Vec4f up(0.f, 1.f, 0.f, 0.f);
+
+    lookAt = HLSL::BRDFParams->InvViewMat * lookAt;
+    up = HLSL::BRDFParams->InvViewMat * up;
+
+    Audio::GetInstance()->SetListenerPosition(Vec3f(pos[0], pos[1], -pos[2]));
+    Audio::GetInstance()->SetListenerOrientation(
+        makeNormal(Vec3f(lookAt[0], lookAt[1], -lookAt[2])),
+        makeNormal(Vec3f(up[0], up[1], -up[2]))
+    );
+
     // Interact
     if (!((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
     {
         for (unsigned int i = 0; i < actors.size(); i++)
         {
-            if (actors[i] != this)
+            if (actors[i]->IsActive())
             {
                 Vec4f actorLookAtWS = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(actors[i]->GetOrientation() - 90.f), 0.f), Type2Type<Matrix44f>()) * Vec4f(0.f, 0.f, 1.f, 0.f);
                 Vec4f actorLookAtVS = HLSL::BRDFParams->ViewMat * actorLookAtWS;
@@ -215,72 +239,204 @@ void Player::Update(const float deltaTime)
     }
 }
 
-Door::Door()
+Door::Door(const unsigned int sceneDataId)
     : Actor()
     , m_pModel(nullptr)
     , m_pOpenSound(nullptr)
+    , m_pHallSound(nullptr)
     , m_fDoorAnimation(0.f)
     , m_fInteractAccum(0.f)
     , m_vPlayerInitialPos(0.f, 0.f, 0.f)
     , m_vPlayerInitialRot(0.f, 0.f, 0.f)
     , m_fInitialFoV(0.f)
     , m_fInitialLight(0.f)
+    , m_eInteractState(IS_ADJUST_PLAYER)
+    , m_bIsInRoom(false)
+    , m_fHallSoundGain(0.f)
 {
     m_pModel = &DoorModel;
+
     m_pOpenSound = Audio::GetInstance()->CreateSoundSource();
     m_pOpenSound->SetSoundFile("sounds/open_door.wav");
+    m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
+
+    m_pHallSound = Audio::GetInstance()->CreateSoundSource();
+    m_pHallSound->SetSoundFile(SceneData::GetSceneData()[sceneDataId].hallSnd.c_str());
+    m_pHallSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
+    m_pHallSound->SetFilterGain(0.f, 0.f);
 }
 
 Door::~Door()
 {
     Audio::GetInstance()->RemoveSoundSource(m_pOpenSound);
+    Audio::GetInstance()->RemoveSoundSource(m_pHallSound);
 }
 
 void Door::Update(const float deltaTime)
 {
-    m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
-
-    if (IsInteracting())
+    if(IsActive())
     {
-        m_fInteractAccum += deltaTime;
+        m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
 
-        const float lerpVal = gmtl::Math::clamp(m_fInteractAccum / 4.4f, 0.f, 1.f);
-        gmtl::Math::lerp(RenderConfig::Camera::FoV, lerpVal, m_fInitialFoV, 1.f);
-
-        if (m_fInteractAccum >= 1.4f)
+        if (!m_bIsInRoom)
         {
-            m_fDoorAnimation += deltaTime / 3.f;
-
-            const float lerpVal = gmtl::Math::clamp(Math::pow(m_fDoorAnimation, 5.f), 0.f, 1.f);
-            gmtl::Math::lerp(RenderConfig::DirectionalLightVolume::MultScatterIntensity, lerpVal, m_fInitialLight, 10000.f);
+            m_pHallSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
         }
         else
         {
-            const float lerpVal = gmtl::Math::clamp(m_fInteractAccum, 0.f, 1.f);
-
-            // Adjust position
-            Vec3f targetPos;
-            Vec4f lookAt = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(GetOrientation() + 90.f), 0.f), Type2Type<Matrix44f>()) * Vec4f(0.f, 0.f, 1.f, 0.f);
-            Vec3f finalPos = GetPosition() + Vec3f(lookAt[0], lookAt[1], lookAt[2]);
-            targetPos[1] = m_vPlayerInitialPos[1];
-            gmtl::Math::lerp(targetPos[0], lerpVal, m_vPlayerInitialPos[0], finalPos[0]);
-            gmtl::Math::lerp(targetPos[2], lerpVal, m_vPlayerInitialPos[2], finalPos[2]);
-            ((VirtualMuseum*)AppMain)->GetCamera().vPos = -targetPos;
-
-            // Adjust rotation
-            Vec3f targetRot;
-            gmtl::Math::lerp(targetRot[0], lerpVal, m_vPlayerInitialRot[0], 0.f);
-            gmtl::Math::lerp(targetRot[1], lerpVal, m_vPlayerInitialRot[1], m_fOrientation >= -90.f ? m_fOrientation - 90.f : m_fOrientation + 270.f);
-            ((VirtualMuseum*)AppMain)->GetCamera().vRot = Vec3f(targetRot[0], targetRot[1], 0.f);
+            Vec3f camPos = -((VirtualMuseum*)AppMain)->GetCamera().vPos;
+            m_pHallSound->SetPosition(Vec3f(camPos[0], m_vPosition[1], -camPos[2]));
         }
 
-        if (m_fDoorAnimation > 1.f)
+        if (m_fHallSoundGain < 1.f)
         {
-            m_fDoorAnimation = 0.f;
-            m_bIsInteracting = false;
-            RenderConfig::Camera::FoV = m_fInitialFoV;
-            RenderConfig::DirectionalLightVolume::MultScatterIntensity = m_fInitialLight;
+            m_fHallSoundGain += deltaTime / 3.f;
+            m_fHallSoundGain = gmtl::Math::clamp(m_fHallSoundGain, 0.f, 1.f);
+            m_pHallSound->SetFilterGain(m_fHallSoundGain, 0.f);
         }
+
+        if (m_pHallSound->GetStatus() != Audio::SoundSource::PLAYING)
+        {
+            m_pHallSound->Play(true);
+        }
+
+        if (IsInteracting())
+        {
+            m_fInteractAccum += deltaTime;
+
+            switch (m_eInteractState)
+            {
+                case IS_ADJUST_PLAYER:
+                {
+                    gmtl::Math::lerp(RenderConfig::Camera::FoV, gmtl::Math::clamp(m_fInteractAccum / 4.4f, 0.f, 1.f), m_fInitialFoV, 1.f);
+
+                    const float lerpVal = gmtl::Math::clamp(m_fInteractAccum, 0.f, 1.f);
+
+                    // Adjust position
+                    Vec3f targetPos;
+                    Vec4f lookAt = makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(GetOrientation() + 90.f), 0.f), Type2Type<Matrix44f>()) * Vec4f(0.f, 0.f, 1.f, 0.f);
+                    Vec3f finalPos = GetPosition() + Vec3f(lookAt[0], lookAt[1], lookAt[2]);
+                    targetPos[1] = m_vPlayerInitialPos[1];
+                    gmtl::Math::lerp(targetPos[0], lerpVal, m_vPlayerInitialPos[0], finalPos[0]);
+                    gmtl::Math::lerp(targetPos[2], lerpVal, m_vPlayerInitialPos[2], finalPos[2]);
+                    ((VirtualMuseum*)AppMain)->GetCamera().vPos = -targetPos;
+
+                    // Adjust rotation
+                    Vec3f targetRot;
+                    gmtl::Math::lerp(targetRot[0], lerpVal, m_vPlayerInitialRot[0], 0.f);
+                    gmtl::Math::lerp(targetRot[1], lerpVal, m_vPlayerInitialRot[1], m_fOrientation >= -90.f ? m_fOrientation - 90.f : m_fOrientation + 270.f);
+                    ((VirtualMuseum*)AppMain)->GetCamera().vRot = Vec3f(targetRot[0], targetRot[1], 0.f);
+
+                    if (m_fInteractAccum >= 1.4f)
+                    {
+                        m_eInteractState = IS_OPEN_DOOR;
+
+                        if (!m_bIsInRoom)
+                        {
+                            auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
+                            for (unsigned int i = 0; i < actors.size(); i++)
+                            {
+                                if (actors[i] != this)
+                                {
+                                    actors[i]->MakeActive(false);
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+                }
+
+                case IS_OPEN_DOOR:
+                {
+                    gmtl::Math::lerp(RenderConfig::Camera::FoV, gmtl::Math::clamp(m_fInteractAccum / 4.4f, 0.f, 1.f), m_fInitialFoV, 1.f);
+
+                    m_fDoorAnimation += deltaTime / 3.f;
+
+                    float lerpVal = gmtl::Math::clamp(m_fDoorAnimation, 0.f, 1.f);
+                    gmtl::Math::lerp(RenderConfig::DirectionalLightVolume::MultScatterIntensity, Math::pow(lerpVal, 5.f), m_fInitialLight, 10000.f);
+
+                    Vec3f hallSoundPos;
+                    lerpVal = m_bIsInRoom ? gmtl::Math::pow(1.f - lerpVal, 2.f) : lerpVal;
+                    gmtl::Math::lerp(hallSoundPos[0], lerpVal, m_vPosition[0], -((VirtualMuseum*)AppMain)->GetCamera().vPos[0]);
+                    //gmtl::Math::lerp(hallSoundPos[1], lerpVal, m_vPosition[1], -((VirtualMuseum*)AppMain)->GetCamera().vPos[1]);
+                    hallSoundPos[1] = m_vPosition[1];
+                    gmtl::Math::lerp(hallSoundPos[2], lerpVal, -m_vPosition[2], ((VirtualMuseum*)AppMain)->GetCamera().vPos[2]);
+                    m_pHallSound->SetPosition(hallSoundPos);
+                    m_pHallSound->SetFilterGain(m_fHallSoundGain, lerpVal);
+
+                    if (m_fDoorAnimation >= 1.f)
+                    {
+                        if (m_bIsInRoom)
+                        {
+                            Vec3f currRot = ((VirtualMuseum*)AppMain)->GetCamera().vRot;
+                            currRot[1] += 180.f;
+                            ((VirtualMuseum*)AppMain)->GetCamera().vRot = currRot;
+                        }
+                        else
+                        {
+                            Vec3f currPos = ((VirtualMuseum*)AppMain)->GetCamera().vPos;
+                            ((VirtualMuseum*)AppMain)->GetCamera().vPos = Vec3f(-currPos[0], currPos[1], -currPos[2]);
+                        }
+
+                        RenderConfig::Camera::FoV = m_fInitialFoV;
+
+                        m_eInteractState = IS_FADE_FROM_WHITE;
+
+                        if (m_bIsInRoom)
+                        {
+                            auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
+                            for (unsigned int i = 0; i < actors.size(); i++)
+                            {
+                                if (actors[i] != this)
+                                {
+                                    actors[i]->MakeActive(true);
+                                }
+                            }
+                        }
+
+                        m_bIsInRoom = !m_bIsInRoom;
+                    }
+
+                    break;
+                }
+
+                case IS_FADE_FROM_WHITE:
+                {
+                    m_fDoorAnimation -= deltaTime / 3.f;
+
+                    const float lerpVal = gmtl::Math::clamp(m_fDoorAnimation, 0.f, 1.f);
+                    gmtl::Math::lerp(RenderConfig::DirectionalLightVolume::MultScatterIntensity, Math::pow(lerpVal, 5.f), m_fInitialLight, 10000.f);
+
+                    if (m_fDoorAnimation <= 0.f)
+                    {
+                        RenderConfig::Camera::FoV = m_fInitialFoV;
+                        RenderConfig::DirectionalLightVolume::MultScatterIntensity = m_fInitialLight;
+                        m_bIsInteracting = false;
+                        m_fDoorAnimation = 0.f;
+                        m_eInteractState = Door::IS_ADJUST_PLAYER;
+                    }
+                }
+            }
+        }
+    }
+    else // if (!IsActive())
+    {
+        if (m_fHallSoundGain > 0.f)
+        {
+            m_fHallSoundGain -= deltaTime / 3.f;
+            m_fHallSoundGain = gmtl::Math::clamp(m_fHallSoundGain, 0.f, 1.f);
+            m_pHallSound->SetFilterGain(m_fHallSoundGain, 0.f);
+        }
+
+        if (m_pHallSound->GetStatus() == Audio::SoundSource::PLAYING && m_fHallSoundGain <= 0.f)
+        {
+            m_pHallSound->Pause();
+        }
+
+        m_bIsInteracting = false;
+        m_fDoorAnimation = 0.f;
+        m_eInteractState = Door::IS_ADJUST_PLAYER;
     }
 }
 
@@ -300,6 +456,11 @@ void Door::Interact()
 
 void Door::Draw(DrawMode drawMode, unsigned int cascade)
 {
+    if (!IsActive())
+    {
+        return;
+    }
+
     assert(m_pModel);
     if (m_pModel)
     {
@@ -520,15 +681,15 @@ void Door::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, fl
 void Scene::SetupScene()
 {
     // Player
-    m_pActors.push_back(new Player());
+    m_pPlayer = new Player();
 
     // Doors
     const unsigned int numDoors = 5;
-    const float doorDist = 15.f;
+    const float doorDist = 10.f;
     const float doorRotRad = Math::PI;
     for (unsigned int i = 0; i < numDoors; i++)
     {
-        m_pActors.push_back(new Door());
+        m_pActors.push_back(new Door(i));
         m_pActors.back()->SetPosition(doorDist * Vec3f(
             Math::sin(doorRotRad * ((float)i / (float)(numDoors - 1)) - doorRotRad * 0.5f),
             0.f,
@@ -539,6 +700,11 @@ void Scene::SetupScene()
 
 void Scene::Update(const float deltaTime)
 {
+    if (m_pPlayer)
+    {
+        m_pPlayer->Update(deltaTime);
+    }
+
     for (unsigned int i = 0; i < m_pActors.size(); i++)
     {
         m_pActors[i]->Update(deltaTime);
@@ -555,6 +721,9 @@ void Scene::Draw(Actor::DrawMode drawMode, unsigned int cascade)
 
 Scene::~Scene()
 {
+    delete m_pPlayer;
+    m_pPlayer = nullptr;
+
     while (m_pActors.size())
     {
         delete m_pActors.back();
@@ -566,6 +735,7 @@ Scene::Actor::Actor()
     : m_vPosition(0.f, 0.f, 0.f)
     , m_fOrientation(0.f)
     , m_bIsInteracting(false)
+    , m_bIsActive(true)
 {}
 
 void Scene::Actor::SetOrientation(float angle)

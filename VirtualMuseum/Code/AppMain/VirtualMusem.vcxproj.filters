@@ -178,6 +178,9 @@
     <ClInclude Include="VirtualMuseum\Scene\Scene.h">
       <Filter>App\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualMuseum\Scene\SceneData.h">
+      <Filter>App\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -301,6 +304,9 @@
       <Filter>App\Audio</Filter>
     </ClCompile>
     <ClCompile Include="VirtualMuseum\Scene\Scene.cpp">
+      <Filter>App\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\Scene\SceneData.cpp">
       <Filter>App\Scene</Filter>
     </ClCompile>
   </ItemGroup>

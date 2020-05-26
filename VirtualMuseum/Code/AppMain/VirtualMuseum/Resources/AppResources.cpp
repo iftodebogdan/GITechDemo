@@ -650,7 +650,7 @@ namespace VirtualMuseumApp
         "Camera",
         RenderConfig::Camera::SpeedUpFactor,
         1.f,
-        5.f);
+        3.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Slow down factor",
@@ -658,7 +658,7 @@ namespace VirtualMuseumApp
         "Camera",
         RenderConfig::Camera::SlowDownFactor,
         0.1f,
-        0.1f);
+        1.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Rotation speed",

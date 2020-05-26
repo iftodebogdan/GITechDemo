@@ -661,6 +661,17 @@ void VirtualMuseum::Update(const float fDeltaTime)
     }
     gmtl::normalize(RenderConfig::DirectionalLight::LightDir);
 
+    // Update scene before matrices - camera position and rotation might change
+    Audio::GetInstance()->BeginUpdate();
+    if (m_pScene)
+    {
+        m_pScene->Update(fDeltaTime);
+    }
+    Audio::GetInstance()->EndUpdate();
+
+    // Rotation might have changed, calculate it again
+    m_tCamera.mRot = makeRot(EulerAngleXYZf(Math::deg2Rad(-m_tCamera.vRot[0]), Math::deg2Rad(-m_tCamera.vRot[1]), 0.f), Type2Type<Matrix44f>());
+
     HLSL::BRDFParams->LightDir = RenderConfig::DirectionalLight::LightDir;
 
 #if 0
@@ -723,13 +734,6 @@ void VirtualMuseum::Update(const float fDeltaTime)
     // to the current frame's view-projection matrix
     if (HLSL::FrameParams->PrevViewProjMat == MAT_IDENTITY44F)
         HLSL::FrameParams->PrevViewProjMat = HLSL::FrameParams->ViewProjMat;
-
-    Audio::GetInstance()->BeginUpdate();
-    if (m_pScene)
-    {
-        m_pScene->Update(fDeltaTime);
-    }
-    Audio::GetInstance()->EndUpdate();
 }
 
 void VirtualMuseum::UpdateUIFocus()

@@ -47,6 +47,9 @@ namespace VirtualMuseumApp
             virtual void Pause() = 0;
             virtual void Stop() = 0;
 
+            virtual void SetFilterGain(const float gain, const float gainHF) = 0;
+            virtual void SetPitch(const float pitch) = 0;
+
             enum Status
             {
                 PLAYING,

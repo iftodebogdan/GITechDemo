@@ -493,6 +493,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClInclude Include="VirtualMuseum\Resources\ArtistParameter.h" />
     <ClInclude Include="VirtualMuseum\Resources\Shaders.h" />
     <ClInclude Include="VirtualMuseum\Scene\Scene.h" />
+    <ClInclude Include="VirtualMuseum\Scene\SceneData.h" />
     <ClInclude Include="VirtualMuseum\Utilities\GaussianFilter.h" />
     <ClInclude Include="VirtualMuseum\VirtualMuseum.h" />
     <ClInclude Include="VirtualMuseum\Utilities\PerlinNoise.h" />
@@ -535,6 +536,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClCompile Include="VirtualMuseum\RenderScheme\SkyPass.cpp" />
     <ClCompile Include="VirtualMuseum\Resources\AppResources.cpp" />
     <ClCompile Include="VirtualMuseum\Resources\ArtistParameter.cpp" />
+    <ClCompile Include="VirtualMuseum\Scene\SceneData.cpp" />
     <ClCompile Include="VirtualMuseum\Scene\Scene.cpp" />
     <ClCompile Include="VirtualMuseum\Utilities\GaussianFilter.cpp" />
     <ClCompile Include="Framework\main.cpp" />

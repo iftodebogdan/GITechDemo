@@ -30,6 +30,7 @@ namespace VirtualMuseumApp
     class Scene
     {
     public:
+        Scene() : m_pPlayer(nullptr) {}
         virtual ~Scene();
 
         class Actor
@@ -58,10 +59,14 @@ namespace VirtualMuseumApp
             virtual void Interact() { m_bIsInteracting = true; }
             const bool IsInteracting() const { return m_bIsInteracting; }
 
+            virtual void MakeActive(const bool active) { m_bIsActive = active; }
+            const bool IsActive() const { return m_bIsActive; }
+
         protected:
             Vec3f m_vPosition;
             float m_fOrientation;
             bool m_bIsInteracting;
+            bool m_bIsActive;
         };
 
         void SetupScene();
@@ -71,8 +76,11 @@ namespace VirtualMuseumApp
         const vector<Actor*>& GetActors() const { return m_pActors; }
         const bool IsInteracting() const;
 
+        Actor* const GetPlayer() const { return m_pPlayer; }
+
     protected:
         vector<Actor*> m_pActors;
+        Actor* m_pPlayer;
     };
 }
 

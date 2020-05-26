@@ -80,6 +80,19 @@ static const unsigned int HRTFCount = HRTFNameCount * HRTFFreqCount;
 static LPALCGETSTRINGISOFT alcGetStringiSOFT = nullptr;
 static LPALCRESETDEVICESOFT alcResetDeviceSOFT = nullptr;
 
+// Filter extensions
+static LPALGENFILTERS alGenFilters = nullptr;
+static LPALDELETEFILTERS alDeleteFilters = nullptr;
+static LPALISFILTER alIsFilter = nullptr;
+static LPALFILTERI alFilteri = nullptr;
+static LPALFILTERIV alFilteriv = nullptr;
+static LPALFILTERF alFilterf = nullptr;
+static LPALFILTERFV alFilterfv = nullptr;
+static LPALGETFILTERI alGetFilteri = nullptr;
+static LPALGETFILTERIV alGetFilteriv = nullptr;
+static LPALGETFILTERF alGetFilterf = nullptr;
+static LPALGETFILTERFV alGetFilterfv = nullptr;
+
 // Wrapper for OpenAL - abstracts and hides the library implementation from the rest of the project code
 class AudioImplement : public Audio
 {
@@ -105,6 +118,9 @@ public:
         void Pause();
         void Stop();
 
+        void SetFilterGain(const float gain, const float gainHF);
+        void SetPitch(const float pitch);
+
         Status GetStatus();
 
     protected:
@@ -115,6 +131,8 @@ public:
 
         ALuint m_alSource;
         bool m_bRepeat;
+
+        ALuint m_alFilter;
 
         friend class Audio;
         friend class AudioImplement;
@@ -489,6 +507,19 @@ void AudioImplement::InitializeExtensions()
     {
         pFW->CreateMessageBox("Error", "HRTF extension was not found. Binaural sound synthesis will be disabled.");
     }
+
+    // Filters
+    alGenFilters = (LPALGENFILTERS)alGetProcAddress("alGenFilters");
+    alDeleteFilters = (LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters");
+    alIsFilter = (LPALISFILTER)alGetProcAddress("alIsFilter");
+    alFilteri = (LPALFILTERI)alGetProcAddress("alFilteri");
+    alFilteriv = (LPALFILTERIV)alGetProcAddress("alFilteriv");
+    alFilterf = (LPALFILTERF)alGetProcAddress("alFilterf");
+    alFilterfv = (LPALFILTERFV)alGetProcAddress("alFilterfv");
+    alGetFilteri = (LPALGETFILTERI)alGetProcAddress("alGetFilteri");
+    alGetFilteriv = (LPALGETFILTERIV)alGetProcAddress("alGetFilteriv");
+    alGetFilterf = (LPALGETFILTERF)alGetProcAddress("alGetFilterf");
+    alGetFilterfv = (LPALGETFILTERFV)alGetProcAddress("alGetFilterfv");
 }
 
 void AudioImplement::DestroyDevice()
@@ -669,6 +700,7 @@ void Audio::RemoveSoundSource(SoundSource*& soundSource)
 AudioImplement::SoundSourceImplement::SoundSourceImplement()
     : m_alSource(AL_INVALID)
     , m_bRepeat(false)
+    , m_alFilter(AL_INVALID)
 {
     assert(AudioImplement::GetInstance());
     if (!AudioImplement::GetInstance())
@@ -686,6 +718,25 @@ AudioImplement::SoundSourceImplement::SoundSourceImplement()
 
     error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
     assert(error == ALC_NO_ERROR);
+
+    // Filter
+    alGenFilters(1, &m_alFilter);
+
+    error = alGetError();
+    assert(error == AL_NO_ERROR);
+
+    if (alIsFilter(m_alFilter))
+    {
+        // low-pass, set params
+        alFilteri(m_alFilter, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
+        alFilterf(m_alFilter, AL_LOWPASS_GAIN, 1.f);
+        alFilterf(m_alFilter, AL_LOWPASS_GAINHF, 1.f);
+
+        error = alGetError();
+        assert(error == AL_NO_ERROR);
+
+        alSourcei(m_alSource, AL_DIRECT_FILTER, m_alFilter);
+    }
 }
 
 AudioImplement::SoundSourceImplement::~SoundSourceImplement()
@@ -694,10 +745,18 @@ AudioImplement::SoundSourceImplement::~SoundSourceImplement()
     if (!AudioImplement::GetInstance() || m_alSource == AL_INVALID)
         return;
 
+    alSourcei(m_alSource, AL_DIRECT_FILTER, AL_FILTER_NULL);
+
+    alDeleteFilters(1, &m_alFilter);
+    m_alFilter = AL_INVALID;
+
+    ALCenum error = alGetError();
+    assert(error == AL_NO_ERROR);
+
     alDeleteSources(1, &m_alSource);
     m_alSource = AL_INVALID;
 
-    ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
+    error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
     assert(error == ALC_NO_ERROR);
 }
 
@@ -761,6 +820,35 @@ void AudioImplement::SoundSourceImplement::Stop()
 
     ALCenum error = alcGetError(AudioImplement::GetInstance()->GetAudioDevice());
     assert(error == ALC_NO_ERROR);
+}
+
+void AudioImplement::SoundSourceImplement::SetFilterGain(const float gain, const float gainHF)
+{
+    if (alIsFilter(m_alFilter))
+    {
+        if (gain < 1.f || gainHF < 1.f)
+        {
+            alFilterf(m_alFilter, AL_LOWPASS_GAIN, Math::clamp(gain, 0.f, 1.f));
+            alFilterf(m_alFilter, AL_LOWPASS_GAINHF, Math::clamp(gainHF, 0.01f, 1.f));
+
+            ALenum error = alGetError();
+            assert(error == AL_NO_ERROR);
+
+            alSourcei(m_alSource, AL_DIRECT_FILTER, m_alFilter);
+        }
+        else
+        {
+            alSourcei(m_alSource, AL_DIRECT_FILTER, AL_FILTER_NULL);
+        }
+    }
+}
+
+void AudioImplement::SoundSourceImplement::SetPitch(const float pitch)
+{
+    alSourcef(m_alSource, AL_PITCH, pitch);
+
+    ALenum error = alGetError();
+    assert(error == AL_NO_ERROR);
 }
 
 Audio::SoundSource::Status AudioImplement::SoundSourceImplement::GetStatus()
