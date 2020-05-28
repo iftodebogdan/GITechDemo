@@ -107,6 +107,47 @@ namespace VirtualMuseumApp
     CREATE_TEXTURE_HANDLE(BayerMatrix);
     CREATE_TEXTURE_HANDLE(NoiseTexture);
     CREATE_TEXTURE_HANDLE(ColorCorrectionTexture);
+
+    CREATE_TEXTURE_HANDLE(Room1_1);
+    CREATE_TEXTURE_HANDLE(Room1_2);
+    CREATE_TEXTURE_HANDLE(Room1_3);
+    CREATE_TEXTURE_HANDLE(Room1_4);
+    CREATE_TEXTURE_HANDLE(Room1_5);
+    CREATE_TEXTURE_HANDLE(Room1_6);
+    CREATE_TEXTURE_HANDLE(Room1_7);
+    CREATE_TEXTURE_HANDLE(Room1_8);
+    CREATE_TEXTURE_HANDLE(Room2_1);
+    CREATE_TEXTURE_HANDLE(Room2_2);
+    CREATE_TEXTURE_HANDLE(Room2_3);
+    CREATE_TEXTURE_HANDLE(Room2_4);
+    CREATE_TEXTURE_HANDLE(Room2_5);
+    CREATE_TEXTURE_HANDLE(Room2_6);
+    CREATE_TEXTURE_HANDLE(Room2_7);
+    CREATE_TEXTURE_HANDLE(Room2_8);
+    CREATE_TEXTURE_HANDLE(Room3_1);
+    CREATE_TEXTURE_HANDLE(Room3_2);
+    CREATE_TEXTURE_HANDLE(Room3_3);
+    CREATE_TEXTURE_HANDLE(Room3_4);
+    CREATE_TEXTURE_HANDLE(Room3_5);
+    CREATE_TEXTURE_HANDLE(Room3_6);
+    CREATE_TEXTURE_HANDLE(Room3_7);
+    CREATE_TEXTURE_HANDLE(Room3_8);
+    CREATE_TEXTURE_HANDLE(Room4_1);
+    CREATE_TEXTURE_HANDLE(Room4_2);
+    CREATE_TEXTURE_HANDLE(Room4_3);
+    CREATE_TEXTURE_HANDLE(Room4_4);
+    CREATE_TEXTURE_HANDLE(Room4_5);
+    CREATE_TEXTURE_HANDLE(Room4_6);
+    CREATE_TEXTURE_HANDLE(Room4_7);
+    CREATE_TEXTURE_HANDLE(Room4_8);
+    CREATE_TEXTURE_HANDLE(Room5_1);
+    CREATE_TEXTURE_HANDLE(Room5_2);
+    CREATE_TEXTURE_HANDLE(Room5_3);
+    CREATE_TEXTURE_HANDLE(Room5_4);
+    CREATE_TEXTURE_HANDLE(Room5_5);
+    CREATE_TEXTURE_HANDLE(Room5_6);
+    CREATE_TEXTURE_HANDLE(Room5_7);
+    CREATE_TEXTURE_HANDLE(Room5_8);
     //------------------------------------------------------
 
     // Render targets
@@ -173,6 +214,7 @@ namespace VirtualMuseumApp
 
     // Used for fullscreen effects, post-processing, etc.
     extern VertexBuffer*    FullScreenTri;
+    extern VertexBuffer*    SimpleQuad;
     //------------------------------------------------------
 
     // Various configurable parameters not used directly in shaders

@@ -480,6 +480,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClInclude Include="VirtualMuseum\RenderScheme\GBufferPass.h" />
     <ClInclude Include="VirtualMuseum\RenderScheme\HDRToneMappingPass.h" />
     <ClInclude Include="VirtualMuseum\RenderScheme\TerrainPass.h" />
+    <ClInclude Include="VirtualMuseum\RenderScheme\UI3DPass.h" />
     <ClInclude Include="VirtualMuseum\RenderScheme\UIPass.h" />
     <ClInclude Include="VirtualMuseum\RenderScheme\LensFlarePass.h" />
     <ClInclude Include="VirtualMuseum\RenderScheme\LightingPass.h" />
@@ -526,6 +527,7 @@ DEL /F /Q "$(OutDir)libsndfile$(PlatformArchitecture).dll"</Command>
     <ClCompile Include="VirtualMuseum\RenderScheme\GBufferPass.cpp" />
     <ClCompile Include="VirtualMuseum\RenderScheme\HDRToneMappingPass.cpp" />
     <ClCompile Include="VirtualMuseum\RenderScheme\TerrainPass.cpp" />
+    <ClCompile Include="VirtualMuseum\RenderScheme\UI3DPass.cpp" />
     <ClCompile Include="VirtualMuseum\RenderScheme\UIPass.cpp" />
     <ClCompile Include="VirtualMuseum\RenderScheme\LensFlarePass.cpp" />
     <ClCompile Include="VirtualMuseum\RenderScheme\LightingPass.cpp" />

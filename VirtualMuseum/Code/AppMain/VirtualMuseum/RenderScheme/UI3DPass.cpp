@@ -2,7 +2,7 @@
  * This file is part of the "VirtualMuseum" application
  * Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *      File:   SceneData.h
+ *      File:   UI3DPass.cpp
  *      Author: Bogdan Iftode
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,30 +19,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#ifndef SCENE_DATA_H_
-#define SCENE_DATA_H_
+#include "stdafx.h"
 
-#include <string>
-using namespace std;
+#include "UI3DPass.h"
+#include "Scene.h"
+#include "VirtualMuseum.h"
+using namespace VirtualMuseumApp;
 
-namespace VirtualMuseumApp
+UI3DPass::UI3DPass(const char* const passName, RenderPass* const parentPass)
+    : RenderPass(passName, parentPass)
+{}
+
+UI3DPass::~UI3DPass()
+{}
+
+void UI3DPass::Update(float fDeltaTime)
 {
-    class Texture;
-
-    struct SceneData
-    {
-        static const SceneData* const GetSceneData() { return m_sSceneData; }
-
-        string hallSnd;
-
-        unsigned int exhibitCount;
-        Texture* exhibits[8];
-        string exhibitDesc[8];
-
-        string roomName;
-
-        static SceneData* m_sSceneData;
-    };
 }
 
-#endif // SCENE_DATA_H_
+void UI3DPass::Draw()
+{
+    ((VirtualMuseum*)AppMain)->GetScene()->Draw(Scene::Actor::UI_3D);
+}
+
+void UI3DPass::AllocateResources()
+{
+
+}
+
+void UI3DPass::ReleaseResources()
+{
+
+}

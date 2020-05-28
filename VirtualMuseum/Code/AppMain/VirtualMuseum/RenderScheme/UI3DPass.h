@@ -2,7 +2,7 @@
  * This file is part of the "VirtualMuseum" application
  * Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
  *
- *      File:   SceneData.h
+ *      File:   UI3DPass.h
  *      Author: Bogdan Iftode
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,30 +19,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#ifndef SCENE_DATA_H_
-#define SCENE_DATA_H_
+#ifndef UI3D_PASS_H_
+#define UI3D_PASS_H_
 
-#include <string>
-using namespace std;
+#include "RenderPass.h"
 
 namespace VirtualMuseumApp
 {
-    class Texture;
-
-    struct SceneData
+    class UI3DPass : public RenderPass
     {
-        static const SceneData* const GetSceneData() { return m_sSceneData; }
-
-        string hallSnd;
-
-        unsigned int exhibitCount;
-        Texture* exhibits[8];
-        string exhibitDesc[8];
-
-        string roomName;
-
-        static SceneData* m_sSceneData;
+        IMPLEMENT_RENDER_PASS(UI3DPass)
     };
 }
 
-#endif // SCENE_DATA_H_
+#endif // UI3D_PASS_H_

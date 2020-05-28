@@ -291,6 +291,7 @@ namespace VirtualMuseumApp
     /////////////////////
     
     VertexBuffer*   FullScreenTri = nullptr;
+    VertexBuffer*   SimpleQuad = nullptr;
 
     //------------------------------------------------------
 
@@ -388,6 +389,47 @@ namespace VirtualMuseumApp
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
     CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
+
+    CREATE_TEXTURE_OBJECT(Room1_1, "textures/room1_1.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_2, "textures/room1_2.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_3, "textures/room1_3.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_4, "textures/room1_4.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_5, "textures/room1_5.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_6, "textures/room1_6.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_7, "textures/room1_7.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room1_8, "textures/room1_8.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_1, "textures/room2_1.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_2, "textures/room2_2.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_3, "textures/room2_3.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_4, "textures/room2_4.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_5, "textures/room2_5.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_6, "textures/room2_6.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_7, "textures/room2_7.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room2_8, "textures/room2_8.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_1, "textures/room3_1.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_2, "textures/room3_2.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_3, "textures/room3_3.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_4, "textures/room3_4.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_5, "textures/room3_5.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_6, "textures/room3_6.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_7, "textures/room3_7.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room3_8, "textures/room3_8.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_1, "textures/room4_1.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_2, "textures/room4_2.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_3, "textures/room4_3.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_4, "textures/room4_4.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_5, "textures/room4_5.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_6, "textures/room4_6.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_7, "textures/room4_7.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room4_8, "textures/room4_8.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_1, "textures/room5_1.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_2, "textures/room5_2.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_3, "textures/room5_3.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_4, "textures/room5_4.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_5, "textures/room5_5.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_6, "textures/room5_6.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_7, "textures/room5_7.s3dtex");
+    CREATE_TEXTURE_OBJECT(Room5_8, "textures/room5_8.s3dtex");
 
     //------------------------------------------------------
 
@@ -1532,7 +1574,7 @@ namespace VirtualMuseumApp
         "Lens flare",
         RenderConfig::PostProcessing::LensFlare::BrightnessThreshold,
         0.1f,
-        6.f);
+        10.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Ghost sample count",
@@ -1620,7 +1662,7 @@ namespace VirtualMuseumApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ExposureBias,
         0.1f,
-        0.1f);
+        0.125f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Lower luma bound",

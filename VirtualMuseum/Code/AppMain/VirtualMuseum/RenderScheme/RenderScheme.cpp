@@ -80,13 +80,24 @@ CREATE_ROOT_PASS()
         #include "DirectionalLightPass.h"
         ADD_RENDER_PASS(DIRECTIONAL_LIGHT_PASS, DirectionalLightPass, "Directional Light", LIGHTING_PASS)
 
-        // Screen space reflection
-        #include "ScreenSpaceReflectionPass.h"
-        ADD_RENDER_PASS(SCREEN_SPACE_REFLECTION_PASS, ScreenSpaceReflectionPass, "Screen Space Reflection", LIGHTING_PASS)
-
         // Screen space ambient occlusion (done here so as not to affect indirect and volumetric lights)
         #include "SSAOPass.h"
         ADD_RENDER_PASS(SSAO_PASS, SSAOPass, "SSAO", LIGHTING_PASS)
+            
+        // Downsample the light accumulation buffer here, because we don't want the volumetric light to be bloomed
+        #include "HDRDownsampleForBloomPass.h"
+        ADD_RENDER_PASS(HDR_DOWNSAMPLE_FOR_BLOOM_PASS, HDRDownsampleForBloomPass, "HDR Downsample for Bloom", LIGHTING_PASS)
+
+        #include "UI3DPass.h"
+        ADD_RENDER_PASS(UI3D_PASS, UI3DPass, "UI 3D", LIGHTING_PASS)
+
+        // Generate the linear and hyperbolic, full and quarter resolution depth buffers
+        #include "DepthDownsamplePass.h"
+        ADD_RENDER_PASS(DEPTH_DOWNSAMPLE_PASS2, DepthDownsamplePass, "Depth Downsample 2", LIGHTING_PASS)
+
+        // Screen space reflection
+        #include "ScreenSpaceReflectionPass.h"
+        ADD_RENDER_PASS(SCREEN_SPACE_REFLECTION_PASS, ScreenSpaceReflectionPass, "Screen Space Reflection", LIGHTING_PASS)
 
         // Compute indirect light contribution from the directional light (1 unoccluded bounce)
         #include "DirectionalIndirectLightPass.h"
@@ -95,10 +106,6 @@ CREATE_ROOT_PASS()
         // Render the sky box (moved after SSAO so as to avoid halo artifacts on the sky; moved after SSR to avoid reflecting sun or sky)
         #include "SkyPass.h"
         //ADD_RENDER_PASS(SKY_PASS, SkyPass, "Sky", LIGHTING_PASS)
-
-        // Downsample the light accumulation buffer here, because we don't want the volumetric light to be bloomed
-        #include "HDRDownsampleForBloomPass.h"
-        ADD_RENDER_PASS(HDR_DOWNSAMPLE_FOR_BLOOM_PASS, HDRDownsampleForBloomPass, "HDR Downsample for Bloom", LIGHTING_PASS)
 
         // Volumetric directional light
         #include "DirectionalLightVolumePass.h"

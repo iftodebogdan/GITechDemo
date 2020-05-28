@@ -239,6 +239,7 @@ void UIPass::Update(const float fDeltaTime)
     HLSL::UIParams->MipLevel = m_nSelectedMip;
     HLSL::UIParams->FaceIdx = m_nSelectedFace;
     HLSL::UIParams->DepthSlice = m_fSelectedSlice;
+    HLSL::UIParams->ColorMul = Vec4f(1.f, 1.f, 1.f, 1.f);
 }
 
 void UIPass::Draw()
@@ -520,7 +521,9 @@ void UIPass::SetupUI()
     {
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize;
         bool showTooltip = true;
-        if (ImGui::Begin("Tooltip", &showTooltip, flags))
+        char windowName[32];
+        snprintf(windowName, 32, "Tooltip_%s", m_tooltips[i].text.c_str());
+        if (ImGui::Begin(windowName, &showTooltip, flags))
         {
             //ImGui::SetWindowPos(ImVec2(m_tooltips[i].pos[0], m_tooltips[i].pos[1]));
             ImGui::TextUnformatted(m_tooltips[i].text.c_str());
@@ -1090,6 +1093,7 @@ void UIPass::RenderUI()
         }
         vtxOffset += cmdList.VtxBufferSize;
     }
+
     UIShader.Disable();
 
     // Revert render states

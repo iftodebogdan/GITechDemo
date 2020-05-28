@@ -25,6 +25,9 @@
 #include <vector>
 using namespace std;
 
+#include <gmtl/gmtl.h>
+using namespace gmtl;
+
 namespace VirtualMuseumApp
 {
     class Scene
@@ -44,7 +47,8 @@ namespace VirtualMuseumApp
                 DEPTH_ONLY,
                 DEPTH_ONLY_ALPHA_TEST,
                 SHADOW,
-                COLOR
+                COLOR,
+                UI_3D
             };
 
             virtual void Update(const float deltaTime) = 0;

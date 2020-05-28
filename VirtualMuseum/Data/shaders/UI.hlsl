@@ -28,6 +28,7 @@ TEXTURE_CUBE_RESOURCE(UI_TextureCube);
 
 CBUFFER_RESOURCE(UI,
     GPU_float4x4 UIProjMat;
+    GPU_float4 ColorMul;
     GPU_uint TextureSwitch;
     GPU_uint MipLevel;
     GPU_uint FaceIdx;
@@ -44,9 +45,9 @@ struct VSOut
 
 // Vertex shader /////////////////////////////////////////////////
 #ifdef VERTEX
-void vsmain(float2 position : POSITION, float4 color : COLOR, float2 texCoord : TEXCOORD, out VSOut output)
+void vsmain(float3 position : POSITION, float4 color : COLOR, float2 texCoord : TEXCOORD, out VSOut output)
 {
-    output.Position = mul(UIParams.UIProjMat, float4(position, 0.f, 1.f));
+    output.Position = mul(UIParams.UIProjMat, float4(position, 1.f));
     output.TexCoord = texCoord;
     output.Color = color;
 }
@@ -87,6 +88,8 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     default:
         color = input.Color; break;
     };
+    
+    color *= UIParams.ColorMul;
 }
 #endif // PIXEL
 ////////////////////////////////////////////////////////////////////

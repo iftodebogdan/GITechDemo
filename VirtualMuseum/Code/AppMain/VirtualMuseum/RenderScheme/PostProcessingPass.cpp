@@ -63,25 +63,83 @@ void PostProcessingPass::AllocateResources()
     ResourceManager* ResourceMgr = RenderContext->GetResourceManager();
     if (!ResourceMgr)
         return;
+    {
+        // Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
+        unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAS_POSITION, VAT_FLOAT4, 0);
+        VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
 
-    // Create a full screen quad (it's actually an over-sized triangle) for fullscreen effects and processing
-    unsigned int vfIdx = ResourceMgr->CreateVertexFormat(1, VAS_POSITION, VAT_FLOAT4, 0);
-    VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
+        unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
+        IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
+        const unsigned short fsqIndices[] = { 0, 1, 2 };
+        ib->SetIndices(fsqIndices, 3);
 
-    unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(3);
-    IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
-    const unsigned short fsqIndices[] = { 0, 1, 2 };
-    ib->SetIndices(fsqIndices, 3);
+        unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
+        FullScreenTri = ResourceMgr->GetVertexBuffer(vbIdx);
 
-    unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 3, ib);
-    FullScreenTri = ResourceMgr->GetVertexBuffer(vbIdx);
+        FullScreenTri->Lock(BL_WRITE_ONLY);
+        FullScreenTri->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
+        FullScreenTri->Position<Vec4f>(1) = Vec4f(3.f, 1.f, 1.f, 1.f);
+        FullScreenTri->Position<Vec4f>(2) = Vec4f(-1.f, -3.f, 1.f, 1.f);
+        FullScreenTri->Update();
+        FullScreenTri->Unlock();
+    }
 
-    FullScreenTri->Lock(BL_WRITE_ONLY);
-    FullScreenTri->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 1.f, 1.f);
-    FullScreenTri->Position<Vec4f>(1) = Vec4f(3.f, 1.f, 1.f, 1.f);
-    FullScreenTri->Position<Vec4f>(2) = Vec4f(-1.f, -3.f, 1.f, 1.f);
-    FullScreenTri->Update();
-    FullScreenTri->Unlock();
+    {
+        // Create a quad
+        unsigned int vfIdx = ResourceMgr->CreateVertexFormat(
+            6,
+            VAS_POSITION,   VAT_FLOAT4, 0,
+            VAS_TEXCOORD,   VAT_FLOAT2, 0,
+            VAS_NORMAL,     VAT_FLOAT3, 0,
+            VAS_TANGENT,    VAT_FLOAT3, 0,
+            VAS_BINORMAL,   VAT_FLOAT3, 0,
+            VAS_COLOR,      VAT_FLOAT4, 0
+        );
+        VertexFormat* vf = ResourceMgr->GetVertexFormat(vfIdx);
+
+        unsigned int ibIdx = ResourceMgr->CreateIndexBuffer(6);
+        IndexBuffer* ib = ResourceMgr->GetIndexBuffer(ibIdx);
+        const unsigned short fsqIndices[] = { 0, 1, 2, 2, 1, 3 };
+        ib->SetIndices(fsqIndices, 6);
+
+        unsigned int vbIdx = ResourceMgr->CreateVertexBuffer(vf, 4, ib);
+        SimpleQuad = ResourceMgr->GetVertexBuffer(vbIdx);
+
+        SimpleQuad->Lock(BL_WRITE_ONLY);
+
+        SimpleQuad->Position<Vec4f>(0) = Vec4f(-1.f, 1.f, 0.f, 1.f);
+        SimpleQuad->Position<Vec4f>(1) = Vec4f(1.f, 1.f, 0.f, 1.f);
+        SimpleQuad->Position<Vec4f>(2) = Vec4f(-1.f, -1.f, 0.f, 1.f);
+        SimpleQuad->Position<Vec4f>(3) = Vec4f(1.f, -1.f, 0.f, 1.f);
+
+        SimpleQuad->TexCoord<Vec2f>(0, 0) = Vec2f(0.f, 0.f);
+        SimpleQuad->TexCoord<Vec2f>(1, 0) = Vec2f(1.f, 0.f);
+        SimpleQuad->TexCoord<Vec2f>(2, 0) = Vec2f(0.f, 1.f);
+        SimpleQuad->TexCoord<Vec2f>(3, 0) = Vec2f(1.f, 1.f);
+
+        SimpleQuad->Normal<Vec3f>(0) = Vec3f(0.f, 0.f, -1.f);
+        SimpleQuad->Normal<Vec3f>(1) = Vec3f(0.f, 0.f, -1.f);
+        SimpleQuad->Normal<Vec3f>(2) = Vec3f(0.f, 0.f, -1.f);
+        SimpleQuad->Normal<Vec3f>(3) = Vec3f(0.f, 0.f, -1.f);
+
+        SimpleQuad->Tangent<Vec3f>(0) = Vec3f(-1.f, 0.f, 0.f);
+        SimpleQuad->Tangent<Vec3f>(1) = Vec3f(-1.f, 0.f, 0.f);
+        SimpleQuad->Tangent<Vec3f>(2) = Vec3f(-1.f, 0.f, 0.f);
+        SimpleQuad->Tangent<Vec3f>(3) = Vec3f(-1.f, 0.f, 0.f);
+
+        SimpleQuad->Binormal<Vec3f>(0) = Vec3f(0.f, 1.f, 0.f);
+        SimpleQuad->Binormal<Vec3f>(1) = Vec3f(0.f, 1.f, 0.f);
+        SimpleQuad->Binormal<Vec3f>(2) = Vec3f(0.f, 1.f, 0.f);
+        SimpleQuad->Binormal<Vec3f>(3) = Vec3f(0.f, 1.f, 0.f);
+
+        SimpleQuad->Color<Vec4f>(0, 0) = Vec4f(1.f, 1.f, 1.f, 1.f);
+        SimpleQuad->Color<Vec4f>(1, 0) = Vec4f(1.f, 1.f, 1.f, 1.f);
+        SimpleQuad->Color<Vec4f>(2, 0) = Vec4f(1.f, 1.f, 1.f, 1.f);
+        SimpleQuad->Color<Vec4f>(3, 0) = Vec4f(1.f, 1.f, 1.f, 1.f);
+
+        SimpleQuad->Update();
+        SimpleQuad->Unlock();
+    }
 }
 
 void PostProcessingPass::ReleaseResources()

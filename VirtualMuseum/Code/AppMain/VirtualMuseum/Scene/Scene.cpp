@@ -57,6 +57,8 @@ namespace VirtualMuseumApp
         void DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat = nullptr,
             Matrix44f* viewMat = nullptr, Matrix44f* projMat = nullptr);
         void DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade = ~0u);
+        void DrawExhibits(DrawMode drawMode, Vec3f pos, float rotDeg);
+        void DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOffset, unsigned int id);
 
         enum InteractState
         {
@@ -77,6 +79,7 @@ namespace VirtualMuseumApp
         InteractState m_eInteractState;
         bool m_bIsInRoom;
         float m_fHallSoundGain;
+        unsigned int m_nSceneDataId;
     };
 
     class Player : public Scene::Actor
@@ -156,24 +159,8 @@ void Player::Update(const float deltaTime)
 
     m_pFootstepsSound->SetPosition(Vec3f(pos[0], 0.f, -pos[2]));
 
-    // "Collision"
-    for (unsigned int i = 0; i < actors.size(); i++)
-    {
-        if (actors[i]->IsActive())
-        {
-            Vec3f posDiff = Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]) - actors[i]->GetPosition();
-            if (lengthSquared(posDiff) < 1)
-            {
-                normalize(posDiff);
-                ((VirtualMuseum*)AppMain)->GetCamera().vPos[0] = -(actors[i]->GetPosition() + posDiff)[0];
-                ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -(actors[i]->GetPosition() + posDiff)[2];
-                m_pFootstepsSound->Stop();
-            }
-        }
-    }
-
     // Leash
-    const float leashDist = 25.f;
+    const float leashDist = 10.f;
     if (lengthSquared(Vec3f(pos[0], 0.f, pos[2])) > leashDist * leashDist)
     {
         Vec3f leashVec = makeNormal(Vec3f(pos[0], 0.f, pos[2])) * leashDist;
@@ -194,6 +181,22 @@ void Player::Update(const float deltaTime)
         makeNormal(Vec3f(lookAt[0], lookAt[1], -lookAt[2])),
         makeNormal(Vec3f(up[0], up[1], -up[2]))
     );
+
+    // "Collision"
+    for (unsigned int i = 0; i < actors.size(); i++)
+    {
+        if (actors[i]->IsActive())
+        {
+            Vec3f posDiff = Vec3f(pos[0], actors[i]->GetPosition()[1], pos[2]) - actors[i]->GetPosition();
+            if (lengthSquared(posDiff) < 1)
+            {
+                normalize(posDiff);
+                ((VirtualMuseum*)AppMain)->GetCamera().vPos[0] = -(actors[i]->GetPosition() + posDiff)[0];
+                ((VirtualMuseum*)AppMain)->GetCamera().vPos[2] = -(actors[i]->GetPosition() + posDiff)[2];
+                m_pFootstepsSound->Stop();
+            }
+        }
+    }
 
     // Interact
     if (!((VirtualMuseum*)AppMain)->GetScene()->IsInteracting())
@@ -253,6 +256,7 @@ Door::Door(const unsigned int sceneDataId)
     , m_eInteractState(IS_ADJUST_PLAYER)
     , m_bIsInRoom(false)
     , m_fHallSoundGain(0.f)
+    , m_nSceneDataId(sceneDataId)
 {
     m_pModel = &DoorModel;
 
@@ -274,6 +278,10 @@ Door::~Door()
 
 void Door::Update(const float deltaTime)
 {
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
     if(IsActive())
     {
         m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
@@ -419,6 +427,22 @@ void Door::Update(const float deltaTime)
                 }
             }
         }
+
+        if (m_bIsInRoom)
+        {
+            const float corridorWidth = 2.f;
+            const Vec3f corridorDir = makeNormal(m_vPosition);
+            const Vec3f camPos = -((VirtualMuseum*)AppMain)->GetCamera().vPos;
+            const Vec3f playerPos = Vec3f(camPos[0], 0.f, camPos[2]);
+            const Vec3f corridorCenterLine = corridorDir * dot(corridorDir, playerPos);
+            const Vec3f centerLineToPlayer = playerPos - corridorCenterLine;
+            const float playerDistFromCorridor = length(centerLineToPlayer);
+            const Vec3f adjustPlayerPos = corridorCenterLine + makeNormal(centerLineToPlayer) * Math::Min(playerDistFromCorridor, corridorWidth * 0.5f);
+            ((VirtualMuseum*)AppMain)->GetCamera().vPos = Vec3f(-adjustPlayerPos[0], -camPos[1], -adjustPlayerPos[2]);
+
+            UI_PASS.AddTooltip(SceneData::GetSceneData()[m_nSceneDataId].roomName.c_str(),
+                Vec2f(0.5f * (float)RenderContext->GetDisplayResolution()[0], 0.95f * (float)RenderContext->GetDisplayResolution()[1]));
+        }
     }
     else // if (!IsActive())
     {
@@ -465,6 +489,177 @@ void Door::Draw(DrawMode drawMode, unsigned int cascade)
     if (m_pModel)
     {
         DrawDoor(m_pModel, drawMode, m_vPosition, m_fOrientation, m_fDoorAnimation, cascade);
+    }
+
+    if (m_bIsInRoom)
+    {
+        DrawExhibits(drawMode, m_vPosition, m_fOrientation);
+    }
+}
+
+void Door::DrawExhibits(DrawMode drawMode, Vec3f pos, float rotDeg)
+{
+    const unsigned int exhibitCount = SceneData::GetSceneData()[m_nSceneDataId].exhibitCount;
+    for (unsigned int id = 0; id < exhibitCount; id++)
+    {
+        const float corridorLength = length(pos) * 2.f;
+        const Vec3f corridorDir = makeNormal(pos);
+        float dist = 5.f;
+        const float exhbitDist = 3.f;
+        for (unsigned int i = 0; dist <= corridorLength; i++)
+        {
+            DrawExhibit(drawMode,
+                pos - corridorDir * dist -
+                makeCross(corridorDir, Vec3f(0.f, 1.f, 0.f)) * exhbitDist +
+                Vec3f(0.f, 1.5f, 0.f),
+                rotDeg, Vec3f(0.f, 0.f, 0.f), i % exhibitCount);
+
+            DrawExhibit(drawMode,
+                pos - corridorDir * dist +
+                makeCross(corridorDir, Vec3f(0.f, 1.f, 0.f)) * exhbitDist +
+                Vec3f(0.f, 1.5f, 0.f),
+                rotDeg - 180.f, Vec3f(0.f, 0.f, 0.f), (exhibitCount / 2 + i) % exhibitCount);
+
+            dist += 4.f;
+        }
+    }
+}
+
+void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOffset, unsigned int id)
+{
+    Renderer* RenderContext = Renderer::GetInstance();
+    RenderState* RSMgr = RenderContext ? RenderContext->GetRenderStateManager() : nullptr;
+    if (!RenderContext || !RSMgr)
+        return;
+
+    switch (drawMode)
+    {
+        case UI_3D:
+        {
+            // Setup render states
+            const bool sRGBEnabled = RSMgr->GetSRGBWriteEnabled();
+            const bool zWriteEnable = RSMgr->GetZWriteEnabled();
+            const Cmp zFunc = RSMgr->GetZFunc();
+            const ZBuffer zEnabled = RSMgr->GetZEnabled();
+            const bool blendEnabled = RSMgr->GetColorBlendEnabled();
+            const Blend dstBlend = RSMgr->GetColorDstBlend();
+            const Blend srcBlend = RSMgr->GetColorSrcBlend();
+            const Cull cullMode = RSMgr->GetCullMode();
+
+            RSMgr->SetSRGBWriteEnabled(false);
+            RSMgr->SetZWriteEnabled(true);
+            RSMgr->SetZFunc(CMP_LESSEQUAL);
+            RSMgr->SetZEnabled(ZB_ENABLED);
+            RSMgr->SetColorBlendEnabled(true);
+            RSMgr->SetColorDstBlend(BLEND_ZERO);
+            RSMgr->SetColorSrcBlend(BLEND_ONE);
+            RSMgr->SetCullMode(CULL_NONE);
+
+            SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+            SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->SetSRGBEnabled(true);
+
+            const float texDimRatio = 
+                (float)SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->GetHeight() /
+                (float)SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->GetWidth();
+            Matrix44f worldMat =
+                makeTrans(pos, Type2Type<Matrix44f>()) *
+                makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(rotDeg), 0.f), Type2Type<Matrix44f>()) *
+                makeTrans(localOffset, Type2Type<Matrix44f>()) *
+                makeScale(Vec3f(1.f, texDimRatio, 1.f), Type2Type<Matrix44f>());
+
+            /*
+            HLSL::DepthPassParams->WorldViewProjMat =
+                HLSL::FrameParams->ProjMat *
+                HLSL::BRDFParams->ViewMat *
+                makeTrans(pos, Type2Type<Matrix44f>()) *
+                makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(rotDeg), 0.f), Type2Type<Matrix44f>());
+
+            RSMgr->SetColorWriteEnabled(false, false, false, false);
+
+            GBuffer.Enable();
+            DepthPassShader.Enable();
+
+            PUSH_PROFILE_MARKER(SceneData::GetSceneData()[m_nSceneDataId].exhibits[i]->GetFilePath());
+            RenderContext->DrawVertexBuffer(SimpleQuad);
+            POP_PROFILE_MARKER();
+
+            DepthPassShader.Disable();
+            GBuffer.Disable();
+            */
+
+            GBuffer.Enable();
+
+            HLSL::GBufferGenerationParams->WorldViewProjMat =
+                HLSL::FrameParams->ProjMat *
+                HLSL::BRDFParams->ViewMat *
+                worldMat;
+            HLSL::GBufferGenerationParams->WorldViewMat = 
+                HLSL::BRDFParams->ViewMat *
+                worldMat;
+
+            HLSL::GBufferGeneration_Diffuse = SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTextureIndex();
+            HLSL::GBufferGeneration_Normal = ~0u;
+            HLSL::GBufferGenerationParams->HasNormalMap = false;
+
+            // For Blinn-Phong BRDF
+            HLSL::GBufferGeneration_Spec = ~0u;
+            HLSL::GBufferGenerationParams->HasSpecMap = false;
+            HLSL::GBufferGenerationParams->SpecIntensity = 0;
+
+            // For Cook-Torrance BRDF
+            HLSL::GBufferGeneration_MatType = ~0u;
+            HLSL::GBufferGeneration_Roughness = ~0u;
+
+            GBufferGenerationShader.Enable();
+
+            PUSH_PROFILE_MARKER(SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetFilePath());
+            RenderContext->DrawVertexBuffer(SimpleQuad);
+            POP_PROFILE_MARKER();
+
+            GBufferGenerationShader.Disable();
+
+            GBuffer.Disable();
+
+            HLSL::UIParams->TextureSwitch = 2;
+            HLSL::UIParams->MipLevel = 0;
+            HLSL::UIParams->FaceIdx = 0;
+            HLSL::UIParams->DepthSlice = 0;
+            HLSL::UIParams->ColorMul = Vec4f(
+                RenderConfig::PostProcessing::LensFlare::BrightnessThreshold * 0.9f,
+                RenderConfig::PostProcessing::LensFlare::BrightnessThreshold * 0.9f,
+                RenderConfig::PostProcessing::LensFlare::BrightnessThreshold * 0.9f,
+                1.f);
+
+            HLSL::UIParams->UIProjMat =
+                HLSL::FrameParams->ProjMat *
+                HLSL::BRDFParams->ViewMat *
+                worldMat;
+
+            HLSL::UI_Texture2D = SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTextureIndex();
+
+            UIShader.Enable();
+
+            PUSH_PROFILE_MARKER(SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetFilePath());
+            RenderContext->DrawVertexBuffer(SimpleQuad);
+            POP_PROFILE_MARKER();
+
+            UIShader.Disable();
+
+            // Revert render states
+            RSMgr->SetSRGBWriteEnabled(sRGBEnabled);
+            RSMgr->SetZWriteEnabled(zWriteEnable);
+            RSMgr->SetZFunc(zFunc);
+            RSMgr->SetZEnabled(zEnabled);
+            RSMgr->SetColorBlendEnabled(blendEnabled);
+            RSMgr->SetColorDstBlend(dstBlend);
+            RSMgr->SetColorSrcBlend(srcBlend);
+            RSMgr->SetCullMode(cullMode);
+
+            break;
+        }
+
+        default:
+            break;
     }
 }
 
@@ -623,7 +818,7 @@ void Door::DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat, Matri
     }
 
     default:
-        assert(0);
+        break;
     }
 
     renderStateMgr->SetCullMode(cullMode);

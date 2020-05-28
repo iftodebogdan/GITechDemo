@@ -181,6 +181,9 @@
     <ClInclude Include="VirtualMuseum\Scene\SceneData.h">
       <Filter>App\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="VirtualMuseum\RenderScheme\UI3DPass.h">
+      <Filter>App\Render Schemes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework\main.cpp">
@@ -308,6 +311,9 @@
     </ClCompile>
     <ClCompile Include="VirtualMuseum\Scene\SceneData.cpp">
       <Filter>App\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMuseum\RenderScheme\UI3DPass.cpp">
+      <Filter>App\Render Schemes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
