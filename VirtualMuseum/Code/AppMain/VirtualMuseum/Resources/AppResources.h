@@ -108,6 +108,8 @@ namespace VirtualMuseumApp
     CREATE_TEXTURE_HANDLE(NoiseTexture);
     CREATE_TEXTURE_HANDLE(ColorCorrectionTexture);
 
+    CREATE_TEXTURE_HANDLE(IntroLogo);
+
     CREATE_TEXTURE_HANDLE(Room1_1);
     CREATE_TEXTURE_HANDLE(Room1_2);
     CREATE_TEXTURE_HANDLE(Room1_3);

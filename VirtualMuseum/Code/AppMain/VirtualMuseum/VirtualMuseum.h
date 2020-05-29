@@ -79,7 +79,8 @@ namespace VirtualMuseumApp
             APP_CMD_SPEED_UP    = APP_CMD_RIGHT         << 1,   // Enable faster moving camera
             APP_CMD_SLOW_DOWN   = APP_CMD_SPEED_UP      << 1,   // Enable slower moving camera
             APP_CMD_FOCUS_UI    = APP_CMD_SLOW_DOWN     << 1,
-            APP_CMD_INTERACT    = APP_CMD_FOCUS_UI      << 1
+            APP_CMD_INTERACT    = APP_CMD_FOCUS_UI      << 1,
+            APP_CMD_START       = APP_CMD_INTERACT      << 1
         };
 
     private:

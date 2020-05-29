@@ -31,17 +31,23 @@ namespace VirtualMuseumApp
 
     struct SceneData
     {
-        static const SceneData* const GetSceneData() { return m_sSceneData; }
+        string IntroText;
 
-        string hallSnd;
+        struct RoomData
+        {
+            string HallSnd;
+            string RoomName;
+            unsigned int ExhibitCount;
+            Texture* Exhibits[8];
+            string ExhibitDesc[2];
+        };
 
-        unsigned int exhibitCount;
-        Texture* exhibits[8];
-        string exhibitDesc[8];
+        RoomData Room[5];
 
-        string roomName;
+        static const SceneData& GetSceneData() { return m_sSceneData; }
 
-        static SceneData* m_sSceneData;
+    private:
+        static SceneData& m_sSceneData;
     };
 }
 

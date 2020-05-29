@@ -42,11 +42,11 @@ namespace VirtualMuseumApp
 {
     extern UIPass UI_PASS;
 
-    class Door : public Scene::Actor
+    class Room : public Scene::Actor
     {
     public:
-        Door(const unsigned int doorId);
-        ~Door();
+        Room(const unsigned int doorId);
+        ~Room();
 
         void Update(const float deltaTime);
         void Draw(DrawMode drawMode, unsigned int cascade = ~0u);
@@ -89,26 +89,53 @@ namespace VirtualMuseumApp
         ~Player();
 
         void Update(const float deltaTime);
-        void Draw(DrawMode drawMode, unsigned int cascade = ~0u) {}
+        void Draw(DrawMode drawMode, unsigned int cascade = ~0u);
 
         void Interact() {}
 
     protected:
         Audio::SoundSource* m_pFootstepsSound;
+        Audio::SoundSource* m_pIntroSound;
+
+        float m_fInitialLight;
+        float m_fInitialIrradiance;
+        float m_fInitialVolumetric;
+
+        float m_fTimeAccum;
+        float m_fIntroDuration;
+        bool m_bPlayIntroMusic;
     };
 }
 
 Player::Player()
     : Actor()
     , m_pFootstepsSound(nullptr)
+    , m_pIntroSound(nullptr)
+    , m_fTimeAccum(0.f)
+    , m_fIntroDuration(3.f)
+    , m_bPlayIntroMusic(true)
 {
     m_pFootstepsSound = Audio::GetInstance()->CreateSoundSource();
     m_pFootstepsSound->SetSoundFile("sounds/footsteps.wav");
+
+    m_pIntroSound = Audio::GetInstance()->CreateSoundSource();
+    m_pIntroSound->SetSoundFile("sounds/intro.wav");
+
+    m_bIsInteracting = true;
+
+    m_fInitialLight = RenderConfig::DirectionalLight::DiffuseFactor;
+    m_fInitialIrradiance = RenderConfig::DirectionalLight::IrradianceFactor;
+    m_fInitialVolumetric = RenderConfig::DirectionalLightVolume::MultScatterIntensity;
+
+    RenderConfig::DirectionalLight::DiffuseFactor = 0.f;
+    RenderConfig::DirectionalLight::IrradianceFactor = 0.f;
+    RenderConfig::DirectionalLightVolume::MultScatterIntensity = 5.f;
 }
 
 Player::~Player()
 {
     Audio::GetInstance()->RemoveSoundSource(m_pFootstepsSound);
+    Audio::GetInstance()->RemoveSoundSource(m_pIntroSound);
 }
 
 void Player::Update(const float deltaTime)
@@ -158,6 +185,39 @@ void Player::Update(const float deltaTime)
     }
 
     m_pFootstepsSound->SetPosition(Vec3f(pos[0], 0.f, -pos[2]));
+    m_pIntroSound->SetPosition(pos);
+
+    // Intro
+    if (m_bIsInteracting)
+    {
+        if (m_pIntroSound->GetStatus() != Audio::SoundSource::PLAYING && m_bPlayIntroMusic)
+        {
+            m_pIntroSound->Play(false);
+            m_bPlayIntroMusic = false;
+        }
+
+        if (input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_START))
+        {
+            m_bIsInteracting = false;
+        }
+
+        UI_PASS.AddTooltip("WASD: Move    Mouse: Camera\n   Press SPACE to explore",
+            Vec2f(0.5f * (float)RenderContext->GetDisplayResolution()[0], 0.95f * (float)RenderContext->GetDisplayResolution()[1]));
+
+        UI_PASS.AddTooltip(SceneData::GetSceneData().IntroText.c_str(),
+            Vec2f(0.5f * (float)RenderContext->GetDisplayResolution()[0], 0.65f * (float)RenderContext->GetDisplayResolution()[1]));
+    }
+    else if(m_fTimeAccum < m_fIntroDuration)
+    {
+        m_fTimeAccum += deltaTime;
+        m_fTimeAccum = gmtl::Math::clamp(m_fTimeAccum, 0.f, m_fIntroDuration);
+        const float lerpValue = gmtl::Math::pow(m_fTimeAccum / m_fIntroDuration, 5.f);
+        gmtl::Math::lerp(RenderConfig::DirectionalLight::DiffuseFactor, lerpValue, 0.f, m_fInitialLight);
+        gmtl::Math::lerp(RenderConfig::DirectionalLight::IrradianceFactor, lerpValue, 0.f, m_fInitialIrradiance);
+        gmtl::Math::lerp(RenderConfig::DirectionalLightVolume::MultScatterIntensity, lerpValue, 5.f, m_fInitialVolumetric);
+
+        m_pIntroSound->SetFilterGain(1.f - (m_fTimeAccum / m_fIntroDuration), 1.f);
+    }
 
     // Leash
     const float leashDist = 10.f;
@@ -229,7 +289,7 @@ void Player::Update(const float deltaTime)
                         Vec2f finalPos = Vec2f(
                             tooltipPos[0] * (float)RenderContext->GetDisplayResolution()[0],
                             (1.f - tooltipPos[1]) * (float)RenderContext->GetDisplayResolution()[1]);
-                        UI_PASS.AddTooltip("Press E to interact", finalPos);
+                        UI_PASS.AddTooltip("Press E to open door", finalPos);
 
                         if (input->GetBoolIsNew(VirtualMuseum::Command::APP_CMD_INTERACT))
                         {
@@ -242,7 +302,82 @@ void Player::Update(const float deltaTime)
     }
 }
 
-Door::Door(const unsigned int sceneDataId)
+void Player::Draw(DrawMode drawMode, unsigned int cascade /* = ~0u */)
+{
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    RenderState* RSMgr = RenderContext->GetRenderStateManager();
+    if (!RSMgr)
+        return;
+
+    switch (drawMode)
+    {
+        case VirtualMuseumApp::Scene::Actor::UI_2D:
+        {
+            if (m_fTimeAccum < m_fIntroDuration)
+            {
+                // Setup render states
+                const bool sRGBEnabled = RSMgr->GetSRGBWriteEnabled();
+                const bool zWriteEnable = RSMgr->GetZWriteEnabled();
+                const Cmp zFunc = RSMgr->GetZFunc();
+                const ZBuffer zEnabled = RSMgr->GetZEnabled();
+                const bool blendEnabled = RSMgr->GetColorBlendEnabled();
+                const Blend dstBlend = RSMgr->GetColorDstBlend();
+                const Blend srcBlend = RSMgr->GetColorSrcBlend();
+                const Cull cullMode = RSMgr->GetCullMode();
+
+                RSMgr->SetSRGBWriteEnabled(false);
+                RSMgr->SetZWriteEnabled(false);
+                RSMgr->SetZFunc(CMP_ALWAYS);
+                RSMgr->SetZEnabled(ZB_DISABLED);
+                RSMgr->SetColorBlendEnabled(true);
+                RSMgr->SetColorDstBlend(BLEND_INVSRCALPHA);
+                RSMgr->SetColorSrcBlend(BLEND_SRCALPHA);
+                RSMgr->SetCullMode(CULL_NONE);
+
+                IntroLogo.GetTexture()->SetSRGBEnabled(false);
+
+                HLSL::UIParams->TextureSwitch = 2;
+                HLSL::UIParams->MipLevel = 0;
+                HLSL::UIParams->FaceIdx = 0;
+                HLSL::UIParams->DepthSlice = 0;
+                HLSL::UIParams->ColorMul = Vec4f(1.f, 1.f, 1.f, 1.f - (m_fTimeAccum / m_fIntroDuration));
+                HLSL::UIParams->UIProjMat = MAT_IDENTITY44F;
+                HLSL::UI_Texture2D = IntroLogo.GetTextureIndex();
+
+                const float logoSize = (float)RenderContext->GetDisplayResolution()[1] * 0.35f;
+                const float texRatio = (float)IntroLogo.GetTexture()->GetWidth() / (float)IntroLogo.GetTexture()->GetHeight();
+                const Vec2i viewportSize((int)(logoSize * texRatio), (int)logoSize);
+                const Vec2i viewportOffset(
+                    (RenderContext->GetDisplayResolution()[0] - viewportSize[0]) / 2,
+                    RenderContext->GetDisplayResolution()[1] / 20);
+
+                UIShader.Enable();
+                RenderContext->SetViewport(viewportSize, viewportOffset);
+                RenderContext->DrawVertexBuffer(SimpleQuad);
+                UIShader.Disable();
+
+                // Revert render states
+                RSMgr->SetSRGBWriteEnabled(sRGBEnabled);
+                RSMgr->SetZWriteEnabled(zWriteEnable);
+                RSMgr->SetZFunc(zFunc);
+                RSMgr->SetZEnabled(zEnabled);
+                RSMgr->SetColorBlendEnabled(blendEnabled);
+                RSMgr->SetColorDstBlend(dstBlend);
+                RSMgr->SetColorSrcBlend(srcBlend);
+                RSMgr->SetCullMode(cullMode);
+            }
+            break;
+        }
+        
+        default:
+            break;
+    }
+}
+
+Room::Room(const unsigned int sceneDataId)
     : Actor()
     , m_pModel(nullptr)
     , m_pOpenSound(nullptr)
@@ -265,22 +400,24 @@ Door::Door(const unsigned int sceneDataId)
     m_pOpenSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
 
     m_pHallSound = Audio::GetInstance()->CreateSoundSource();
-    m_pHallSound->SetSoundFile(SceneData::GetSceneData()[sceneDataId].hallSnd.c_str());
+    m_pHallSound->SetSoundFile(SceneData::GetSceneData().Room[sceneDataId].HallSnd.c_str());
     m_pHallSound->SetPosition(Vec3f(m_vPosition[0], m_vPosition[1], -m_vPosition[2]));
     m_pHallSound->SetFilterGain(0.f, 0.f);
 }
 
-Door::~Door()
+Room::~Room()
 {
     Audio::GetInstance()->RemoveSoundSource(m_pOpenSound);
     Audio::GetInstance()->RemoveSoundSource(m_pHallSound);
 }
 
-void Door::Update(const float deltaTime)
+void Room::Update(const float deltaTime)
 {
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
         return;
+
+    gainput::InputMap* input = ((VirtualMuseum*)AppMain)->GetInput();
 
     if(IsActive())
     {
@@ -296,16 +433,18 @@ void Door::Update(const float deltaTime)
             m_pHallSound->SetPosition(Vec3f(camPos[0], m_vPosition[1], -camPos[2]));
         }
 
+        if (m_pHallSound->GetStatus() != Audio::SoundSource::PLAYING &&
+            !((VirtualMuseum*)AppMain)->GetScene()->GetPlayer()->IsInteracting())
+        {
+            m_pHallSound->Play(true);
+            m_fHallSoundGain = 0.f;
+        }
+
         if (m_fHallSoundGain < 1.f)
         {
             m_fHallSoundGain += deltaTime / 3.f;
             m_fHallSoundGain = gmtl::Math::clamp(m_fHallSoundGain, 0.f, 1.f);
             m_pHallSound->SetFilterGain(m_fHallSoundGain, 0.f);
-        }
-
-        if (m_pHallSound->GetStatus() != Audio::SoundSource::PLAYING)
-        {
-            m_pHallSound->Play(true);
         }
 
         if (IsInteracting())
@@ -422,7 +561,7 @@ void Door::Update(const float deltaTime)
                         RenderConfig::DirectionalLightVolume::MultScatterIntensity = m_fInitialLight;
                         m_bIsInteracting = false;
                         m_fDoorAnimation = 0.f;
-                        m_eInteractState = Door::IS_ADJUST_PLAYER;
+                        m_eInteractState = Room::IS_ADJUST_PLAYER;
                     }
                 }
             }
@@ -440,8 +579,32 @@ void Door::Update(const float deltaTime)
             const Vec3f adjustPlayerPos = corridorCenterLine + makeNormal(centerLineToPlayer) * Math::Min(playerDistFromCorridor, corridorWidth * 0.5f);
             ((VirtualMuseum*)AppMain)->GetCamera().vPos = Vec3f(-adjustPlayerPos[0], -camPos[1], -adjustPlayerPos[2]);
 
-            UI_PASS.AddTooltip(SceneData::GetSceneData()[m_nSceneDataId].roomName.c_str(),
-                Vec2f(0.5f * (float)RenderContext->GetDisplayResolution()[0], 0.95f * (float)RenderContext->GetDisplayResolution()[1]));
+            UI_PASS.AddTooltip(SceneData::GetSceneData().Room[m_nSceneDataId].RoomName.c_str(),
+                Vec2f(0.5f * (float)RenderContext->GetDisplayResolution()[0], 0.05f * (float)RenderContext->GetDisplayResolution()[1]));
+
+            if (playerDistFromCorridor >= corridorWidth * 0.5f * 0.9f)
+            {
+                Vec3f exhibitLinePos = corridorCenterLine + makeNormal(centerLineToPlayer) * 3.f;
+                Vec4f tooltipPos =
+                    HLSL::FrameParams->ViewProjMat *
+                    Vec4f(exhibitLinePos[0], 0.75f, exhibitLinePos[2], 1.f);
+                tooltipPos = tooltipPos / tooltipPos[3];
+                if (tooltipPos[0] > -1.f && tooltipPos[0] < 1.f &&
+                    tooltipPos[1] > -1.f && tooltipPos[1] < 1.f &&
+                    tooltipPos[2] > 0.f && tooltipPos[2] < 1.f)
+                {
+                    tooltipPos *= 0.5f;
+                    tooltipPos[0] += 0.5f;
+                    tooltipPos[1] += 0.5f;
+
+                    Vec2f finalPos = Vec2f(
+                        tooltipPos[0] * (float)RenderContext->GetDisplayResolution()[0],
+                        (1.f - tooltipPos[1]) * (float)RenderContext->GetDisplayResolution()[1]);
+
+                    const bool leftOrRightSide = makeCross(m_vPosition, centerLineToPlayer)[1] > 0.f;
+                    UI_PASS.AddTooltip(SceneData::GetSceneData().Room[m_nSceneDataId].ExhibitDesc[leftOrRightSide ? 0 : 1].c_str(), finalPos);
+                }
+            }
         }
     }
     else // if (!IsActive())
@@ -460,11 +623,11 @@ void Door::Update(const float deltaTime)
 
         m_bIsInteracting = false;
         m_fDoorAnimation = 0.f;
-        m_eInteractState = Door::IS_ADJUST_PLAYER;
+        m_eInteractState = Room::IS_ADJUST_PLAYER;
     }
 }
 
-void Door::Interact()
+void Room::Interact()
 {
     Actor::Interact();
 
@@ -478,7 +641,7 @@ void Door::Interact()
     m_fInitialLight = RenderConfig::DirectionalLightVolume::MultScatterIntensity;
 }
 
-void Door::Draw(DrawMode drawMode, unsigned int cascade)
+void Room::Draw(DrawMode drawMode, unsigned int cascade)
 {
     if (!IsActive())
     {
@@ -497,9 +660,9 @@ void Door::Draw(DrawMode drawMode, unsigned int cascade)
     }
 }
 
-void Door::DrawExhibits(DrawMode drawMode, Vec3f pos, float rotDeg)
+void Room::DrawExhibits(DrawMode drawMode, Vec3f pos, float rotDeg)
 {
-    const unsigned int exhibitCount = SceneData::GetSceneData()[m_nSceneDataId].exhibitCount;
+    const unsigned int exhibitCount = SceneData::GetSceneData().Room[m_nSceneDataId].ExhibitCount;
     for (unsigned int id = 0; id < exhibitCount; id++)
     {
         const float corridorLength = length(pos) * 2.f;
@@ -525,7 +688,7 @@ void Door::DrawExhibits(DrawMode drawMode, Vec3f pos, float rotDeg)
     }
 }
 
-void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOffset, unsigned int id)
+void Room::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOffset, unsigned int id)
 {
     Renderer* RenderContext = Renderer::GetInstance();
     RenderState* RSMgr = RenderContext ? RenderContext->GetRenderStateManager() : nullptr;
@@ -555,12 +718,12 @@ void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOf
             RSMgr->SetColorSrcBlend(BLEND_ONE);
             RSMgr->SetCullMode(CULL_NONE);
 
-            SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
-            SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->SetSRGBEnabled(true);
+            SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTexture()->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
+            SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTexture()->SetSRGBEnabled(true);
 
             const float texDimRatio = 
-                (float)SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->GetHeight() /
-                (float)SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTexture()->GetWidth();
+                (float)SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTexture()->GetHeight() /
+                (float)SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTexture()->GetWidth();
             Matrix44f worldMat =
                 makeTrans(pos, Type2Type<Matrix44f>()) *
                 makeRot(EulerAngleXYZf(0.f, Math::deg2Rad(rotDeg), 0.f), Type2Type<Matrix44f>()) *
@@ -597,7 +760,7 @@ void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOf
                 HLSL::BRDFParams->ViewMat *
                 worldMat;
 
-            HLSL::GBufferGeneration_Diffuse = SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTextureIndex();
+            HLSL::GBufferGeneration_Diffuse = SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTextureIndex();
             HLSL::GBufferGeneration_Normal = ~0u;
             HLSL::GBufferGenerationParams->HasNormalMap = false;
 
@@ -612,7 +775,7 @@ void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOf
 
             GBufferGenerationShader.Enable();
 
-            PUSH_PROFILE_MARKER(SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetFilePath());
+            PUSH_PROFILE_MARKER(SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetFilePath());
             RenderContext->DrawVertexBuffer(SimpleQuad);
             POP_PROFILE_MARKER();
 
@@ -635,11 +798,11 @@ void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOf
                 HLSL::BRDFParams->ViewMat *
                 worldMat;
 
-            HLSL::UI_Texture2D = SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetTextureIndex();
+            HLSL::UI_Texture2D = SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetTextureIndex();
 
             UIShader.Enable();
 
-            PUSH_PROFILE_MARKER(SceneData::GetSceneData()[m_nSceneDataId].exhibits[id]->GetFilePath());
+            PUSH_PROFILE_MARKER(SceneData::GetSceneData().Room[m_nSceneDataId].Exhibits[id]->GetFilePath());
             RenderContext->DrawVertexBuffer(SimpleQuad);
             POP_PROFILE_MARKER();
 
@@ -663,7 +826,7 @@ void Door::DrawExhibit(DrawMode drawMode, Vec3f pos, float rotDeg, Vec3f localOf
     }
 }
 
-void Door::DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat, Matrix44f* viewMat, Matrix44f* projMat)
+void Room::DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat, Matrix44f* viewMat, Matrix44f* projMat)
 {
     Renderer* RenderContext = Renderer::GetInstance();
     ResourceManager* const ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
@@ -824,7 +987,7 @@ void Door::DrawModel(Model* model, DrawMode drawMode, Matrix44f* worldMat, Matri
     renderStateMgr->SetCullMode(cullMode);
 }
 
-void Door::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade)
+void Room::DrawDoor(Model* model, DrawMode drawMode, Vec3f pos, float rotDeg, float openDoor, unsigned int cascade)
 {
     const unsigned int meshCount = (unsigned int)model->GetModel()->arrMesh.size();
     assert(meshCount >= 2); // just in case
@@ -884,7 +1047,7 @@ void Scene::SetupScene()
     const float doorRotRad = Math::PI;
     for (unsigned int i = 0; i < numDoors; i++)
     {
-        m_pActors.push_back(new Door(i));
+        m_pActors.push_back(new Room(i));
         m_pActors.back()->SetPosition(doorDist * Vec3f(
             Math::sin(doorRotRad * ((float)i / (float)(numDoors - 1)) - doorRotRad * 0.5f),
             0.f,
@@ -912,6 +1075,8 @@ void Scene::Draw(Actor::DrawMode drawMode, unsigned int cascade)
     {
         m_pActors[i]->Draw(drawMode, cascade);
     }
+
+    m_pPlayer->Draw(drawMode, cascade);
 }
 
 Scene::~Scene()
@@ -950,6 +1115,11 @@ void Scene::Actor::SetOrientation(float angle)
 
 const bool Scene::IsInteracting() const
 {
+    if (m_pPlayer->IsInteracting())
+    {
+        return true;
+    }
+
     auto actors = ((VirtualMuseum*)AppMain)->GetScene()->GetActors();
     for (unsigned int i = 0; i < actors.size(); i++)
     {

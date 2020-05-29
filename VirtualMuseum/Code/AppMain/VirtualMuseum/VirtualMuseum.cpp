@@ -133,6 +133,7 @@ bool VirtualMuseum::Init(void* hWnd)
             m_pInputMap->MapBool(APP_CMD_SLOW_DOWN, keyboardId, gainput::KeyCtrlL);
             m_pInputMap->MapBool(APP_CMD_FOCUS_UI, keyboardId, gainput::KeyMenu);
             m_pInputMap->MapBool(APP_CMD_INTERACT, keyboardId, gainput::KeyE);
+            m_pInputMap->MapBool(APP_CMD_START, keyboardId, gainput::KeySpace);
         }
 
         // Setup UI key bindings

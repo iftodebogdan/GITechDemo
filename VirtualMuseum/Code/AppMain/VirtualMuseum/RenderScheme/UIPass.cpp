@@ -46,6 +46,7 @@ using namespace AppFramework;
 #include "VirtualMuseum.h"
 #include "ArtistParameter.h"
 #include "RenderScheme.h"
+#include "Scene.h"
 using namespace VirtualMuseumApp;
 
 #define FRAMETIME_GRAPH_HEIGHT (100.f)
@@ -139,7 +140,7 @@ void UIPass::Update(const float fDeltaTime)
     io.RenderDrawListsFn = nullptr;
 
     io.DisplaySize = ImVec2((float)RenderContext->GetDisplayResolution()[0], (float)RenderContext->GetDisplayResolution()[1]);
-    io.FontGlobalScale = Math::Max(io.DisplaySize.y / 1080.f, 1.f); // 1080p is the reference font size
+    io.FontGlobalScale = Math::Max(io.DisplaySize.y / 720.f, 1.f); // 720p is the reference font size
     io.DeltaTime = pFW->GetDeltaTime();
 
     // Pass current mouse position to ImGui
@@ -245,6 +246,8 @@ void UIPass::Update(const float fDeltaTime)
 void UIPass::Draw()
 {
     RenderUI();
+
+    ((VirtualMuseum*)AppMain)->GetScene()->Draw(Scene::Actor::DrawMode::UI_2D);
 }
 
 void UIPass::AddParameterInWindow(ArtistParameter* const param) const
@@ -525,9 +528,11 @@ void UIPass::SetupUI()
         snprintf(windowName, 32, "Tooltip_%s", m_tooltips[i].text.c_str());
         if (ImGui::Begin(windowName, &showTooltip, flags))
         {
+            ImGui::PushTextWrapPos(io.DisplaySize.x * 0.75f);
             //ImGui::SetWindowPos(ImVec2(m_tooltips[i].pos[0], m_tooltips[i].pos[1]));
             ImGui::TextUnformatted(m_tooltips[i].text.c_str());
             ImGui::SetWindowPos(ImVec2(m_tooltips[i].pos[0] - (style.WindowPadding.x + ImGui::GetWindowWidth()) * 0.5f, m_tooltips[i].pos[1] - (style.WindowPadding.y + ImGui::GetWindowHeight()) * 0.5f));
+            ImGui::PopTextWrapPos();
             ImGui::End();
         }
     }
@@ -575,10 +580,12 @@ void UIPass::SetupUI()
             ImGui::OpenPopup("Quit?");
         }
 
+    #ifndef RELEASE
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.f);
         ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize(pFW->GetWindowTitle().c_str()).x - style.WindowPadding.x);
         ImGui::TextDisabled(pFW->GetWindowTitle().c_str());
         ImGui::PopStyleVar();
+    #endif
 
         // Quit confirmation dialog
         ImGui::PushStyleColor(ImGuiCol_ModalWindowDarkening, ImVec4(0.1f, 0.1f, 0.1f, 0.75f));

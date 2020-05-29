@@ -390,6 +390,8 @@ namespace VirtualMuseumApp
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
     CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
 
+    CREATE_TEXTURE_OBJECT(IntroLogo, "textures/logo.s3dtex");
+
     CREATE_TEXTURE_OBJECT(Room1_1, "textures/room1_1.s3dtex");
     CREATE_TEXTURE_OBJECT(Room1_2, "textures/room1_2.s3dtex");
     CREATE_TEXTURE_OBJECT(Room1_3, "textures/room1_3.s3dtex");
@@ -643,7 +645,7 @@ namespace VirtualMuseumApp
         "Synchronizes backbuffer swapping with screen refresh rate",
         "Window",
         RenderConfig::Window::VSync,
-        false);
+        true);
     //------------------------------------------------------
 
     // Camera ----------------------------------------------
@@ -1289,7 +1291,7 @@ namespace VirtualMuseumApp
         "Volumetric lights",
         RenderConfig::DirectionalLightVolume::BlurDepthFalloff,
         0.0001f,
-        0.025f);
+        0.25f);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "Depth-aware upscaling",

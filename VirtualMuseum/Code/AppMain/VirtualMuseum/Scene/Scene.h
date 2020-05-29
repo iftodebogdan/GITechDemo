@@ -48,7 +48,8 @@ namespace VirtualMuseumApp
                 DEPTH_ONLY_ALPHA_TEST,
                 SHADOW,
                 COLOR,
-                UI_3D
+                UI_3D,
+                UI_2D
             };
 
             virtual void Update(const float deltaTime) = 0;

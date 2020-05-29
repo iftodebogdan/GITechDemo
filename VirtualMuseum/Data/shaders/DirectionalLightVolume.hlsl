@@ -75,7 +75,8 @@ void vsmain(float4 position : POSITION, out VSOut output)
 // Radiative transport equation terms (http://sirkan.iit.bme.hu/~szirmay/lightshaft.pdf)
 #define TAU     (0.0001f)   // Probability of collision
 //#define PHI       (1.f)       // Source power of the light
-#define PHI BRDFParams.DiffuseFactor
+//#define PHI BRDFParams.DiffuseFactor
+#define PHI (30.f)
 
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
