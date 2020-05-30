@@ -29,6 +29,9 @@
 #include <Profiler.h>
 using namespace Synesthesia3D;
 
+#include "Framework.h"
+using namespace AppFramework;
+
 #include "HDRToneMappingPass.h"
 using namespace GITechDemoApp;
 
@@ -51,6 +54,8 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
     if (!ResourceMgr)
         return;
 
+    Framework* const pFW = Framework::GetInstance();
+
     ResourceMgr->GetTexture(AverageLuminanceBuffer[0]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(AverageLuminanceBuffer[1]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
     ResourceMgr->GetTexture(AverageLuminanceBuffer[2]->GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -69,7 +74,7 @@ void HDRToneMappingPass::Update(const float fDeltaTime)
     SWAP_RENDER_TARGET_HANDLES(AdaptedLuminance[0], AdaptedLuminance[1]);
 
     HLSL::LumaAdaptParams->LumaAdaptSpeed = RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed;
-    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(fDeltaTime, 0.f, 1.f / RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed);
+    HLSL::HDRToneMappingParams->FrameTime = gmtl::Math::clamp(pFW->GetDeltaTime(), 0.f, 1.f / RenderConfig::PostProcessing::ToneMapping::AutoExposureSpeed);
 
     HLSL::LumaAdapt_LumaTarget = AverageLuminanceBuffer[3]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_ColorCorrectionTexture = ColorCorrectionTexture.GetTextureIndex();

@@ -84,6 +84,7 @@ const unsigned int GetCascadeIdx(const float2 lightViewPos)
 const float3 GetCascadeSpacePos(const float3 lightViewPos, const unsigned int validCascade)
 {
     float3 cascadeTexCoord = mul(CSMParams.CascadeProjMat[validCascade], float4(lightViewPos, 1.f)).xyz;
+    cascadeTexCoord.z = saturate(cascadeTexCoord.z);
 
     // After bringing our point in normalized light-view space, calculate
     // proper texture coordinates for shadow map sampling
