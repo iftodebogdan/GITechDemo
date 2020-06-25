@@ -2,7 +2,7 @@
 # This file is part of the "GITechDemo" application
 # Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
-#       File:   build_tools_win.py
+#       File:   build_tools.py
 #       Author: Bogdan Iftode
 #
 # This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import utils
 #############################################################################
 #       Arguments:                                                          #
 #---------------------------------------------------------------------------#
-#   'win32' to build the 32 bit version of the tools                        #
+#   'x86' to build the 32 bit version of the tools                          #
 #   'x64' to build the 64 bit version of the tools (default)                #
 #############################################################################
 
@@ -52,6 +52,7 @@ def Run():
 
     defaultForceRebuild = False
     defaultArchitecture = "x64"
+    defaultPlatform = "Windows" # Compiler tools have Windows-specific dependencies
 
     #################
 
@@ -70,8 +71,8 @@ def Run():
             defaultForceRebuild = True
         if(opt.lower() == "x64"):
             defaultArchitecture = "x64"
-        if(opt.lower() == "win32" or opt.lower() == "x86"):
-            defaultArchitecture = "Win32"
+        if(opt.lower() == "x86"):
+            defaultArchitecture = "x86"
 
 
 
@@ -90,7 +91,7 @@ def Run():
     logging.info("")
     for dep in toolsName:
         startPerTool = time.clock()
-        if utils.BuildSLN(dep, buildEnvPath, defaultArchitecture, "Release", defaultForceRebuild) != 0:
+        if utils.BuildSLN(dep, buildEnvPath, defaultPlatform + "_" + defaultArchitecture, "Release", defaultForceRebuild) != 0:
             logging.error("Could not complete tool build process")
             return 1
         # Done! Print some info.

@@ -30,8 +30,9 @@
     <ProjectGUID>{84A40273-6042-41CE-8DA8-CD1D538E1FC1}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
-    <ProjectName>gainput</ProjectName>
+    <ProjectName>gainput_Windows</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <RootNamespace>gainput</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,42 +78,51 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="gainput.vcxitems" Label="Shared" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <TargetName>$(RootNamespace)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -145,7 +155,7 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -179,7 +189,7 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -213,7 +223,7 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
@@ -247,7 +257,7 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -281,7 +291,7 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
@@ -315,75 +325,9 @@
       <AdditionalDependencies>XInput.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>lib\$(Platform)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>lib\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="source\builtin\GainputInputDeviceBuiltIn.cpp" />
-    <ClCompile Include="source\dev\GainputDev.cpp" />
-    <ClCompile Include="source\dev\GainputMemoryStream.cpp" />
-    <ClCompile Include="source\dev\GainputNetAddress.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="source\dev\GainputNetConnection.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="source\dev\GainputNetListener.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="source\gainput.cpp" />
-    <ClCompile Include="source\GainputAllocator.cpp" />
-    <ClCompile Include="source\GainputInputDeltaState.cpp" />
-    <ClCompile Include="source\GainputInputDevice.cpp" />
-    <ClCompile Include="source\GainputInputManager.cpp" />
-    <ClCompile Include="source\GainputInputMap.cpp" />
-    <ClCompile Include="source\GainputInputState.cpp" />
-    <ClCompile Include="source\gestures\GainputButtonStickGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputDoubleClickGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputHoldGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputPinchGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputRotateGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputSimultaneouslyDownGesture.cpp" />
-    <ClCompile Include="source\gestures\GainputTapGesture.cpp" />
-    <ClCompile Include="source\keyboard\GainputInputDeviceKeyboard.cpp" />
-    <ClCompile Include="source\keyboard\GainputInputDeviceKeyboardMac.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="source\mouse\GainputInputDeviceMouse.cpp" />
-    <ClCompile Include="source\pad\GainputInputDevicePad.cpp" />
-    <ClCompile Include="source\pad\GainputInputDevicePadMac.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="source\recorder\GainputInputPlayer.cpp" />
-    <ClCompile Include="source\recorder\GainputInputRecorder.cpp" />
-    <ClCompile Include="source\recorder\GainputInputRecording.cpp" />
-    <ClCompile Include="source\touch\GainputInputDeviceTouch.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

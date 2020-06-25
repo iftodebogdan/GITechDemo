@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{a609f56d-f353-4e3c-99bb-b76c3af9c971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Windows">
+      <UniqueIdentifier>{d01e7f03-eeca-419a-b560-836055eb4276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Windows\Precompiled Headers">
+      <UniqueIdentifier>{9b34dc74-67cf-4d4a-a4a7-3be29418b097}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Framework\Windows\Framework.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Framework\Windows\small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GITechDemo\Framework.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GITechDemo\small.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="GITechDemo\UtahTeapot.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="GITechDemo\GITechDemo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="Framework\Windows\Framework.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Framework\Windows\FrameworkWin.cpp">
+      <Filter>Framework\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework\Windows\stdafx.cpp">
+      <Filter>Framework\Windows\Precompiled Headers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Framework\Windows\FrameworkWin.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="GITechDemo\Resource.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\targetver.h">
+      <Filter>Framework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework\Windows\stdafx.h">
+      <Filter>Framework\Windows\Precompiled Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

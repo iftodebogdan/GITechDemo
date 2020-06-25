@@ -1,0 +1,397 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{c80db294-8fa9-4374-bc27-0ea181a354d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{718ebd3a-cfab-4366-8af5-f825c7a283ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl">
+      <UniqueIdentifier>{aab49332-e929-4c01-b4ed-bba5c1657629}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Util">
+      <UniqueIdentifier>{e27250b1-6d45-4c74-af95-19f197bdb53d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Numerics">
+      <UniqueIdentifier>{fdac47e9-5cae-4867-9630-0ac7726a9e77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Misc">
+      <UniqueIdentifier>{aded5edb-3bd9-49f5-a0de-4fe1bff53c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\Fit">
+      <UniqueIdentifier>{5c2944fa-31e5-4227-be77-f67fda99034a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\gmtl\External">
+      <UniqueIdentifier>{45c1f7db-226e-4d84-8eea-984025d6ab8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\lz4">
+      <UniqueIdentifier>{ef12d921-af4d-4365-9387-d076984e6900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NULL">
+      <UniqueIdentifier>{f285ad4f-1de6-4ed9-8199-d6a8a696581e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompiled Headers">
+      <UniqueIdentifier>{60064ce2-666d-46aa-ba5f-b99e991f9eb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{ffaad265-9a83-40dc-b6bf-716670a46dc2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Profiler.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ResourceSerialization.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\RenderState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\RenderTarget.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ResourceManager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\SamplerState.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ShaderInput.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ShaderProgram.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Texture.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Buffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\IndexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Renderer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\VertexFormat.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)External\lz4\lz4.c">
+      <Filter>External\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)External\lz4\lz4hc.c">
+      <Filter>External\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ResourceManagerNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\SamplerStateNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ShaderProgramNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
+      <Filter>Precompiled Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\Debug.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\HalfFloat.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)dllmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ResourceData.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\RenderTarget.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ResourceManager.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\SamplerState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ShaderInput.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ShaderProgram.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Texture.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Buffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\IndexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\RenderState.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Renderer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\VertexFormat.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AABox.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AABoxOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AxisAngle.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AxisAngleOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Comparitors.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Config.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Containment.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Coord.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\CoordOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Defines.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\EulerAngle.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\EulerAngleOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Frustum.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\FrustumOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Generate.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\gmtl.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Helpers.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Intersection.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\LineSeg.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\LineSegOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Math.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Matrix.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\MatrixOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\OOBox.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Output.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\ParametricCurve.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Plane.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\PlaneOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Point.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Quat.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\QuatOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Ray.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\RayOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Sphere.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\SphereOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Tri.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\TriOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Vec.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecBase.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecExprMeta.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecOps.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecOpsMeta.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Version.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Xforms.h">
+      <Filter>External\gmtl</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\Assert.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\Meta.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\StaticAssert.h">
+      <Filter>External\gmtl\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Numerics\Eigen.h">
+      <Filter>External\gmtl\Numerics</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Misc\MatrixConvert.h">
+      <Filter>External\gmtl\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Fit\GaussPointsFit.h">
+      <Filter>External\gmtl\Fit</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\External\OpenSGConvert.h">
+      <Filter>External\gmtl\External</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4hc.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4opt.h">
+      <Filter>External\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ShaderProgramNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ResourceManagerNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\SamplerStateNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h">
+      <Filter>Precompiled Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Debug.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Hash.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\HalfFloat.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Mutex.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Base\ShaderInput.inl">
+      <Filter>Base</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.inl">
+      <Filter>Base</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Synesthesia3D.licenseheader" />
+  </ItemGroup>
+</Project>

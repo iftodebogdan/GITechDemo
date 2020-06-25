@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{865aa4e0-4159-4dca-ac2f-baa13d71ff6c}</ItemsProjectGuid>
+    <ItemsProjectName>Synesthesia3D_Shared</ItemsProjectName>
+    <ItemsRootNamespace>Synesthesia3D</ItemsRootNamespace>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Buffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\IndexBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Profiler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\RenderState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\RenderTarget.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ResourceSerialization.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\SamplerState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ShaderInput.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\ShaderProgram.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\Texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Base\VertexFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)dllmain.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)External\lz4\lz4.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)External\lz4\lz4hc.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ResourceManagerNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\SamplerStateNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ShaderProgramNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\Debug.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Utility\HalfFloat.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Buffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\IndexBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Renderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\RenderState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\RenderTarget.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ResourceData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\SamplerState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ShaderInput.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\ShaderProgram.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\Texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Base\VertexFormat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AABox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AABoxOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AxisAngle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\AxisAngleOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Comparitors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Config.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Containment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Coord.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\CoordOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Defines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\EulerAngle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\EulerAngleOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\External\OpenSGConvert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Fit\GaussPointsFit.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Frustum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\FrustumOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Generate.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\gmtl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Intersection.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\LineSeg.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\LineSegOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Math.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Matrix.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\MatrixOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Misc\MatrixConvert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Numerics\Eigen.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\OOBox.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Output.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\ParametricCurve.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Plane.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\PlaneOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Point.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Quat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\QuatOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Ray.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\RayOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Sphere.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\SphereOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Tri.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\TriOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\Assert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\Meta.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Util\StaticAssert.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Vec.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecExprMeta.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecOps.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\VecOpsMeta.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Version.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\gmtl\include\gmtl\Xforms.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4hc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4opt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ResourceManagerNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\SamplerStateNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ShaderProgramNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Debug.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\HalfFloat.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Hash.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Mutex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Base\ShaderInput.inl" />
+    <None Include="$(MSBuildThisFileDirectory)Base\VertexBuffer.inl" />
+    <None Include="$(MSBuildThisFileDirectory)Synesthesia3D.licenseheader" />
+  </ItemGroup>
+</Project>

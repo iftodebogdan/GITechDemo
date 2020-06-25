@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{1a0b1011-449c-4914-82e8-72685326b748}</ItemsProjectGuid>
+    <ItemsProjectName>ImGui_Shared</ItemsProjectName>
+    <ItemsRootNamespace>ImGui</ItemsRootNamespace>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\imconfig.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\imgui.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\imgui_internal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\stb_rect_pack.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\stb_textedit.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\stb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\imgui.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\imgui_demo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\imgui_draw.cpp" />
+  </ItemGroup>
+</Project>

@@ -26,11 +26,80 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DX9\IndexBufferDX9.cpp" />
+    <ClCompile Include="DX9\MappingsDX9.cpp" />
+    <ClCompile Include="DX9\ProfilerDX9.cpp" />
+    <ClCompile Include="DX9\RendererDX9.cpp" />
+    <ClCompile Include="DX9\RenderStateDX9.cpp" />
+    <ClCompile Include="DX9\RenderTargetDX9.cpp" />
+    <ClCompile Include="DX9\ResourceManagerDX9.cpp" />
+    <ClCompile Include="DX9\SamplerStateDX9.cpp" />
+    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
+    <ClCompile Include="DX9\TextureDX9.cpp" />
+    <ClCompile Include="DX9\VertexBufferDX9.cpp" />
+    <ClCompile Include="DX9\VertexFormatDX9.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DX9\IndexBufferDX9.h" />
+    <ClInclude Include="DX9\MappingsDX9.h" />
+    <ClInclude Include="DX9\ProfilerDX9.h" />
+    <ClInclude Include="DX9\RendererDX9.h" />
+    <ClInclude Include="DX9\RenderStateDX9.h" />
+    <ClInclude Include="DX9\RenderTargetDX9.h" />
+    <ClInclude Include="DX9\ResourceManagerDX9.h" />
+    <ClInclude Include="DX9\SamplerStateDX9.h" />
+    <ClInclude Include="DX9\ShaderProgramDX9.h" />
+    <ClInclude Include="DX9\TextureDX9.h" />
+    <ClInclude Include="DX9\VertexBufferDX9.h" />
+    <ClInclude Include="DX9\VertexFormatDX9.h" />
+    <ClInclude Include="External\DX9\include\d3d9.h" />
+    <ClInclude Include="External\DX9\include\d3d9caps.h" />
+    <ClInclude Include="External\DX9\include\d3d9types.h" />
+    <ClInclude Include="External\DX9\include\d3dx9.h" />
+    <ClInclude Include="External\DX9\include\d3dx9anim.h" />
+    <ClInclude Include="External\DX9\include\d3dx9core.h" />
+    <ClInclude Include="External\DX9\include\d3dx9effect.h" />
+    <ClInclude Include="External\DX9\include\d3dx9math.h" />
+    <ClInclude Include="External\DX9\include\d3dx9mesh.h" />
+    <ClInclude Include="External\DX9\include\d3dx9shader.h" />
+    <ClInclude Include="External\DX9\include\d3dx9shape.h" />
+    <ClInclude Include="External\DX9\include\d3dx9tex.h" />
+    <ClInclude Include="External\DX9\include\d3dx9xof.h" />
+    <ClInclude Include="External\DX9\include\DxErr.h" />
+    <ClInclude Include="External\vld\include\vld.h" />
+    <ClInclude Include="External\vld\include\vld_def.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="External\DX9\lib\x64\d3d9.lib" />
+    <Library Include="External\DX9\lib\x64\d3dx9.lib" />
+    <Library Include="External\DX9\lib\x64\d3dx9d.lib" />
+    <Library Include="External\DX9\lib\x64\DxErr.lib" />
+    <Library Include="External\DX9\lib\x86\d3d9.lib" />
+    <Library Include="External\DX9\lib\x86\d3dx9.lib" />
+    <Library Include="External\DX9\lib\x86\d3dx9d.lib" />
+    <Library Include="External\DX9\lib\x86\DxErr.lib" />
+    <Library Include="External\vld\lib\x64\vld.lib" />
+    <Library Include="External\vld\lib\x86\vld.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="External\DX9\include\d3dx9math.inl" />
+    <None Include="External\vld\bin\x64\dbghelp.dll" />
+    <None Include="External\vld\bin\x64\vld_x64.dll" />
+    <None Include="External\vld\bin\x86\dbghelp.dll" />
+    <None Include="External\vld\bin\x86\vld_x86.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="External\vld\bin\x86\Microsoft.DTfW.DHL.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="External\vld\bin\x64\Microsoft.DTfW.DHL.manifest" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{42B90F7F-E5D8-4B7F-BE74-CAC4DA86C76F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Synesthesia3D</RootNamespace>
-    <ProjectName>Synesthesia3D</ProjectName>
+    <ProjectName>Synesthesia3D_Windows</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -77,6 +146,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="Synesthesia3D.vcxitems" Label="Shared" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -100,57 +172,57 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;</LibraryPath>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
     <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(FrameworkSDKDir)\lib;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath);$(ProjectDir)External;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include</IncludePath>
     <LibraryPath>$(LibraryPath);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSdkDir)lib\x64;</LibraryPath>
-    <OutDir>$(SolutionDir)..\..\Bin\$(Platform)\$(Configuration)\$(SolutionName)\</OutDir>
-    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Bin\$(PlatformTarget)\$(Configuration)\$(SolutionName)\</OutDir>
+    <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -164,12 +236,12 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);$(ProjectDir)External\vld\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(Platform)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -196,11 +268,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);$(ProjectDir)External\vld\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(Platform)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
@@ -233,7 +305,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -259,7 +331,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -284,7 +356,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
@@ -310,7 +382,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent />
@@ -319,231 +391,6 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
     <PostBuildEvent />
     <CustomBuildStep />
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Base\Profiler.h" />
-    <ClInclude Include="Base\ResourceData.h" />
-    <ClInclude Include="Base\RenderTarget.h" />
-    <ClInclude Include="Base\ResourceManager.h" />
-    <ClInclude Include="Base\SamplerState.h" />
-    <ClInclude Include="Base\ShaderInput.h" />
-    <ClInclude Include="Base\ShaderProgram.h" />
-    <ClInclude Include="Base\Texture.h" />
-    <ClInclude Include="DX9\MappingsDX9.h" />
-    <ClInclude Include="DX9\ProfilerDX9.h" />
-    <ClInclude Include="DX9\RenderStateDX9.h" />
-    <ClInclude Include="DX9\RenderTargetDX9.h" />
-    <ClInclude Include="DX9\ResourceManagerDX9.h" />
-    <ClInclude Include="DX9\SamplerStateDX9.h" />
-    <ClInclude Include="DX9\ShaderProgramDX9.h" />
-    <ClInclude Include="DX9\TextureDX9.h" />
-    <ClInclude Include="DX9\VertexFormatDX9.h" />
-    <ClInclude Include="Base\Buffer.h" />
-    <ClInclude Include="DX9\RendererDX9.h" />
-    <ClInclude Include="Base\IndexBuffer.h" />
-    <ClInclude Include="DX9\IndexBufferDX9.h" />
-    <ClInclude Include="Base\RenderState.h" />
-    <ClInclude Include="Base\Renderer.h" />
-    <ClInclude Include="External\DX9\include\DxErr.h" />
-    <ClInclude Include="External\lz4\lz4.h" />
-    <ClInclude Include="External\lz4\lz4hc.h" />
-    <ClInclude Include="External\lz4\lz4opt.h" />
-    <ClInclude Include="NULL\ShaderProgramNULL.h" />
-    <ClInclude Include="Utility\Debug.h" />
-    <ClInclude Include="Utility\Hash.h" />
-    <ClInclude Include="NULL\IndexBufferNULL.h" />
-    <ClInclude Include="NULL\RendererNULL.h" />
-    <ClInclude Include="NULL\RenderStateNULL.h" />
-    <ClInclude Include="NULL\RenderTargetNULL.h" />
-    <ClInclude Include="NULL\ResourceManagerNULL.h" />
-    <ClInclude Include="NULL\SamplerStateNULL.h" />
-    <ClInclude Include="NULL\TextureNULL.h" />
-    <ClInclude Include="NULL\VertexBufferNULL.h" />
-    <ClInclude Include="NULL\VertexFormatNULL.h" />
-    <ClInclude Include="External\DX9\include\d3d9.h" />
-    <ClInclude Include="External\DX9\include\d3d9caps.h" />
-    <ClInclude Include="External\DX9\include\d3d9types.h" />
-    <ClInclude Include="External\DX9\include\d3dx9.h" />
-    <ClInclude Include="External\DX9\include\d3dx9anim.h" />
-    <ClInclude Include="External\DX9\include\d3dx9core.h" />
-    <ClInclude Include="External\DX9\include\d3dx9effect.h" />
-    <ClInclude Include="External\DX9\include\d3dx9math.h" />
-    <ClInclude Include="External\DX9\include\d3dx9mesh.h" />
-    <ClInclude Include="External\DX9\include\d3dx9shader.h" />
-    <ClInclude Include="External\DX9\include\d3dx9shape.h" />
-    <ClInclude Include="External\DX9\include\d3dx9tex.h" />
-    <ClInclude Include="External\DX9\include\d3dx9xof.h" />
-    <ClInclude Include="Base\VertexFormat.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\AABox.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\AABoxOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\AxisAngle.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\AxisAngleOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Comparitors.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Config.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Containment.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Coord.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\CoordOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Defines.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\EulerAngle.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\EulerAngleOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\External\OpenSGConvert.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Fit\GaussPointsFit.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Frustum.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\FrustumOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Generate.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\gmtl.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Helpers.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Intersection.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\LineSeg.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\LineSegOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Math.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Matrix.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\MatrixOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Misc\MatrixConvert.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Numerics\Eigen.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\OOBox.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Output.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\ParametricCurve.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Plane.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\PlaneOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Point.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Quat.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\QuatOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Ray.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\RayOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Sphere.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\SphereOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Tri.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\TriOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Util\Assert.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Util\Meta.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Util\StaticAssert.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Vec.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\VecBase.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\VecExprMeta.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\VecOps.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\VecOpsMeta.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Version.h" />
-    <ClInclude Include="External\gmtl\include\gmtl\Xforms.h" />
-    <ClInclude Include="External\vld\include\vld.h" />
-    <ClInclude Include="External\vld\include\vld_def.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Base\VertexBuffer.h" />
-    <ClInclude Include="DX9\VertexBufferDX9.h" />
-    <ClInclude Include="Utility\ColorUtility.h" />
-    <ClInclude Include="Utility\HalfFloat.h" />
-    <ClInclude Include="Utility\Mutex.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Base\Profiler.cpp" />
-    <ClCompile Include="Base\ResourceSerialization.cpp" />
-    <ClCompile Include="Base\RenderState.cpp" />
-    <ClCompile Include="Base\RenderTarget.cpp" />
-    <ClCompile Include="Base\ResourceManager.cpp" />
-    <ClCompile Include="Base\SamplerState.cpp" />
-    <ClCompile Include="Base\ShaderInput.cpp" />
-    <ClCompile Include="Base\ShaderProgram.cpp" />
-    <ClCompile Include="Base\Texture.cpp" />
-    <ClCompile Include="DX9\MappingsDX9.cpp" />
-    <ClCompile Include="DX9\ProfilerDX9.cpp" />
-    <ClCompile Include="DX9\RenderStateDX9.cpp" />
-    <ClCompile Include="DX9\RenderTargetDX9.cpp" />
-    <ClCompile Include="DX9\ResourceManagerDX9.cpp" />
-    <ClCompile Include="DX9\SamplerStateDX9.cpp" />
-    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
-    <ClCompile Include="DX9\TextureDX9.cpp" />
-    <ClCompile Include="DX9\VertexFormatDX9.cpp" />
-    <ClCompile Include="Base\Buffer.cpp" />
-    <ClCompile Include="dllmain.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="DX9\RendererDX9.cpp" />
-    <ClCompile Include="Base\IndexBuffer.cpp" />
-    <ClCompile Include="DX9\IndexBufferDX9.cpp" />
-    <ClCompile Include="Base\Renderer.cpp" />
-    <ClCompile Include="Base\VertexFormat.cpp" />
-    <ClCompile Include="External\lz4\lz4.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">CompileAsCpp</CompileAs>
-    </ClCompile>
-    <ClCompile Include="External\lz4\lz4hc.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">CompileAsCpp</CompileAs>
-    </ClCompile>
-    <ClCompile Include="NULL\IndexBufferNULL.cpp" />
-    <ClCompile Include="NULL\RendererNULL.cpp" />
-    <ClCompile Include="NULL\RenderStateNULL.cpp" />
-    <ClCompile Include="NULL\RenderTargetNULL.cpp" />
-    <ClCompile Include="NULL\ResourceManagerNULL.cpp" />
-    <ClCompile Include="NULL\SamplerStateNULL.cpp" />
-    <ClCompile Include="NULL\ShaderProgramNULL.cpp" />
-    <ClCompile Include="NULL\TextureNULL.cpp" />
-    <ClCompile Include="NULL\VertexBufferNULL.cpp" />
-    <ClCompile Include="NULL\VertexFormatNULL.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Base\VertexBuffer.cpp" />
-    <ClCompile Include="DX9\VertexBufferDX9.cpp" />
-    <ClCompile Include="Utility\ColorUtility.cpp" />
-    <ClCompile Include="Utility\Debug.cpp" />
-    <ClCompile Include="Utility\HalfFloat.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Base\ShaderInput.inl" />
-    <None Include="Synesthesia3D.licenseheader" />
-    <None Include="External\DX9\include\d3dx9math.inl" />
-    <None Include="Base\VertexBuffer.inl" />
-    <None Include="External\vld\bin\x64\dbghelp.dll" />
-    <None Include="External\vld\bin\x64\vld_x64.dll" />
-    <None Include="External\vld\bin\Win32\dbghelp.dll" />
-    <None Include="External\vld\bin\Win32\vld_x86.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="External\DX9\lib\x64\d3d9.lib" />
-    <Library Include="External\DX9\lib\x64\d3dx9.lib" />
-    <Library Include="External\DX9\lib\x64\d3dx9d.lib" />
-    <Library Include="External\DX9\lib\x64\DxErr.lib" />
-    <Library Include="External\DX9\lib\Win32\d3d9.lib" />
-    <Library Include="External\DX9\lib\Win32\d3dx9.lib" />
-    <Library Include="External\DX9\lib\Win32\d3dx9d.lib" />
-    <Library Include="External\DX9\lib\Win32\DxErr.lib" />
-    <Library Include="External\vld\lib\x64\vld.lib" />
-    <Library Include="External\vld\lib\Win32\vld.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="External\vld\bin\x64\Microsoft.DTfW.DHL.manifest" />
-    <None Include="External\vld\bin\Win32\Microsoft.DTfW.DHL.manifest" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

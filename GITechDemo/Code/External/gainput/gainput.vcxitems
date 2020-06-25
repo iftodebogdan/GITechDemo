@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{ab248b0c-2e57-474e-8766-05dbbdcb20d5}</ItemsProjectGuid>
+    <ItemsProjectName>gainput_Shared</ItemsProjectName>
+    <ItemsRootNamespace>gainput</ItemsRootNamespace>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\builtin\GainputInputDeviceBuiltIn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\dev\GainputDev.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\dev\GainputMemoryStream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\dev\GainputNetAddress.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\dev\GainputNetConnection.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\dev\GainputNetListener.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gainput.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputAllocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputInputDeltaState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputInputDevice.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputInputManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputInputMap.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\GainputInputState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputButtonStickGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputDoubleClickGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputHoldGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputPinchGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputRotateGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputSimultaneouslyDownGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\gestures\GainputTapGesture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\keyboard\GainputInputDeviceKeyboard.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\keyboard\GainputInputDeviceKeyboardMac.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\mouse\GainputInputDeviceMouse.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\pad\GainputInputDevicePad.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\pad\GainputInputDevicePadMac.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\recorder\GainputInputPlayer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\recorder\GainputInputRecorder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\recorder\GainputInputRecording.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)source\touch\GainputInputDeviceTouch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gainput.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputContainers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputDebugRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputHelpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDeltaState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDevice.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDeviceBuiltIn.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDeviceKeyboard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDeviceMouse.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDevicePad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputDeviceTouch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputListener.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputMap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputInputState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputIos.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputLog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\GainputMapFilters.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputButtonStickGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputDoubleClickGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputGestures.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputHoldGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputPinchGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputRotateGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputSimultaneouslyDownGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\gestures\GainputTapGesture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\recorder\GainputInputPlayer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\recorder\GainputInputRecorder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\gainput\recorder\GainputInputRecording.h" />
+  </ItemGroup>
+</Project>

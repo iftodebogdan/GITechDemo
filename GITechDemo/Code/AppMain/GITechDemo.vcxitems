@@ -1,0 +1,1045 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{1881d8f0-64ac-4eb9-9e11-3cc949754e06}</ItemsProjectGuid>
+    <ItemsProjectName>GITechDemo_Shared</ItemsProjectName>
+    <ItemsRootNamespace>GITechDemo</ItemsRootNamespace>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Framework\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Framework\Timestamp.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\GITechDemo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\BloomPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\CopyToBackBufferPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthDownsamplePass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthOfFieldPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalIndirectLightPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalLightPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalLightVolumePass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\FXAAPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\GBufferPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRDownsampleForBloomPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRDownsamplePass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRToneMappingPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\LensFlarePass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\LightingPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\MotionBlurPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\PBRMaterialTestPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\PostProcessingPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RenderPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RenderScheme.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ResolveDepthBufferPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RSMDirectionalLightPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SceneGeometryPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ScreenSpaceReflectionPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SkyPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SSAOPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\UIPass.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\AppResources.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\ArtistParameter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\RenderResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\GaussianFilter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\PerlinNoise.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\Poisson.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Framework\App.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Framework\Framework.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Framework\Timestamp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\GITechDemo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\BloomPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\CopyToBackBufferPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthDownsamplePass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthOfFieldPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalIndirectLightPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalLightPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DirectionalLightVolumePass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\FXAAPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\GBufferPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRDownsampleForBloomPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRDownsamplePass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\HDRToneMappingPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\LensFlarePass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\LightingPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\MotionBlurPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\PBRMaterialTestPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\PostProcessingPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RenderPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RenderScheme.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ResolveDepthBufferPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\RSMDirectionalLightPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SceneGeometryPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ScreenSpaceReflectionPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ShadowMapDirectionalLightPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SkyPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\SSAOPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\UIPass.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\AppResources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\ArtistParameter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\RenderResource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Resources\Shaders.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\GaussianFilter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\PerlinNoise.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\Utilities\Poisson.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\Build\build_all.bat" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Build\build_data.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Build\build_project.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Build\build_tools.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Build\utils.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\DataSrc\compile_sponza_model.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\DataSrc\compile_utility_textures.py" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\BRDFUtils.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\Common.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\CSMUtils.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\PostProcessingUtils.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\RSMCommon.hlsli">
+      <FileType>Document</FileType>
+      <Command>call "%25DXSDK_DIR%25\Utilities\bin\dx_setenv.cmd"
+call fxc.exe /Tvs_3_0 /Evsmain /O3 /nologo "%(FullPath)"
+call fxc.exe /Tps_3_0 /Epsmain /O3 /nologo "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>dummy</Outputs>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\Utils.hlsli">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)GITechDemo.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\BilateralBlur.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\NearestDepthUpscale.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\AnamorphicLensFlareFeatures.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\AnamorphicLensFlareBlur.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\DirectionalLight.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\BRDFUtils.hlsli;$(SolutionDir)..\..\Data\shaders\CSMUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\DepthCopy.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\DepthPass.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\GBufferGeneration.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ColorCopy.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\UI.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\MotionBlur.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\SphericalLensFlareFeatures.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\LensFlareApply.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\LumaAdapt.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\DirectionalLightVolume.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\CSMUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\Skybox.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\RSMUpscale.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\RSMCommon.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ScreenSpaceReflection.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\BRDFUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\RSMCapture.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\RSMApply.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\RSMCommon.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\Downsample.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\LumaCapture.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\HDRToneMapping.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\Bloom.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\FXAA.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\SSAO.hlsl">
+      <FileType>Document</FileType>
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <ShaderType>Pixel</ShaderType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\BokehDoF.hlsl">
+      <EntryPointName>psmain</EntryPointName>
+      <ShaderType>Pixel</ShaderType>
+      <ShaderModel>3.0</ShaderModel>
+      <ObjectFileOutput>
+      </ObjectFileOutput>
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\DepthPassAlphaTest.hlsl">
+      <FileType>Document</FileType>
+      <Command>call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message>Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs>$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <LinkObjects>false</LinkObjects>
+      <BuildInParallel>true</BuildInParallel>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

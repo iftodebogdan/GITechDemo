@@ -2,7 +2,7 @@
 # This file is part of the "GITechDemo" application
 # Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
-#       File:   build_project_win.py
+#       File:   build_project.py
 #       Author: Bogdan Iftode
 #
 # This program is free software: you can redistribute it and/or modify
@@ -29,8 +29,8 @@ import subprocess
 sys.dont_write_bytecode = True
 
 import utils
-import build_tools_win
-import build_data_win
+import build_tools
+import build_data
 
 
 
@@ -40,8 +40,9 @@ import build_data_win
 #   'rebuild' to force rebuilding the solution                              #
 #   'release' to build on the Release configuration (default)               #
 #   'profile' to build on the Profile configuration                         #
-#   'win32' to build for 32 bit architecture                                #
+#   'x86' to build for 32 bit architecture                                  #
 #   'x64' to build for 64 bit architecture (default)                        #
+#   'windows' to generate a Windows build                                   #
 #############################################################################
 
 
@@ -57,6 +58,7 @@ def Run():
     defaultForceRebuild = False
     defaultBuildConfiguration = "Release"
     defaultArchitecture = "x64"
+    defaultPlatform = "Windows"
 
     #################
 
@@ -79,19 +81,21 @@ def Run():
             defaultBuildConfiguration = "Profile"
         if(opt.lower() == "x64"):
             defaultArchitecture = "x64"
-        if(opt.lower() == "win32" or opt.lower() == "x86"):
-            defaultArchitecture = "Win32"
+        if(opt.lower() == "x86"):
+            defaultArchitecture = "x86"
+        if(opt.lower() == "windows"):
+            defaultPlatform = "Windows"
 
 
 
     # Compile tools, if required
-    build_tools_win.Run()
+    build_tools.Run()
     logging.info("")
 
 
 
     # Compile data, if required
-    build_data_win.Run()
+    build_data.Run()
     logging.info("")
 
 
@@ -112,7 +116,7 @@ def Run():
     logging.info("")
 
     startProjectBuild = time.clock()
-    if utils.BuildSLN(projectName, buildEnvPath, defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
+    if utils.BuildSLN(projectName, buildEnvPath, defaultPlatform + "_" + defaultArchitecture, defaultBuildConfiguration, defaultForceRebuild) != 0:
         logging.error("Could not complete project build process")
         return 1
     else:
@@ -129,7 +133,7 @@ def Run():
 
     # Create directory structure
     logging.info("Creating directory structure...")
-    rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/Windows/" + projectName + "/")
+    rootBuildDir = os.path.realpath(utils.GetScriptAbsolutePath() + "/" + defaultPlatform + "/" + projectName + "/")
     utils.MakeDir(rootBuildDir)
 
     # Copy binaries

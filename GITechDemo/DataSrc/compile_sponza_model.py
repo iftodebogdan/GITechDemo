@@ -28,7 +28,7 @@ from collections import defaultdict
 #############################################################################
 #       Arguments:                                                          #
 #---------------------------------------------------------------------------#
-#   'win32' to use the 32 bit version of the tools                          #
+#   'x86' to use the 32 bit version of the tools                            #
 #   'x64' to use the 64 bit version of the tools (default)                  #
 #   'rebuild' to force rebuilding all data assets                           #
 #############################################################################
@@ -43,8 +43,8 @@ scriptAbsPath = os.path.abspath(os.path.dirname(os.path.realpath(__file__)));
 for opt in sys.argv:
     if(opt.lower() == "x64"):
         defaultArchitecture = "x64"
-    if(opt.lower() == "win32"):
-        defaultArchitecture = "Win32"
+    if(opt.lower() == "x86"):
+        defaultArchitecture = "x86"
     if(opt.lower() == "rebuild"):
         defaultForceRebuild = True
 

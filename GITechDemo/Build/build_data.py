@@ -2,7 +2,7 @@
 # This file is part of the "GITechDemo" application
 # Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
 #
-#       File:   build_data_win.py
+#       File:   build_data.py
 #       Author: Bogdan Iftode
 #
 # This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import utils
 #############################################################################
 #       Arguments:                                                          #
 #---------------------------------------------------------------------------#
-#   'win32' to use the 32 bit version of the tools                          #
+#   'x86' to use the 32 bit version of the tools                            #
 #   'x64' to use the 64 bit version of the tools (default)                  #
 #   'rebuild' to force rebuilding all data assets                           #
 #############################################################################
