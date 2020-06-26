@@ -162,9 +162,9 @@
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
@@ -197,9 +197,9 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
@@ -239,9 +239,9 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
@@ -278,9 +278,9 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
@@ -319,9 +319,9 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
@@ -359,9 +359,9 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <CustomBuildStep />
     <PostBuildEvent>
       <Command>cd "$(SolutionDir)..\..\Build"
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(Platform)
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_tools.py" $(PlatformTarget)
 echo.
-call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(Platform)</Command>
+call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\build_data.py" $(PlatformTarget)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Build tools and data</Message>
