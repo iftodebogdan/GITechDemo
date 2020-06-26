@@ -11,9 +11,7 @@ platform:
   - Windows_x86
   - Windows_x64
 shallow_clone: true
-build:
-  project: GITechDemo/Code/Solutions/GITechDemo.sln
-  parallel: true
-  verbosity: minimal
+build_script:
+  - msbuild "C:\projects\GITechDemo\GITechDemo\Code\Solutions\GITechDemo.sln" /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 test: off
 deploy: off
