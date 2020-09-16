@@ -45,7 +45,7 @@ namespace Synesthesia3D
         void    CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const;
         void    CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
         
-        const bool          SetDisplayResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true) { m_vScreenSize = size; return true; }
+        const bool          SetDisplayResolution(const Vec2i size, const Vec2i offset = Vec2i(0, 0), const bool fullscreen = false, const unsigned int refreshRate = 0, const bool vsync = true, const unsigned int vsyncInterval = 0, const bool force = false) { m_vScreenSize = size; return true; }
         const Vec2i         GetDisplayResolution() const { return m_vScreenSize; }
         const bool          IsFullscreen() const { return true; }
         const bool          GetVSyncStatus() const { return true; };

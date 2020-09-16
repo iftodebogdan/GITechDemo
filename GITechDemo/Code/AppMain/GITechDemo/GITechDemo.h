@@ -55,15 +55,21 @@ namespace GITechDemoApp
 
         Camera& GetCamera() { return m_tCamera; }
         const float GetDeltaTime() const { return m_fDeltaTime; }
+        const float GetDeltaTimeModifier() const { return m_fDeltaTimeModifier; }
+        float& GetDeltaTimeModifier() { return m_fDeltaTimeModifier; }
+        void SetDeltaTimeModifier(const float factor) { m_fDeltaTimeModifier = factor; }
         const bool IsUIInFocus() const { return m_bUIHasFocus; }
+        void ForceUpdateResolution() { m_bForceResolutionUpdate = true; }
 
     private:
         void UpdateUIFocus();
 
         Camera m_tCamera;
         float m_fDeltaTime;
+        float m_fDeltaTimeModifier;
         gainput::InputMap* m_pInputMap;
-        int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
+        int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate, m_nLastFrameVSyncInterval;
+        bool m_bForceResolutionUpdate;
         Vec2i m_vLastFrameViewport;
         bool m_bLastFrameFullscreen, m_bLastFrameBorderless, m_bLastFrameVSync;
         bool m_bUIHasFocus;

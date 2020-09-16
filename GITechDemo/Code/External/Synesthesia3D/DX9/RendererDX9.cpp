@@ -38,6 +38,13 @@ using namespace Synesthesia3D;
 
 D3DFORMAT BBFormats[] = { D3DFMT_A2R10G10B10, D3DFMT_A8R8G8B8, D3DFMT_X8R8G8B8, D3DFMT_A1R5G5B5, D3DFMT_X1R5G5B5, D3DFMT_R5G6B5 };
 D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32, D3DFMT_D24X8, D3DFMT_D16 }; // Prefer with stencil
+UINT D3DPresentIntervals[] = {
+    D3DPRESENT_INTERVAL_DEFAULT,
+    D3DPRESENT_INTERVAL_ONE,
+    D3DPRESENT_INTERVAL_TWO,
+    D3DPRESENT_INTERVAL_THREE,
+    D3DPRESENT_INTERVAL_FOUR
+};
 
 RendererDX9::RendererDX9()
     : m_pD3D(nullptr)
@@ -270,23 +277,23 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
     }
 
     // Validate presentation interval
-    UINT validPI = pp.PresentationInterval;
+    UINT validPI = D3DPRESENT_INTERVAL_DEFAULT;
     switch (pp.PresentationInterval)
     {
     case D3DPRESENT_INTERVAL_FOUR:
-        if (m_tDeviceCaps.bPresentIntervalFour)
+        if (m_tDeviceCaps.bPresentIntervalFour && !pp.Windowed)
         {
             validPI = D3DPRESENT_INTERVAL_FOUR;
             break;
         }
     case D3DPRESENT_INTERVAL_THREE:
-        if (m_tDeviceCaps.bPresentIntervalThree)
+        if (m_tDeviceCaps.bPresentIntervalThree && !pp.Windowed)
         {
             validPI = D3DPRESENT_INTERVAL_THREE;
             break;
         }
     case D3DPRESENT_INTERVAL_TWO:
-        if (m_tDeviceCaps.bPresentIntervalTwo)
+        if (m_tDeviceCaps.bPresentIntervalTwo && !pp.Windowed)
         {
             validPI = D3DPRESENT_INTERVAL_TWO;
             break;
@@ -411,19 +418,23 @@ void RendererDX9::Initialize(void* hWnd)
     SetDeviceState(DS_READY);
 }
 
-const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
+const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync, const unsigned int vsyncInterval, const bool force)
 {
     Vec2i validOffset(offset);
     if (fullscreen)
         validOffset[0] = validOffset[1] = 0;
 
+    const unsigned int validVsyncInterval = Math::Min(vsyncInterval, (const unsigned int)ARRAYSIZE(D3DPresentIntervals) - 1u);
+
     // If already set, skip
-    if (size[0] == m_ePresentParameters.BackBufferWidth &&
+    if (!force &&
+        size[0] == m_ePresentParameters.BackBufferWidth &&
         size[1] == m_ePresentParameters.BackBufferHeight &&
         validOffset == m_vBackBufferOffset &&
         fullscreen == !m_ePresentParameters.Windowed &&
         refreshRate == m_ePresentParameters.FullScreen_RefreshRateInHz &&
-        vsync == GetVSyncStatus())
+        vsync == GetVSyncStatus() &&
+        (!vsync || D3DPresentIntervals[validVsyncInterval] == m_ePresentParameters.PresentationInterval))
         return true;
 
     // Some sanity checks
@@ -456,14 +467,19 @@ const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offse
     pp.FullScreen_RefreshRateInHz = fullscreen ? refreshRate : 0;
 
     // Set VSync status
-    pp.PresentationInterval = vsync ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;
+    pp.PresentationInterval =
+        vsync
+        ?
+        D3DPresentIntervals[validVsyncInterval]
+        :
+        D3DPRESENT_INTERVAL_IMMEDIATE;
 
     // Validate and correct the present parameters
     ValidatePresentParameters(pp);
 
     // If, after validation, the resulting present parameters
     // are identical to the ones we set before, skip setting them.
-    if (memcmp(&pp, &m_ePresentParameters, sizeof(D3DPRESENT_PARAMETERS)) == 0)
+    if (!force && memcmp(&pp, &m_ePresentParameters, sizeof(D3DPRESENT_PARAMETERS)) == 0)
         return true;
 
     // Unbind resources
@@ -483,6 +499,10 @@ const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offse
 
         // Reset render states
         GetRenderStateManager()->Reset();
+    }
+    else
+    {
+        return false;
     }
 
     return SUCCEEDED(hr);
@@ -683,6 +703,7 @@ const bool RendererDX9::ResetDevice(D3DPRESENT_PARAMETERS& pp)
     do {
         hr = m_pd3dDevice->Reset(&pp);
         attempts++;
+        Sleep(1);
     } while (FAILED(hr) && attempts < 3);
     S3D_VALIDATE_HRESULT(hr);
 

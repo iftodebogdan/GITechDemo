@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <random>
 
 #include "RenderPass.h"
 
@@ -135,10 +136,45 @@ namespace GITechDemoApp
         bool m_bShowAllParameters;
         bool m_bShowProfiler;
         bool m_bShowTextureViewer;
+        bool m_bFPSTestMode;
         float m_fAlpha;
+        float m_fGPUFrametimeMin;
+        float m_fGPUFrametimeMax;
         std::vector<ParamCategoryWindowState> m_arrParamCategoryWindowStates;
         std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultCache;
         std::vector<GPUFrametimeHistoryEntry> m_arrGPUFrametimeHistory;
+
+        enum FPSTestState
+        {
+            FPS_TEST_CONFIG,
+            FPS_TEST_RUN,
+            FPS_TEST_RESULT
+        } m_eFPSTestState;
+
+        int m_nFPSTestCount;
+        int m_nFPSTestCounter;
+        bool m_bFPSTestLowGfxMode;
+        bool m_arrFPSTestSelectedInterval[4];
+        int m_arrFPSTestInterval[4];
+        int m_nFPSTestSelectedCount;
+        std::default_random_engine m_FPSTestSelectorGenerator;
+        std::uniform_int_distribution<int> m_FPSTestSelector;
+
+        bool m_bFPSTestFullscreenBackup;
+        int m_nFPSTestRefreshRateBackup;
+        bool m_bFPSTestVSyncBackup;
+        int m_nFPSTestVSyncIntervalBackup;
+        bool m_bFPSTestAnimationBackup;
+        int m_nFPSTestAnimationTimeoutBackup;
+        bool m_bFPSTestMotionBlurBackup;
+        bool m_bFPSTestVolLightBackup;
+        bool m_bFPSTestRSMBackup;
+        bool m_bFPSTestSSRBackup;
+        bool m_bFPSTestSSAOBackup;
+        bool m_bFPSTestPostBackup;
+
+        int m_arrFPSTestIntervalsTests[4];
+        int m_arrFPSTestIntervalsCorrect[4];
 
         // Geometry resource data
         unsigned int m_nCurrBufferIdx;

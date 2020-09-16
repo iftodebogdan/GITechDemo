@@ -10,9 +10,9 @@ set then="&& cd %~dp0 && echo. && ^"
 pushd %~dp0
 
 :: Execute the build processes
-%py_exec% build_project.py windows release x86 %then%
-%py_exec% build_project.py windows profile x86 %then%
-%py_exec% build_project.py windows release x64 %then%
+rem %py_exec% build_project.py windows release x86 %then%
+rem %py_exec% build_project.py windows profile x86 %then%
+rem %py_exec% build_project.py windows release x64 %then%
 %py_exec% build_project.py windows profile x64
 
 :: Save the exit code of the build process that failed (or 0, if all succeeded)

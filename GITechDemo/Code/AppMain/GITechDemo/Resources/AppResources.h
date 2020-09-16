@@ -183,6 +183,7 @@ namespace GITechDemoApp
             static Vec2i Resolution;
             static int RefreshRate;
             static bool VSync;
+            static int VSyncInterval;
         };
 
         struct Camera

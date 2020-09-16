@@ -93,6 +93,8 @@ namespace Synesthesia3D
          * @param[in]   fullscreen      Switch the application into fullscreen (true) or windowed (false) mode.
          * @param[in]   refreshRate     Set the specified display refresh rate (only affects fullscreen mode).
          * @param[in]   vsync           Switch VSync on or off.
+         * @param[in]   vsyncInterval   Sets the interval at which to swap the backbuffers. Ignored if @ref vsync is false.
+         * @param[in]   force           Forces applying the presentation parameters and a device reset even if there are no changes.
          *
          * @return  Success of operation.
          *
@@ -104,7 +106,10 @@ namespace Synesthesia3D
             const Vec2i offset = Vec2i(0, 0),
             const bool fullscreen = false,
             const unsigned int refreshRate = 0,
-            const bool vsync = true) PURE_VIRTUAL;
+            const bool vsync = true,
+            const unsigned int vsyncInterval = 0,
+            const bool force = false
+        ) PURE_VIRTUAL;
 
         /**
          * @brief   Returns the size of the backbuffer.

@@ -99,6 +99,24 @@ UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     , m_bShowAllParameters(false)
     , m_bShowProfiler(ENABLE_PROFILE_MARKERS)
     , m_bShowTextureViewer(false)
+    , m_bFPSTestMode(false)
+    , m_eFPSTestState(FPS_TEST_CONFIG)
+    , m_nFPSTestCount(40)
+    , m_nFPSTestCounter(0)
+    , m_bFPSTestLowGfxMode(false)
+    , m_bFPSTestFullscreenBackup(RenderConfig::Window::Fullscreen)
+    , m_nFPSTestRefreshRateBackup(RenderConfig::Window::RefreshRate)
+    , m_bFPSTestVSyncBackup(RenderConfig::Window::VSync)
+    , m_nFPSTestVSyncIntervalBackup(RenderConfig::Window::VSyncInterval)
+    , m_bFPSTestAnimationBackup(RenderConfig::Camera::Animation)
+    , m_nFPSTestAnimationTimeoutBackup(RenderConfig::Camera::AnimationTimeout)
+    , m_bFPSTestMotionBlurBackup(RenderConfig::PostProcessing::MotionBlur::Enabled)
+    , m_bFPSTestVolLightBackup(RenderConfig::DirectionalLightVolume::Enabled)
+    , m_bFPSTestRSMBackup(RenderConfig::ReflectiveShadowMap::Enabled)
+    , m_bFPSTestSSRBackup(RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled)
+    , m_bFPSTestSSAOBackup(RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled)
+    , m_bFPSTestPostBackup(RenderConfig::PostProcessing::Enabled)
+    , m_nFPSTestSelectedCount(0)
     , m_fAlpha(0.f)
     , m_nDummyTex1DIdx(~0u)
     , m_nDummyTex2DIdx(~0u)
@@ -108,6 +126,8 @@ UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
     , m_pDummyTex2D(nullptr)
     , m_pDummyTex3D(nullptr)
     , m_pDummyTexCube(nullptr)
+    , m_fGPUFrametimeMin(FLT_MAX)
+    , m_fGPUFrametimeMax(-FLT_MAX)
 {
     for (unsigned int i = 0; i < UI_BUFFER_COUNT; i++)
     {
@@ -118,6 +138,9 @@ UIPass::UIPass(const char* const passName, RenderPass* const parentPass)
         m_nImGuiVbIdx[i] = ~0u;
         m_pImGuiVb[i] = nullptr;
     }
+
+    memset(m_arrFPSTestSelectedInterval, 1, sizeof(bool) * ARRAYSIZE(m_arrFPSTestSelectedInterval));
+    memset(m_arrFPSTestInterval, 0, sizeof(int) * ARRAYSIZE(m_arrFPSTestInterval));
 }
 
 UIPass::~UIPass()
@@ -239,6 +262,38 @@ void UIPass::Update(const float fDeltaTime)
     HLSL::UIParams->MipLevel = m_nSelectedMip;
     HLSL::UIParams->FaceIdx = m_nSelectedFace;
     HLSL::UIParams->DepthSlice = m_fSelectedSlice;
+
+    // Update GPU frame time history buffer
+    m_fGPUFrametimeMin = FLT_MAX;
+    m_fGPUFrametimeMax = -FLT_MAX;
+    const GPUProfileMarkerResult* const rootMarker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(RenderScheme::GetRootPass().GetPassName());
+    if (rootMarker)
+    {
+        const float rootTiming = rootMarker->GetTiming();
+        const float rootStart = rootMarker->GetStart();
+        m_arrGPUFrametimeHistory.push_back(GPUFrametimeHistoryEntry(rootTiming, rootStart));
+
+        // Clean up entries older than FRAMETIME_GRAPH_HISTORY seconds
+        for (int i = (int)m_arrGPUFrametimeHistory.size() - 1; i >= 0; i--)
+        {
+            if (m_arrGPUFrametimeHistory[i].start < rootStart - FRAMETIME_GRAPH_HISTORY * 1000000.f || m_arrGPUFrametimeHistory[i].start > rootStart)
+            {
+                m_arrGPUFrametimeHistory.erase(m_arrGPUFrametimeHistory.begin() + i);
+            }
+            else
+            {
+                if (m_arrGPUFrametimeHistory[i].timing < m_fGPUFrametimeMin)
+                {
+                    m_fGPUFrametimeMin = m_arrGPUFrametimeHistory[i].timing;
+                }
+
+                if (m_arrGPUFrametimeHistory[i].timing > m_fGPUFrametimeMax)
+                {
+                    m_fGPUFrametimeMax = m_arrGPUFrametimeHistory[i].timing;
+                }
+            }
+        }
+    }
 }
 
 void UIPass::Draw()
@@ -299,39 +354,6 @@ void UIPass::DrawGPUFrametimeGraph()
 
     const ImGuiStyle& style = ImGui::GetStyle();
 
-    float minTiming = FLT_MAX;
-    float maxTiming = -FLT_MAX;
-
-    // Update GPU frame time history buffer
-    const GPUProfileMarkerResult* const rootMarker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(RenderScheme::GetRootPass().GetPassName());
-    if (rootMarker)
-    {
-        const float rootTiming = rootMarker->GetTiming();
-        const float rootStart = rootMarker->GetStart();
-        m_arrGPUFrametimeHistory.push_back(GPUFrametimeHistoryEntry(rootTiming, rootStart));
-
-        // Clean up entries older than FRAMETIME_GRAPH_HISTORY seconds
-        for (int i = (int)m_arrGPUFrametimeHistory.size() - 1; i >= 0; i--)
-        {
-            if (m_arrGPUFrametimeHistory[i].start < rootStart - FRAMETIME_GRAPH_HISTORY * 1000000.f || m_arrGPUFrametimeHistory[i].start > rootStart)
-            {
-                m_arrGPUFrametimeHistory.erase(m_arrGPUFrametimeHistory.begin() + i);
-            }
-            else
-            {
-                if (m_arrGPUFrametimeHistory[i].timing < minTiming)
-                {
-                    minTiming = m_arrGPUFrametimeHistory[i].timing;
-                }
-
-                if (m_arrGPUFrametimeHistory[i].timing > maxTiming)
-                {
-                    maxTiming = m_arrGPUFrametimeHistory[i].timing;
-                }
-            }
-        }
-    }
-
     if (m_arrGPUFrametimeHistory.size() > 0)
     {
         const float widthFactor = Math::clamp((m_arrGPUFrametimeHistory.back().start - m_arrGPUFrametimeHistory.front().start) / (FRAMETIME_GRAPH_HISTORY * 1000000.f), 0.f, 1.f);
@@ -340,16 +362,16 @@ void UIPass::DrawGPUFrametimeGraph()
         
         const ImVec2 graphSize(widthFactor * width, height);
 
-        const float lineR = maxTiming > 1000.f / 60.f;
-        const float lineG = maxTiming < 1000.f / 30.f;
+        const float lineR = m_fGPUFrametimeMax > 1000.f / 60.f;
+        const float lineG = m_fGPUFrametimeMax < 1000.f / 30.f;
 
         ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
         ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(lineR, lineG, 0.0f, 1.f));
 
-        ImGui::Text("%7.3f ms (%6.3f fps)", maxTiming, 1000.f / maxTiming);
+        ImGui::Text("%7.3f ms (%6.3f fps)", m_fGPUFrametimeMax, 1000.f / m_fGPUFrametimeMax);
         ImGui::SetCursorPosX((1.f - widthFactor) * width + style.WindowPadding.x);
-        ImGui::PlotLines("", &(m_arrGPUFrametimeHistory[0].timing), (int)m_arrGPUFrametimeHistory.size(), 0, nullptr, minTiming, maxTiming, graphSize, sizeof(GPUFrametimeHistoryEntry));
-        ImGui::Text("%7.3f ms (%6.3f fps)", minTiming, 1000.f / minTiming);
+        ImGui::PlotLines("", &(m_arrGPUFrametimeHistory[0].timing), (int)m_arrGPUFrametimeHistory.size(), 0, nullptr, m_fGPUFrametimeMin, m_fGPUFrametimeMax, graphSize, sizeof(GPUFrametimeHistoryEntry));
+        ImGui::Text("%7.3f ms (%6.3f fps)", m_fGPUFrametimeMin, 1000.f / m_fGPUFrametimeMin);
 
         ImGui::PopStyleColor();
         ImGui::PopStyleColor();
@@ -504,6 +526,10 @@ void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int le
 
 void UIPass::SetupUI()
 {
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
     Framework* const pFW = Framework::GetInstance();
     ImGuiIO& io = ImGui::GetIO();
     const ImGuiStyle& style = ImGui::GetStyle();
@@ -519,7 +545,7 @@ void UIPass::SetupUI()
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_fAlpha);
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("Parameters"))
+        if (ImGui::BeginMenu("Parameters", !m_bFPSTestMode))
         {
             ImGui::MenuItem("All parameters", nullptr, &m_bShowAllParameters);
 
@@ -533,14 +559,41 @@ void UIPass::SetupUI()
             ImGui::EndMenu();
         }
 
+        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        {
+            ImGui::BeginTooltip();
+            ImGui::PushTextWrapPos(450.0f);
+            ImGui::TextUnformatted("Not available during FPS Test Mode.");
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+
         bool pauseUpdate = pFW->IsUpdatePaused();
-        ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate);
+        ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate, !m_bFPSTestMode);
         pFW->PauseUpdate(pauseUpdate);
 
-        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler, ENABLE_PROFILE_MARKERS);
+        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        {
+            ImGui::BeginTooltip();
+            ImGui::PushTextWrapPos(450.0f);
+            ImGui::TextUnformatted("Not available during FPS Test Mode.");
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+
+        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler, ENABLE_PROFILE_MARKERS && !m_bFPSTestMode);
+
+        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        {
+            ImGui::BeginTooltip();
+            ImGui::PushTextWrapPos(450.0f);
+            ImGui::TextUnformatted("Not available during FPS Test Mode.");
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
 
     #if !ENABLE_PROFILE_MARKERS
-        if (ImGui::IsItemHovered())
+        if (ImGui::IsItemHovered() && !m_bFPSTestMode)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -550,7 +603,78 @@ void UIPass::SetupUI()
         }
     #endif
 
-        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer);
+        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer, !m_bFPSTestMode);
+
+        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        {
+            ImGui::BeginTooltip();
+            ImGui::PushTextWrapPos(450.0f);
+            ImGui::TextUnformatted("Not available during FPS Test Mode.");
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+
+        if (ImGui::MenuItem(m_bFPSTestMode ? "Stop FPS test mode" : "Start FPS test mode", nullptr, &m_bFPSTestMode))
+        {
+            if (m_bFPSTestMode)
+            {
+                m_eFPSTestState = FPS_TEST_CONFIG;
+
+                m_bFPSTestFullscreenBackup = RenderConfig::Window::Fullscreen;
+                m_nFPSTestRefreshRateBackup = RenderConfig::Window::RefreshRate;
+                m_bFPSTestVSyncBackup = RenderConfig::Window::VSync;
+                m_nFPSTestVSyncIntervalBackup = RenderConfig::Window::VSyncInterval;
+                m_bFPSTestAnimationBackup = RenderConfig::Camera::Animation;
+                m_nFPSTestAnimationTimeoutBackup = RenderConfig::Camera::AnimationTimeout;
+                m_bFPSTestMotionBlurBackup = RenderConfig::PostProcessing::MotionBlur::Enabled;
+
+                m_bFPSTestVolLightBackup = RenderConfig::DirectionalLightVolume::Enabled;
+                m_bFPSTestRSMBackup = RenderConfig::ReflectiveShadowMap::Enabled;
+                m_bFPSTestSSRBackup = RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled;
+                m_bFPSTestSSAOBackup = RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled;
+                m_bFPSTestPostBackup = RenderConfig::PostProcessing::Enabled;
+
+                RenderConfig::Camera::Animation = true;
+                RenderConfig::Camera::AnimationTimeout = 0;
+                RenderConfig::PostProcessing::MotionBlur::Enabled = false;
+
+                ((GITechDemo*)AppMain)->SetDeltaTimeModifier(2.f);
+
+                if (m_bFPSTestLowGfxMode)
+                {
+                    RenderConfig::DirectionalLightVolume::Enabled = false;
+                    RenderConfig::ReflectiveShadowMap::Enabled = false;
+                    RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled = false;
+                    RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled = false;
+                    RenderConfig::PostProcessing::Enabled = false;
+                }
+                else
+                {
+                    RenderConfig::DirectionalLightVolume::Enabled = m_bFPSTestVolLightBackup;
+                    RenderConfig::ReflectiveShadowMap::Enabled = m_bFPSTestRSMBackup;
+                    RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled = m_bFPSTestSSRBackup;
+                    RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled = m_bFPSTestSSAOBackup;
+                    RenderConfig::PostProcessing::Enabled = m_bFPSTestPostBackup;
+                }
+            }
+            else
+            {
+                RenderConfig::Window::Fullscreen = m_bFPSTestFullscreenBackup;
+                RenderConfig::Window::RefreshRate = m_nFPSTestRefreshRateBackup;
+                RenderConfig::Window::VSync = m_bFPSTestVSyncBackup;
+                RenderConfig::Window::VSyncInterval = m_nFPSTestVSyncIntervalBackup;
+                RenderConfig::Camera::Animation = m_bFPSTestAnimationBackup;
+                RenderConfig::Camera::AnimationTimeout = m_nFPSTestAnimationTimeoutBackup;
+                RenderConfig::PostProcessing::MotionBlur::Enabled = m_bFPSTestMotionBlurBackup;
+                RenderConfig::DirectionalLightVolume::Enabled = m_bFPSTestVolLightBackup;
+                RenderConfig::ReflectiveShadowMap::Enabled = m_bFPSTestRSMBackup;
+                RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled = m_bFPSTestSSRBackup;
+                RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled = m_bFPSTestSSAOBackup;
+                RenderConfig::PostProcessing::Enabled = m_bFPSTestPostBackup;
+
+                ((GITechDemo*)AppMain)->SetDeltaTimeModifier(1.f);
+            }
+        }
 
         if (ImGui::MenuItem("Quit", "Alt+F4"))
         {
@@ -584,305 +708,460 @@ void UIPass::SetupUI()
     }
     ImGui::PopStyleVar();
 
-    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Math::Max(m_fAlpha, ALPHA_MIN));
-    if (!m_bShowAllParameters)
+    if (!m_bFPSTestMode)
     {
-        // Parameter windows (one per category)
-        for (unsigned int catIdx = 0; catIdx < m_arrParamCategoryWindowStates.size(); catIdx++)
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Math::Max(m_fAlpha, ALPHA_MIN));
+        if (!m_bShowAllParameters)
         {
-            if (m_arrParamCategoryWindowStates[catIdx].windowOpen)
+            // Parameter windows (one per category)
+            for (unsigned int catIdx = 0; catIdx < m_arrParamCategoryWindowStates.size(); catIdx++)
             {
-                if (ImGui::Begin(m_arrParamCategoryWindowStates[catIdx].categoryName.c_str(), &m_arrParamCategoryWindowStates[catIdx].windowOpen, ImGuiWindowFlags_AlwaysAutoResize))
+                if (m_arrParamCategoryWindowStates[catIdx].windowOpen)
                 {
-                    for (unsigned int paramIdx = 0; paramIdx < ArtistParameter::GetParameterCount(); paramIdx++)
+                    if (ImGui::Begin(m_arrParamCategoryWindowStates[catIdx].categoryName.c_str(), &m_arrParamCategoryWindowStates[catIdx].windowOpen, ImGuiWindowFlags_AlwaysAutoResize))
                     {
-                        ArtistParameter* const param = ArtistParameter::GetParameterByIdx(paramIdx);
-                        if (param->GetCategoryName() == m_arrParamCategoryWindowStates[catIdx].categoryName)
+                        for (unsigned int paramIdx = 0; paramIdx < ArtistParameter::GetParameterCount(); paramIdx++)
                         {
-                            AddParameterInWindow(param);
-                        }
-                    }
-                }
-                ImGui::End();
-            }
-        }
-    }
-    else
-    {
-        if (ImGui::Begin("All parameters", &m_bShowAllParameters))
-        {
-            if (!ImGui::IsWindowCollapsed())
-            {
-                ImGui::SetWindowSize(ImVec2(0, io.DisplaySize.y * 0.9f));
-
-                for (unsigned int catIdx = 0; catIdx < m_arrParamCategoryWindowStates.size(); catIdx++)
-                {
-                    ImGui::TextDisabled(m_arrParamCategoryWindowStates[catIdx].categoryName.c_str());
-                    for (unsigned int paramIdx = 0; paramIdx < ArtistParameter::GetParameterCount(); paramIdx++)
-                    {
-                        ArtistParameter* const param = ArtistParameter::GetParameterByIdx(paramIdx);
-                        if (param->GetCategoryName() == m_arrParamCategoryWindowStates[catIdx].categoryName)
-                        {
-                            AddParameterInWindow(param);
-                        }
-                    }
-                    ImGui::Separator();
-                }
-            }
-            else
-            {
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowWidth(), io.DisplaySize.y * 0.9f));
-            }
-        }
-        ImGui::End();
-    }
-    ImGui::PopStyleVar();
-
-    if (m_bShowProfiler)
-    {
-        const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
-
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
-        if (ImGui::Begin("GPU frametime graph", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
-        {
-            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
-            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, FRAMETIME_GRAPH_HEIGHT));
-            DrawGPUFrametimeGraph();
-            ImGui::End();
-        }
-        ImGui::PopStyleColor();
-
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-        if (ImGui::Begin("GPU Profiler Bars", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
-        {
-            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + FRAMETIME_GRAPH_HEIGHT + style.WindowPadding.y * 2.f));
-            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, 0.f));
-            DrawGPUProfileBars();
-            ImGui::End();
-        }
-        ImGui::PopStyleColor();
-
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
-        if (ImGui::Begin("GPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
-        {
-            ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - style.WindowPadding.x - ImGui::GetWindowWidth(), io.DisplaySize.y - style.WindowPadding.y - ImGui::GetWindowHeight()));
-            DrawGPUProfileDetails();
-            ImGui::End();
-        }
-        ImGui::PopStyleColor();
-    }
-
-    if (m_bShowTextureViewer)
-    {
-        const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
-
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-        if (ImGui::Begin("Texture viewer", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-        {
-            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
-            ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - style.WindowPadding.y * 2.f - mainMenuBarHeight));
-
-            const Synesthesia3D::ResourceManager* const resMan = Renderer::GetInstance()->GetResourceManager();
-
-            string texDesc;
-            vector<s3dSampler> texList;
-            for (unsigned int i = 0; i < RenderResource::GetResourceList().size(); i++)
-            {
-                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_RENDERTARGET)
-                {
-                    const unsigned int targetCount = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->GetTargetCount();
-                    const bool hasDepth = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->HasDepthBuffer();
-
-                    for (unsigned int j = 0; j < targetCount; j++)
-                    {
-                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetColorBuffer(j));
-                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
-                        if (hasDepth)
-                        {
-                            texDesc += " - color";
-                            if (targetCount > 1)
+                            ArtistParameter* const param = ArtistParameter::GetParameterByIdx(paramIdx);
+                            if (param->GetCategoryName() == m_arrParamCategoryWindowStates[catIdx].categoryName)
                             {
-                                char num[3];
-                                sprintf_s(num, " %d", j);
-                                texDesc += num;
+                                AddParameterInWindow(param);
                             }
                         }
-                        texDesc += '\0';
                     }
-
-                    if (hasDepth)
-                    {
-                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetDepthBuffer());
-                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
-                        if (targetCount > 0)
-                        {
-                            texDesc += " - depth";
-                        }
-                        texDesc += '\0';
-                    }
-                }
-
-                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_TEXTURE)
-                {
-                    texList.push_back(((Texture*)RenderResource::GetResourceList()[i])->GetTextureIndex());
-                    texDesc += RenderResource::GetResourceList()[i]->GetDesc();
-                    texDesc += '\0';
+                    ImGui::End();
                 }
             }
-
-            const float viewerWidth = ImGui::GetWindowWidth() * 2.f / 3.f;
-            const float viewerHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - style.WindowPadding.y;
-            const float viewerPosY = ImGui::GetCursorPosY();
-
-            Synesthesia3D::Texture* const tex = m_nTextureViewerIdx >= 0 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texList[m_nTextureViewerIdx]) : nullptr;
-
-            if (m_nTextureViewerIdx >= 0)
+        }
+        else
+        {
+            if (ImGui::Begin("All parameters", &m_bShowAllParameters))
             {
-                float imgWidth, imgHeight;
-
-                if (tex->GetWidth() * viewerHeight / tex->GetHeight() > viewerWidth)
+                if (!ImGui::IsWindowCollapsed())
                 {
-                    imgWidth = viewerWidth;
-                    imgHeight = tex->GetHeight() * viewerWidth / tex->GetWidth();
-                    ImGui::SetCursorPosY(gmtl::Math::clamp((viewerHeight - imgHeight) * 0.5f, 0.f, viewerHeight));
+                    ImGui::SetWindowSize(ImVec2(0, io.DisplaySize.y * 0.9f));
+
+                    for (unsigned int catIdx = 0; catIdx < m_arrParamCategoryWindowStates.size(); catIdx++)
+                    {
+                        ImGui::TextDisabled(m_arrParamCategoryWindowStates[catIdx].categoryName.c_str());
+                        for (unsigned int paramIdx = 0; paramIdx < ArtistParameter::GetParameterCount(); paramIdx++)
+                        {
+                            ArtistParameter* const param = ArtistParameter::GetParameterByIdx(paramIdx);
+                            if (param->GetCategoryName() == m_arrParamCategoryWindowStates[catIdx].categoryName)
+                            {
+                                AddParameterInWindow(param);
+                            }
+                        }
+                        ImGui::Separator();
+                    }
                 }
                 else
                 {
-                    imgWidth = tex->GetWidth() * viewerHeight / tex->GetHeight();
-                    imgHeight = viewerHeight;
-                    ImGui::SetCursorPosX(gmtl::Math::clamp((viewerWidth - imgWidth) * 0.5f, 0.f, viewerWidth));
-                }
-
-                ImGui::Image(tex, ImVec2(imgWidth, imgHeight), ImVec2(0, 0), ImVec2(1, 1),
-                    ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImVec4(1, 0, 0, 1));
-                const ImVec2 imgPos = ImGui::GetItemRectMin();
-
-                if (ImGui::IsItemHovered() && ((GITechDemo*)AppMain)->IsUIInFocus())
-                {
-                    ImGui::BeginTooltip();
-                    float focus_sz = 32.0f;
-                    float focus_x = ImGui::GetMousePos().x - imgPos.x - focus_sz * 0.5f; if (focus_x < 0.0f) focus_x = 0.0f; else if (focus_x > imgWidth - focus_sz) focus_x = imgWidth - focus_sz;
-                    float focus_y = ImGui::GetMousePos().y - imgPos.y - focus_sz * 0.5f; if (focus_y < 0.0f) focus_y = 0.0f; else if (focus_y > imgHeight - focus_sz) focus_y = imgHeight - focus_sz;
-                    //ImGui::Text("Min: (%d, %d)", int(round((focus_x * tex->GetWidth() / imgWidth))), int(round(focus_y * tex->GetHeight() / imgHeight)));
-                    //ImGui::Text("Max: (%d, %d)", int(round((focus_x + focus_sz) * tex->GetWidth() / imgWidth)), int(round((focus_y + focus_sz) * tex->GetHeight() / imgHeight)));
-                    ImVec2 uv0 = ImVec2((focus_x) / imgWidth, (focus_y) / imgHeight);
-                    ImVec2 uv1 = ImVec2((focus_x + focus_sz) / imgWidth, (focus_y + focus_sz) / imgHeight);
-                    ImGui::Image(tex, ImVec2(256, 256), uv0, uv1, ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImColor(255, 255, 255, 128));
-                    ImGui::EndTooltip();
+                    ImGui::SetWindowSize(ImVec2(ImGui::GetWindowWidth(), io.DisplaySize.y * 0.9f));
                 }
             }
+            ImGui::End();
+        }
+        ImGui::PopStyleVar();
 
-            ImGui::SameLine();
-            ImGui::SetCursorPos(ImVec2(viewerWidth + style.WindowPadding.x + style.FramePadding.x * 2.f, viewerPosY));
+        if (m_bShowProfiler)
+        {
+            const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
 
-            if (ImGui::BeginChild("", ImVec2(viewerWidth / 2.f - style.WindowPadding.x - style.FramePadding.x * 4.f, viewerHeight)))
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
+            if (ImGui::Begin("GPU frametime graph", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
             {
-                ImGui::Separator();
-                ImGui::NewLine();
+                ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
+                ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, FRAMETIME_GRAPH_HEIGHT));
+                DrawGPUFrametimeGraph();
+                ImGui::End();
+            }
+            ImGui::PopStyleColor();
 
-                ImGui::Text("Select texture");
-                ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-                ImGui::Combo("Texture", &m_nTextureViewerIdx, texDesc.c_str(), INT_MAX);
-                ImGui::PopItemWidth();
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+            if (ImGui::Begin("GPU Profiler Bars", &m_bShowProfiler, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+            {
+                ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + FRAMETIME_GRAPH_HEIGHT + style.WindowPadding.y * 2.f));
+                ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, 0.f));
+                DrawGPUProfileBars();
+                ImGui::End();
+            }
+            ImGui::PopStyleColor();
 
-                if (tex)
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
+            if (ImGui::Begin("GPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+            {
+                ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - style.WindowPadding.x - ImGui::GetWindowWidth(), io.DisplaySize.y - style.WindowPadding.y - ImGui::GetWindowHeight()));
+                DrawGPUProfileDetails();
+                ImGui::End();
+            }
+            ImGui::PopStyleColor();
+        }
+
+        if (m_bShowTextureViewer)
+        {
+            const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
+
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+            if (ImGui::Begin("Texture viewer", &m_bShowTextureViewer, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+            {
+                ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + style.WindowPadding.y));
+                ImGui::SetWindowSize(ImVec2(io.DisplaySize.x - style.WindowPadding.x * 2.f, io.DisplaySize.y - style.WindowPadding.y * 2.f - mainMenuBarHeight));
+
+                const Synesthesia3D::ResourceManager* const resMan = Renderer::GetInstance()->GetResourceManager();
+
+                string texDesc;
+                vector<s3dSampler> texList;
+                for (unsigned int i = 0; i < RenderResource::GetResourceList().size(); i++)
                 {
+                    if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_RENDERTARGET)
+                    {
+                        const unsigned int targetCount = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->GetTargetCount();
+                        const bool hasDepth = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->HasDepthBuffer();
+
+                        for (unsigned int j = 0; j < targetCount; j++)
+                        {
+                            texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetColorBuffer(j));
+                            texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                            if (hasDepth)
+                            {
+                                texDesc += " - color";
+                                if (targetCount > 1)
+                                {
+                                    char num[3];
+                                    sprintf_s(num, " %d", j);
+                                    texDesc += num;
+                                }
+                            }
+                            texDesc += '\0';
+                        }
+
+                        if (hasDepth)
+                        {
+                            texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetDepthBuffer());
+                            texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                            if (targetCount > 0)
+                            {
+                                texDesc += " - depth";
+                            }
+                            texDesc += '\0';
+                        }
+                    }
+
+                    if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_TEXTURE)
+                    {
+                        texList.push_back(((Texture*)RenderResource::GetResourceList()[i])->GetTextureIndex());
+                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                        texDesc += '\0';
+                    }
+                }
+
+                const float viewerWidth = ImGui::GetWindowWidth() * 2.f / 3.f;
+                const float viewerHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - style.WindowPadding.y;
+                const float viewerPosY = ImGui::GetCursorPosY();
+
+                Synesthesia3D::Texture* const tex = m_nTextureViewerIdx >= 0 ? Renderer::GetInstance()->GetResourceManager()->GetTexture(texList[m_nTextureViewerIdx]) : nullptr;
+
+                if (m_nTextureViewerIdx >= 0)
+                {
+                    float imgWidth, imgHeight;
+
+                    if (tex->GetWidth() * viewerHeight / tex->GetHeight() > viewerWidth)
+                    {
+                        imgWidth = viewerWidth;
+                        imgHeight = tex->GetHeight() * viewerWidth / tex->GetWidth();
+                        ImGui::SetCursorPosY(gmtl::Math::clamp((viewerHeight - imgHeight) * 0.5f, 0.f, viewerHeight));
+                    }
+                    else
+                    {
+                        imgWidth = tex->GetWidth() * viewerHeight / tex->GetHeight();
+                        imgHeight = viewerHeight;
+                        ImGui::SetCursorPosX(gmtl::Math::clamp((viewerWidth - imgWidth) * 0.5f, 0.f, viewerWidth));
+                    }
+
+                    ImGui::Image(tex, ImVec2(imgWidth, imgHeight), ImVec2(0, 0), ImVec2(1, 1),
+                        ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImVec4(1, 0, 0, 1));
+                    const ImVec2 imgPos = ImGui::GetItemRectMin();
+
+                    if (ImGui::IsItemHovered() && ((GITechDemo*)AppMain)->IsUIInFocus())
+                    {
+                        ImGui::BeginTooltip();
+                        float focus_sz = 32.0f;
+                        float focus_x = ImGui::GetMousePos().x - imgPos.x - focus_sz * 0.5f; if (focus_x < 0.0f) focus_x = 0.0f; else if (focus_x > imgWidth - focus_sz) focus_x = imgWidth - focus_sz;
+                        float focus_y = ImGui::GetMousePos().y - imgPos.y - focus_sz * 0.5f; if (focus_y < 0.0f) focus_y = 0.0f; else if (focus_y > imgHeight - focus_sz) focus_y = imgHeight - focus_sz;
+                        //ImGui::Text("Min: (%d, %d)", int(round((focus_x * tex->GetWidth() / imgWidth))), int(round(focus_y * tex->GetHeight() / imgHeight)));
+                        //ImGui::Text("Max: (%d, %d)", int(round((focus_x + focus_sz) * tex->GetWidth() / imgWidth)), int(round((focus_y + focus_sz) * tex->GetHeight() / imgHeight)));
+                        ImVec2 uv0 = ImVec2((focus_x) / imgWidth, (focus_y) / imgHeight);
+                        ImVec2 uv1 = ImVec2((focus_x + focus_sz) / imgWidth, (focus_y + focus_sz) / imgHeight);
+                        ImGui::Image(tex, ImVec2(256, 256), uv0, uv1, ImVec4(m_bChannelMask[0] ? 1.f : 0.f, m_bChannelMask[1] ? 1.f : 0.f, m_bChannelMask[2] ? 1.f : 0.f, 1.f), ImColor(255, 255, 255, 128));
+                        ImGui::EndTooltip();
+                    }
+                }
+
+                ImGui::SameLine();
+                ImGui::SetCursorPos(ImVec2(viewerWidth + style.WindowPadding.x + style.FramePadding.x * 2.f, viewerPosY));
+
+                if (ImGui::BeginChild("", ImVec2(viewerWidth / 2.f - style.WindowPadding.x - style.FramePadding.x * 4.f, viewerHeight)))
+                {
+                    ImGui::Separator();
                     ImGui::NewLine();
 
-                    ImGui::Text("Texture type: %s", Renderer::GetEnumString(tex->GetTextureType()));
-                    ImGui::Text("Pixel format: %s", Renderer::GetEnumString(tex->GetPixelFormat()));
-                    ImGui::Text("sRGB: %s", tex->GetSRGBEnabled() ? "true" : "false");
-                    ImGui::Text("Bytes per pixel: %u B", Synesthesia3D::Texture::GetBytesPerPixel(tex->GetPixelFormat()));
-                    ImGui::Text("Render target: %s", tex->IsRenderTarget() ? "true" : "false");
-                    ImGui::Text("Depth/stencil: %s", tex->IsDepthStencil() ? "true" : "false");
-                    ImGui::Text("Width: %u", tex->GetWidth());
-                    ImGui::Text("Height: %u", tex->GetHeight());
-                    ImGui::Text("Depth: %u", tex->GetDepth());
-                    ImGui::Text("MIP count: %u", tex->GetMipCount());
-                    ImGui::Text("Total size: %s", HumanReadableByteCount(tex->GetSize()).c_str());
+                    ImGui::Text("Select texture");
+                    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                    ImGui::Combo("Texture", &m_nTextureViewerIdx, texDesc.c_str(), INT_MAX);
+                    ImGui::PopItemWidth();
 
-                    if (tex->GetTextureType() == TT_CUBE)
+                    if (tex)
                     {
+                        ImGui::NewLine();
+
+                        ImGui::Text("Texture type: %s", Renderer::GetEnumString(tex->GetTextureType()));
+                        ImGui::Text("Pixel format: %s", Renderer::GetEnumString(tex->GetPixelFormat()));
+                        ImGui::Text("sRGB: %s", tex->GetSRGBEnabled() ? "true" : "false");
+                        ImGui::Text("Bytes per pixel: %u B", Synesthesia3D::Texture::GetBytesPerPixel(tex->GetPixelFormat()));
+                        ImGui::Text("Render target: %s", tex->IsRenderTarget() ? "true" : "false");
+                        ImGui::Text("Depth/stencil: %s", tex->IsDepthStencil() ? "true" : "false");
+                        ImGui::Text("Width: %u", tex->GetWidth());
+                        ImGui::Text("Height: %u", tex->GetHeight());
+                        ImGui::Text("Depth: %u", tex->GetDepth());
+                        ImGui::Text("MIP count: %u", tex->GetMipCount());
+                        ImGui::Text("Total size: %s", HumanReadableByteCount(tex->GetSize()).c_str());
+
+                        if (tex->GetTextureType() == TT_CUBE)
+                        {
+                            ImGui::NewLine();
+                            ImGui::Separator();
+                            ImGui::NewLine();
+
+                            ImGui::Text("Select cube face");
+                            ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                            ImGui::SliderInt("Face", &m_nSelectedFace, 0, FACE_MAX - 1, Renderer::GetEnumString((CubeFace)m_nSelectedFace));
+                            ImGui::PopItemWidth();
+                            ImGui::NewLine();
+
+                            ImGui::Text("Face size (incl. MIPs): %s", HumanReadableByteCount(tex->GetCubeFaceOffset()).c_str());
+                        }
+
+                        if (tex->GetTextureType() == TT_3D)
+                        {
+                            ImGui::NewLine();
+                            ImGui::Separator();
+                            ImGui::NewLine();
+
+                            ImGui::Text("Select depth slice");
+                            ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                            ImGui::SliderInt("Depth", &m_nSelectedSlice, 0, tex->GetDepth() - 1);
+                            m_fSelectedSlice = (float)m_nSelectedSlice / (float)(tex->GetDepth() - 1);
+                            ImGui::PopItemWidth();
+                        }
+
+                        if (tex->GetMipCount() > 1)
+                        {
+                            ImGui::NewLine();
+                            ImGui::Separator();
+                            ImGui::NewLine();
+
+                            ImGui::Text("Select MIP level");
+                            ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+                            ImGui::SliderInt("MIP", &m_nSelectedMip, 0, tex->GetMipCount() - 1);
+                            ImGui::PopItemWidth();
+                            ImGui::NewLine();
+
+                            ImGui::Text("MIP width: %u", tex->GetWidth(m_nSelectedMip));
+                            ImGui::Text("MIP height: %u", tex->GetHeight(m_nSelectedMip));
+                            ImGui::Text("MIP depth: %u", tex->GetDepth(m_nSelectedMip));
+                            ImGui::Text("MIP size: %s", HumanReadableByteCount(tex->GetMipSizeBytes(m_nSelectedMip)).c_str());
+                        }
+
                         ImGui::NewLine();
                         ImGui::Separator();
                         ImGui::NewLine();
 
-                        ImGui::Text("Select cube face");
-                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-                        ImGui::SliderInt("Face", &m_nSelectedFace, 0, FACE_MAX - 1, Renderer::GetEnumString((CubeFace)m_nSelectedFace));
-                        ImGui::PopItemWidth();
+                        ImGui::Text("Sampler states:");
                         ImGui::NewLine();
 
-                        ImGui::Text("Face size (incl. MIPs): %s", HumanReadableByteCount(tex->GetCubeFaceOffset()).c_str());
-                    }
+                        ImGui::Text("Anisotropy: %u", tex->GetAnisotropy());
+                        ImGui::Text("MIP bias: %u", tex->GetMipLodBias());
+                        ImGui::Text("Filter: %s", Renderer::GetEnumString(tex->GetFilter()));
+                        ImGui::Text("Addressing mode U: %s", Renderer::GetEnumString(tex->GetAddressingModeU()));
+                        ImGui::Text("Addressing mode V: %s", Renderer::GetEnumString(tex->GetAddressingModeV()));
+                        ImGui::Text("Addressing mode W: %s", Renderer::GetEnumString(tex->GetAddressingModeW()));
+                        ImGui::Text("Border color: RGBA(%f, %f, %f, %f)",
+                            tex->GetBorderColor()[0], tex->GetBorderColor()[1],
+                            tex->GetBorderColor()[2], tex->GetBorderColor()[3]);
 
-                    if (tex->GetTextureType() == TT_3D)
-                    {
                         ImGui::NewLine();
-                        ImGui::Separator();
-                        ImGui::NewLine();
+                        ImGui::Text("Channel mask:");
 
-                        ImGui::Text("Select depth slice");
-                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-                        ImGui::SliderInt("Depth", &m_nSelectedSlice, 0, tex->GetDepth() - 1);
-                        m_fSelectedSlice = (float)m_nSelectedSlice / (float)(tex->GetDepth() - 1);
-                        ImGui::PopItemWidth();
-                    }
-
-                    if (tex->GetMipCount() > 1)
-                    {
-                        ImGui::NewLine();
-                        ImGui::Separator();
-                        ImGui::NewLine();
-
-                        ImGui::Text("Select MIP level");
-                        ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-                        ImGui::SliderInt("MIP", &m_nSelectedMip, 0, tex->GetMipCount() - 1);
-                        ImGui::PopItemWidth();
-                        ImGui::NewLine();
-
-                        ImGui::Text("MIP width: %u", tex->GetWidth(m_nSelectedMip));
-                        ImGui::Text("MIP height: %u", tex->GetHeight(m_nSelectedMip));
-                        ImGui::Text("MIP depth: %u", tex->GetDepth(m_nSelectedMip));
-                        ImGui::Text("MIP size: %s", HumanReadableByteCount(tex->GetMipSizeBytes(m_nSelectedMip)).c_str());
+                        ImGui::Checkbox("Red", &m_bChannelMask[0]);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Green", &m_bChannelMask[1]);
+                        ImGui::SameLine();
+                        ImGui::Checkbox("Blue", &m_bChannelMask[2]);
                     }
 
                     ImGui::NewLine();
                     ImGui::Separator();
-                    ImGui::NewLine();
+                }
+                ImGui::EndChild();
 
-                    ImGui::Text("Sampler states:");
-                    ImGui::NewLine();
+                ImGui::End();
+            }
 
-                    ImGui::Text("Anisotropy: %u", tex->GetAnisotropy());
-                    ImGui::Text("MIP bias: %u", tex->GetMipLodBias());
-                    ImGui::Text("Filter: %s", Renderer::GetEnumString(tex->GetFilter()));
-                    ImGui::Text("Addressing mode U: %s", Renderer::GetEnumString(tex->GetAddressingModeU()));
-                    ImGui::Text("Addressing mode V: %s", Renderer::GetEnumString(tex->GetAddressingModeV()));
-                    ImGui::Text("Addressing mode W: %s", Renderer::GetEnumString(tex->GetAddressingModeW()));
-                    ImGui::Text("Border color: RGBA(%f, %f, %f, %f)",
-                        tex->GetBorderColor()[0], tex->GetBorderColor()[1],
-                        tex->GetBorderColor()[2], tex->GetBorderColor()[3]);
+            ImGui::PopStyleColor();
+        }
+    }
 
-                    ImGui::NewLine();
-                    ImGui::Text("Channel mask:");
+    if (m_bFPSTestMode)
+    {
+        switch (m_eFPSTestState)
+        {
+        case FPS_TEST_CONFIG:
+            if (ImGui::Begin("FPS test mode configuration", &m_bFPSTestMode, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove))
+            {
+                ImGui::InputFloat("Simulation speed modifier", &((GITechDemo*)AppMain)->GetDeltaTimeModifier(), 0.1f, 1.f);
+                ImGui::InputInt("Number of tests", &m_nFPSTestCount, 1, 10);
+                if(ImGui::Checkbox("Low graphics mode", &m_bFPSTestLowGfxMode))
+                {
+                    if (m_bFPSTestLowGfxMode)
+                    {
+                        RenderConfig::DirectionalLightVolume::Enabled = false;
+                        RenderConfig::ReflectiveShadowMap::Enabled = false;
+                        RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled = false;
+                        RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled = false;
+                        RenderConfig::PostProcessing::Enabled = false;
+                    }
+                    else
+                    {
+                        RenderConfig::DirectionalLightVolume::Enabled = m_bFPSTestVolLightBackup;
+                        RenderConfig::ReflectiveShadowMap::Enabled = m_bFPSTestRSMBackup;
+                        RenderConfig::PostProcessing::ScreenSpaceReflections::Enabled = m_bFPSTestSSRBackup;
+                        RenderConfig::PostProcessing::ScreenSpaceAmbientOcclusion::Enabled = m_bFPSTestSSAOBackup;
+                        RenderConfig::PostProcessing::Enabled = m_bFPSTestPostBackup;
+                    }
+                }
+                ImGui::NewLine();
 
-                    ImGui::Checkbox("Red", &m_bChannelMask[0]);
-                    ImGui::SameLine();
-                    ImGui::Checkbox("Green", &m_bChannelMask[1]);
-                    ImGui::SameLine();
-                    ImGui::Checkbox("Blue", &m_bChannelMask[2]);
+                int selectedTestsCount = 0;
+                char checkboxLabel[256];
+                for (int i = 0; i < ARRAYSIZE(m_arrFPSTestSelectedInterval); i++)
+                {
+                    sprintf_s(checkboxLabel, "%d Hz", RenderConfig::Window::RefreshRate / (i + 1));
+                    ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !RenderContext->GetDeviceCaps().bPresentIntervalOne);
+                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (RenderContext->GetDeviceCaps().bPresentIntervalOne ? 1.f : 0.5f));
+                    ImGui::Checkbox(checkboxLabel, &m_arrFPSTestSelectedInterval[i]);
+                    ImGui::PopItemFlag();
+                    ImGui::PopStyleVar();
+
+                    if (ImGui::IsItemHovered() && !RenderContext->GetDeviceCaps().bPresentIntervalOne)
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::PushTextWrapPos(450.0f);
+                        ImGui::TextUnformatted("Not supported by graphics driver.");
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndTooltip();
+                    }
+
+                    selectedTestsCount += (int)m_arrFPSTestSelectedInterval[i];
                 }
 
                 ImGui::NewLine();
-                ImGui::Separator();
+                if (ImGui::Button("Start test") && selectedTestsCount >= 2)
+                {
+                    m_eFPSTestState = FPS_TEST_RUN;
+
+                    RenderConfig::Window::Fullscreen = true;
+                    RenderConfig::Window::RefreshRate = INT_MAX;
+                    RenderConfig::Window::VSync = true;
+
+                    m_nFPSTestCounter = m_nFPSTestCount;
+                    m_nFPSTestSelectedCount = selectedTestsCount;
+
+                    memset(m_arrFPSTestInterval, 0, sizeof(int) * ARRAYSIZE(m_arrFPSTestInterval));
+                    for (int i = 0, j = 0; i < ARRAYSIZE(m_arrFPSTestSelectedInterval); i++)
+                    {
+                        if (m_arrFPSTestSelectedInterval[i])
+                        {
+                            m_arrFPSTestInterval[j] = i + 1;
+                            j++;
+                        }
+                    }
+
+                    m_FPSTestSelectorGenerator.seed(GetTickCount());
+                    m_FPSTestSelector.param(std::uniform_int_distribution<int>::param_type(0, m_nFPSTestSelectedCount - 1));
+                    m_FPSTestSelector.reset();
+
+                    RenderConfig::Window::VSyncInterval = m_arrFPSTestInterval[m_FPSTestSelector(m_FPSTestSelectorGenerator)];
+
+                    memset(m_arrFPSTestIntervalsTests, 0, sizeof(int)* ARRAYSIZE(m_arrFPSTestIntervalsTests));
+                    memset(m_arrFPSTestIntervalsCorrect, 0, sizeof(int)* ARRAYSIZE(m_arrFPSTestIntervalsCorrect));
+                }
+
+                if (selectedTestsCount < 2)
+                {
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::PushTextWrapPos(450.0f);
+                        ImGui::TextUnformatted("You need to select at least two options to start the test.");
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndTooltip();
+                    }
+                }
             }
-            ImGui::EndChild();
-
             ImGui::End();
-        }
+            break;
 
-        ImGui::PopStyleColor();
+        case FPS_TEST_RUN:
+            if (m_nFPSTestCounter <= 0)
+            {
+                m_eFPSTestState = FPS_TEST_RESULT;
+            }
+            else
+            {
+                if (ImGui::Begin("FPS test in progress", &m_bFPSTestMode, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove))
+                {
+                    char buttonLabel[256];
+                    for (int i = 0; i < m_nFPSTestSelectedCount; i++)
+                    {
+                        sprintf_s(buttonLabel, "%d Hz", RenderConfig::Window::RefreshRate / m_arrFPSTestInterval[i]);
+                        if (ImGui::Button(buttonLabel, ImVec2(100, 50)))
+                        {
+                            m_arrFPSTestIntervalsTests[RenderConfig::Window::VSyncInterval - 1]++;
+                            m_arrFPSTestIntervalsCorrect[RenderConfig::Window::VSyncInterval - 1] += (int)(RenderConfig::Window::VSyncInterval == m_arrFPSTestInterval[i]);
+                            m_nFPSTestCounter--;
+                            RenderConfig::Window::VSyncInterval = m_arrFPSTestInterval[m_FPSTestSelector(m_FPSTestSelectorGenerator)];
+                            ((GITechDemo*)AppMain)->ForceUpdateResolution();
+                        }
+                        ImGui::SameLine();
+                    }
+                }
+                //ImGui::Text("Remaining tests: %d Current interval: %d", m_nFPSTestCounter, RenderConfig::Window::VSyncInterval);
+                ImGui::End();
+            }
+            break;
+
+        case FPS_TEST_RESULT:
+            if (ImGui::Begin("FPS test results", &m_bFPSTestMode, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove))
+            {
+                for (int i = 0; i < m_nFPSTestSelectedCount; i++)
+                {
+                    ImGui::Text("%dHz - %d/%d (%.2f%%)",
+                        RenderConfig::Window::RefreshRate / m_arrFPSTestInterval[i],
+                        m_arrFPSTestIntervalsCorrect[m_arrFPSTestInterval[i] - 1],
+                        m_arrFPSTestIntervalsTests[m_arrFPSTestInterval[i] - 1],
+                        (float)m_arrFPSTestIntervalsCorrect[m_arrFPSTestInterval[i] - 1] / (float)m_arrFPSTestIntervalsTests[m_arrFPSTestInterval[i] - 1] * 100.f);
+                }
+
+                ImGui::NewLine();
+                if (ImGui::Button("Restart test"))
+                {
+                    m_eFPSTestState = FPS_TEST_CONFIG;
+                }
+            }
+            ImGui::End();
+            break;
+        }
     }
 
     ImGui::Render();

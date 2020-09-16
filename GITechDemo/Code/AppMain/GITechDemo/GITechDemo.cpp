@@ -69,6 +69,7 @@ template <typename T> string tostr(const T& t) {
 GITechDemo::GITechDemo()
     : App()
     , m_fDeltaTime(0.f)
+    , m_fDeltaTimeModifier(1.f)
     , m_pInputMap(nullptr)
     , m_bUIHasFocus(false)
 {
@@ -163,9 +164,11 @@ bool GITechDemo::Init(void* hWnd)
     m_nLastFrameResY = -1;
     m_vLastFrameViewport = Vec2i(-1, -1);
     m_nLastFrameRefreshRate = -1;
+    m_nLastFrameVSyncInterval = -1;
     m_bLastFrameFullscreen = pFW->IsFullscreen();
     m_bLastFrameBorderless = pFW->IsBorderlessWindow();
     m_bLastFrameVSync = RenderContext->GetVSyncStatus();
+    m_bForceResolutionUpdate = false;
 
     HLSL::FrameParams->ViewProjMat = MAT_IDENTITY44F;
 
@@ -245,7 +248,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 
 void GITechDemo::Update(const float fDeltaTime)
 {
-    m_fDeltaTime = fDeltaTime;
+    m_fDeltaTime = fDeltaTime * m_fDeltaTimeModifier;
     
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
@@ -257,12 +260,21 @@ void GITechDemo::Update(const float fDeltaTime)
     const Vec2i viewportSize = Vec2i(cRight - cLeft, cBottom - cTop);
 
     const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+    const int nPresentIntarvalCount = 5;
+    const bool arrSupportedPresentIntervals[nPresentIntarvalCount] = {
+        true, // default is always supported
+        RenderContext->GetDeviceCaps().bPresentIntervalOne,
+        RenderContext->GetDeviceCaps().bPresentIntervalTwo && RenderConfig::Window::Fullscreen,
+        RenderContext->GetDeviceCaps().bPresentIntervalThree && RenderConfig::Window::Fullscreen,
+        RenderContext->GetDeviceCaps().bPresentIntervalFour && RenderConfig::Window::Fullscreen
+    };
 
     // Update fullscreen resolution setting
     if (m_nLastFrameResX != -1 ||
         m_nLastFrameResY != -1 ||
         m_vLastFrameViewport != Vec2i(-1, -1) ||
-        m_nLastFrameRefreshRate != -1)
+        m_nLastFrameRefreshRate != -1 ||
+        m_nLastFrameVSyncInterval != -1)
     {
         if (RenderConfig::Window::Resolution[0] > m_nLastFrameResX)
         {
@@ -402,6 +414,40 @@ void GITechDemo::Update(const float fDeltaTime)
                 RenderConfig::Window::RefreshRate = m_nLastFrameRefreshRate;
             }
         }
+        else if (RenderConfig::Window::VSyncInterval > m_nLastFrameVSyncInterval)
+        {
+            RenderConfig::Window::VSyncInterval = Math::clamp(RenderConfig::Window::VSyncInterval, 0, nPresentIntarvalCount - 1);
+
+            // VSync interval increased
+            while (!arrSupportedPresentIntervals[RenderConfig::Window::VSyncInterval] &&
+                RenderConfig::Window::VSyncInterval < nPresentIntarvalCount - 1)
+            {
+                RenderConfig::Window::VSyncInterval++;
+            }
+
+            if (!arrSupportedPresentIntervals[RenderConfig::Window::VSyncInterval])
+            {
+                // Reset vsync interval if we didn't find a suitable one
+                RenderConfig::Window::VSyncInterval = m_nLastFrameVSyncInterval;
+            }
+        }
+        else if (RenderConfig::Window::VSyncInterval < m_nLastFrameVSyncInterval || m_bLastFrameFullscreen != RenderConfig::Window::Fullscreen)
+        {
+            RenderConfig::Window::VSyncInterval = Math::clamp(RenderConfig::Window::VSyncInterval, 0, nPresentIntarvalCount - 1);
+
+            // VSync interval decreased
+            while (!arrSupportedPresentIntervals[RenderConfig::Window::VSyncInterval] &&
+                RenderConfig::Window::VSyncInterval > 0)
+            {
+                RenderConfig::Window::VSyncInterval--;
+            }
+
+            if (!arrSupportedPresentIntervals[RenderConfig::Window::VSyncInterval])
+            {
+                // Reset vsync interval if we didn't find a suitable one
+                RenderConfig::Window::VSyncInterval = m_nLastFrameVSyncInterval;
+            }
+        }
     }
 
     // Set the size of the backbuffer accordingly
@@ -412,7 +458,9 @@ void GITechDemo::Update(const float fDeltaTime)
         (m_vLastFrameViewport != viewportSize && !RenderConfig::Window::Fullscreen) ||
         m_bLastFrameFullscreen != RenderConfig::Window::Fullscreen ||
         m_bLastFrameBorderless != RenderConfig::Window::Borderless ||
-        m_bLastFrameVSync != RenderConfig::Window::VSync))
+        m_bLastFrameVSync != RenderConfig::Window::VSync ||
+        m_nLastFrameVSyncInterval != RenderConfig::Window::VSyncInterval) ||
+        m_bForceResolutionUpdate)
     {
         if (!m_bLastFrameFullscreen && RenderConfig::Window::Fullscreen)
             pFW->OnSwitchToFullscreenMode();
@@ -433,7 +481,9 @@ void GITechDemo::Update(const float fDeltaTime)
             Vec2i(0, 0),
             RenderConfig::Window::Fullscreen,
             RenderConfig::Window::RefreshRate,
-            RenderConfig::Window::VSync);
+            RenderConfig::Window::VSync,
+            RenderConfig::Window::VSyncInterval,
+            m_bForceResolutionUpdate);
 
         m_nLastFrameResX = RenderConfig::Window::Resolution[0];
         m_nLastFrameResY = RenderConfig::Window::Resolution[1];
@@ -442,6 +492,8 @@ void GITechDemo::Update(const float fDeltaTime)
         m_bLastFrameFullscreen = RenderConfig::Window::Fullscreen;
         m_bLastFrameBorderless = RenderConfig::Window::Borderless;
         m_bLastFrameVSync = RenderConfig::Window::VSync;
+        m_nLastFrameVSyncInterval = RenderConfig::Window::VSyncInterval;
+        m_bForceResolutionUpdate = false;
     }
 
     // Update focus context
@@ -564,11 +616,11 @@ void GITechDemo::Update(const float fDeltaTime)
         static float lastInput = 0.f;
         if (cmd == APP_CMD_NONE)
         {
-            lastInput += fDeltaTime;
+            lastInput += m_fDeltaTime;
             if (lastInput > RenderConfig::Camera::AnimationTimeout)
             {
                 static float time = 0.f;
-                time += fDeltaTime;
+                time += m_fDeltaTime;
                 Vec3f perlinPos(
                     PerlinNoise.Get(time, 0.f),
                     PerlinNoise.Get(0.f, time),
@@ -613,7 +665,7 @@ void GITechDemo::Update(const float fDeltaTime)
     if (RenderConfig::DirectionalLight::Animation)
     {
         static float time = 0.f;
-        time += fDeltaTime;
+        time += m_fDeltaTime;
         float noiseX = PerlinNoise.Get(time, 0);
         float noiseZ = PerlinNoise.Get(0, time);
         RenderConfig::DirectionalLight::LightDir[0] = noiseX;

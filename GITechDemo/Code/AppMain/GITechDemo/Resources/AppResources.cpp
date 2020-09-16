@@ -118,6 +118,7 @@ namespace GITechDemoApp
     Vec2i RenderConfig::Window::Resolution;
     int RenderConfig::Window::RefreshRate;
     bool RenderConfig::Window::VSync;
+    int RenderConfig::Window::VSyncInterval;
 
     bool RenderConfig::Camera::InfiniteProjection;
     float RenderConfig::Camera::ZNear;
@@ -597,6 +598,14 @@ namespace GITechDemoApp
         "Window",
         RenderConfig::Window::VSync,
         false);
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "VSync interval",
+        "Adjusts the swap rate relative to the screen refresh rate",
+        "Window",
+        RenderConfig::Window::VSyncInterval,
+        1,
+        0);
     //------------------------------------------------------
 
     // Camera ----------------------------------------------
