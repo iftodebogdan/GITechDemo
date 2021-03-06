@@ -541,11 +541,13 @@ void UIPass::SetupUI()
     // ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
     // ImGui::ShowTestWindow(&show_test_window);
 
+    const bool bFPSTestDisablesMenus = m_bFPSTestMode && m_eFPSTestState != FPS_TEST_CONFIG;
+
     // Main menu + title bar
     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_fAlpha);
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("Parameters", !m_bFPSTestMode))
+        if (ImGui::BeginMenu("Parameters", !bFPSTestDisablesMenus))
         {
             ImGui::MenuItem("All parameters", nullptr, &m_bShowAllParameters);
 
@@ -559,7 +561,7 @@ void UIPass::SetupUI()
             ImGui::EndMenu();
         }
 
-        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        if (ImGui::IsItemHovered() && bFPSTestDisablesMenus)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -569,10 +571,10 @@ void UIPass::SetupUI()
         }
 
         bool pauseUpdate = pFW->IsUpdatePaused();
-        ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate, !m_bFPSTestMode);
+        ImGui::MenuItem(pauseUpdate ? "Unpause update" : "Pause update", nullptr, &pauseUpdate, !bFPSTestDisablesMenus);
         pFW->PauseUpdate(pauseUpdate);
 
-        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        if (ImGui::IsItemHovered() && bFPSTestDisablesMenus)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -581,9 +583,9 @@ void UIPass::SetupUI()
             ImGui::EndTooltip();
         }
 
-        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler, ENABLE_PROFILE_MARKERS && !m_bFPSTestMode);
+        ImGui::MenuItem(m_bShowProfiler ? "Hide profiler" : "Show profiler", "Debug/Profile only", &m_bShowProfiler, ENABLE_PROFILE_MARKERS && !bFPSTestDisablesMenus);
 
-        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        if (ImGui::IsItemHovered() && bFPSTestDisablesMenus)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -593,7 +595,7 @@ void UIPass::SetupUI()
         }
 
     #if !ENABLE_PROFILE_MARKERS
-        if (ImGui::IsItemHovered() && !m_bFPSTestMode)
+        if (ImGui::IsItemHovered() && !bFPSTestDisablesMenus)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -603,9 +605,9 @@ void UIPass::SetupUI()
         }
     #endif
 
-        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer, !m_bFPSTestMode);
+        ImGui::MenuItem(m_bShowTextureViewer ? "Close texture viewer" : "Open texture viewer", nullptr, &m_bShowTextureViewer, !bFPSTestDisablesMenus);
 
-        if (ImGui::IsItemHovered() && m_bFPSTestMode)
+        if (ImGui::IsItemHovered() && bFPSTestDisablesMenus)
         {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(450.0f);
@@ -708,7 +710,7 @@ void UIPass::SetupUI()
     }
     ImGui::PopStyleVar();
 
-    if (!m_bFPSTestMode)
+    if (!bFPSTestDisablesMenus)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Math::Max(m_fAlpha, ALPHA_MIN));
         if (!m_bShowAllParameters)
@@ -1019,6 +1021,8 @@ void UIPass::SetupUI()
         case FPS_TEST_CONFIG:
             if (ImGui::Begin("FPS test mode configuration", &m_bFPSTestMode, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove))
             {
+                const float mainMenuBarHeight = ImGui::GetFontSize() + style.FramePadding.y;
+                ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, mainMenuBarHeight + 200 + style.WindowPadding.y));
                 ImGui::InputFloat("Simulation speed modifier", &((GITechDemo*)AppMain)->GetDeltaTimeModifier(), 0.1f, 1.f);
                 ImGui::InputInt("Number of tests", &m_nFPSTestCount, 1, 10);
                 if(ImGui::Checkbox("Low graphics mode", &m_bFPSTestLowGfxMode))

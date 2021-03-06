@@ -38,12 +38,16 @@ using namespace Synesthesia3D;
 
 D3DFORMAT BBFormats[] = { D3DFMT_A2R10G10B10, D3DFMT_A8R8G8B8, D3DFMT_X8R8G8B8, D3DFMT_A1R5G5B5, D3DFMT_X1R5G5B5, D3DFMT_R5G6B5 };
 D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32, D3DFMT_D24X8, D3DFMT_D16 }; // Prefer with stencil
-UINT D3DPresentIntervals[] = {
+UINT D3DPresentIntervalsFullscreen[] = {
     D3DPRESENT_INTERVAL_DEFAULT,
     D3DPRESENT_INTERVAL_ONE,
     D3DPRESENT_INTERVAL_TWO,
     D3DPRESENT_INTERVAL_THREE,
     D3DPRESENT_INTERVAL_FOUR
+};
+UINT D3DPresentIntervalsWindowed[] = {
+    D3DPRESENT_INTERVAL_DEFAULT,
+    D3DPRESENT_INTERVAL_ONE
 };
 
 RendererDX9::RendererDX9()
@@ -421,10 +425,23 @@ void RendererDX9::Initialize(void* hWnd)
 const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync, const unsigned int vsyncInterval, const bool force)
 {
     Vec2i validOffset(offset);
+    UINT* D3DPresentIntervals;
+    unsigned int D3DPresentIntervalCount = 1;
+
     if (fullscreen)
+    {
         validOffset[0] = validOffset[1] = 0;
 
-    const unsigned int validVsyncInterval = Math::Min(vsyncInterval, (const unsigned int)ARRAYSIZE(D3DPresentIntervals) - 1u);
+        D3DPresentIntervals = D3DPresentIntervalsFullscreen;
+        D3DPresentIntervalCount = ARRAYSIZE(D3DPresentIntervalsFullscreen);
+    }
+    else
+    {
+        D3DPresentIntervals = D3DPresentIntervalsWindowed;
+        D3DPresentIntervalCount = ARRAYSIZE(D3DPresentIntervalsWindowed);
+    }
+
+    const unsigned int validVsyncInterval = Math::Min(vsyncInterval, D3DPresentIntervalCount - 1u);
 
     // If already set, skip
     if (!force &&

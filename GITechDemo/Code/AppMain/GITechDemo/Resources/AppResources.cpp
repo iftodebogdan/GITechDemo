@@ -601,7 +601,7 @@ namespace GITechDemoApp
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "VSync interval",
-        "Adjusts the swap rate relative to the screen refresh rate",
+        "Adjusts the swap rate relative to the screen refresh rate. 0 is the default and is equivalent to 1 except for the system timer being used, which is higher res for 1.",
         "Window",
         RenderConfig::Window::VSyncInterval,
         1,
