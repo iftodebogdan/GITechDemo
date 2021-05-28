@@ -264,6 +264,17 @@ void UIPass::AddParameterInWindow(ArtistParameter* const param) const
         ImGui::Checkbox(param->GetName().c_str(), &param->GetParameterAsBool());
         break;
 
+    case ArtistParameter::ArtistParameterDataType::APDT_DROPDOWN:
+    {
+        int dropdownItemCount = 0;
+        while (param->GetParameterAsDropdownFncPtr()(AppMain, dropdownItemCount, nullptr)) // maybe limit this to something sensible?
+        {
+            dropdownItemCount++;
+        };
+        ImGui::Combo(param->GetName().c_str(), &param->GetDropdownIndex(), param->GetParameterAsDropdownFncPtr(), AppMain, dropdownItemCount);
+        break;
+    }
+
     default:
         assert(false);
         ImGui::TextDisabled(param->GetName().c_str());

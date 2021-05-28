@@ -137,30 +137,35 @@ bool GITechDemo::Init(void* hWnd)
 
     const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
-    // Set the highest available fullscreen resolution
-    for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-    {
-        if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
-        {
-            if ((int)arrSupportedScreenFormats[i].nWidth > RenderConfig::Window::Resolution[0] ||
-                (int)arrSupportedScreenFormats[i].nHeight > RenderConfig::Window::Resolution[1])
-            {
-                RenderConfig::Window::Resolution[0] = arrSupportedScreenFormats[i].nWidth;
-                RenderConfig::Window::Resolution[1] = arrSupportedScreenFormats[i].nHeight;
-                RenderConfig::Window::RefreshRate = arrSupportedScreenFormats[i].nRefreshRate;
-            }
+    // Build a list of all available resolutions
+    BuildSupportedResolutionList();
 
-            if ((int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] ||
-                (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1] ||
-                (int)arrSupportedScreenFormats[i].nRefreshRate > RenderConfig::Window::RefreshRate)
-            {
-                RenderConfig::Window::RefreshRate = arrSupportedScreenFormats[i].nRefreshRate;
-            }
+    // Set the highest resolution available (hopefully it's the native one...)
+    for (int i = 0, bestRes = 0; i < m_arrSupportedResolutionList.size(); i++)
+    {
+        const int resolution = m_arrSupportedResolutionList[i].GetResolution()[0] * m_arrSupportedResolutionList[i].GetResolution()[1];
+        if (bestRes < resolution)
+        {
+            bestRes = resolution;
+            RenderConfig::Window::ResolutionIdx = i;
         }
     }
 
-    m_nLastFrameResX = -1;
-    m_nLastFrameResY = -1;
+    // Build a list of all available refresh rates for the specified resolution
+    BuildSupportedRefreshRateList(m_arrSupportedResolutionList[RenderConfig::Window::ResolutionIdx].GetResolution());
+
+    // Set the highest available refresh rate for the selected resolution
+    for (int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
+    {
+        const int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
+        if (bestRefreshRate < refreshRate)
+        {
+            bestRefreshRate = refreshRate;
+            RenderConfig::Window::RefreshRateIdx = i;
+        }
+    }
+
+    m_nLastFrameRes = -1;
     m_vLastFrameViewport = Vec2i(-1, -1);
     m_nLastFrameRefreshRate = -1;
     m_bLastFrameFullscreen = pFW->IsFullscreen();
@@ -259,156 +264,31 @@ void GITechDemo::Update(const float fDeltaTime)
     const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
 
     // Update fullscreen resolution setting
-    if (m_nLastFrameResX != -1 ||
-        m_nLastFrameResY != -1 ||
+    if (m_nLastFrameRes != -1 ||
         m_vLastFrameViewport != Vec2i(-1, -1) ||
         m_nLastFrameRefreshRate != -1)
     {
-        if (RenderConfig::Window::Resolution[0] > m_nLastFrameResX)
+        if (RenderConfig::Window::ResolutionIdx != m_nLastFrameRes)
         {
-            // X resolution increased
-            RenderConfig::Window::Resolution[0] = INT_MAX;
-            RenderConfig::Window::Resolution[1] = INT_MAX;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+            BuildSupportedRefreshRateList(m_arrSupportedResolutionList[RenderConfig::Window::ResolutionIdx].GetResolution());
+
+            // Set the highest available refresh rate for the selected resolution
+            for (int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
             {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
+                const int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
+                if (bestRefreshRate < refreshRate)
                 {
-                    if ((int)arrSupportedScreenFormats[i].nWidth > m_nLastFrameResX &&
-                        (int)arrSupportedScreenFormats[i].nWidth <= RenderConfig::Window::Resolution[0])
-                    {
-                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
-                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
-                    }
+                    bestRefreshRate = refreshRate;
+                    RenderConfig::Window::RefreshRateIdx = i;
                 }
-            }
-            if (RenderConfig::Window::Resolution[0] == INT_MAX && RenderConfig::Window::Resolution[1] == INT_MAX)
-            {
-                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
-                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
-            }
-        }
-        else if (RenderConfig::Window::Resolution[0] < m_nLastFrameResX)
-        {
-            // X resolution decreased
-            RenderConfig::Window::Resolution[0] = 0;
-            RenderConfig::Window::Resolution[1] = 0;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-            {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
-                {
-                    if ((int)arrSupportedScreenFormats[i].nWidth < m_nLastFrameResX &&
-                        (int)arrSupportedScreenFormats[i].nWidth >= RenderConfig::Window::Resolution[0])
-                    {
-                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
-                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
-                    }
-                }
-            }
-            if (RenderConfig::Window::Resolution[0] == 0 && RenderConfig::Window::Resolution[1] == 0)
-            {
-                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
-                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
-            }
-        }
-        else if (RenderConfig::Window::Resolution[1] > m_nLastFrameResY)
-        {
-            // Y resolution increased
-            RenderConfig::Window::Resolution[0] = INT_MAX;
-            RenderConfig::Window::Resolution[1] = INT_MAX;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-            {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
-                {
-                    if ((int)arrSupportedScreenFormats[i].nHeight > m_nLastFrameResY &&
-                        (int)arrSupportedScreenFormats[i].nHeight <= RenderConfig::Window::Resolution[1])
-                    {
-                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
-                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
-                    }
-                }
-            }
-            if (RenderConfig::Window::Resolution[0] == INT_MAX && RenderConfig::Window::Resolution[1] == INT_MAX)
-            {
-                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
-                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
-            }
-        }
-        else if (RenderConfig::Window::Resolution[1] < m_nLastFrameResY)
-        {
-            // Y resolution decreased
-            RenderConfig::Window::Resolution[0] = 0;
-            RenderConfig::Window::Resolution[1] = 0;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-            {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat)
-                {
-                    if ((int)arrSupportedScreenFormats[i].nHeight < m_nLastFrameResY &&
-                        (int)arrSupportedScreenFormats[i].nHeight >= RenderConfig::Window::Resolution[1])
-                    {
-                        RenderConfig::Window::Resolution[0] = (int)arrSupportedScreenFormats[i].nWidth;
-                        RenderConfig::Window::Resolution[1] = (int)arrSupportedScreenFormats[i].nHeight;
-                    }
-                }
-            }
-            if (RenderConfig::Window::Resolution[0] == 0 && RenderConfig::Window::Resolution[1] == 0)
-            {
-                RenderConfig::Window::Resolution[0] = m_nLastFrameResX; // Reset resolution setting in case
-                RenderConfig::Window::Resolution[1] = m_nLastFrameResY; // we didn't find another suitable one
-            }
-        }
-        else if (RenderConfig::Window::RefreshRate > m_nLastFrameRefreshRate)
-        {
-            // Refresh rate increased
-            RenderConfig::Window::RefreshRate = INT_MAX;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-            {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
-                    (int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] &&
-                    (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1])
-                {
-                    if ((int)arrSupportedScreenFormats[i].nRefreshRate > m_nLastFrameRefreshRate &&
-                        (int)arrSupportedScreenFormats[i].nRefreshRate <= RenderConfig::Window::RefreshRate)
-                    {
-                        RenderConfig::Window::RefreshRate = (int)arrSupportedScreenFormats[i].nRefreshRate;
-                    }
-                }
-            }
-            if (RenderConfig::Window::RefreshRate == INT_MAX)
-            {
-                // Reset resolution setting in case we didn't find another suitable one
-                RenderConfig::Window::RefreshRate = m_nLastFrameRefreshRate;
-            }
-        }
-        else if (RenderConfig::Window::RefreshRate < m_nLastFrameRefreshRate)
-        {
-            // Refresh rate decreased
-            RenderConfig::Window::RefreshRate = 0;
-            for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
-            {
-                if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
-                    (int)arrSupportedScreenFormats[i].nWidth == RenderConfig::Window::Resolution[0] &&
-                    (int)arrSupportedScreenFormats[i].nHeight == RenderConfig::Window::Resolution[1])
-                {
-                    if ((int)arrSupportedScreenFormats[i].nRefreshRate < m_nLastFrameRefreshRate &&
-                        (int)arrSupportedScreenFormats[i].nRefreshRate >= RenderConfig::Window::RefreshRate)
-                    {
-                        RenderConfig::Window::RefreshRate = (int)arrSupportedScreenFormats[i].nRefreshRate;
-                    }
-                }
-            }
-            if (RenderConfig::Window::RefreshRate == 0)
-            {
-                // Reset resolution setting in case we didn't find another suitable one
-                RenderConfig::Window::RefreshRate = m_nLastFrameRefreshRate;
             }
         }
     }
 
     // Set the size of the backbuffer accordingly
     if (!pFW->IsRenderingPaused() &&
-        (m_nLastFrameResX != RenderConfig::Window::Resolution[0] ||
-        m_nLastFrameResY != RenderConfig::Window::Resolution[1] ||
-        m_nLastFrameRefreshRate != RenderConfig::Window::RefreshRate ||
+        (m_nLastFrameRes != RenderConfig::Window::ResolutionIdx ||
+        m_nLastFrameRefreshRate != RenderConfig::Window::RefreshRateIdx ||
         (m_vLastFrameViewport != viewportSize && !RenderConfig::Window::Fullscreen) ||
         m_bLastFrameFullscreen != RenderConfig::Window::Fullscreen ||
         m_bLastFrameBorderless != RenderConfig::Window::Borderless ||
@@ -429,19 +309,20 @@ void GITechDemo::Update(const float fDeltaTime)
             pFW->OnSwitchToWindowedMode();
 
         RenderContext->SetDisplayResolution(
-            RenderConfig::Window::Fullscreen ? Vec2i(RenderConfig::Window::Resolution[0], RenderConfig::Window::Resolution[1]) : viewportSize,
+            RenderConfig::Window::Fullscreen ? m_arrSupportedResolutionList[RenderConfig::Window::ResolutionIdx].GetResolution() : viewportSize,
             Vec2i(0, 0),
             RenderConfig::Window::Fullscreen,
-            RenderConfig::Window::RefreshRate,
+            m_arrSupportedRefreshRateList[RenderConfig::Window::RefreshRateIdx].GetRefreshRate(),
             RenderConfig::Window::VSync);
 
-        m_nLastFrameResX = RenderConfig::Window::Resolution[0];
-        m_nLastFrameResY = RenderConfig::Window::Resolution[1];
-        m_nLastFrameRefreshRate = RenderConfig::Window::RefreshRate;
+        m_nLastFrameRes = RenderConfig::Window::ResolutionIdx;
+        m_nLastFrameRefreshRate = RenderConfig::Window::RefreshRateIdx;
         m_vLastFrameViewport = viewportSize;
         m_bLastFrameFullscreen = RenderConfig::Window::Fullscreen;
         m_bLastFrameBorderless = RenderConfig::Window::Borderless;
         m_bLastFrameVSync = RenderConfig::Window::VSync;
+
+        UI_PASS.ResetFrametimeGraph();
     }
 
     // Update focus context
@@ -755,5 +636,109 @@ void GITechDemo::Draw()
     {
         RenderScheme::Draw();
         RenderContext->EndFrame();
+    }
+}
+
+bool GITechDemo::GetSupportedResolutionList(void* data, int idx, const char** out_text)
+{
+    return ((GITechDemo*)data)->GetSupportedResolutionListImpl(idx, out_text);
+}
+
+bool GITechDemo::GetSupportedResolutionListImpl(int idx, const char** out_text)
+{
+    if (idx < m_arrSupportedResolutionList.size())
+    {
+        if (out_text)
+        {
+            *out_text = m_arrSupportedResolutionList[idx].GetResolutionDesc();
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void GITechDemo::BuildSupportedResolutionList()
+{
+    for (unsigned int i = 0; i < m_arrSupportedResolutionList.size(); i++)
+    {
+        delete[] m_arrSupportedResolutionList[i].GetResolutionDesc();
+    }
+    m_arrSupportedResolutionList.clear();
+
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+
+    for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+    {
+        bool alreadyAdded = false;
+        for (unsigned int j = 0; j < m_arrSupportedResolutionList.size(); j++)
+        {
+            if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
+                m_arrSupportedResolutionList[j].GetResolution() == Vec2i(arrSupportedScreenFormats[i].nWidth, arrSupportedScreenFormats[i].nHeight))
+            {
+                alreadyAdded = true;
+                break;
+            }
+        }
+
+        if (!alreadyAdded)
+        {
+            const unsigned int maxResolutionDescLength = 32;
+            const SupportedResolution resolution = { Vec2i(arrSupportedScreenFormats[i].nWidth, arrSupportedScreenFormats[i].nHeight), new char[maxResolutionDescLength] };
+            m_arrSupportedResolutionList.push_back(resolution);
+            sprintf_s(m_arrSupportedResolutionList.back().GetResolutionDesc(), maxResolutionDescLength, "%dx%d", arrSupportedScreenFormats[i].nWidth, arrSupportedScreenFormats[i].nHeight);
+        }
+    }
+}
+
+bool GITechDemo::GetSupportedRefreshRateList(void* data, int idx, const char** out_text)
+{
+    return ((GITechDemo*)data)->GetSupportedRefreshRateListImpl(idx, out_text);
+}
+
+bool GITechDemo::GetSupportedRefreshRateListImpl(int idx, const char** out_text)
+{
+    if (idx < m_arrSupportedRefreshRateList.size())
+    {
+        if (out_text)
+        {
+            *out_text = m_arrSupportedRefreshRateList[idx].GetRefreshRateDesc();
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void GITechDemo::BuildSupportedRefreshRateList(const Vec2i resolution)
+{
+    for (unsigned int i = 0; i < m_arrSupportedRefreshRateList.size(); i++)
+    {
+        delete[] m_arrSupportedRefreshRateList[i].GetRefreshRateDesc();
+    }
+    m_arrSupportedRefreshRateList.clear();
+
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    const std::vector<Synesthesia3D::DeviceCaps::SupportedScreenFormat>& arrSupportedScreenFormats = RenderContext->GetDeviceCaps().arrSupportedScreenFormats;
+
+    for (unsigned int i = 0; i < arrSupportedScreenFormats.size(); i++)
+    {
+        if (RenderContext->GetBackBufferFormat() == arrSupportedScreenFormats[i].ePixelFormat &&
+            Vec2i(arrSupportedScreenFormats[i].nWidth, arrSupportedScreenFormats[i].nHeight) == resolution)
+        {
+            const unsigned int maxRefreshRateDescLength = 4;
+            const SupportedRefreshRate refreshRate = { arrSupportedScreenFormats[i].nRefreshRate, new char[maxRefreshRateDescLength] };
+            m_arrSupportedRefreshRateList.push_back(refreshRate);
+            sprintf_s(m_arrSupportedRefreshRateList.back().GetRefreshRateDesc(), maxRefreshRateDescLength, "%d", arrSupportedScreenFormats[i].nRefreshRate);
+        }
     }
 }

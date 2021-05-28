@@ -119,6 +119,7 @@ namespace GITechDemoApp
 
     public:
         void SetupInput(gainput::InputManager* pInputManager);
+        void ResetFrametimeGraph() { m_arrGPUFrametimeHistory.clear(); }
 
     private:
         void SetupUI();

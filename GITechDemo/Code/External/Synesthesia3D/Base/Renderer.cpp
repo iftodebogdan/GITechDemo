@@ -127,7 +127,13 @@ void Renderer::ValidateDisplayResolution(Vec2i& size, unsigned int& refreshRate)
     {
         if (GetBackBufferFormat() == m_tDeviceCaps.arrSupportedScreenFormats[i].ePixelFormat)
         {
-            if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth >= bestMatch[0] &&
+            if ((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth == size[0] &&
+                (int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight == size[1] &&
+                m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate == refreshRate)
+            {
+                return;
+            }
+            else if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth >= bestMatch[0] &&
                 (int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth <= size[0]) ||
                 
                 ((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight >= bestMatch[1] &&

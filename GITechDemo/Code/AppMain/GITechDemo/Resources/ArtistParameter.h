@@ -30,12 +30,15 @@ namespace GITechDemoApp
 {
     class ArtistParameter
     {
+        typedef bool (*DropdownFncPtr)(void*, int, const char**);
+
     public:
         ArtistParameter(
             const char* const name,
             const char* const desc,
             const char* const category,
             void* const param,
+            void* const param2,
             const float step,
             const unsigned long long typeHash,
             const float defaultValue);
@@ -49,6 +52,7 @@ namespace GITechDemoApp
             //APDT_UINT,
             APDT_BOOL,
             APDT_GPU_FLOAT,
+            APDT_DROPDOWN,
             APDT_MAX,
             APDT_NOT_SUPPORTED
         };
@@ -62,6 +66,9 @@ namespace GITechDemoApp
                     int&                GetParameterAsInt() const { assert(IsDataType(APDT_INT)); return *(int*)m_pParam; }
         //        unsigned int&           GetParameterAsUInt() const { assert(IsDataType(APDT_UINT)); return *(unsigned int*)m_pParam; }
                     bool&               GetParameterAsBool() const { assert(IsDataType(APDT_BOOL)); return *(bool*)m_pParam; }
+                DropdownFncPtr          GetParameterAsDropdownFncPtr() const { assert(IsDataType(APDT_DROPDOWN)); return (DropdownFncPtr)m_pParam; }
+                    int&                GetDropdownIndex() { assert(IsDataType(APDT_DROPDOWN)); return *(int*)m_pParam2; }
+
                     float               GetStepValue() const { return m_fStepValue; }
                     float               GetDefaultValue() const { return m_fDefaultValue; }
 
@@ -73,6 +80,7 @@ namespace GITechDemoApp
         string m_szDesc;
         string m_szCategory;
         void* m_pParam;
+        void* m_pParam2;
         float m_fStepValue;
         unsigned long long m_nTypeHash;
         float m_fDefaultValue;

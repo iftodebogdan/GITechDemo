@@ -180,8 +180,8 @@ namespace GITechDemoApp
         {
             static bool Fullscreen;
             static bool Borderless;
-            static Vec2i Resolution;
-            static int RefreshRate;
+            static int ResolutionIdx;
+            static int RefreshRateIdx;
             static bool VSync;
         };
 

@@ -34,6 +34,7 @@ using namespace GITechDemoApp;
 #define PARAM_IS_INT()      (m_nTypeHash == ms_TypeHash[APDT_INT])
 //#define PARAM_IS_UINT()     (m_nTypeHash == ms_TypeHash[APDT_UINT])
 #define PARAM_IS_BOOL()     (m_nTypeHash == ms_TypeHash[APDT_BOOL])
+#define PARAM_IS_DROPDOWN() (m_nTypeHash == ms_TypeHash[APDT_DROPDOWN])
 #define PARAM_IS(APDT_TYPE) (m_nTypeHash == ms_TypeHash[APDT_TYPE])
 
 ArtistParameter::ArtistParameter(
@@ -41,6 +42,7 @@ ArtistParameter::ArtistParameter(
     const char* const desc,
     const char* const category,
     void* const param,
+    void* const param2,
     const float step,
     const unsigned long long typeHash,
     const float defaultValue)
@@ -48,6 +50,7 @@ ArtistParameter::ArtistParameter(
     , m_szDesc(desc)
     , m_szCategory(category)
     , m_pParam(param)
+    , m_pParam2(param2)
     , m_fStepValue(step)
     , m_nTypeHash(typeHash)
     , m_fDefaultValue(defaultValue)
@@ -65,6 +68,10 @@ ArtistParameter::ArtistParameter(
     else if (PARAM_IS_BOOL())
     {
         GetParameterAsBool() = (bool)m_fDefaultValue;
+    }
+    else if (PARAM_IS_DROPDOWN())
+    {
+        GetDropdownIndex() = 0;
     }
     else
     {
@@ -101,6 +108,10 @@ const ArtistParameter::ArtistParameterDataType ArtistParameter::GetDataType() co
     else if (PARAM_IS_BOOL())
     {
         return APDT_BOOL;
+    }
+    else if (PARAM_IS_DROPDOWN())
+    {
+        return APDT_DROPDOWN;
     }
     else
     {

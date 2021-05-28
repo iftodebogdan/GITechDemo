@@ -24,6 +24,9 @@
 // This will prevent the inclusion of Shaders.h for the moment
 #define INCLUDED_FROM_APP_RESOURCES_CPP
 
+#include <Utility/Hash.h>
+
+#include "GITechDemo.h"
 #include "AppResources.h"
 #include "ArtistParameter.h"
 #include "PBRMaterialTestPass.h"
@@ -39,6 +42,8 @@ using namespace Synesthesia3D;
 // DO NOT USE!  //
 //////////////////
 
+#define DROPDOWN_TYPE_HASH S3DHASH("DROPDOWN")
+
 vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
 vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistParameter.cpp
 const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
@@ -47,7 +52,8 @@ const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistPar
     typeid(int).hash_code(),
     //typeid(unsigned int).hash_code(),
     typeid(bool).hash_code(),
-    typeid(Vec4f).hash_code()
+    typeid(Vec4f).hash_code(),
+    DROPDOWN_TYPE_HASH
 };
 
 #define CONCAT2(x, y) x##y
@@ -78,8 +84,9 @@ const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistPar
 #define CREATE_SHADER_CONSTANT_OBJECT(... /* Name, Type, Val[opt] */) EXPAND(EXPAND(INFER_SHADER_CONSTANT_FUNC(__VA_ARGS__, SHADER_CONSTANT_WITH_INITIALIZE, SHADER_CONSTANT_NO_INITIALIZE))(__VA_ARGS__));
 #define CREATE_STATIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], Width, Height, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, STATIC_RENDER_TARGET))
 #define CREATE_DYNAMIC_RENDER_TARGET_OBJECT(... /* Name, RT0, RT1[opt], RT2[opt], RT3[opt], WidthRatio, HeightRatio, DepthFormat */) EXPAND(EXPAND(INFER_RENDER_TARGET_FUNC(__VA_ARGS__, RENDER_TARGET_FUNC_FOUR, RENDER_TARGET_FUNC_THREE, RENDER_TARGET_FUNC_TWO, RENDER_TARGET_FUNC_ONE))(__VA_ARGS__, DYNAMIC_RENDER_TARGET))
-#define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal, DefaultVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, StepVal, typeid(Param).hash_code(), DefaultVal)
+#define CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, StepVal, DefaultVal) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & Param, nullptr, StepVal, typeid(Param).hash_code(), DefaultVal)
 #define CREATE_ARTIST_BOOLPARAM_OBJECT(Name, Desc, Category, Param, DefaultVal) CREATE_ARTIST_PARAMETER_OBJECT(Name, Desc, Category, Param, 1.f, DefaultVal)
+#define CREATE_ARTIST_DROPDOWN_OBJECT(Name, Desc, Category, ItemList, SelectedItemIdx) ArtistParameter CREATE_UNIQUE_NAME (Name, Desc, Category, & ItemList, & SelectedItemIdx, 0.f, DROPDOWN_TYPE_HASH, 0.f)
 
 #define TEXTURE_1D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler1D)
 #define TEXTURE_2D_RESOURCE(textureName) CREATE_SHADER_CONSTANT_OBJECT(textureName, s3dSampler2D)
@@ -115,8 +122,8 @@ namespace GITechDemoApp
 
     bool RenderConfig::Window::Fullscreen;
     bool RenderConfig::Window::Borderless;
-    Vec2i RenderConfig::Window::Resolution;
-    int RenderConfig::Window::RefreshRate;
+    int RenderConfig::Window::ResolutionIdx;
+    int RenderConfig::Window::RefreshRateIdx;
     bool RenderConfig::Window::VSync;
 
     bool RenderConfig::Camera::InfiniteProjection;
@@ -567,29 +574,19 @@ namespace GITechDemoApp
         RenderConfig::Window::Borderless,
         true);
 
-    CREATE_ARTIST_PARAMETER_OBJECT(
-        "Resolution X (width)",
-        "Set the resolution on the X axis (only affects fullscreen mode)",
+    CREATE_ARTIST_DROPDOWN_OBJECT(
+        "Resolution",
+        "Set the resolution (only affects fullscreen mode)",
         "Window",
-        RenderConfig::Window::Resolution[0],
-        1,
-        0);
+        GITechDemo::GetSupportedResolutionList,
+        RenderConfig::Window::ResolutionIdx);
 
-    CREATE_ARTIST_PARAMETER_OBJECT(
-        "Resolution Y (height)",
-        "Set the resolution on the Y axis (only affects fullscreen mode)",
-        "Window",
-        RenderConfig::Window::Resolution[1],
-        1,
-        0);
-
-    CREATE_ARTIST_PARAMETER_OBJECT(
+    CREATE_ARTIST_DROPDOWN_OBJECT(
         "Refresh rate",
         "Set the refresh rate of the display (only affects fullscreen mode)",
         "Window",
-        RenderConfig::Window::RefreshRate,
-        1,
-        0);
+        GITechDemo::GetSupportedRefreshRateList,
+        RenderConfig::Window::RefreshRateIdx);
 
     CREATE_ARTIST_BOOLPARAM_OBJECT(
         "VSync enabled",
@@ -1692,8 +1689,8 @@ namespace GITechDemoApp
         "Amount of film grain applied to the image",
         "Film grain",
         RenderConfig::PostProcessing::FilmGrain::FilmGrainAmount,
-        0.001f,
-        0.0025f);
+        0.0001f,
+        0.0002f);
     //------------------------------------------------------
 
     // FXAA ------------------------------------------------

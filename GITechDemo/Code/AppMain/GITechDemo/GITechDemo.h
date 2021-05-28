@@ -57,16 +57,51 @@ namespace GITechDemoApp
         const float GetDeltaTime() const { return m_fDeltaTime; }
         const bool IsUIInFocus() const { return m_bUIHasFocus; }
 
+        static bool GetSupportedResolutionList(void* data, int idx, const char** out_text);
+        static bool GetSupportedRefreshRateList(void* data, int idx, const char** out_text);
+
     private:
         void UpdateUIFocus();
+
+        bool GetSupportedResolutionListImpl(int idx, const char** out_text);
+        bool GetSupportedRefreshRateListImpl(int idx, const char** out_text);
+
+        void BuildSupportedResolutionList();
+        void BuildSupportedRefreshRateList(const Vec2i resolution);
 
         Camera m_tCamera;
         float m_fDeltaTime;
         gainput::InputMap* m_pInputMap;
-        int m_nLastFrameResX, m_nLastFrameResY, m_nLastFrameRefreshRate;
+        int m_nLastFrameRes, m_nLastFrameRefreshRate;
         Vec2i m_vLastFrameViewport;
         bool m_bLastFrameFullscreen, m_bLastFrameBorderless, m_bLastFrameVSync;
         bool m_bUIHasFocus;
+
+        struct SupportedResolution
+        {
+            Vec2i m_vResolution;
+            char* m_szResolutionDesc;
+
+            Vec2i& GetResolution() { return m_vResolution; }
+            char*& GetResolutionDesc() { return m_szResolutionDesc; }
+
+            const Vec2i GetResolution() const { return m_vResolution; }
+            const char* const GetResolutionDesc() const { return m_szResolutionDesc; }
+        };
+        std::vector<SupportedResolution> m_arrSupportedResolutionList;
+
+        struct SupportedRefreshRate
+        {
+            unsigned int m_nRefreshRate;
+            char* m_szRefreshRateDesc;
+
+            unsigned int& GetRefreshRate() { return m_nRefreshRate; }
+            char*& GetRefreshRateDesc() { return m_szRefreshRateDesc; }
+
+            const unsigned int GetRefreshRate() const { return m_nRefreshRate; }
+            const char* const GetRefreshRateDesc() const { return m_szRefreshRateDesc; }
+        };
+        std::vector<SupportedRefreshRate> m_arrSupportedRefreshRateList;
 
         MUTEX mResInitMutex;
 
