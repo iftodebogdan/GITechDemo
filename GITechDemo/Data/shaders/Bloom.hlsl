@@ -25,7 +25,6 @@
 TEXTURE_2D_RESOURCE(Bloom_Source); // The texture to be blurred
 
 CBUFFER_RESOURCE(Bloom,
-    GPU_float2 HalfTexelOffset;
     GPU_float Strength;         // Intensity of bloom
     GPU_float Power;            // Exponent of bloom
     GPU_float4 TexSize;         // zw: normalized size of a texel
@@ -45,7 +44,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BloomParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

@@ -332,6 +332,8 @@ namespace GITechDemoApp
         float heightRatio;
         PixelFormat eDepthStencilFormat;
         bool bIsDynamic;
+
+        static std::vector<Vec2i> RenderTarget::ms_vActiveRenderTargetSizeInv;
     };
 
     class PBRMaterial : public RenderResource

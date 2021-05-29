@@ -119,7 +119,6 @@ void DepthOfFieldPass::AutofocusPass()
 
     AutofocusBuffer[0]->Enable();
 
-    HLSL::LumaAdaptParams->HalfTexelOffset = Vec2f(0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / AutofocusBuffer[1]->GetRenderTarget()->GetHeight());
     HLSL::LumaAdapt_LumaInput = AutofocusBuffer[1]->GetRenderTarget()->GetColorBuffer(0);
     HLSL::LumaAdapt_LumaTarget = LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer(); // GBuffer.GetRenderTarget()->GetDepthBuffer();
 
@@ -151,10 +150,6 @@ void DepthOfFieldPass::AccumulateDoFEffect()
     const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    HLSL::BokehDoFParams->HalfTexelOffset = Vec2f(
-        0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
-        0.5f / DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight()
-        );
     HLSL::BokehDoFParams->TexSize = Vec4f(
         (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetWidth(),
         (float)DepthOfFieldBuffer[1]->GetRenderTarget()->GetHeight(),
@@ -190,10 +185,6 @@ void DepthOfFieldPass::CalculateBlurFactor()
     const bool colorBlendEnabled = RenderContext->GetRenderStateManager()->GetColorBlendEnabled();
     RenderContext->GetRenderStateManager()->SetColorBlendEnabled(false);
 
-    HLSL::BokehDoFParams->HalfTexelOffset = Vec2f(
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-    );
     HLSL::BokehDoFParams->TexSize = Vec4f(
         (float)LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
         (float)LightAccumulationBuffer.GetRenderTarget()->GetHeight(),
@@ -233,10 +224,6 @@ void DepthOfFieldPass::ApplyDoF()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight()
-    );
     HLSL::ColorCopy_SourceTexture = (DepthOfFieldBuffer[0]->GetRenderTarget())->GetColorBuffer(0);
 
     ColorCopyShader.Enable();

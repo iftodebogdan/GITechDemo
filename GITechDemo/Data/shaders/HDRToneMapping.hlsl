@@ -28,7 +28,6 @@ TEXTURE_2D_RESOURCE(HDRToneMapping_AvgLumaTexture);           // 1x1 average lum
 TEXTURE_3D_RESOURCE(HDRToneMapping_ColorCorrectionTexture);   // Color correction texture
 
 CBUFFER_RESOURCE(HDRToneMapping,
-    GPU_float2 HalfTexelOffset;
     GPU_float ExposureBias;      // Exposure amount
     GPU_float ShoulderStrength;  // = 0.15;
     GPU_float LinearStrength;    // = 0.50;
@@ -54,7 +53,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + HDRToneMappingParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

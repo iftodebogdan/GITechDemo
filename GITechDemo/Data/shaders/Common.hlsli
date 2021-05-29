@@ -22,13 +22,16 @@
 #ifndef COMMON_HLSLI_
 #define COMMON_HLSLI_
 
+// This only fixes IntelliSense. The defines are ignored by both CPP and HLSL code.
+// They ARE defined however depending on proper context via shader compiler options.
 #ifdef __INTELLISENSE__
 #ifndef WIN32
-#define HLSL
-#endif
-#define VERTEX
-#define PIXEL
-#endif
+#define HLSL    // defined for HLSL code, not visible in CPP
+#endif // WIN32
+#define VERTEX  // defined for vertex shader HLSL code
+#define PIXEL   // defined for pixel shader HLSL code
+#define DX9     // defined for HLSL code when compiled for use with D3D9 API
+#endif // __INTELLISENSE__
 
 #ifdef HLSL
 

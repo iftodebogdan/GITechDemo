@@ -52,6 +52,7 @@ struct Utils
 
 CBUFFER_RESOURCE(Utils,
     GPU_float2 PoissonDisk[Utils::PoissonDiskSampleCount];
+    GPU_float2 RenderTargetInvSize;
 );
 
 #ifdef HLSL
@@ -434,6 +435,19 @@ float PCF8x8(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, 
 
 // This is safer than the previously used saturate(dot(x, y)) because it avoids divisions by zero
 #define safe_saturate_dot(x, y) (clamp(dot(x, y), 0.0001f, 0.9999f))
+
+////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// Fix for DX9 half-pixel offset. Easier to manage and matches other APIs. //
+// https://aras-p.info/blog/2016/04/08/solving-dx9-half-pixel-offset/      //
+/////////////////////////////////////////////////////////////////////////////
+void PatchVSOutputPositionForHalfPixelOffset(inout float4 vsOutPos)
+{
+#if defined(DX9) && defined(VERTEX)
+    vsOutPos.xy += float2(-1.f, 1.f) * UtilsParams.RenderTargetInvSize * vsOutPos.w;
+#endif
+}
 
 ////////////////////////////////////////////////////////////////
 

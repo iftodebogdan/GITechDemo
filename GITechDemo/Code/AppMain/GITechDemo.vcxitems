@@ -150,6 +150,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +222,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +328,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -344,12 +368,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -420,6 +444,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -450,6 +480,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -510,6 +546,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -540,6 +582,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -940,6 +988,12 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

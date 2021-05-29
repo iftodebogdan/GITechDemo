@@ -1730,7 +1730,7 @@ namespace GITechDemoApp
         "Enables depth based edge detection for conditional FXAA application",
         "FXAA",
         RenderConfig::PostProcessing::FastApproximateAntiAliasing::UseEdgeDetection,
-        true);
+        false);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Edge detection threshold",

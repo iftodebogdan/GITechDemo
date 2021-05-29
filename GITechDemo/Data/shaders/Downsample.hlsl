@@ -25,7 +25,6 @@
 TEXTURE_2D_RESOURCE(Downsample_Source);  // Source texture for downsampling
 
 CBUFFER_RESOURCE(Downsample,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize;     // zw: size of source texture texel
 
     // Color downsampling options
@@ -50,7 +49,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DownsampleParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
@@ -66,7 +67,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
         float sampleDepth;
         
         if (DownsampleParams.DownsampleFactor == 4)
-            sampleDepth = GetDownsampledDepth(Downsample_Source, input.TexCoord).r;
+            sampleDepth = GetDownsampledDepth(Downsample_Source, input.TexCoord, DownsampleParams.TexSize.zw).r;
         else
             sampleDepth = tex2D(Downsample_Source, input.TexCoord).r;
         

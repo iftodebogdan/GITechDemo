@@ -126,11 +126,6 @@ void HDRToneMappingPass::LuminanceMeasurementPass()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(
-            0.5f / AverageLuminanceBuffer[i]->GetRenderTarget()->GetWidth(),
-            0.5f / AverageLuminanceBuffer[i]->GetRenderTarget()->GetHeight()
-            );
-
         if (i == 0)
         {
             HLSL::LumaCaptureParams->TexSize = Vec4f(
@@ -182,7 +177,6 @@ void HDRToneMappingPass::LuminanceAdaptationPass()
 
     AdaptedLuminance[0]->Enable();
 
-    HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetWidth(), 0.5f / AdaptedLuminance[1]->GetRenderTarget()->GetHeight());
     HLSL::LumaAdapt_LumaInput = AdaptedLuminance[1]->GetRenderTarget()->GetColorBuffer(0);
 
     LumaAdaptShader.Enable();
@@ -210,7 +204,6 @@ void HDRToneMappingPass::ToneMappingPass()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    HLSL::HDRToneMappingParams->HalfTexelOffset = Vec2f(0.5f / LightAccumulationBuffer.GetRenderTarget()->GetWidth(), 0.5f / LightAccumulationBuffer.GetRenderTarget()->GetHeight());
     HLSL::HDRToneMapping_SourceTexture = LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0);
     HLSL::HDRToneMapping_AvgLumaTexture = AdaptedLuminance[0]->GetRenderTarget()->GetColorBuffer(0);
 

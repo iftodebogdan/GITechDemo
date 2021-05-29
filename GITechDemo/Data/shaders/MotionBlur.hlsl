@@ -26,7 +26,6 @@ TEXTURE_2D_RESOURCE(MotionBlur_Source);      // Color texture
 TEXTURE_2D_RESOURCE(MotionBlur_DepthBuffer); // Depth buffer
 
 CBUFFER_RESOURCE(MotionBlur,
-    GPU_float2 HalfTexelOffset;
     GPU_float NumSamples;           // The number of samples along the velocity vector
     GPU_float FrameTime;            // Frame duration
     GPU_float Intensity;            // Intensity of the motion blur effect
@@ -45,8 +44,10 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + MotionBlurParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     output.ScreenPos = position.xy;
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

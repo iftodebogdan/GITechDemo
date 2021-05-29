@@ -115,11 +115,6 @@ void DirectionalIndirectLightPass::Draw()
         RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
     }
 
-    HLSL::RSMApplyParams->HalfTexelOffset = Vec2f(
-        0.5f / GBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / GBuffer.GetRenderTarget()->GetHeight()
-    );
-
     for (unsigned int i = 0; i < HLSL::RSM::PassCount; i++)
     {
         for (unsigned int j = 0; j < HLSL::RSM::SamplesPerPass; j++)
@@ -178,7 +173,6 @@ void DirectionalIndirectLightPass::Blur()
 
     RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    HLSL::BilateralBlurParams->HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight());
     HLSL::BilateralBlurParams->TexSize = Vec4f(
         (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
         (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
@@ -208,7 +202,6 @@ void DirectionalIndirectLightPass::Blur()
 
     IndirectLightAccumulationBuffer[0]->Enable();
 
-    HLSL::BilateralBlurParams->HalfTexelOffset = Vec2f(0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(), 0.5f / IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight());
     HLSL::BilateralBlurParams->TexSize = Vec4f(
         (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetWidth(),
         (float)IndirectLightAccumulationBuffer[1]->GetRenderTarget()->GetHeight(),
@@ -254,9 +247,11 @@ void DirectionalIndirectLightPass::Upscale()
 
     PUSH_PROFILE_MARKER("Upscale");
 
-    HLSL::RSMUpscaleParams->HalfTexelOffset = Vec2f(
-        0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
-        0.5f / IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
+    HLSL::RSMUpscaleParams->DstTexSize = Vec4f(
+        (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight(),
+        1.f / (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetWidth(),
+        1.f / (float)IndirectLightAccumulationBuffer[0]->GetRenderTarget()->GetHeight()
     );
 
     ResourceMgr->GetTexture(

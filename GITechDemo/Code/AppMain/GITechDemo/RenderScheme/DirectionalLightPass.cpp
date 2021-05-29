@@ -75,7 +75,6 @@ void DirectionalLightPass::ReleaseResources()
 void DirectionalLightPass::Update(const float fDeltaTime)
 {
     HLSL::DirectionalLightParams->DebugCascades = RenderConfig::CascadedShadowMaps::DebugCascades;
-    HLSL::DirectionalLightParams->HalfTexelOffset = Vec2f(0.5f / GBuffer.GetRenderTarget()->GetWidth(), 0.5f / GBuffer.GetRenderTarget()->GetHeight());
     HLSL::DirectionalLight_DiffuseBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(0);
     HLSL::DirectionalLight_NormalBuffer = GBuffer.GetRenderTarget()->GetColorBuffer(1);
     HLSL::DirectionalLight_DepthBuffer = GBuffer.GetRenderTarget()->GetDepthBuffer();

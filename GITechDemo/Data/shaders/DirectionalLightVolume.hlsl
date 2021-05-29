@@ -29,7 +29,6 @@ TEXTURE_2D_RESOURCE(DirectionalLightVolume_DepthBuffer); // Scene depth
 TEXTURE_3D_RESOURCE(DirectionalLightVolume_Noise); // Noise texture (for fog)
 
 CBUFFER_RESOURCE(DirectionalLightVolume,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize; // xy: size, in texels, of destination texture; zw : normalized texel size
 
     GPU_float       SampleCount;            // Number of samples along ray
@@ -59,9 +58,11 @@ struct VSOut
 void vsmain(float4 position : POSITION, out VSOut output)
 {
     output.Position   = position;
-    output.TexCoord   = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DirectionalLightVolumeParams.HalfTexelOffset;
+    output.TexCoord   = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     output.ScreenPos  = position.xy;
     output.TexelIdx   = DirectionalLightVolumeParams.TexSize.xy * (position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f));
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

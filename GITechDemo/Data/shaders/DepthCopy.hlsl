@@ -19,13 +19,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(DepthCopy_Source);  // Source depth texture
 
-CBUFFER_RESOURCE(DepthCopy,
-    GPU_float2 HalfTexelOffset;
-);
+//CBUFFER_RESOURCE(DepthCopy,
+//
+//);
 
 #ifdef HLSL
 struct VSOut
@@ -39,7 +40,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + DepthCopyParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

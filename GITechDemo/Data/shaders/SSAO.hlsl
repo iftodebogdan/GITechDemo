@@ -26,7 +26,6 @@ TEXTURE_2D_RESOURCE(SSAO_NormalBuffer);    // View-space normals
 TEXTURE_2D_RESOURCE(SSAO_DepthBuffer);     // Depth values
 
 CBUFFER_RESOURCE(SSAO,
-    GPU_float2 HalfTexelOffset;
     GPU_float SampleRadius;  // Radius of the sampling pattern
     GPU_float Intensity;     // Overall intensity of the SSAO effect
     GPU_float Scale;         // Scale for the occlusion attenuation with distance
@@ -46,8 +45,10 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + SSAOParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     output.ScreenPos = position.xy;
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

@@ -57,11 +57,6 @@ void LightingPass::Update(const float fDeltaTime)
     ResourceMgr->GetTexture(
         LightAccumulationBuffer.GetRenderTarget()->GetColorBuffer(0)
         )->SetAddressingMode(SAM_CLAMP);
-
-    HLSL::DirectionalLightParams->HalfTexelOffset = Vec2f(
-        0.5f / GBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / GBuffer.GetRenderTarget()->GetHeight()
-        );
 }
 
 void LightingPass::Draw()

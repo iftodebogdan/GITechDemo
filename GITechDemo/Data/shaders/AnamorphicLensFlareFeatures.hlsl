@@ -19,14 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(AnamorphicLensFlareFeatures_Source);  // Source texture
 
 CBUFFER_RESOURCE(AnamorphicLensFlareFeatures,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize;     // zw: size of source texture texel
-
     GPU_float AnamorphicIntensity;
 );
 
@@ -43,9 +42,11 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + AnamorphicLensFlareFeaturesParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
     // Flip texture coordinates horizontally/vertically
-    output.FlippedTexCoord = float2(1.f, 1.f) - (position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + AnamorphicLensFlareFeaturesParams.HalfTexelOffset);
+    output.FlippedTexCoord = float2(1.f, 1.f) - output.TexCoord;
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

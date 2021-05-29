@@ -26,7 +26,6 @@ TEXTURE_2D_RESOURCE(LumaAdapt_LumaInput); // One of the two 1x1 textures with th
 TEXTURE_2D_RESOURCE(LumaAdapt_LumaTarget); // The 1x1 texture with the target average luma value
 
 CBUFFER_RESOURCE(LumaAdapt,
-    GPU_float2 HalfTexelOffset;
     GPU_float LumaAdaptSpeed; // The speed of the animation
     GPU_float FrameTime; // Last frame's duration in seconds
 );
@@ -43,7 +42,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + LumaAdaptParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

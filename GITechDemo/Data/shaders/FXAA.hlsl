@@ -19,14 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsli"
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(FXAA_SourceTexture);    // The texture to be antialiased
 TEXTURE_2D_RESOURCE(FXAA_DepthBuffer);      // Scene depth values
 
 CBUFFER_RESOURCE(FXAA,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TextureSize;          // xy: size of texture in pixels; zw: the size of a texel (1 / xy)
     GPU_float Subpix;                // Amount of sub-pixel aliasing removal (default: 0.75f)
     GPU_float EdgeThreshold;         // Minimum amount of local contrast to apply algorithm (default: 0.166f)
@@ -48,7 +47,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + FXAAParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
@@ -2173,7 +2174,7 @@ void psmain(VSOut input, out float4 color : SV_TARGET)
     //////////////////////////////////////////////////////////////////////////////////////
     // These values aren't actually used on PC, but are here for portability reasons    //
     //////////////////////////////////////////////////////////////////////////////////////
-    const float4 fxaaPosPos = float4(input.TexCoord - FXAAParams.HalfTexelOffset, input.TexCoord + FXAAParams.HalfTexelOffset);
+    const float4 fxaaPosPos = float4(input.TexCoord - FXAAParams.TextureSize.zw * 0.5f, input.TexCoord + FXAAParams.TextureSize.zw * 0.5f);
     
     const float fxaaSharpness = 0.5f;
     const float4 fxaaRcpFrameOpt = float4(-fxaaSharpness * FXAAParams.TextureSize.zw, fxaaSharpness * FXAAParams.TextureSize.zw);

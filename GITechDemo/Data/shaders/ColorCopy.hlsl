@@ -19,13 +19,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsli"
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(ColorCopy_SourceTexture); // The texture to be copied
 
 CBUFFER_RESOURCE(ColorCopy,
-    GPU_float2 HalfTexelOffset;
     GPU_bool SingleChannelCopy;
     GPU_bool ApplyTonemap;
     GPU_float4 CustomColorModulator;
@@ -43,7 +42,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + ColorCopyParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

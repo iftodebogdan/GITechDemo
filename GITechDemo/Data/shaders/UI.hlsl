@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsli"
+#include "Utils.hlsli"
 
 TEXTURE_1D_RESOURCE(UI_Texture1D);
 TEXTURE_2D_RESOURCE(UI_Texture2D); // Usually font texture
@@ -49,6 +49,8 @@ void vsmain(float2 position : POSITION, float4 color : COLOR, float2 texCoord : 
     output.Position = mul(UIParams.UIProjMat, float4(position, 0.f, 1.f));
     output.TexCoord = texCoord;
     output.Color = color;
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsli"
+#include "Utils.hlsli"
 
 CBUFFER_RESOURCE(DepthPass,
     GPU_float4x4 WorldViewProjMat;
@@ -30,7 +30,9 @@ CBUFFER_RESOURCE(DepthPass,
 #ifdef VERTEX
 float4 vsmain(float4 position : POSITION) : SV_POSITION
 {
-    return mul(DepthPassParams.WorldViewProjMat, position);
+    float4 outputPosition = mul(DepthPassParams.WorldViewProjMat, position);
+    PatchVSOutputPositionForHalfPixelOffset(outputPosition);
+    return outputPosition;
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

@@ -51,7 +51,6 @@ CBUFFER_RESOURCE(PostProcessing,
     GPU_float ZNear;
     GPU_float ZFar;
     GPU_float2 LinearDepthEquation;
-    GPU_float DepthHalfTexelOffset; // Half texel offset of depth buffer
 );
 
 #ifdef HLSL
@@ -81,9 +80,10 @@ float ReconstructDepth(float hyperbolicDepth)
 // Downsample depth to a quarter of the original resolution             //
 // NB: texCoord must be at the center of the quarter resolution texel   //
 // (i.e. right at the middle of the 4 full resolution samples)          //
+// dstTexelSize is 1.f / destination render target resolution           //
 //////////////////////////////////////////////////////////////////////////
 #define DEPTH_DOWNSAMPLE_FUNC(x, y) (max(x, y))
-const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 texCoord)
+const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 texCoord, const float2 dstTexelSize)
 {
     const float2 sampleOffset[] =
     {
@@ -96,12 +96,12 @@ const float GetDownsampledDepth(const sampler2D texDepthBuffer, const float2 tex
     return
         DEPTH_DOWNSAMPLE_FUNC(
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[0]).r,
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[1]).r
+                tex2D(texDepthBuffer, texCoord + dstTexelSize * 0.5f * sampleOffset[0]).r,
+                tex2D(texDepthBuffer, texCoord + dstTexelSize * 0.5f * sampleOffset[1]).r
                 ),
             DEPTH_DOWNSAMPLE_FUNC(
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[2]).r,
-                tex2D(texDepthBuffer, texCoord + PostProcessingParams.DepthHalfTexelOffset * sampleOffset[3]).r
+                tex2D(texDepthBuffer, texCoord + dstTexelSize * 0.5f * sampleOffset[2]).r,
+                tex2D(texDepthBuffer, texCoord + dstTexelSize * 0.5f * sampleOffset[3]).r
                 )
             );
 }
@@ -120,13 +120,11 @@ float4 KawaseBlur(const sampler2D texSource, const float2 texelSize, const float
         UNROLL for (int j = -1; j <= 1; j += 2)
         {
             const float2 texelOffset = texelSize * float2(i, j);
-            const float2 halfTexelOffset = 0.5f * texelOffset;
-            const float2 halfTexelSize = 0.5f * texelSize;
-            const float2 sampleCenter = texCoord + halfTexelOffset + texelOffset * (kernel + 0.5f);
+            const float2 sampleCenter = texCoord + 0.5f * texelOffset + texelOffset * (kernel + 0.5f);
 
             UNROLL for (int x = -1; x <= 1; x += 2)
                 UNROLL for (int y = -1; y <= 1; y += 2)
-                    color += tex2D(texSource, sampleCenter + halfTexelSize * float2(x, y));
+                    color += tex2D(texSource, sampleCenter + 0.5f * texelSize * float2(x, y));
         }
     }
 

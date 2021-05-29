@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(BilateralBlur_Source);      // The texture to be blurred
@@ -31,7 +32,6 @@ struct BilateralBlurUtils
 };
 
 CBUFFER_RESOURCE(BilateralBlur,
-    GPU_float2 HalfTexelOffset;
     GPU_float2 BlurDir;         // Horizontal or vertical blur
     GPU_float4 TexSize;         // zw: normalized size of a texel
     GPU_float BlurDepthFalloff; // Depth threshold for edge detection
@@ -49,7 +49,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BilateralBlurParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

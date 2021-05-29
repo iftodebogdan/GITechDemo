@@ -74,10 +74,6 @@ void GBufferPass::Update(const float fDeltaTime)
         1.f / (float)GBuffer.GetRenderTarget()->GetHeight()
     );
     HLSL::DownsampleParams->DepthDownsample = true;
-    HLSL::PostProcessingParams->DepthHalfTexelOffset = Vec2f(
-        0.5f / (float)GBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / (float)GBuffer.GetRenderTarget()->GetHeight()
-    );
 
     ResourceMgr->GetTexture(LinearFullDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);
     ResourceMgr->GetTexture(LinearQuarterDepthBuffer.GetRenderTarget()->GetColorBuffer())->SetAddressingMode(SAM_CLAMP);

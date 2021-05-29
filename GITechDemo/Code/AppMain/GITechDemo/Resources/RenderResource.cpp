@@ -38,11 +38,15 @@ using namespace AppFramework;
 #include "RenderResource.h"
 using namespace GITechDemoApp;
 
+#include "AppResources.h"
+
 // Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
 //vector<RenderResource*> RenderResource::arrResources;
 
 namespace GITechDemoApp
 {
+    std::vector<Vec2i> RenderTarget::ms_vActiveRenderTargetSizeInv;
+
     const char* const RenderResource::ms_ResourceTypeMap[] = {
         "",
         "Model",
@@ -971,11 +975,16 @@ namespace GITechDemoApp
     {
         PUSH_PROFILE_MARKER(("Render Target: " + szDesc).c_str());
         pRenderTarget->Enable();
+        ms_vActiveRenderTargetSizeInv.push_back(pRenderTarget->GetSize());
+        HLSL::UtilsParams->RenderTargetInvSize = Vec2f(1.f / ms_vActiveRenderTargetSizeInv.back()[0], 1.f / ms_vActiveRenderTargetSizeInv.back()[1]);
     }
 
     void RenderTarget::Disable()
     {
         pRenderTarget->Disable();
+        ms_vActiveRenderTargetSizeInv.pop_back();
+        Vec2i rtRes = ms_vActiveRenderTargetSizeInv.size() > 0 ? ms_vActiveRenderTargetSizeInv.back() : Renderer::GetInstance()->GetDisplayResolution();
+        HLSL::UtilsParams->RenderTargetInvSize = Vec2f(1.f / rtRes[0], 1.f / rtRes[1]);
         POP_PROFILE_MARKER();
     }
 

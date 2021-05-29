@@ -63,6 +63,8 @@ void vsmain(VSIn input, out VSOut output)
     output.Normal   = normalize(mul((float3x3)GBufferGenerationParams.WorldViewMat, input.Normal));
     output.Tangent  = normalize(mul((float3x3)GBufferGenerationParams.WorldViewMat, input.Tangent));
     output.Binormal = normalize(mul((float3x3)GBufferGenerationParams.WorldViewMat, input.Binormal));
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

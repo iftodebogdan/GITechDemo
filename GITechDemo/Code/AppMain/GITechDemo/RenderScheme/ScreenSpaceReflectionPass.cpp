@@ -79,7 +79,6 @@ void ScreenSpaceReflectionPass::Update(const float fDeltaTime)
     ltAccBufCopy->SetBorderColor(Vec4f(0.f, 0.f, 0.f, 0.f));
     ltAccBufCopy->SetFilter(SF_MIN_MAG_LINEAR_MIP_LINEAR);
 
-    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / m_pLightAccumulationBufferCopyRT->GetWidth(), 0.5f / m_pLightAccumulationBufferCopyRT->GetHeight());
     HLSL::ColorCopy_SourceTexture = ltAccBuf->GetColorBuffer();
     HLSL::ColorCopyParams->SingleChannelCopy = false;
     HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);

@@ -144,6 +144,8 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
 
     macroList.push_back({ "HLSL", "" });
 
+    macroList.push_back({ "DX9", "" });
+
     HRESULT hr = D3DXCompileShaderFromFile(filePath, macroList.c_str(), NULL, entryPoint, profile,
         flags, &compiledData, &errorMsg, &m_pConstantTable);
 

@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
-#include "Common.hlsli"
 #include "BRDFUtils.hlsli"
 
 TEXTURE_CUBE_RESOURCE(Skybox_SkyCube);   // Sky cubemap
@@ -44,6 +43,8 @@ void vsmain(float4 position : POSITION, out VSOut output)
     output.Position   =   mul(SkyboxParams.SkyViewProjMat, position);
     output.Position.z =   output.Position.w; // Position sky at far plane
     output.TexCoord   =   normalize(position.xyz);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

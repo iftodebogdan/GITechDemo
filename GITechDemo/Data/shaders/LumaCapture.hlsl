@@ -26,8 +26,6 @@
 TEXTURE_2D_RESOURCE(LumaCapture_LumaInput);
 
 CBUFFER_RESOURCE(LumaCapture,
-    GPU_float2 HalfTexelOffset;
-
     // Flags for deciding code path
     GPU_bool InitialLumaPass;
     GPU_bool FinalLumaPass;
@@ -51,7 +49,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + LumaCaptureParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

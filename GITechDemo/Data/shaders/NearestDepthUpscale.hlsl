@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(NearestDepthUpscale_Source);                // The texture to be upsampled
@@ -26,9 +27,8 @@ TEXTURE_2D_RESOURCE(NearestDepthUpscale_DepthBuffer);           // Scene depth v
 TEXTURE_2D_RESOURCE(NearestDepthUpscale_QuarterDepthBuffer);    // Quarter resolution scene depth values
 
 CBUFFER_RESOURCE(NearestDepthUpscale,
-    GPU_float2 HalfTexelOffset;
-
-    GPU_float4 TexSize; // xy: size of source texture; zw: normalized texel size
+    GPU_float4 SrcTexSize; // xy: size of source texture; zw: normalized texel size
+    GPU_float4 DstTexSize; // xy: size of destination texture; zw: normalized texel size
 
     // Set a threshold which controls the level of sensitivity of the edge detection.
     GPU_float UpsampleDepthThreshold;
@@ -52,7 +52,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + NearestDepthUpscaleParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
@@ -128,11 +130,11 @@ const float2 GetBilinearSampleCoords(const float2 texCoord, const int idx)
     // Calculate the offset for the center of the 4 bilinear samples
     // from the low-resolution texture corresponding to the high-resolution
     // fragment, relative to the current high-resolution fragment's coordinates
-    const float2 centerOffset = (step(float2(0.5f, 0.5f), frac(texCoord * NearestDepthUpscaleParams.TexSize.xy)) * 2.f - 1.f) * NearestDepthUpscaleParams.HalfTexelOffset;
+    const float2 centerOffset = (step(float2(0.5f, 0.5f), frac(texCoord * NearestDepthUpscaleParams.SrcTexSize.xy)) * 2.f - 1.f) * (NearestDepthUpscaleParams.DstTexSize.zw * 0.5f);
 
     // Offset the current coordinates to the center of the 4 bilinear samples, then offset
     // it again to the center of the bilinear sample corresponding to the provided index
-    return texCoord + centerOffset + NearestDepthUpscaleParams.TexSize.zw * 0.5f * sampleOffset[idx];
+    return texCoord + centerOffset + NearestDepthUpscaleParams.SrcTexSize.zw * 0.5f * sampleOffset[idx];
 }
 #endif // PIXEL
 ////////////////////////////////////////////////////////////////////

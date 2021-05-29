@@ -90,11 +90,6 @@ void SSAOPass::CalculateSSAO()
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    HLSL::SSAOParams->HalfTexelOffset = Vec2f(
-        0.5f / GBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / GBuffer.GetRenderTarget()->GetHeight()
-        );
-
     SsaoShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     SsaoShader.Disable();
@@ -135,10 +130,6 @@ void SSAOPass::BlurSSAO()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        HLSL::BloomParams->HalfTexelOffset = Vec2f(
-            0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-            0.5f / SSAOBuffer[i % 2]->GetRenderTarget()->GetHeight()
-            );
         ResourceMgr->GetTexture(
             SSAOBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
             )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -192,10 +183,6 @@ void SSAOPass::ApplySSAO()
     RenderContext->GetRenderStateManager()->SetColorSrcBlend(BLEND_ZERO);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(
-        0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetWidth(),
-        0.5f / SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetHeight()
-        );
     ResourceMgr->GetTexture(
         SSAOBuffer[BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);

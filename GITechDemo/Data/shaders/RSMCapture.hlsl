@@ -49,6 +49,8 @@ void vsmain(VSIn input, out VSOut output)
     output.Position = mul(RSMCaptureParams.RSMWorldViewProjMat, input.Position);
     output.TexCoord = input.TexCoord;
     output.Normal = normalize(mul((float3x3)FrameParams.LightWorldViewMat, input.Normal));
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

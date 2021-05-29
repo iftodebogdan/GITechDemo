@@ -42,10 +42,6 @@ ResolveDepthBufferPass::~ResolveDepthBufferPass()
 void ResolveDepthBufferPass::Update(float fDeltaTime)
 {
     HLSL::DepthCopy_Source = GBuffer.GetRenderTarget()->GetDepthBuffer();
-    HLSL::DepthCopyParams->HalfTexelOffset = Vec2f(
-        0.5f / (float)GBuffer.GetRenderTarget()->GetWidth(),
-        0.5f / (float)GBuffer.GetRenderTarget()->GetHeight()
-    );
 }
 
 void ResolveDepthBufferPass::Draw()

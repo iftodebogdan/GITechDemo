@@ -19,6 +19,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 =============================================================================*/
 
+#include "Utils.hlsli"
 #include "PostProcessingUtils.hlsli"
 
 TEXTURE_2D_RESOURCE(LensFlareApply_Features); // Lens flare effect features
@@ -26,7 +27,6 @@ TEXTURE_2D_RESOURCE(LensFlareApply_Dirt); // Lens dirt texture
 TEXTURE_2D_RESOURCE(LensFlareApply_StarBurst); // Lens star burst texture
 
 CBUFFER_RESOURCE(LensFlareApply,
-    GPU_float2 HalfTexelOffset;
     GPU_float DirtIntensity; // Scale factor for lens dirt texture samples
     GPU_float StarBurstIntensity; // Scale factor for lens star burst texture samples
 
@@ -47,7 +47,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + LensFlareApplyParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

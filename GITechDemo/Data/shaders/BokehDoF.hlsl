@@ -32,7 +32,6 @@ struct BokehDofUtils
 };
 
 CBUFFER_RESOURCE(BokehDoF,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize; // xy: size, in texels, of source image; zw: normalized size of a texel
 
     // Camera properties
@@ -75,7 +74,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + BokehDoFParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

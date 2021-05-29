@@ -72,10 +72,6 @@ void HDRDownsampleForBloomPass::DownsampleForBloomPass(GITechDemoApp::RenderTarg
     // Not necessary
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
-        0.5f / pDest->GetRenderTarget()->GetWidth(),
-        0.5f / pDest->GetRenderTarget()->GetHeight()
-        );
     HLSL::DownsampleParams->TexSize = Vec4f(
         (float)pSource->GetRenderTarget()->GetWidth(),
         (float)pSource->GetRenderTarget()->GetHeight(),

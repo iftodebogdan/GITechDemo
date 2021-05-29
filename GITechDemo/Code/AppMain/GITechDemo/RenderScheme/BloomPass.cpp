@@ -93,10 +93,6 @@ void BloomPass::BloomBrightnessFilter()
     const SamplerFilter samplerFilter = ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->GetFilter();
     ResourceMgr->GetTexture(HDRDownsampleForBloomBuffer.GetRenderTarget()->GetColorBuffer(0))->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
 
-    HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
-        0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetWidth(),
-        0.5f / (float)BloomBuffer[0]->GetRenderTarget()->GetHeight()
-        );
     HLSL::DownsampleParams->TexSize = Vec4f(
         (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetWidth(),
         (float)HDRDownsampleForBloomBuffer.GetRenderTarget()->GetHeight(),
@@ -142,10 +138,6 @@ void BloomPass::BloomBlur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        HLSL::BloomParams->HalfTexelOffset = Vec2f(
-            0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetWidth(),
-            0.5f / (float)BloomBuffer[i % 2]->GetRenderTarget()->GetHeight()
-            );
         ResourceMgr->GetTexture(
             BloomBuffer[i % 2]->GetRenderTarget()->GetColorBuffer(0)
             )->SetFilter(SF_MIN_MAG_POINT_MIP_NONE);
@@ -201,7 +193,6 @@ void BloomPass::BloomApply()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::ColorCopyParams->HalfTexelOffset = Vec2f(0.5f / BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetWidth(), 0.5f / BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
         BloomBuffer[RenderConfig::PostProcessing::Bloom::BlurKernelCount % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);

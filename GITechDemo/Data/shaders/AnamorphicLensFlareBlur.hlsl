@@ -25,7 +25,6 @@
 TEXTURE_2D_RESOURCE(AnamorphicLensFlareBlur_Source);  // The texture to be blurred
 
 CBUFFER_RESOURCE(AnamorphicLensFlareBlur,
-    GPU_float2 HalfTexelOffset;
     GPU_float4 TexSize;     // zw: normalized size of texel
     GPU_int Kernel;          // Kernel size for current pass
 );
@@ -42,7 +41,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + AnamorphicLensFlareBlurParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
@@ -58,13 +59,11 @@ float4 KawaseBlurAnamorphic(const sampler2D texSource, const float2 texelSize, c
         UNROLL for (int j = -1; j <= 1; j += 2)
         {
             const float2 texelOffset = texelSize * float2(i, j);
-            const float2 halfTexelOffset = 0.5f * texelOffset;
-            const float2 halfTexelSize = 0.5f * texelSize;
-            const float2 sampleCenter = texCoord + halfTexelOffset + texelOffset * (kernel + 0.5f) * float2(1.f, 0.f);
+            const float2 sampleCenter = texCoord + texelOffset * 0.5f + texelOffset * (kernel + 0.5f) * float2(1.f, 0.f);
 
             UNROLL for (int x = -1; x <= 1; x += 2)
                 UNROLL for (int y = -1; y <= 1; y += 2)
-                    color += tex2D(texSource, sampleCenter + halfTexelSize * float2(x, y));
+                    color += tex2D(texSource, sampleCenter + texelSize * 0.5f * float2(x, y));
         }
     }
 

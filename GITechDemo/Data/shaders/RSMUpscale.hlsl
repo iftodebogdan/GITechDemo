@@ -29,9 +29,9 @@ TEXTURE_2D_RESOURCE(RSMUpscale_Source); // The texture to be upsampled
 TEXTURE_2D_RESOURCE(RSMUpscale_DepthBuffer); // G-Buffer depth values
 
 CBUFFER_RESOURCE(RSMUpscale,
-    GPU_float2 HalfTexelOffset;
-    GPU_float WeightThreshold; // Set a threshold which controls the level of sensitivity of the edge detection.
-    GPU_bool DebugUpscalePass; // Shows pixels that could not be interpolated and need reshading
+    GPU_float4 DstTexSize;      // xy: size of destination texture; zw: size of texel (1 / xy)
+    GPU_float WeightThreshold;  // Set a threshold which controls the level of sensitivity of the edge detection.
+    GPU_bool DebugUpscalePass;  // Shows pixels that could not be interpolated and need reshading
 );
 
 #ifdef HLSL
@@ -46,7 +46,9 @@ struct VSOut
 void vsmain(float4 position : POSITION, out VSOut output)
 {
     output.Position = position;
-    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f) + RSMUpscaleParams.HalfTexelOffset;
+    output.TexCoord = position.xy * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////
@@ -83,13 +85,13 @@ bool PerformUpscale(const float2 texCoord, const float depth, out float4 colorOu
     // pixel in an attempt to save some bandwidth
     clip(-!any(color.rgb));
 
-    // Easier to write f3TexelOffset.xz or f3TexelOffset.zy than
-    // float2(0.5f * f2HalfTexelOffset.x, 0.f) or float2(0.f, 0.5f * f2HalfTexelOffset.y);
-    // NB: f2HalfTexelOffset is half the width and half the height of a texel from the
-    // IndirectLightAccumulationBuffer render target (quarter resolution). As such, we require
-    // half of that width and half of that height in order to offset our coordinates from the
+    // texelOffset.z is 0 because it's easier to write texelOffset.xz or texelOffset.zy than
+    // float2(0.5f * RSMUpscaleParams.DstTexSize.z, 0.f) or float2(0.f, 0.5f * RSMUpscaleParams.DstTexSize.w);
+    // NB: RSMUpscaleParams.DstTexSize.zw is the normalized width and height of a texel from
+    // the full resolution destination render target. As such, we require half of that
+    // width and half of that height in order to offset our coordinates from the
     // center of a quarter resolution texel to the center of a full resolution texel.
-    const float3 texelOffset = float3(0.5f * RSMUpscaleParams.HalfTexelOffset, 0.f);
+    const float3 texelOffset = float3(0.5f * RSMUpscaleParams.DstTexSize.zw, 0.f);
 
     // Sample the normal for our reference pixel (i.e. the one we're shading)
     const float3 refNormal = DecodeNormal(tex2D(RSMCommon_NormalBuffer, texCoord));

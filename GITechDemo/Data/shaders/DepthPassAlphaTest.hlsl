@@ -46,6 +46,8 @@ void vsmain(VSIn input, out VSOut output)
 {
     output.Position = mul(DepthPassAlphaTestParams.WorldViewProjMat, input.Position);
     output.TexCoord = input.TexCoord;
+
+    PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

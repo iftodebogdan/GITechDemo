@@ -152,10 +152,6 @@ void LensFlarePass::ApplyBrightnessFilter()
 
     if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
     {
-        HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
-            0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
-            0.5f / HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight()
-            );
         HLSL::DownsampleParams->TexSize = Vec4f(
             (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetWidth(),
             (float)HDRDownsampleBuffer[QUARTER]->GetRenderTarget()->GetHeight(),
@@ -166,10 +162,6 @@ void LensFlarePass::ApplyBrightnessFilter()
     }
     else
     {
-        HLSL::DownsampleParams->HalfTexelOffset = Vec2f(
-            0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
-            0.5f / HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight()
-            );
         HLSL::DownsampleParams->TexSize = Vec4f(
             (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetWidth(),
             (float)HDRDownsampleBuffer[SIXTEENTH]->GetRenderTarget()->GetHeight(),
@@ -233,10 +225,6 @@ void LensFlarePass::GenerateFeatures()
 
     if (!RenderConfig::PostProcessing::LensFlare::Anamorphic)
     {
-        HLSL::SphericalLensFlareFeaturesParams->HalfTexelOffset = Vec2f(
-            0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
-            0.5f / CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight()
-            );
         HLSL::SphericalLensFlareFeaturesParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[0]->GetRenderTarget()->GetHeight(),
@@ -251,10 +239,6 @@ void LensFlarePass::GenerateFeatures()
     }
     else
     {
-        HLSL::AnamorphicLensFlareFeaturesParams->HalfTexelOffset = Vec2f(
-            0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
-            0.5f / CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight()
-            );
         HLSL::AnamorphicLensFlareFeaturesParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[2]->GetRenderTarget()->GetHeight(),
@@ -312,10 +296,6 @@ void LensFlarePass::Blur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        HLSL::BloomParams->HalfTexelOffset = Vec2f(
-            0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
-            0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
-            );
         HLSL::BloomParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
@@ -377,10 +357,6 @@ void LensFlarePass::AnamorphicBlur()
         // Not necesarry
         //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-        HLSL::AnamorphicLensFlareBlurParams->HalfTexelOffset = Vec2f(
-            0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
-            0.5f / CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight()
-            );
         HLSL::AnamorphicLensFlareBlurParams->TexSize = Vec4f(
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetWidth(),
             (float)CurrentLensFlareBuffer[(i + 1) % 2]->GetRenderTarget()->GetHeight(),
@@ -428,7 +404,6 @@ void LensFlarePass::UpscaleAndBlend()
     RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
     RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
-    HLSL::LensFlareApplyParams->HalfTexelOffset = Vec2f(0.5f / CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetWidth(), 0.5f / CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetHeight());
     ResourceMgr->GetTexture(
         CurrentLensFlareBuffer[(RenderConfig::PostProcessing::LensFlare::BlurKernelCount + 1) % 2]->GetRenderTarget()->GetColorBuffer(0)
         )->SetFilter(SF_MIN_MAG_LINEAR_MIP_NONE);
