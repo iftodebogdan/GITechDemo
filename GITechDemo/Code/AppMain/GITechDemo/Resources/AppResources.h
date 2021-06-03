@@ -88,6 +88,7 @@ namespace GITechDemoApp
     CREATE_SHADER_HANDLE(AnamorphicLensFlareFeaturesShader);
     CREATE_SHADER_HANDLE(AnamorphicLensFlareBlurShader);
     CREATE_SHADER_HANDLE(ScreenSpaceReflectionShader);
+    CREATE_SHADER_HANDLE(ASCIIEffect);
     //------------------------------------------------------
 
     // Models (manage their own textures, no need to declare them)
@@ -105,6 +106,7 @@ namespace GITechDemoApp
     CREATE_TEXTURE_HANDLE(BayerMatrix);
     CREATE_TEXTURE_HANDLE(NoiseTexture);
     CREATE_TEXTURE_HANDLE(ColorCorrectionTexture);
+    CREATE_TEXTURE_HANDLE(ASCIIMap);
     //------------------------------------------------------
 
     // Render targets
@@ -148,6 +150,7 @@ namespace GITechDemoApp
     CREATE_RENDER_TARGET_HANDLE(AnamorphicLensFlareBuffer0);
     CREATE_RENDER_TARGET_HANDLE(AnamorphicLensFlareBuffer1);
     CREATE_RENDER_TARGET_HANDLE(AnamorphicLensFlareBuffer2);
+    CREATE_RENDER_TARGET_HANDLE(ASCIIEffectBuffer);
 
     enum HDRDownsampleBufferIndex {
         QUARTER = 0,
@@ -414,6 +417,14 @@ namespace GITechDemoApp
                 static bool UseEdgeDetection;
                 static float EdgeDepthThreshold;
                 static bool DebugEdgeDetection;
+            };
+
+            struct ASCIIEffect
+            {
+                static bool Enabled;
+                static int ResolutionDescaler;
+                static float Gamma;
+                static bool UseColor;
             };
         };
     };

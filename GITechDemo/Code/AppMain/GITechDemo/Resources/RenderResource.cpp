@@ -858,6 +858,8 @@ namespace GITechDemoApp
             if (nTexIdx != ~0u)
                 pTexture = ResMgr->GetTexture(nTexIdx);
 
+            assert(nTexIdx != ~0u && pTexture != nullptr);
+
             return true;
         }
         else

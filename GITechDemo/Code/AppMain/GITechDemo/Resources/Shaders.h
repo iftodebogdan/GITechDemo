@@ -53,6 +53,7 @@ namespace GITechDemoApp
         #include "FXAA.hlsl"
         #include "ColorCopy.hlsl"
         #include "UI.hlsl"
+        #include "ASCIIEffect.hlsl"
     }
 }
 #endif // SHADERS_H_

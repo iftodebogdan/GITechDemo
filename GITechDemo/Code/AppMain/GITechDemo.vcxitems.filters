@@ -135,6 +135,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Framework\Timestamp.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ASCIIPass.cpp">
+      <Filter>App\Render Schemes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\GITechDemo.h">
@@ -250,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Framework\Timestamp.h">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ASCIIPass.h">
+      <Filter>App\Render Schemes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -379,5 +385,10 @@
     <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\UI.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ASCIIEffect.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

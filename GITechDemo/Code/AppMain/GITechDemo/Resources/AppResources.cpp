@@ -286,6 +286,10 @@ namespace GITechDemoApp
     float RenderConfig::PostProcessing::FastApproximateAntiAliasing::EdgeDepthThreshold;
     bool RenderConfig::PostProcessing::FastApproximateAntiAliasing::DebugEdgeDetection;
 
+    bool RenderConfig::PostProcessing::ASCIIEffect::Enabled;
+    int RenderConfig::PostProcessing::ASCIIEffect::ResolutionDescaler;
+    float RenderConfig::PostProcessing::ASCIIEffect::Gamma;
+    bool RenderConfig::PostProcessing::ASCIIEffect::UseColor;
     //------------------------------------------------------
 
 
@@ -343,6 +347,7 @@ namespace GITechDemoApp
     CREATE_SHADER_OBJECT(LensFlareApplyShader,              "shaders/LensFlareApply.hlsl");
     CREATE_SHADER_OBJECT(UIShader,                          "shaders/UI.hlsl");
     CREATE_SHADER_OBJECT(DepthCopyShader,                   "shaders/DepthCopy.hlsl");
+    CREATE_SHADER_OBJECT(ASCIIEffect,                       "shaders/ASCIIEffect.hlsl");
 
     //------------------------------------------------------
 
@@ -390,6 +395,7 @@ namespace GITechDemoApp
     CREATE_TEXTURE_OBJECT(BayerMatrix,              "textures/bayer_matrix.s3dtex");
     CREATE_TEXTURE_OBJECT(NoiseTexture,             "textures/noise.s3dtex");
     CREATE_TEXTURE_OBJECT(ColorCorrectionTexture,   "textures/ContrastEnhance.s3dtex");
+    CREATE_TEXTURE_OBJECT(ASCIIMap,                 "textures/ascii_map.s3dtex");
 
     //------------------------------------------------------
 
@@ -481,7 +487,10 @@ namespace GITechDemoApp
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(AnamorphicLensFlareBuffer0, PF_A16B16G16R16F, 0.03125f, 0.5f, PF_NONE);
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(AnamorphicLensFlareBuffer1, PF_A16B16G16R16F, 0.03125f, 0.5f, PF_NONE);
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(AnamorphicLensFlareBuffer2, PF_A16B16G16R16F, 0.25f, 0.25f, PF_NONE);
-    
+
+    // ASCII render effect render target
+    CREATE_DYNAMIC_RENDER_TARGET_OBJECT(ASCIIEffectBuffer, PF_A8R8G8B8, 1.f, 1.f, PF_NONE);
+
     // Arrays of render targets for easier handling
     RenderTarget* VolumetricLightFullBuffer[2] = {
         &VolumetricLightFullBuffer0,
@@ -1746,5 +1755,38 @@ namespace GITechDemoApp
         "FXAA",
         RenderConfig::PostProcessing::FastApproximateAntiAliasing::DebugEdgeDetection,
         false);
+    //------------------------------------------------------
+
+
+    // ASCII Effect ----------------------------------------
+    CREATE_ARTIST_BOOLPARAM_OBJECT(
+        "ASCII effect enable",
+        "Toggle the ASCII effect filter",
+        "ASCII Effect",
+        RenderConfig::PostProcessing::ASCIIEffect::Enabled,
+        false);
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "ASCII effect resolution descaler",
+        "Determines output resolution (source resolution / 2^ResolutionDescaler)",
+        "ASCII Effect",
+        RenderConfig::PostProcessing::ASCIIEffect::ResolutionDescaler,
+        1,
+        4);
+
+    CREATE_ARTIST_PARAMETER_OBJECT(
+        "ASCII effect gamma",
+        "Adjusts gamma for source image luminance. Used to offset banding.",
+        "ASCII Effect",
+        RenderConfig::PostProcessing::ASCIIEffect::Gamma,
+        0.1f,
+        0.3f);
+
+    CREATE_ARTIST_BOOLPARAM_OBJECT(
+        "ASCII effect color",
+        "Toggle the use of color for the ASCII effect filter",
+        "ASCII Effect",
+        RenderConfig::PostProcessing::ASCIIEffect::UseColor,
+        true);
     //------------------------------------------------------
 }

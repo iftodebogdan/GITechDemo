@@ -61,7 +61,8 @@ customArgs = defaultdict(lambda: "-q -f A8R8G8B8", \
     #"LensFlareStarBurst.png"            : "-q -f A8R8G8B8 -mip 1",
     "ContrastEnhance.dds"               : "-q -f A8R8G8B8 -mip 1",
     "bayer_matrix.dds"                  : "-q -f L8 -mip 1",
-    "noise.dds"                         : "-q -f L8 -mip 1"
+    "noise.dds"                         : "-q -f L8 -mip 1",
+    "ascii_map.dds"                     : "-q -f L8 -mip 1"
 })
 
 # Detect modification of texture compiler executable

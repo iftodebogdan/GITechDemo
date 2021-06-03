@@ -132,6 +132,10 @@ CREATE_ROOT_PASS()
         #include "FXAAPass.h"
         ADD_RENDER_PASS(FXAA_PASS, FXAAPass, "FXAA", POST_PROCESSING_PASS)
 
+        // ASCII character render effect
+        #include "ASCIIPass.h"
+        ADD_RENDER_PASS(ASCII_PASS, ASCIIPass, "ASCII Effect", POST_PROCESSING_PASS)
+
     #include "CopyToBackBufferPass.h"
     ADD_RENDER_PASS(COPY_TO_BACK_BUFFER_PASS, CopyToBackBufferPass, "Copy to back buffer", ROOT_PASS)
 

@@ -56,6 +56,8 @@ void vsmain(float4 position : POSITION, float2 texCoord : TEXCOORD, out VSOut ou
 
 // Pixel shader ///////////////////////////////////////////////////
 #ifdef PIXEL
+#undef tex2D // PostProcessingUtils.hlsli defines tex2D as tex2Dlod, since we typically don't use mip-mapped textures in post processing passes
+
 void psmain(VSOut input, out float4 color : SV_TARGET)
 {
     //////////////////////////////////////////////////////////////////////////////

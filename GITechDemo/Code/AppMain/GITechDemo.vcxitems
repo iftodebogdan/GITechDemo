@@ -19,6 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Framework\main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Framework\Timestamp.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\GITechDemo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ASCIIPass.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\BloomPass.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\CopyToBackBufferPass.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthDownsamplePass.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Framework\Framework.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Framework\Timestamp.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\GITechDemo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\ASCIIPass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\BloomPass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\CopyToBackBufferPass.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GITechDemo\RenderScheme\DepthDownsamplePass.h" />
@@ -1094,6 +1096,53 @@ call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ASCIIEffect.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T vs_3_0 /E vsmain /O3 /D HLSL /D VERTEX /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm" "%(FullPath)"
+call "$(SolutionDir)..\External\Synesthesia3D\External\DX9\bin\$(PlatformTarget)\fxc.exe" /T ps_3_0 /E psmain /O3 /D HLSL /D PIXEL /nologo /Fc "$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm" "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling shader "%(Filename)%(Extension)"</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).vsasm;$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\Shaders\%(Filename).psasm;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\..\Data\shaders\Common.hlsli;$(SolutionDir)..\..\Data\shaders\Utils.hlsli;$(SolutionDir)..\..\Data\shaders\PostProcessingUtils.hlsli;%(AdditionalInputs)</AdditionalInputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
     </CustomBuild>
   </ItemGroup>
 </Project>

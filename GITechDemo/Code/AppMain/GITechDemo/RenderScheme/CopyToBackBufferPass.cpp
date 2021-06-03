@@ -65,6 +65,9 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
 
         if (RenderConfig::PostProcessing::FastApproximateAntiAliasing::Enabled)
             m_pFinalImageBuffer = LDRFxaaImageBuffer.GetRenderTarget();
+
+        if (RenderConfig::PostProcessing::ASCIIEffect::Enabled)
+            m_pFinalImageBuffer = ASCIIEffectBuffer.GetRenderTarget();
     }
     else
         m_pFinalImageBuffer = LightAccumulationBuffer.GetRenderTarget();
