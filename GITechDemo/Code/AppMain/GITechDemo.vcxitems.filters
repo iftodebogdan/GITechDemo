@@ -385,10 +385,8 @@
     <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\UI.hlsl">
       <Filter>Shaders</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ASCIIEffect.hlsl">
+    <CustomBuild Include="$(MSBuildThisFileDirectory)..\..\Data\shaders\ASCIIEffect.hlsl">
       <Filter>Shaders</Filter>
-    </FxCompile>
+    </CustomBuild>
   </ItemGroup>
 </Project>

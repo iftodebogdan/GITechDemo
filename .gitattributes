@@ -62,6 +62,7 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-*.c    linguist-language=C++
-*.h    linguist-language=C++
-*.inl    linguist-language=C++
+*.c                 linguist-language=C++
+*.h                 linguist-language=C++
+*.inl               linguist-language=C++
+GITechDemo/Tools/*  linguist-vendored
