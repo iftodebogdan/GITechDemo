@@ -65,4 +65,4 @@
 *.c                 linguist-language=C++
 *.h                 linguist-language=C++
 *.inl               linguist-language=C++
-GITechDemo/Tools/*  linguist-vendored
+GITechDemo/Tools/** linguist-vendored

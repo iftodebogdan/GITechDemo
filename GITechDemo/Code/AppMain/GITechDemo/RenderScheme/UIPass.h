@@ -44,7 +44,7 @@ namespace Synesthesia3D
 
 namespace GITechDemoApp
 {
-    #define UI_BUFFER_COUNT (2)
+    #define UI_BUFFER_COUNT (3)
 
     class ArtistParameter;
 

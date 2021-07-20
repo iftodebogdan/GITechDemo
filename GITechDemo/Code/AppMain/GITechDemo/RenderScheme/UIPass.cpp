@@ -1009,9 +1009,7 @@ void UIPass::RenderUI()
     if (!RSMgr)
         return;
 
-    const unsigned int nRenderBufferIdx = (m_nCurrBufferIdx + 1) % UI_BUFFER_COUNT;
-
-    if (!m_pImGuiVb[nRenderBufferIdx])
+    if (!m_pImGuiVb[m_nCurrBufferIdx])
         return;
 
     // Setup render states
@@ -1037,9 +1035,9 @@ void UIPass::RenderUI()
 
     // Render geometry
     UIShader.Enable();
-    for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[nRenderBufferIdx].CmdList.size(); n++)
+    for (unsigned int n = 0, vtxOffset = 0, idxOffset = 0; n < m_tDrawData[m_nCurrBufferIdx].CmdList.size(); n++)
     {
-        const UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[nRenderBufferIdx].CmdList[n];
+        const UIDrawData::UIDrawCommandList& cmdList = m_tDrawData[m_nCurrBufferIdx].CmdList[n];
         for (unsigned int i = 0; i < cmdList.DrawCmd.size(); i++)
         {
             const UIDrawData::UIDrawCommandList::UIDrawCommand& cmd = cmdList.DrawCmd[i];
@@ -1080,7 +1078,7 @@ void UIPass::RenderUI()
             if (invalidateShaderConstants)
                 UIShader.CommitShaderInputs();
 
-            RenderContext->DrawVertexBuffer(m_pImGuiVb[nRenderBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
+            RenderContext->DrawVertexBuffer(m_pImGuiVb[m_nCurrBufferIdx], vtxOffset, cmd.ElemCount / 3, cmdList.VtxBufferSize, idxOffset);
 
             idxOffset += cmd.ElemCount;
         }
