@@ -187,6 +187,7 @@ void GITechDemo::Release()
 
     bExtraResInit = false;
 
+    ImGui::Shutdown();
     RenderScheme::ReleaseResources();
 
     RenderResource::FreeAll();

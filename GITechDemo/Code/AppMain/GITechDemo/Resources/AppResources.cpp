@@ -777,7 +777,7 @@ namespace GITechDemoApp
         "Directional light",
         RenderConfig::DirectionalLight::IrradianceFactor,
         0.1f,
-        1.f);
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Reflection factor",
@@ -1048,7 +1048,7 @@ namespace GITechDemoApp
         "Reflective shadow map",
         RenderConfig::ReflectiveShadowMap::KernelScale,
         0.001f,
-        0.025f);
+        0.02f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Upscale threshold",
@@ -1617,7 +1617,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ShoulderStrength,
         0.1f,
-        0.5f);
+        0.15f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear strength",
@@ -1625,7 +1625,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::LinearStrength,
         0.1f,
-        0.58f);
+        0.5f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear angle",
@@ -1633,7 +1633,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::LinearAngle,
         0.1f,
-        0.35f);
+        0.1f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe strength",
@@ -1641,7 +1641,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ToeStrength,
         0.1f,
-        0.48f);
+        0.2f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe numerator",
@@ -1649,7 +1649,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ToeNumerator,
         0.01f,
-        0.12f);
+        0.02f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Toe denominator",
@@ -1657,7 +1657,7 @@ namespace GITechDemoApp
         "HDR tone mapping",
         RenderConfig::PostProcessing::ToneMapping::ToeDenominator,
         0.1f,
-        0.58f);
+        0.3f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Linear white",

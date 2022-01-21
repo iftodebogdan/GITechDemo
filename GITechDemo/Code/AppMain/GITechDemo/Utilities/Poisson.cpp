@@ -214,6 +214,10 @@ std::vector<sPoint> GeneratePoissonPoints( float MinDist, int NewPointsCount, si
 
     //std::cout << std::endl << std::endl;
 
+    delete dis;
+    delete gen;
+    delete rd;
+
     return SamplePoints;
 }
 
