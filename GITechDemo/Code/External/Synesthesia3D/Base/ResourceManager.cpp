@@ -40,16 +40,6 @@ using namespace Synesthesia3D;
 
 #include <lz4/lz4hc.h>
 
-// Mutexes for each resource pool
-MUTEX   VFMutex;
-MUTEX   IBMutex;
-MUTEX   VBMutex;
-MUTEX   ShdInMutex;
-MUTEX   ShdProgMutex;
-MUTEX   TexMutex;
-MUTEX   RTMutex;
-MUTEX   ModelMutex;
-
 struct membuf : std::streambuf {
     membuf(char const* base, size_t size) {
         char* p(const_cast<char*>(base));
@@ -66,14 +56,7 @@ struct imemstream : virtual membuf, std::istream {
 
 ResourceManager::ResourceManager()
 {
-    MUTEX_INIT(VFMutex);
-    MUTEX_INIT(IBMutex);
-    MUTEX_INIT(VBMutex);
-    MUTEX_INIT(ShdInMutex);
-    MUTEX_INIT(ShdProgMutex);
-    MUTEX_INIT(TexMutex);
-    MUTEX_INIT(RTMutex);
-    MUTEX_INIT(ModelMutex);
+
 }
 
 ResourceManager::~ResourceManager()
@@ -90,90 +73,74 @@ ResourceManager::~ResourceManager()
         GetRenderTargetCount() ||
         GetModelCount())
         ReleaseAll();
+}
 
-    MUTEX_DESTROY(VFMutex);
-    MUTEX_DESTROY(IBMutex);
-    MUTEX_DESTROY(VBMutex);
-    MUTEX_DESTROY(ShdInMutex);
-    MUTEX_DESTROY(ShdProgMutex);
-    MUTEX_DESTROY(TexMutex);
-    MUTEX_DESTROY(RTMutex);
-    MUTEX_DESTROY(ModelMutex);
+template <typename T>
+static void ResourceManager::DeleteResourcesAndClearList(ThreadSafeList<T>& resourceList)
+{
+    ThreadSafeList<T>::Writer listWriter = resourceList.GetWriter();
+    std::vector<T>& list = listWriter.GetList();
+
+    for (unsigned int i = 0; i < list.size(); i++)
+        delete list[i];
+
+    list.clear();
 }
 
 void ResourceManager::ReleaseAll()
 {
     UnbindAll();
 
-    for (unsigned int i = 0; i < m_arrModel.size(); i++)
-        delete m_arrModel[i];
-    for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
-        delete m_arrVertexFormat[i];
-    for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
-        delete m_arrIndexBuffer[i];
-    for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
-        delete m_arrVertexBuffer[i];
-    for (unsigned int i = 0; i < m_arrShaderInput.size(); i++)
-        delete m_arrShaderInput[i];
-    for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-        delete m_arrShaderProgram[i];
-    for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
-        delete m_arrRenderTarget[i];
-    for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-        delete m_arrTexture[i];
+    DeleteResourcesAndClearList(m_arrModel);
+    DeleteResourcesAndClearList(m_arrVertexFormat);
+    DeleteResourcesAndClearList(m_arrIndexBuffer);
+    DeleteResourcesAndClearList(m_arrVertexBuffer);
+    DeleteResourcesAndClearList(m_arrShaderInput);
+    DeleteResourcesAndClearList(m_arrShaderProgram);
+    DeleteResourcesAndClearList(m_arrRenderTarget);
+    DeleteResourcesAndClearList(m_arrTexture);
+}
 
-    m_arrModel.clear();
-    m_arrVertexFormat.clear();
-    m_arrIndexBuffer.clear();
-    m_arrVertexBuffer.clear();
-    m_arrShaderInput.clear();
-    m_arrShaderProgram.clear();
-    m_arrTexture.clear();
-    m_arrRenderTarget.clear();
+template <typename T>
+static void ResourceManager::BindResourcesInList(ThreadSafeList<T>& resourceList)
+{
+    ThreadSafeList<T>::Reader listReader = resourceList.GetReader();
+    const std::vector<T>& list = listReader.GetList();
+
+    for (unsigned int i = 0; i < list.size(); i++)
+        if (list[i])
+            list[i]->Bind();
 }
 
 void ResourceManager::BindAll()
 {
-    for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
-        if (m_arrVertexFormat[i])
-            m_arrVertexFormat[i]->Bind();
-    for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
-        if (m_arrIndexBuffer[i])
-            m_arrIndexBuffer[i]->Bind();
-    for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
-        if (m_arrVertexBuffer[i])
-            m_arrVertexBuffer[i]->Bind();
-    //for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-    //  if (m_arrShaderProgram[i])
-    //      m_arrShaderProgram[i]->Bind();
-    for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-        if (m_arrTexture[i])
-            m_arrTexture[i]->Bind();
-    for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
-        if (m_arrRenderTarget[i])
-            m_arrRenderTarget[i]->Bind();
+    BindResourcesInList(m_arrVertexFormat);
+    BindResourcesInList(m_arrIndexBuffer);
+    BindResourcesInList(m_arrVertexBuffer);
+    //BindResourcesInList(m_arrShaderProgram);
+    BindResourcesInList(m_arrTexture);
+    BindResourcesInList(m_arrRenderTarget);
+}
+
+template <typename T>
+static void ResourceManager::UnbindResourcesInList(ThreadSafeList<T>& resourceList)
+{
+    ThreadSafeList<T>::Reader listReader = resourceList.GetReader();
+    const std::vector<T>& list = listReader.GetList();
+
+    for (unsigned int i = 0; i < list.size(); i++)
+        if (list[i])
+            list[i]->Unbind();
 }
 
 void ResourceManager::UnbindAll()
 {
-    for (unsigned int i = 0; i < m_arrVertexFormat.size(); i++)
-        if (m_arrVertexFormat[i])
-            m_arrVertexFormat[i]->Unbind();
-    for (unsigned int i = 0; i < m_arrIndexBuffer.size(); i++)
-        if (m_arrIndexBuffer[i])
-            m_arrIndexBuffer[i]->Unbind();
-    for (unsigned int i = 0; i < m_arrVertexBuffer.size(); i++)
-        if (m_arrVertexBuffer[i])
-            m_arrVertexBuffer[i]->Unbind();
-    //for (unsigned int i = 0; i < m_arrShaderProgram.size(); i++)
-    //  if (m_arrShaderProgram[i])
-    //      m_arrShaderProgram[i]->Unbind();
-    for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-        if (m_arrTexture[i])
-            m_arrTexture[i]->Unbind();
-    for (unsigned int i = 0; i < m_arrRenderTarget.size(); i++)
-        if (m_arrRenderTarget[i])
-            m_arrRenderTarget[i]->Unbind();
+    UnbindResourcesInList(m_arrVertexFormat);
+    UnbindResourcesInList(m_arrIndexBuffer);
+    UnbindResourcesInList(m_arrVertexBuffer);
+    //UnbindResourcesInList(m_arrShaderProgram);
+    UnbindResourcesInList(m_arrTexture);
+    UnbindResourcesInList(m_arrRenderTarget);
 
     if(Renderer::GetInstance()->GetProfiler())
         Renderer::GetInstance()->GetProfiler()->ReleaseGPUProfileMarkerResults();
@@ -328,430 +295,246 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
     return modelIdx;
 }
 
-const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
+template <typename T>
+static const unsigned int ResourceManager::FindByName(const char* pathToFile, const bool strict, ThreadSafeList<T>& resourceList)
 {
-    //MUTEX_LOCK(TexMutex);
-    for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-        if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile == pathToFile)
-        {
-            //MUTEX_UNLOCK(TexMutex);
+    ThreadSafeList<T>::Reader listReader = resourceList.GetReader();
+    const std::vector<T>& list = listReader.GetList();
+
+    for (unsigned int i = 0; i < list.size(); i++)
+        if (list[i] && list[i]->GetSourceFile() == pathToFile)
             return i;
-        }
 
     if (!strict)
-        for (unsigned int i = 0; i < m_arrTexture.size(); i++)
-            if (m_arrTexture[i] && m_arrTexture[i]->m_szSourceFile.find(pathToFile) != std::string::npos)
-            {
-                //MUTEX_UNLOCK(TexMutex);
+        for (unsigned int i = 0; i < list.size(); i++)
+            if (list[i] && list[i]->GetSourceFile().find(pathToFile) != std::string::npos)
                 return i;
-            }
 
-    //MUTEX_UNLOCK(TexMutex);
     return ~0u;
+}
+
+const unsigned int ResourceManager::FindTexture(const char * pathToFile, const bool strict)
+{
+    return FindByName(pathToFile, strict, m_arrTexture);
 }
 
 const unsigned int ResourceManager::FindModel(const char * pathToFile, const bool strict)
 {
-    //MUTEX_LOCK(ModelMutex);
-    for (unsigned int i = 0; i < m_arrModel.size(); i++)
-        if (m_arrModel[i] && m_arrModel[i]->szSourceFile == pathToFile)
-        {
-            //MUTEX_UNLOCK(ModelMutex);
-            return i;
-        }
+    return FindByName(pathToFile, strict, m_arrModel);
+}
 
-    if(!strict)
-        for (unsigned int i = 0; i < m_arrModel.size(); i++)
-            if (m_arrModel[i] && m_arrModel[i]->szSourceFile.find(pathToFile) != std::string::npos)
-            {
-                //MUTEX_UNLOCK(ModelMutex);
-                return i;
-            }
+template <typename T>
+static T ResourceManager::GetResourceFromIndex(const unsigned int idx, const ThreadSafeList<T>& resourceList)
+{
+    ThreadSafeList<T>::Reader listReader = resourceList.GetReader();
+    const std::vector<T>& list = listReader.GetList();
 
-    //MUTEX_UNLOCK(ModelMutex);
-    return ~0u;
+    assert(idx < list.size());
+    if (idx >= list.size())
+        return nullptr;
+    return list[idx];
 }
 
 VertexFormat* const ResourceManager::GetVertexFormat(const unsigned int idx) const
 {
-    assert(idx < m_arrVertexFormat.size());
-    if (idx >= m_arrVertexFormat.size())
-        return nullptr;
-    return m_arrVertexFormat[idx];
+    return GetResourceFromIndex(idx, m_arrVertexFormat);
 }
 
 IndexBuffer* const ResourceManager::GetIndexBuffer(const unsigned int idx) const
 {
-    assert(idx < m_arrIndexBuffer.size());
-    if (idx >= m_arrIndexBuffer.size())
-        return nullptr;
-    return m_arrIndexBuffer[idx];
+    return GetResourceFromIndex(idx, m_arrIndexBuffer);
 }
 
 VertexBuffer* const ResourceManager::GetVertexBuffer(const unsigned int idx) const
 {
-    assert(idx < m_arrVertexBuffer.size());
-    if (idx >= m_arrVertexBuffer.size())
-        return nullptr;
-    return m_arrVertexBuffer[idx];
+    return GetResourceFromIndex(idx, m_arrVertexBuffer);
 }
 
 ShaderInput* const ResourceManager::GetShaderInput(const unsigned int idx) const
 {
-    assert(idx < m_arrShaderInput.size());
-    if (idx >= m_arrShaderInput.size())
-        return nullptr;
-    return m_arrShaderInput[idx];
+    return GetResourceFromIndex(idx, m_arrShaderInput);
 }
 
 ShaderProgram* const ResourceManager::GetShaderProgram(const unsigned int idx) const
 {
-    assert(idx < m_arrShaderProgram.size());
-    if (idx >= m_arrShaderProgram.size())
-        return nullptr;
-    return m_arrShaderProgram[idx];
+    return GetResourceFromIndex(idx, m_arrShaderProgram);
 }
 
 Texture* const ResourceManager::GetTexture(const unsigned int idx) const
 {
-    assert(idx < m_arrTexture.size());
-    if (idx >= m_arrTexture.size())
-        return nullptr;
-    return m_arrTexture[idx];
+    return GetResourceFromIndex(idx, m_arrTexture);
 }
 
 RenderTarget* const ResourceManager::GetRenderTarget(const unsigned int idx) const
 {
-    assert(idx < m_arrRenderTarget.size());
-    if (idx >= m_arrRenderTarget.size())
-        return nullptr;
-    return m_arrRenderTarget[idx];
+    return GetResourceFromIndex(idx, m_arrRenderTarget);
 }
 
 Model* const ResourceManager::GetModel(const unsigned int idx) const
 {
-    assert(idx < m_arrModel.size());
-    if (idx >= m_arrModel.size())
-        return nullptr;
-    return m_arrModel[idx];
+    return GetResourceFromIndex(idx, m_arrModel);
 }
 
 const unsigned int ResourceManager::GetVertexFormatCount() const
 {
-    return (unsigned int)m_arrVertexFormat.size();
+    return (unsigned int)m_arrVertexFormat.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetIndexBufferCount() const
 {
-    return (unsigned int)m_arrIndexBuffer.size();
+    return (unsigned int)m_arrIndexBuffer.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetVertexBufferCount() const
 {
-    return (unsigned int)m_arrVertexBuffer.size();
+    return (unsigned int)m_arrVertexBuffer.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetShaderInputCount() const
 {
-    return (unsigned int)m_arrShaderInput.size();
+    return (unsigned int)m_arrShaderInput.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetShaderProgramCount() const
 {
-    return (unsigned int)m_arrShaderProgram.size();
+    return (unsigned int)m_arrShaderProgram.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetTextureCount() const
 {
-    return (unsigned int)m_arrTexture.size();
+    return (unsigned int)m_arrTexture.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetRenderTargetCount() const
 {
-    return (unsigned int)m_arrRenderTarget.size();
+    return (unsigned int)m_arrRenderTarget.GetReader().GetList().size();
 }
 
 const unsigned int ResourceManager::GetModelCount() const
 {
-    return (unsigned int)m_arrModel.size();
+    return (unsigned int)m_arrModel.GetReader().GetList().size();
+}
+
+template <typename T>
+static void ResourceManager::ReleaseResourceByIndex(const unsigned int idx, ThreadSafeList<T>& resourceList, ThreadSafeList<unsigned int>& freeSlotsList)
+{
+    ThreadSafeList<T>::Writer listWriter = resourceList.GetWriter();
+    std::vector<T>& list = listWriter.GetList();
+
+    assert(idx < list.size());
+    if (idx >= list.size())
+        return;
+
+    delete list[idx];
+    list[idx] = nullptr;
+
+    freeSlotsList.GetWriter().GetList().push_back(idx);
 }
 
 void ResourceManager::ReleaseVertexFormat(const unsigned int idx)
 {
-    assert(idx < m_arrVertexFormat.size());
-    if (idx >= m_arrVertexFormat.size())
-        return;
-
-    delete m_arrVertexFormat[idx];
-    m_arrVertexFormat[idx] = nullptr;
-
-    MUTEX_LOCK(VFMutex);
-    m_arrVertexFormatFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(VFMutex);
+    ReleaseResourceByIndex(idx, m_arrVertexFormat, m_arrVertexFormatFreeSlots);
 }
 
 void ResourceManager::ReleaseIndexBuffer(const unsigned int idx)
 {
-    assert(idx < m_arrIndexBuffer.size());
-    if (idx >= m_arrIndexBuffer.size())
-        return;
-
-    delete m_arrIndexBuffer[idx];
-    m_arrIndexBuffer[idx] = nullptr;
-
-    MUTEX_LOCK(IBMutex);
-    m_arrIndexBufferFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(IBMutex);
+    ReleaseResourceByIndex(idx, m_arrIndexBuffer, m_arrIndexBufferFreeSlots);
 }
 
 void ResourceManager::ReleaseVertexBuffer(const unsigned int idx)
 {
-    assert(idx < m_arrVertexBuffer.size());
-    if (idx >= m_arrVertexBuffer.size())
-        return;
-
-    delete m_arrVertexBuffer[idx];
-    m_arrVertexBuffer[idx] = nullptr;
-
-    MUTEX_LOCK(VBMutex);
-    m_arrVertexBufferFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(VBMutex);
+    ReleaseResourceByIndex(idx, m_arrVertexBuffer, m_arrVertexBufferFreeSlots);
 }
 
 void ResourceManager::ReleaseShaderInput(const unsigned int idx)
 {
-    assert(idx < m_arrShaderInput.size());
-    if (idx >= m_arrShaderInput.size())
-        return;
-
-    delete m_arrShaderInput[idx];
-    m_arrShaderInput[idx] = nullptr;
-
-    MUTEX_LOCK(ShdInMutex);
-    m_arrShaderInputFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(ShdInMutex);
+    ReleaseResourceByIndex(idx, m_arrShaderInput, m_arrShaderInputFreeSlots);
 }
 
 void ResourceManager::ReleaseShaderProgram(const unsigned int idx)
 {
-    assert(idx < m_arrShaderProgram.size());
-    if (idx >= m_arrShaderProgram.size())
-        return;
-
-    delete m_arrShaderProgram[idx];
-    m_arrShaderProgram[idx] = nullptr;
-
-    MUTEX_LOCK(ShdProgMutex);
-    m_arrShaderProgramFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(ShdProgMutex);
+    ReleaseResourceByIndex(idx, m_arrShaderProgram, m_arrShaderProgramFreeSlots);
 }
 
 void ResourceManager::ReleaseTexture(const unsigned int idx)
 {
-    assert(idx < m_arrTexture.size());
-    if (idx >= m_arrTexture.size())
-        return;
-
-    delete m_arrTexture[idx];
-    m_arrTexture[idx] = nullptr;
-
-    MUTEX_LOCK(TexMutex);
-    m_arrTextureFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(TexMutex);
+    ReleaseResourceByIndex(idx, m_arrTexture, m_arrTextureFreeSlots);
 }
 
 void ResourceManager::ReleaseRenderTarget(const unsigned int idx)
 {
-    assert(idx < m_arrRenderTarget.size());
-    if (idx >= m_arrRenderTarget.size())
-        return;
-
-    delete m_arrRenderTarget[idx];
-    m_arrRenderTarget[idx] = nullptr;
-
-    MUTEX_LOCK(RTMutex);
-    m_arrRenderTargetFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(RTMutex);
+    ReleaseResourceByIndex(idx, m_arrRenderTarget, m_arrRenderTargetFreeSlots);
 }
 
 void ResourceManager::ReleaseModel(const unsigned int idx)
 {
-    assert(idx < m_arrRenderTarget.size());
-    if (idx > m_arrRenderTarget.size())
-        return;
+    ReleaseResourceByIndex(idx, m_arrModel, m_arrModelFreeSlots);
+}
 
-    delete m_arrModel[idx];
-    m_arrModel[idx] = nullptr;
+template <typename T>
+static const unsigned int ResourceManager::AddResourceAndGetIndex(T resource, ThreadSafeList<T>& resourceList, ThreadSafeList<unsigned int>& freeSlotsList)
+{
+    unsigned int idx = ~0u;
 
-    MUTEX_LOCK(ModelMutex);
-    m_arrModelFreeSlots.push_back(idx);
-    MUTEX_UNLOCK(ModelMutex);
+    ThreadSafeList<T>::Writer resourceListWriter = resourceList.GetWriter();
+    std::vector<T>& resources = resourceListWriter.GetList();
+
+    {
+        ThreadSafeList<unsigned int>::Writer freeSlotsListWriter = freeSlotsList.GetWriter();
+        std::vector<unsigned int>& freeSlots = freeSlotsListWriter.GetList();
+
+        if (!freeSlots.empty())
+        {
+            idx = freeSlots.front();
+            resources[idx] = resource;
+            freeSlots.erase(freeSlots.begin());
+
+            return idx;
+        }
+    }
+
+    resources.push_back(resource);
+    idx = (unsigned int)resources.size() - 1;
+
+    return idx;
 }
 
 const unsigned int ResourceManager::AddVertexFormat(VertexFormat* vf)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(VFMutex);
-    if (!m_arrVertexFormatFreeSlots.empty())
-    {
-        idx = m_arrVertexFormatFreeSlots.front();
-        m_arrVertexFormat[idx] = vf;
-        m_arrVertexFormatFreeSlots.erase(m_arrVertexFormatFreeSlots.begin());
-    }
-    else
-    {
-        m_arrVertexFormat.push_back(vf);
-        idx = (unsigned int)m_arrVertexFormat.size() - 1;
-    }
-    MUTEX_UNLOCK(VFMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(vf, m_arrVertexFormat, m_arrVertexFormatFreeSlots);
 }
 
 const unsigned int ResourceManager::AddIndexBuffer(IndexBuffer* ib)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(IBMutex);
-    if (!m_arrIndexBufferFreeSlots.empty())
-    {
-        idx = m_arrIndexBufferFreeSlots.front();
-        m_arrIndexBuffer[idx] = ib;
-        m_arrIndexBufferFreeSlots.erase(m_arrIndexBufferFreeSlots.begin());
-    }
-    else
-    {
-        m_arrIndexBuffer.push_back(ib);
-        idx = (unsigned int)m_arrIndexBuffer.size() - 1;
-    }
-    MUTEX_UNLOCK(IBMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(ib, m_arrIndexBuffer, m_arrIndexBufferFreeSlots);
 }
 
 const unsigned int ResourceManager::AddVertexBuffer(VertexBuffer* vb)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(VBMutex);
-    if (!m_arrVertexBufferFreeSlots.empty())
-    {
-        idx = m_arrVertexBufferFreeSlots.front();
-        m_arrVertexBuffer[idx] = vb;
-        m_arrVertexBufferFreeSlots.erase(m_arrVertexBufferFreeSlots.begin());
-    }
-    else
-    {
-        m_arrVertexBuffer.push_back(vb);
-        idx = (unsigned int)m_arrVertexBuffer.size() - 1;
-    }
-    MUTEX_UNLOCK(VBMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(vb, m_arrVertexBuffer, m_arrVertexBufferFreeSlots);
 }
 
 const unsigned int ResourceManager::AddShaderProgram(ShaderProgram* shdProg)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(ShdProgMutex);
-    if (!m_arrShaderProgramFreeSlots.empty())
-    {
-        idx = m_arrShaderProgramFreeSlots.front();
-        m_arrShaderProgram[idx] = shdProg;
-        m_arrShaderProgramFreeSlots.erase(m_arrShaderProgramFreeSlots.begin());
-    }
-    else
-    {
-        m_arrShaderProgram.push_back(shdProg);
-        idx = (unsigned int)m_arrShaderProgram.size() - 1;
-    }
-    MUTEX_UNLOCK(ShdProgMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(shdProg, m_arrShaderProgram, m_arrShaderProgramFreeSlots);
 }
 
 const unsigned int ResourceManager::AddTexture(Texture* tex)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(TexMutex);
-    if (!m_arrTextureFreeSlots.empty())
-    {
-        idx = m_arrTextureFreeSlots.front();
-        m_arrTexture[idx] = tex;
-        m_arrTextureFreeSlots.erase(m_arrTextureFreeSlots.begin());
-    }
-    else
-    {
-        m_arrTexture.push_back(tex);
-        idx = (unsigned int)m_arrTexture.size() - 1;
-    }
-    MUTEX_UNLOCK(TexMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(tex, m_arrTexture, m_arrTextureFreeSlots);
 }
 
 const unsigned int ResourceManager::AddRenderTarget(RenderTarget* rt)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(RTMutex);
-    if (!m_arrRenderTargetFreeSlots.empty())
-    {
-        idx = m_arrRenderTargetFreeSlots.front();
-        m_arrRenderTarget[idx] = rt;
-        m_arrRenderTargetFreeSlots.erase(m_arrRenderTargetFreeSlots.begin());
-    }
-    else
-    {
-        m_arrRenderTarget.push_back(rt);
-        idx = (unsigned int)m_arrRenderTarget.size() - 1;
-    }
-    MUTEX_UNLOCK(RTMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(rt, m_arrRenderTarget, m_arrRenderTargetFreeSlots);
 }
 
 const unsigned int ResourceManager::AddShaderInput(ShaderInput* shdIn)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(ShdInMutex);
-    if (!m_arrShaderInputFreeSlots.empty())
-    {
-        idx = m_arrShaderInputFreeSlots.front();
-        m_arrShaderInput[idx] = shdIn;
-        m_arrShaderInputFreeSlots.erase(m_arrShaderInputFreeSlots.begin());
-    }
-    else
-    {
-        m_arrShaderInput.push_back(shdIn);
-        idx = (unsigned int)m_arrShaderInput.size() - 1;
-    }
-    MUTEX_UNLOCK(ShdInMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(shdIn, m_arrShaderInput, m_arrShaderInputFreeSlots);
 }
 
 const unsigned int ResourceManager::AddModel(Model* mdl)
 {
-    unsigned int idx = ~0u;
-
-    MUTEX_LOCK(ModelMutex);
-    if (!m_arrModelFreeSlots.empty())
-    {
-        idx = m_arrModelFreeSlots.front();
-        m_arrModel[idx] = mdl;
-        m_arrModelFreeSlots.erase(m_arrModelFreeSlots.begin());
-    }
-    else
-    {
-        m_arrModel.push_back(mdl);
-        idx = (unsigned int)m_arrModel.size() - 1;
-    }
-    MUTEX_UNLOCK(ModelMutex);
-
-    return idx;
+    return AddResourceAndGetIndex(mdl, m_arrModel, m_arrModelFreeSlots);
 }

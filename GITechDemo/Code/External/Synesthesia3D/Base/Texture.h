@@ -511,6 +511,8 @@ namespace Synesthesia3D
 
         std::string     m_szSourceFile; /**< @brief Path to the file from which the texture was loaded from. */
 
+        const std::string& GetSourceFile() const { return m_szSourceFile; }
+
         bool    m_bIsDynamicRT; /**< @brief Whether this texture is a render target with dynamic resolution, sync'ed to the back buffer's resolution. */
         float   m_fWidthRatio;  /**< @brief Ratio of width of texture to width of back buffer. */
         float   m_fHeightRatio; /**< @brief Ratio of height of texture to height of back buffer. */

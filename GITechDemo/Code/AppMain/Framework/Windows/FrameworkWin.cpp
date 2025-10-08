@@ -37,6 +37,8 @@ using namespace std;
 
 namespace AppFramework
 {
+    std::atomic<unsigned int> s_nTotalInitTicks{ 0 };
+
     LRESULT CALLBACK WndProc_wrapper(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         return ((FrameworkWin*)FrameworkWin::m_pInstance)->WndProc(hWnd, message, wParam, lParam);
@@ -49,10 +51,21 @@ namespace AppFramework
 
     DWORD WINAPI AppMainLoadResources_wrapper(LPVOID args)
     {
+        unsigned int elapsedTicks = 0;
+        Framework* const pFW = Framework::GetInstance();
+        if (pFW)
+            elapsedTicks = pFW->GetTicks();
+
         // 'args' is of type unsigned int[2] where:
         // args[0] = Thread ID
         // args[1] = Thread count
         AppMain->LoadResources(((unsigned int*)args)[0], ((unsigned int*)args)[1]);
+
+        if(pFW)
+            elapsedTicks = pFW->GetTicks() - elapsedTicks;
+
+        s_nTotalInitTicks.fetch_add(elapsedTicks);
+
         return 0;
     }
 }
@@ -239,7 +252,7 @@ int FrameworkWin::Run()
                 // Restore thread priority after resources are loaded
                 if (bAppRdy)
                 {
-                    cout << endl << "Resources successfully loaded in " << (float)(GetTicks() - startLoadingTicks) / 1000000.f << " seconds." << endl;
+                    cout << endl << "Resources successfully loaded in " << (float)(GetTicks() - startLoadingTicks) / 1000000.f << " seconds. Total CPU time: " << (float)s_nTotalInitTicks / 1000000.f << " seconds." << endl;
                     //SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
                 #ifndef _DEBUG
                     Sleep(2000);

@@ -808,6 +808,8 @@ namespace Synesthesia3D
 
         std::string             szSourceFile;   /**< File from which model was loaded. */
 
+        const std::string&      GetSourceFile() const { return szSourceFile; }
+
         /**
          * @brief   Serializes a model object.
          */

@@ -72,12 +72,12 @@ GITechDemo::GITechDemo()
     , m_pInputMap(nullptr)
     , m_bUIHasFocus(false)
 {
-    MUTEX_INIT(mResInitMutex);
+
 }
 
 GITechDemo::~GITechDemo()
 {
-    MUTEX_DESTROY(mResInitMutex);
+
 }
 
 bool GITechDemo::Init(void* hWnd)
@@ -141,9 +141,9 @@ bool GITechDemo::Init(void* hWnd)
     BuildSupportedResolutionList();
 
     // Set the highest resolution available (hopefully it's the native one...)
-    for (int i = 0, bestRes = 0; i < m_arrSupportedResolutionList.size(); i++)
+    for (unsigned int i = 0, bestRes = 0; i < m_arrSupportedResolutionList.size(); i++)
     {
-        const int resolution = m_arrSupportedResolutionList[i].GetResolution()[0] * m_arrSupportedResolutionList[i].GetResolution()[1];
+        const unsigned int resolution = m_arrSupportedResolutionList[i].GetResolution()[0] * m_arrSupportedResolutionList[i].GetResolution()[1];
         if (bestRes < resolution)
         {
             bestRes = resolution;
@@ -155,9 +155,9 @@ bool GITechDemo::Init(void* hWnd)
     BuildSupportedRefreshRateList(m_arrSupportedResolutionList[RenderConfig::Window::ResolutionIdx].GetResolution());
 
     // Set the highest available refresh rate for the selected resolution
-    for (int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
+    for (unsigned int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
     {
-        const int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
+        const unsigned int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
         if (bestRefreshRate < refreshRate)
         {
             bestRefreshRate = refreshRate;
@@ -204,30 +204,41 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
     do
     {
         bAllInitialized = true;
-        const vector<RenderResource*>& resList = RenderResource::GetResourceList();
-        for (unsigned int i = 0; i < resList.size(); i++)
+        RenderResource* pInitCandidate = nullptr;
+
         {
-            if (!resList[i]->IsInitialized())
+            ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = RenderResource::GetResourceList().GetReader();
+            const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+            for (unsigned int i = 0; i < arrRenderResourceList.size(); i++)
             {
-                bAllInitialized = false;
-                if (resList[i]->TryLockRes())
+                if (!arrRenderResourceList[i]->HasStartedInitialization())
                 {
-                    std::stringstream msg;
-                    msg << "Thread " << thId << " - ";
-                    msg << RenderResource::ms_ResourceTypeMap[resList[i]->GetResourceType()] << ": \"" << resList[i]->GetDesc() << "\"";
-                    cout << msg.str() + " start\n";
-                    const unsigned startTicks = pFW->GetTicks();
-                    resList[i]->Init();
-                    cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
-                    resList[i]->UnlockRes();
+                    pInitCandidate = arrRenderResourceList[i];
+                    bAllInitialized = false;
+                    break;
                 }
             }
         }
-        pFW->Sleep(1); // sleep 1 ms so as not to hog CPU time
+
+        if (pInitCandidate && !pInitCandidate->HasStartedInitialization())
+        {
+            std::stringstream msg;
+            msg << "Thread " << thId << " - ";
+            msg << RenderResource::ms_ResourceTypeMap[pInitCandidate->GetResourceType()] << ": \"" << pInitCandidate->GetDesc() << "\"";
+            const unsigned startTicks = pFW->GetTicks();
+
+            if (!pInitCandidate->Init())
+                continue;
+
+            const unsigned int elapsedTicks = pFW->GetTicks() - startTicks;
+            cout << msg.str() + " finished in " + tostr((float)(elapsedTicks) / 1000.f) + "ms\n";
+        }
+
+        //pFW->Sleep(1); // sleep 1 ms so as not to hog CPU time
     } while (!bAllInitialized);
 
     // Allow only the first thread to get here to initialize the rest of the resources
-    if (MUTEX_TRYLOCK(mResInitMutex))
+    if (m_tResInitMutex.try_lock())
     {
         if (!bExtraResInit)
         {
@@ -245,7 +256,7 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
 
             cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
         }
-        MUTEX_UNLOCK(mResInitMutex);
+        m_tResInitMutex.unlock();
     }
 }
 
@@ -274,9 +285,9 @@ void GITechDemo::Update(const float fDeltaTime)
             BuildSupportedRefreshRateList(m_arrSupportedResolutionList[RenderConfig::Window::ResolutionIdx].GetResolution());
 
             // Set the highest available refresh rate for the selected resolution
-            for (int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
+            for (unsigned int i = 0, bestRefreshRate = 0; i < m_arrSupportedRefreshRateList.size(); i++)
             {
-                const int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
+                const unsigned int refreshRate = m_arrSupportedRefreshRateList[i].GetRefreshRate();
                 if (bestRefreshRate < refreshRate)
                 {
                     bestRefreshRate = refreshRate;
@@ -640,12 +651,12 @@ void GITechDemo::Draw()
     }
 }
 
-bool GITechDemo::GetSupportedResolutionList(void* data, int idx, const char** out_text)
+bool GITechDemo::GetSupportedResolutionList(void* data, unsigned int idx, const char** out_text)
 {
     return ((GITechDemo*)data)->GetSupportedResolutionListImpl(idx, out_text);
 }
 
-bool GITechDemo::GetSupportedResolutionListImpl(int idx, const char** out_text)
+bool GITechDemo::GetSupportedResolutionListImpl(unsigned int idx, const char** out_text)
 {
     if (idx < m_arrSupportedResolutionList.size())
     {
@@ -697,12 +708,12 @@ void GITechDemo::BuildSupportedResolutionList()
     }
 }
 
-bool GITechDemo::GetSupportedRefreshRateList(void* data, int idx, const char** out_text)
+bool GITechDemo::GetSupportedRefreshRateList(void* data, unsigned int idx, const char** out_text)
 {
     return ((GITechDemo*)data)->GetSupportedRefreshRateListImpl(idx, out_text);
 }
 
-bool GITechDemo::GetSupportedRefreshRateListImpl(int idx, const char** out_text)
+bool GITechDemo::GetSupportedRefreshRateListImpl(unsigned int idx, const char** out_text)
 {
     if (idx < m_arrSupportedRefreshRateList.size())
     {

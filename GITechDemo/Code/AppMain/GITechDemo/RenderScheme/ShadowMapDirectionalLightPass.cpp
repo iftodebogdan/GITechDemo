@@ -336,7 +336,8 @@ void ShadowMapDirectionalLightPass::Draw()
 
         DepthPassShader.Disable();
 
-        const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
+        ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = RenderResource::GetResourceList().GetReader();
+        const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
         const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
 
         for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
@@ -378,9 +379,10 @@ void ShadowMapDirectionalLightPass::AllocateResources()
     // RenderPass::AllocateResources() is called from multiple threads along with the
     // various RenderResource::Init() calls. As such, any RenderResource type that is
     // being modified here has to be locked for modification to avoid race conditions.
-    SponzaScene.LockRes();
+    //SponzaScene.LockRes();
+    SponzaScene.WaitUntilInitialized();
     UpdateSceneAABB();
-    SponzaScene.UnlockRes();
+    //SponzaScene.UnlockRes();
 }
 
 void ShadowMapDirectionalLightPass::ReleaseResources()

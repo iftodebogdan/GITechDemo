@@ -22,12 +22,12 @@
 #ifndef GITECHDEMO_H_
 #define GITECHDEMO_H_
 
+#include <mutex>
+
 #include <gmtl\gmtl.h>
 
 #include "App.h"
 using namespace AppFramework;
-
-#include <Utility/Mutex.h>
 
 namespace gainput
 {
@@ -57,14 +57,14 @@ namespace GITechDemoApp
         const float GetDeltaTime() const { return m_fDeltaTime; }
         const bool IsUIInFocus() const { return m_bUIHasFocus; }
 
-        static bool GetSupportedResolutionList(void* data, int idx, const char** out_text);
-        static bool GetSupportedRefreshRateList(void* data, int idx, const char** out_text);
+        static bool GetSupportedResolutionList(void* data, unsigned int idx, const char** out_text);
+        static bool GetSupportedRefreshRateList(void* data, unsigned int idx, const char** out_text);
 
     private:
         void UpdateUIFocus();
 
-        bool GetSupportedResolutionListImpl(int idx, const char** out_text);
-        bool GetSupportedRefreshRateListImpl(int idx, const char** out_text);
+        bool GetSupportedResolutionListImpl(unsigned int idx, const char** out_text);
+        bool GetSupportedRefreshRateListImpl(unsigned int idx, const char** out_text);
 
         void BuildSupportedResolutionList();
         void BuildSupportedRefreshRateList(const Vec2i resolution);
@@ -103,7 +103,7 @@ namespace GITechDemoApp
         };
         std::vector<SupportedRefreshRate> m_arrSupportedRefreshRateList;
 
-        MUTEX mResInitMutex;
+        std::mutex m_tResInitMutex;
 
         enum Command
         {

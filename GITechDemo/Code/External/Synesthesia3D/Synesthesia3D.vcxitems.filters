@@ -130,6 +130,9 @@
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)dllmain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ProfilerNULL.cpp">
+      <Filter>NULL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h">
@@ -382,6 +385,12 @@
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Mutex.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ProfilerNULL.h">
+      <Filter>NULL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ThreadSafeList.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>

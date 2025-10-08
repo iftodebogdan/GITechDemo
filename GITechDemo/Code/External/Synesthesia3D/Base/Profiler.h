@@ -32,6 +32,7 @@
 #endif // SYNESTHESIA3D_DLL
 
 #include <vector>
+#include <mutex>
 
 #ifndef ENABLE_PROFILE_MARKERS
     #if defined(_DEBUG) || defined(_PROFILE)
@@ -182,6 +183,8 @@ namespace Synesthesia3D
 
         std::vector<GPUProfileMarkerResult*>    m_arrGPUProfileMarkerResult;    /**< @brief A list of issued GPU profile markers. */
         static  int             ms_nProfileMarkerCounter;   /**< @brief Keeps track of profiler marker start/end pairs. */
+
+        mutable std::recursive_mutex m_tProfileMarkerMutex; /**< @brief A mutex to guarantee thread-safety for profile marker operations. */
 
         friend class Renderer;
         friend class ResourceManager;

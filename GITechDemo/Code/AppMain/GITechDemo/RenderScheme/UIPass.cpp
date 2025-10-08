@@ -695,19 +695,22 @@ void UIPass::SetupUI()
 
             const Synesthesia3D::ResourceManager* const resMan = Renderer::GetInstance()->GetResourceManager();
 
+            ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = RenderResource::GetResourceList().GetReader();
+            const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+
             string texDesc;
             vector<s3dSampler> texList;
-            for (unsigned int i = 0; i < RenderResource::GetResourceList().size(); i++)
+            for (unsigned int i = 0; i < arrRenderResourceList.size(); i++)
             {
-                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_RENDERTARGET)
+                if (arrRenderResourceList[i]->GetResourceType() == RenderResource::RES_RENDERTARGET)
                 {
-                    const unsigned int targetCount = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->GetTargetCount();
-                    const bool hasDepth = ((RenderTarget*)(RenderResource::GetResourceList()[i]))->GetRenderTarget()->HasDepthBuffer();
+                    const unsigned int targetCount = ((RenderTarget*)(arrRenderResourceList[i]))->GetRenderTarget()->GetTargetCount();
+                    const bool hasDepth = ((RenderTarget*)(arrRenderResourceList[i]))->GetRenderTarget()->HasDepthBuffer();
 
                     for (unsigned int j = 0; j < targetCount; j++)
                     {
-                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetColorBuffer(j));
-                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                        texList.push_back(((RenderTarget*)arrRenderResourceList[i])->GetRenderTarget()->GetColorBuffer(j));
+                        texDesc += arrRenderResourceList[i]->GetDesc();
                         if (hasDepth)
                         {
                             texDesc += " - color";
@@ -723,8 +726,8 @@ void UIPass::SetupUI()
 
                     if (hasDepth)
                     {
-                        texList.push_back(((RenderTarget*)RenderResource::GetResourceList()[i])->GetRenderTarget()->GetDepthBuffer());
-                        texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                        texList.push_back(((RenderTarget*)arrRenderResourceList[i])->GetRenderTarget()->GetDepthBuffer());
+                        texDesc += arrRenderResourceList[i]->GetDesc();
                         if (targetCount > 0)
                         {
                             texDesc += " - depth";
@@ -733,10 +736,10 @@ void UIPass::SetupUI()
                     }
                 }
 
-                if (RenderResource::GetResourceList()[i]->GetResourceType() == RenderResource::RES_TEXTURE)
+                if (arrRenderResourceList[i]->GetResourceType() == RenderResource::RES_TEXTURE)
                 {
-                    texList.push_back(((Texture*)RenderResource::GetResourceList()[i])->GetTextureIndex());
-                    texDesc += RenderResource::GetResourceList()[i]->GetDesc();
+                    texList.push_back(((Texture*)arrRenderResourceList[i])->GetTextureIndex());
+                    texDesc += arrRenderResourceList[i]->GetDesc();
                     texDesc += '\0';
                 }
             }
@@ -1320,9 +1323,11 @@ const float GPUProfileMarkerResultHistory::GetAverage(const char* const name) co
     float totalTime = 0.f;
     int markerCount = 0;
 
+    const unsigned int nameHash = S3DHASH(name);
+
     for (unsigned int i = 0; i < m_arrGPUProfileMarkerResultHistory[historyBufferIdx].size(); i++)
     {
-        if (m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].name == name)
+        if (m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].nameHash == nameHash)
         {
             totalTime += m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].timing;
             markerCount++;

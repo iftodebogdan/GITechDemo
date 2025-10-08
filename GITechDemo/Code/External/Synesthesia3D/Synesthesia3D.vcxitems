@@ -42,6 +42,7 @@
       <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ProfilerNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4hc.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)External\lz4\lz4opt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\IndexBufferNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NULL\ProfilerNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RendererNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderStateNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\RenderTargetNULL.h" />
@@ -138,6 +140,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ThreadSafeList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\Debug.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\HalfFloat.h" />

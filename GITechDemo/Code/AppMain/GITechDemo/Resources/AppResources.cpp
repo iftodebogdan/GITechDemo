@@ -44,7 +44,7 @@ using namespace Synesthesia3D;
 
 #define DROPDOWN_TYPE_HASH S3DHASH("DROPDOWN")
 
-vector<RenderResource*> RenderResource::arrResources; // Moved from RenderResource.cpp
+ThreadSafeList<RenderResource*> RenderResource::ms_arrResources; // Moved from RenderResource.cpp
 vector<ArtistParameter*> ArtistParameter::ms_arrParams; // Moved from ArtistParameter.cpp
 const unsigned long long ArtistParameter::ms_TypeHash[ArtistParameter::ArtistParameterDataType::APDT_MAX] =
 {

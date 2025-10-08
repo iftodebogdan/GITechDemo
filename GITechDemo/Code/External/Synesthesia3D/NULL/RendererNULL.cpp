@@ -26,6 +26,7 @@
 #include "ResourceManagerNULL.h"
 #include "RenderStateNULL.h"
 #include "SamplerStateNULL.h"
+#include "ProfilerNULL.h"
 using namespace Synesthesia3D;
 
 void RendererNULL::Initialize(void* /*hWnd*/)
@@ -34,8 +35,17 @@ void RendererNULL::Initialize(void* /*hWnd*/)
     m_pRenderStateManager = new RenderStateNULL();
     m_pSamplerStateManager = new SamplerStateNULL();
 
+    m_pProfiler = new ProfilerNULL();
+
     m_pSamplerStateManager->Reset();
     m_pRenderStateManager->Reset();
+
+    DeviceCaps::SupportedScreenFormat ssf;
+    ssf.nWidth = 800u;
+    ssf.nHeight = 600u;
+    ssf.ePixelFormat = PF_NONE;
+    ssf.nRefreshRate = 60u;
+    m_tDeviceCaps.arrSupportedScreenFormats.push_back(ssf);
 }
 
 void RendererNULL::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const

@@ -41,7 +41,7 @@ using namespace GITechDemoApp;
 #include "AppResources.h"
 
 // Moved to AppResources.cpp until the issue with the static initialization fiasco is resolved
-//vector<RenderResource*> RenderResource::arrResources;
+//vector<RenderResource*> RenderResource::ms_arrResources;
 
 namespace GITechDemoApp
 {
@@ -58,52 +58,34 @@ namespace GITechDemoApp
     };
 
     RenderResource::RenderResource(const char* filePath, ResourceType resType)
-        : nId((unsigned int)arrResources.size())
-        , szDesc(filePath)
+        : szDesc(filePath)
         , eResType(resType)
-        , bInitialized(false)
     {
-        MUTEX_INIT(mResMutex);
-        MUTEX_INIT(mInitMutex);
-
-        arrResources.push_back(this);
+        ThreadSafeList<RenderResource*>::Writer tRenderResourceListWriter = RenderResource::GetResourceList().GetWriter();
+        vector<RenderResource*>& arrRenderResourceList = tRenderResourceListWriter.GetList();
+        nId = (unsigned int)arrRenderResourceList.size();
+        arrRenderResourceList.push_back(this);
     }
 
     RenderResource::~RenderResource()
     {
-        MUTEX_DESTROY(mResMutex);
-        MUTEX_DESTROY(mInitMutex);
+
     }
 
     const bool RenderResource::Init()
     {
-        if (bInitialized)
+        bool expected = false;
+        const bool exchanged = bHasStartedInitialization.compare_exchange_strong(expected, true);
+
+        if (!exchanged)
             return false;
 
-        if (MUTEX_TRYLOCK(mInitMutex))
-        {
-            if (!bInitialized)
-            {
-                //cout << ResourceTypeMap[eResType] << ": \"" << szDesc.c_str() << "\"" << endl;
-                bInitialized = true;
-                MUTEX_UNLOCK(mInitMutex);
-                return true;
-            }
-            else
-            {
-                MUTEX_UNLOCK(mInitMutex);
-                return false;
-            }
-        }
-        else
-            return false;
+        return true;
     }
 
     void RenderResource::Free()
     {
-        MUTEX_LOCK(mInitMutex);
-        bInitialized = false;
-        MUTEX_UNLOCK(mInitMutex);
+        bIsInitialized = false;
     }
 
     void RenderResource::InitAllResources()
@@ -121,55 +103,79 @@ namespace GITechDemoApp
         cout << "Done initializing resources" << endl;
     }
 
+    void RenderResource::InitAllResourcesOfType(const ResourceType type)
+    {
+        vector<RenderResource*> arrInitList;
+
+        {
+            ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = GetResourceList().GetReader();
+            const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+
+            for (unsigned int i = 0; i < arrRenderResourceList.size(); i++)
+                if (arrRenderResourceList[i]->eResType == type)
+                    arrInitList.push_back(arrRenderResourceList[i]);
+        }
+
+        for (unsigned int i = 0; i < arrInitList.size(); i++)
+        {
+            arrInitList[i]->Init();
+        }
+    }
+
     void RenderResource::InitAllModels()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType == RES_MODEL)
-                arrResources[i]->Init();
+        InitAllResourcesOfType(RES_MODEL);
     }
 
     void RenderResource::InitAllTextures()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType == RES_TEXTURE)
-                arrResources[i]->Init();
+        InitAllResourcesOfType(RES_TEXTURE);
     }
 
     void RenderResource::InitAllShaders()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType == RES_SHADER)
-                arrResources[i]->Init();
+        InitAllResourcesOfType(RES_SHADER);
     }
 
     void RenderResource::InitAllRenderTargets()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType == RES_RENDERTARGET)
-                arrResources[i]->Init();
+        InitAllResourcesOfType(RES_RENDERTARGET);
     }
 
     void RenderResource::InitAllPBRMaterials()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType == RES_PBR_MATERIAL)
-                arrResources[i]->Init();
+        InitAllResourcesOfType(RES_PBR_MATERIAL);
     }
 
     void RenderResource::FreeAll()
     {
-        for (unsigned int i = 0; i < arrResources.size(); i++)
-            if (arrResources[i]->eResType != RES_SHADER_CONSTANT)
-                arrResources[i]->Free();
+        vector<RenderResource*> arrFreeList;
+
+        {
+            ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = GetResourceList().GetReader();
+            const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+
+            for (unsigned int i = 0; i < arrRenderResourceList.size(); i++)
+                if (arrRenderResourceList[i]->eResType != RES_SHADER_CONSTANT)
+                    arrFreeList.push_back(arrRenderResourceList[i]);
+        }
+
+        for (unsigned int i = 0; i < arrFreeList.size(); i++)
+        {
+            arrFreeList[i]->Free();
+        }
     }
 
     const unsigned int RenderResource::GetResourceCountByType(const ResourceType type)
     {
         unsigned int count = 0;
 
-        for (unsigned int i = 0; i < arrResources.size(); i++)
+        ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = GetResourceList().GetReader();
+        const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+
+        for (unsigned int i = 0; i < arrRenderResourceList.size(); i++)
         {
-            if (arrResources[i]->eResType == type)
+            if (arrRenderResourceList[i]->eResType == type)
             {
                 count++;
             }
@@ -195,7 +201,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || bInitialized)
+        if (!RenderContext || !ResMgr)
             return false;
 
         if (RenderResource::Init())
@@ -230,15 +236,17 @@ namespace GITechDemoApp
                 {
                     const ShaderInputDesc& desc = shdInput->GetInputDesc(i);
 
-                    for (unsigned int j = 0; j < arrResources.size(); j++)
+                    ThreadSafeList<RenderResource*>::Reader tRenderResourceListReader = GetResourceList().GetReader();
+                    const vector<RenderResource*>& arrRenderResourceList = tRenderResourceListReader.GetList();
+                    for (unsigned int j = 0; j < arrRenderResourceList.size(); j++)
                     {
-                        if (arrResources[j]->GetResourceType() == RES_SHADER_CONSTANT)
+                        if (arrRenderResourceList[j]->GetResourceType() == RES_SHADER_CONSTANT)
                         {
-                            const char* const constName = arrResources[j]->GetDesc();
+                            const char* const constName = arrRenderResourceList[j]->GetDesc();
                             if (desc.nNameHash == S3DHASH(constName))
                             {
                                 ShaderConstantInstance constInst;
-                                constInst.pShaderConstantTemplate = arrResources[j];
+                                constInst.pShaderConstantTemplate = arrRenderResourceList[j];
                                 constInst.nShaderConstantHandle = i;
                                 constInst.eShaderType = (ShaderProgramType)spt;
                                 constInst.eConstantType = desc.eInputType;
@@ -253,52 +261,58 @@ namespace GITechDemoApp
                 }
             }
             /*
-            for (unsigned int i = 0; i < arrResources.size(); i++)
             {
-                if (arrResources[i]->GetResourceType() == RES_SHADER_CONSTANT)
+                ListReader RenderResourceListReader;
+                const vector<RenderResource*>& RenderResourceList = RenderResourceListReader.GetResourceList();
+
+                for (unsigned int i = 0; i < RenderResourceList.size(); i++)
                 {
-                    for (int spt = SPT_VERTEX; spt < SPT_MAX; spt++)
+                    if (RenderResourceList[i]->GetResourceType() == RES_SHADER_CONSTANT)
                     {
-                        ShaderInput* shdInput = nullptr;
-
-                        switch (spt)
+                        for (int spt = SPT_VERTEX; spt < SPT_MAX; spt++)
                         {
-                        case SPT_VERTEX:
-                            shdInput = pVertexShaderInput;
-                            break;
-                        case SPT_PIXEL:
-                            shdInput = pPixelShaderInput;
-                            break;
-                        default:
-                            assert(0);
-                        }
+                            ShaderInput* shdInput = nullptr;
 
-                        unsigned int handle;
-                        shdInput->GetInputHandleByName(((ShaderConstantTemplate<void*>*)arrResources[i])->GetName(), handle);
+                            switch (spt)
+                            {
+                            case SPT_VERTEX:
+                                shdInput = pVertexShaderInput;
+                                break;
+                            case SPT_PIXEL:
+                                shdInput = pPixelShaderInput;
+                                break;
+                            default:
+                                assert(0);
+                            }
 
-                        if (handle != ~0u)
-                        {
-                            const ShaderInputDesc& desc = shdInput->GetInputDesc(handle);
-                            ShaderConstantInstance constInst;
+                            unsigned int handle;
+                            shdInput->GetInputHandleByName(((ShaderConstantTemplate<void*>*)RenderResourceList[i])->GetName(), handle);
 
-                            constInst.pShaderConstantTemplate = arrResources[i];
-                            constInst.nShaderConstantHandle = handle;
-                            constInst.eShaderType = (ShaderProgramType)spt;
-                            constInst.eConstantType = desc.eInputType;
-                            constInst.nNumRows = desc.nRows;
-                            constInst.nNumColumns = desc.nColumns;
-                            constInst.nNumArrayElem = desc.nArrayElements;
+                            if (handle != ~0u)
+                            {
+                                const ShaderInputDesc& desc = shdInput->GetInputDesc(handle);
+                                ShaderConstantInstance constInst;
 
-                            arrConstantList.push_back(constInst);
+                                constInst.pShaderConstantTemplate = RenderResourceList[i];
+                                constInst.nShaderConstantHandle = handle;
+                                constInst.eShaderType = (ShaderProgramType)spt;
+                                constInst.eConstantType = desc.eInputType;
+                                constInst.nNumRows = desc.nRows;
+                                constInst.nNumColumns = desc.nColumns;
+                                constInst.nNumArrayElem = desc.nArrayElements;
+
+                                arrConstantList.push_back(constInst);
+                            }
                         }
                     }
                 }
             }*/
 
+            bIsInitialized = true;
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     void Shader::Free()
@@ -306,7 +320,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || !bInitialized)
+        if (!RenderContext || !ResMgr)
             return;
 
         RenderResource::Free();
@@ -638,7 +652,9 @@ namespace GITechDemoApp
     {
         for (unsigned int i = 0; i < TextureList.size(); i++)
         {
-            arrResources[TextureList[i]->nId] = nullptr;
+            ThreadSafeList<RenderResource*>::Writer tRenderResourceListWriter = GetResourceList().GetWriter();
+            vector<RenderResource*>& arrRenderResourceList = tRenderResourceListWriter.GetList();
+            arrRenderResourceList[TextureList[i]->nId] = nullptr;
             delete TextureList[i];
         }
 
@@ -650,7 +666,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || bInitialized)
+        if (!RenderContext || !ResMgr)
             return false;
 
         if (RenderResource::Init())
@@ -697,11 +713,7 @@ namespace GITechDemoApp
             // to maybe pick some of them up while populating TextureList.
             for (unsigned int i = 0; i < TextureList.size(); i++)
             {
-                if (TextureList[i]->TryLockRes())
-                {
-                    TextureList[i]->Init();
-                    TextureList[i]->UnlockRes();
-                }
+                TextureList[i]->Init();
             }
 
             for (unsigned int i = 0; i < pModel->arrMaterial.size(); i++)
@@ -721,7 +733,7 @@ namespace GITechDemoApp
                     {
                         if (TextureList[k]->GetFilePath() == filePath)
                         {
-                            bool bGotLockOnTex = false;
+                            /*bool bGotLockOnTex = false;
                             do
                             {
                                 if (TextureList[k]->TryLockRes())
@@ -745,8 +757,10 @@ namespace GITechDemoApp
                                 TextureList[k]->Init();
                                 TextureList[k]->UnlockRes();
                                 bGotLockOnTex = false;
-                            }
-
+                            }*/
+                            TextureList[k]->WaitUntilInitialized();
+                            texIdx = TextureList[k]->GetTextureIndex();
+                            assert(texIdx != ~0u);
                             break;
                         }
                     }
@@ -803,10 +817,11 @@ namespace GITechDemoApp
                 }
             }
 
+            bIsInitialized = true;
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     void Model::Free()
@@ -814,7 +829,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || !bInitialized)
+        if (!RenderContext || !ResMgr || !bIsInitialized)
             return;
 
         RenderResource::Free();
@@ -826,12 +841,16 @@ namespace GITechDemoApp
         pModel = nullptr;
 
         for (unsigned int i = 0; i < TextureList.size(); i++)
-            for (unsigned int j = 0; j < arrResources.size(); j++)
-                if (TextureList[i] == arrResources[j])
+        {
+            ThreadSafeList<RenderResource*>::Writer tRenderResourceListWriter = GetResourceList().GetWriter();
+            vector<RenderResource*>& arrRenderResourceList = tRenderResourceListWriter.GetList();
+            for (unsigned int j = 0; j < arrRenderResourceList.size(); j++)
+                if (TextureList[i] == arrRenderResourceList[j])
                 {
-                    arrResources.erase(arrResources.begin() + j);
+                    arrRenderResourceList.erase(arrRenderResourceList.begin() + j);
                     j--;
                 }
+        }
 
         TextureList.clear();
         for (unsigned int tt = Synesthesia3D::Model::TextureDesc::TT_NONE; tt < Synesthesia3D::Model::TextureDesc::TT_UNKNOWN; tt++)
@@ -849,7 +868,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || bInitialized)
+        if (!RenderContext || !ResMgr)
             return false;
 
         if (RenderResource::Init())
@@ -860,10 +879,11 @@ namespace GITechDemoApp
 
             assert(nTexIdx != ~0u && pTexture != nullptr);
 
+            bIsInitialized = true;
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     void Texture::Free()
@@ -871,7 +891,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || !bInitialized)
+        if (!RenderContext || !ResMgr || !bIsInitialized)
             return;
 
         RenderResource::Free();
@@ -930,7 +950,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || bInitialized)
+        if (!RenderContext || !ResMgr)
             return false;
 
         if (RenderResource::Init())
@@ -950,10 +970,11 @@ namespace GITechDemoApp
                 pRenderTarget = ResMgr->GetRenderTarget(nRenderTargetIdx);
             }
 
+            bIsInitialized = true;
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     void RenderTarget::Free()
@@ -961,7 +982,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || !bInitialized)
+        if (!RenderContext || !ResMgr || !bIsInitialized)
             return;
 
         RenderResource::Free();
@@ -1009,7 +1030,7 @@ namespace GITechDemoApp
         Renderer* RenderContext = Renderer::GetInstance();
         ResourceManager* ResMgr = RenderContext ? RenderContext->GetResourceManager() : nullptr;
 
-        if (!RenderContext || !ResMgr || bInitialized)
+        if (!RenderContext || !ResMgr)
             return false;
 
         if (RenderResource::Init())
@@ -1023,22 +1044,19 @@ namespace GITechDemoApp
             // initialization before we get a chance to do it from here.
             for (unsigned int i = 0; i < PBRTT_MAX; i++)
             {
-                if (arrTexture[i]->TryLockRes())
-                {
-                    arrTexture[i]->Init();
-                    arrTexture[i]->UnlockRes();
-                }
+                arrTexture[i]->Init();
             }
 
+            bIsInitialized = true;
             return true;
         }
-        else
-            return false;
+
+        return false;
     }
 
     void PBRMaterial::Free()
     {
-        if (!bInitialized)
+        if (!bIsInitialized)
             return;
 
         RenderResource::Free();

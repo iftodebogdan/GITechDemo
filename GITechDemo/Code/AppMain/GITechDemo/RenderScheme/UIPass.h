@@ -27,6 +27,8 @@
 
 #include "RenderPass.h"
 
+#include "Utility/Hash.h"
+
 namespace gainput
 {
     class InputManager;
@@ -71,11 +73,12 @@ namespace GITechDemoApp
         GPUProfileMarkerResultCacheEntry(
             std::string _name, float _timing, float _start, float _end,
             float _rootTiming, float _rootStart, float _rootEnd)
-            : name(_name), timing(_timing), start(_start), end(_end)
+            : name(_name), nameHash(S3DHASH(_name.c_str())), timing(_timing), start(_start), end(_end)
             , rootTiming(_rootTiming), rootStart(_rootStart), rootEnd(_rootEnd)
         {}
 
         std::string name;
+        unsigned int nameHash;
         float timing, start, end;
         float rootTiming, rootStart, rootEnd;
     };

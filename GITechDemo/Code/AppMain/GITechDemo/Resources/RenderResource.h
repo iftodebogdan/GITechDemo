@@ -41,6 +41,7 @@ namespace Synesthesia3D
 }
 
 #include <Utility/Mutex.h>
+#include <Utility/ThreadSafeList.h>
 
 namespace GITechDemoApp
 {
@@ -64,10 +65,10 @@ namespace GITechDemoApp
             RES_MAX
         };
 
-        static const vector<RenderResource*>& GetResourceList() { return arrResources; }
         static const unsigned int GetResourceCountByType(const ResourceType type);
 
         static void InitAllResources();
+        static void InitAllResourcesOfType(const ResourceType type);
         static void InitAllModels();
         static void InitAllTextures();
         static void InitAllShaders();
@@ -79,15 +80,15 @@ namespace GITechDemoApp
         const char* GetDesc() const { return szDesc.c_str(); }
         const ResourceType GetResourceType() { return eResType; }
 
-        const bool IsInitialized() { return bInitialized; }
+        const bool IsInitialized() { return bIsInitialized; }
+        const bool HasStartedInitialization() { return bHasStartedInitialization; }
+        void WaitUntilInitialized() { while(!bIsInitialized) std::this_thread::yield(); }
         virtual const bool Init();
         virtual void Free();
 
-        const bool  TryLockRes() { return MUTEX_TRYLOCK(mResMutex); }
-        void        LockRes() { MUTEX_LOCK(mResMutex); }
-        void        UnlockRes() { MUTEX_UNLOCK(mResMutex); }
-
         static const char* const RenderResource::ms_ResourceTypeMap[RenderResource::RES_MAX];
+
+        static ThreadSafeList<RenderResource*>& GetResourceList() { return ms_arrResources; }
 
     protected:
         RenderResource(const char* filePath, ResourceType resType);
@@ -98,12 +99,12 @@ namespace GITechDemoApp
         unsigned int    nId;
         string          szDesc;
         ResourceType    eResType;
-        bool            bInitialized;
 
-        MUTEX           mResMutex;
-        MUTEX           mInitMutex;
+        std::atomic<bool>   bHasStartedInitialization{ false };
+        std::atomic<bool>   bIsInitialized{ false };
 
-        static vector<RenderResource*> arrResources;
+    private:
+        static ThreadSafeList<RenderResource*> ms_arrResources;
     };
 
     class Model : public RenderResource
@@ -161,13 +162,15 @@ namespace GITechDemoApp
             : RenderResource(name, RES_SHADER_CONSTANT)
         {
             currentValue = defaultVal;
-            bInitialized = true;
+            bHasStartedInitialization = true;
+            bIsInitialized = true;
         }
 
         ShaderConstantTemplate(const char* name)
             : RenderResource(name, RES_SHADER_CONSTANT)
         {
-            bInitialized = true;
+            bHasStartedInitialization = true;
+            bIsInitialized = true;
         }
 
         const char* GetName() { return szDesc.c_str(); }

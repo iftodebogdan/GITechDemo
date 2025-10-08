@@ -26,23 +26,17 @@
 #include "Renderer.h"
 using namespace Synesthesia3D;
 
-#include "Utility/Mutex.h"
-
 int Profiler::ms_nProfileMarkerCounter = 0;
-
-// A mutex to guarantee thread-safety for profile marker operations
-MUTEX gProfileMarkerMutex;
 
 Profiler::Profiler()
 {
-    MUTEX_INIT(gProfileMarkerMutex);
+
 }
 
 Profiler::~Profiler()
 {
-    MUTEX_DESTROY(gProfileMarkerMutex);
-
 #if ENABLE_PROFILE_MARKERS
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     assert(ms_nProfileMarkerCounter == 0);
 #endif
 }
@@ -50,19 +44,17 @@ Profiler::~Profiler()
 void Profiler::PushProfileMarker(const char* const label, const bool issueGPUQuery)
 {
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     ms_nProfileMarkerCounter++;
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
 }
 
 void Profiler::PopProfileMarker()
 {
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     ms_nProfileMarkerCounter--;
     assert(ms_nProfileMarkerCounter >= 0);
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
 }
 
@@ -70,7 +62,7 @@ const float Profiler::RetrieveGPUProfileMarkerStart(const char* const label) con
 {
     float time = -1.f;
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
     {
         GPUProfileMarkerResult* marker = m_arrGPUProfileMarkerResult[i];
@@ -80,7 +72,6 @@ const float Profiler::RetrieveGPUProfileMarkerStart(const char* const label) con
             break;
         }
     }
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
     return time;
 }
@@ -89,7 +80,7 @@ const float Profiler::RetrieveGPUProfileMarkerEnd(const char* const label) const
 {
     float time = -1.f;
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
     {
         GPUProfileMarkerResult* marker = m_arrGPUProfileMarkerResult[i];
@@ -99,7 +90,6 @@ const float Profiler::RetrieveGPUProfileMarkerEnd(const char* const label) const
             break;
         }
     }
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
     return time;
 }
@@ -108,7 +98,7 @@ const float Profiler::RetrieveGPUProfileMarkerResult(const char* const label) co
 {
     float time = -1.f;
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
     {
         GPUProfileMarkerResult* marker = m_arrGPUProfileMarkerResult[i];
@@ -118,7 +108,6 @@ const float Profiler::RetrieveGPUProfileMarkerResult(const char* const label) co
             break;
         }
     }
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
     return time;
 }
@@ -129,12 +118,11 @@ const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarker(const uns
 
     const GPUProfileMarkerResult* ret = nullptr;
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     if (handle < m_arrGPUProfileMarkerResult.size() && handle >= 0 && m_arrGPUProfileMarkerResult[handle]->m_eStatus == GPUProfileMarkerResult::GPMRS_VALID)
     {
         ret = m_arrGPUProfileMarkerResult[handle];
     }
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
     return ret;
 }
@@ -143,7 +131,7 @@ const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarker(const cha
 {
     const GPUProfileMarkerResult* ret = nullptr;
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
     for (unsigned int i = 0; i < m_arrGPUProfileMarkerResult.size(); i++)
     {
         const GPUProfileMarkerResult* const marker = m_arrGPUProfileMarkerResult[i];
@@ -153,7 +141,6 @@ const GPUProfileMarkerResult* const Profiler::RetrieveGPUProfileMarker(const cha
             break;
         }
     }
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
     return ret;
 }

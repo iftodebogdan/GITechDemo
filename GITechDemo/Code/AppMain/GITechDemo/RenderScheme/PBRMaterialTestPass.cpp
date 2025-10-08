@@ -49,14 +49,15 @@ void PBRMaterialTestPass::Draw()
 
     GBuffer.Enable();
 
-    const vector<RenderResource*>& arrRenderResourceList = RenderResource::GetResourceList();
+    ThreadSafeList<RenderResource*>::Reader arrRenderResourceListReader = RenderResource::GetResourceList().GetReader();
+    const vector<RenderResource*>& tRenderResourceList = arrRenderResourceListReader.GetList();
     const unsigned int pbrMaterialCount = RenderResource::GetResourceCountByType(RenderResource::RES_PBR_MATERIAL);
 
-    for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < arrRenderResourceList.size(); resIdx++)
+    for (unsigned int resIdx = 0, pbrMatIdx = 0; resIdx < tRenderResourceList.size(); resIdx++)
     {
-        if (arrRenderResourceList[resIdx] && arrRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
+        if (tRenderResourceList[resIdx] && tRenderResourceList[resIdx]->GetResourceType() == RenderResource::RES_PBR_MATERIAL)
         {
-            const PBRMaterial* const pbrMaterial = (PBRMaterial*)arrRenderResourceList[resIdx];
+            const PBRMaterial* const pbrMaterial = (PBRMaterial*)tRenderResourceList[resIdx];
 
             PUSH_PROFILE_MARKER(pbrMaterial->GetDesc());
 

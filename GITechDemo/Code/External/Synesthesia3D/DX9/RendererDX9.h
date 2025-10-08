@@ -23,6 +23,12 @@
 #ifndef RENDERERDX9_H
 #define RENDERERDX9_H
 
+#ifdef _DEBUG
+    #ifndef D3D_DEBUG_INFO
+        #define D3D_DEBUG_INFO
+    #endif
+#endif
+
 #include <d3d9.h>
 
 #include "Renderer.h"

@@ -26,11 +26,6 @@
 #include "RendererDX9.h"
 using namespace Synesthesia3D;
 
-#include "Utility/Mutex.h"
-
- // From Profiling.cpp
-extern MUTEX gProfileMarkerMutex;
-
 UINT64 ProfilerDX9::ms_nFirstQueryBeginTime = 0;
 
 ProfilerDX9::ProfilerDX9()
@@ -46,7 +41,7 @@ ProfilerDX9::~ProfilerDX9()
 void ProfilerDX9::PushProfileMarker(const char* const label, const bool issueGPUQuery)
 {
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
 
     Profiler::PushProfileMarker(label);
     unsigned int len = (unsigned int)strlen(label) + 1;
@@ -66,15 +61,13 @@ void ProfilerDX9::PushProfileMarker(const char* const label, const bool issueGPU
         }
         m_arrGPUProfileMarkerDX9Stack.push(marker);
     }
-
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
 }
 
 void ProfilerDX9::PopProfileMarker()
 {
 #if ENABLE_PROFILE_MARKERS
-    MUTEX_LOCK(gProfileMarkerMutex);
+    const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
 
     if (m_arrGPUProfileMarkerDX9Stack.size() > 0)
     {
@@ -87,7 +80,6 @@ void ProfilerDX9::PopProfileMarker()
 
     D3DPERF_EndEvent();
     Profiler::PopProfileMarker();
-    MUTEX_UNLOCK(gProfileMarkerMutex);
 #endif
 }
 
