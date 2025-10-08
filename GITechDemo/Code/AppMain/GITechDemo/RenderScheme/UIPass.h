@@ -25,7 +25,12 @@
 #include <vector>
 #include <string>
 
+#include <gmtl\gmtl.h>
+using namespace gmtl;
+
 #include "RenderPass.h"
+
+#include "ResourceData.h"
 
 #include "Utility/Hash.h"
 

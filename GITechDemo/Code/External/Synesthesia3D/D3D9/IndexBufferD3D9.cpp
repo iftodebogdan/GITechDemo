@@ -1,5 +1,5 @@
 /**
- * @file        IndexBufferDX9.cpp
+ * @file        IndexBufferD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,14 +22,14 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
 
-#include "IndexBufferDX9.h"
-#include "ProfilerDX9.h"
+#include "IndexBufferD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-IndexBufferDX9::IndexBufferDX9(const unsigned int indexCount, const IndexBufferFormat indexFormat, const BufferUsage usage)
+IndexBufferD3D9::IndexBufferD3D9(const unsigned int indexCount, const IndexBufferFormat indexFormat, const BufferUsage usage)
     : IndexBuffer(indexCount, indexFormat, usage)
     , m_pIndexBuffer(nullptr)
     , m_pTempBuffer(nullptr)
@@ -38,21 +38,21 @@ IndexBufferDX9::IndexBufferDX9(const unsigned int indexCount, const IndexBufferF
         Bind();
 }
 
-IndexBufferDX9::~IndexBufferDX9()
+IndexBufferD3D9::~IndexBufferD3D9()
 {
     Unbind();
 }
 
-void IndexBufferDX9::Enable()
+void IndexBufferD3D9::Enable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = device->SetIndices(m_pIndexBuffer);
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void IndexBufferDX9::Disable()
+void IndexBufferD3D9::Disable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
 #ifdef _DEBUG
@@ -69,14 +69,14 @@ void IndexBufferDX9::Disable()
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void IndexBufferDX9::Lock(const BufferLocking lockMode)
+void IndexBufferD3D9::Lock(const BufferLocking lockMode)
 {
     assert(m_pTempBuffer == nullptr);
-    HRESULT hr = m_pIndexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingDX9[lockMode]);
+    HRESULT hr = m_pIndexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingD3D9[lockMode]);
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void IndexBufferDX9::Unlock()
+void IndexBufferD3D9::Unlock()
 {
     assert(m_pTempBuffer != nullptr);
     HRESULT hr = m_pIndexBuffer->Unlock();
@@ -84,16 +84,16 @@ void IndexBufferDX9::Unlock()
     m_pTempBuffer = nullptr;
 }
 
-void IndexBufferDX9::Update()
+void IndexBufferD3D9::Update()
 {
     assert(m_pTempBuffer != nullptr);
     memcpy(m_pTempBuffer, GetData(), GetSize());
 }
 
-void IndexBufferDX9::Bind()
+void IndexBufferD3D9::Bind()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-    HRESULT hr = device->CreateIndexBuffer((UINT)m_nSize, BufferUsageDX9[m_eBufferUsage], IndexBufferFormatDX9[m_eIndexFormat], D3DPOOL_DEFAULT, &m_pIndexBuffer, 0);
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
+    HRESULT hr = device->CreateIndexBuffer((UINT)m_nSize, BufferUsageD3D9[m_eBufferUsage], IndexBufferFormatD3D9[m_eIndexFormat], D3DPOOL_DEFAULT, &m_pIndexBuffer, 0);
     S3D_VALIDATE_HRESULT(hr);
 
     Lock(BL_WRITE_ONLY);
@@ -101,7 +101,7 @@ void IndexBufferDX9::Bind()
     Unlock();
 }
 
-void IndexBufferDX9::Unbind()
+void IndexBufferD3D9::Unbind()
 {
     ULONG refCount = 0;
     if(m_pIndexBuffer)

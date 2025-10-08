@@ -1,5 +1,5 @@
 /**
- * @file        VertexFormatDX9.h
+ * @file        RendererD3D9On12.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,34 +20,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VERTEXFORMATDX9_H
-#define VERTEXFORMATDX9_H
+#ifndef RENDERERD3D9ON12_H
+#define RENDERERD3D9ON12_H
 
-#include <d3d9.h>
-#include "VertexFormat.h"
+
+#include "RendererD3D9.h"
+
+#if ENABLE_D3D9_ON_12
+
+#include <dxgi.h>
+#include <d3d9on12.h>
 
 namespace Synesthesia3D
 {
-    //This is the DX9 implementation of the VertexFormat class
-    class VertexFormatDX9 : public VertexFormat
+    class RendererD3D9On12 : public RendererD3D9
     {
-    public:
-        void    Enable();
-        void    Disable();
-        void    Update();
+    protected:
+        RendererD3D9On12();
+        ~RendererD3D9On12();
 
-        void    Bind();
-        void    Unbind();
+        IDirect3D9* CreateDriver();
+        void ValidateDevice();
 
     private:
-        VertexFormatDX9(const unsigned int attributeCount);
-        ~VertexFormatDX9();
+        const bool LoadDLLFunctions();
+        IDXGIAdapter1* CreateD3D12Adapter();
 
-        D3DVERTEXELEMENT9 m_pVertexElements[VF_MAX_ATTRIBUTES + 1];
-        IDirect3DVertexDeclaration9* m_pVertexDeclaration;
+        IDirect3D9* WINAPI Direct3DCreate9On12(UINT SDKVersion, D3D9ON12_ARGS* pOverrideList, UINT NumOverrideEntries);
 
-        friend class ResourceManagerDX9;
+        PFN_Direct3DCreate9On12 m_pfnDirect3DCreate9On12 = nullptr;
+
+        friend class Renderer;
     };
 }
 
-#endif //VERTEXFORMATDX9_H
+#endif //ENABLE_D3D9_ON_12
+
+#endif //RENDERD3D9ON12_H

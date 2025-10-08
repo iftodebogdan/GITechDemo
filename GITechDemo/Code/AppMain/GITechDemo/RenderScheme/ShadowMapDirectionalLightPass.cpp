@@ -41,7 +41,7 @@ using namespace GITechDemoApp;
 
 namespace GITechDemoApp
 {
-    // The vertices corresponding to DX9's clip space cuboid
+    // The vertices corresponding to D3D9's clip space cuboid
     // used when partitioning the view frustum for CSM
     const Vec4f cuboidVerts[] =
     {

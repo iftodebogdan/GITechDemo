@@ -1,5 +1,5 @@
 /**
- * @file        RendererDX9.h
+ * @file        RendererD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,8 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENDERERDX9_H
-#define RENDERERDX9_H
+#ifndef RENDERERD3D9_H
+#define RENDERERD3D9_H
 
 #ifdef _DEBUG
     #ifndef D3D_DEBUG_INFO
@@ -32,7 +32,7 @@
 #include <d3d9.h>
 
 #include "Renderer.h"
-#include "MappingsDX9.h"
+#include "MappingsD3D9.h"
 
 #ifdef _DEBUG
     #include <DxErr.h>
@@ -49,12 +49,13 @@
 
 namespace Synesthesia3D
 {
-    class ProfilerDX9;
+    class ProfilerD3D9;
 
-    class RendererDX9 : public Renderer
+    class RendererD3D9 : public Renderer
     {
-        RendererDX9();
-        ~RendererDX9();
+    protected:
+        RendererD3D9();
+        virtual ~RendererD3D9();
 
         void        CheckDeviceCaps();
         void        ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp);
@@ -67,8 +68,15 @@ namespace Synesthesia3D
         IDirect3DDevice9*       m_pd3dDevice;
         D3DPRESENT_PARAMETERS   m_ePresentParameters;
 
+        virtual IDirect3D9*     CreateDriver();
+        virtual void            ValidateDevice();
+
     public:
-        static  RendererDX9* const  GetInstance() { assert(ms_eAPI == API_DX9); return (RendererDX9*)ms_pInstance; };
+#if ENABLE_D3D9_ON_12
+        static  RendererD3D9* const  GetInstance() { assert(ms_eAPI == API_D3D9 || ms_eAPI == API_D3D9On12); return (RendererD3D9*)ms_pInstance; };
+#else
+        static  RendererD3D9* const  GetInstance() { assert(ms_eAPI == API_D3D9); return (RendererD3D9*)ms_pInstance; };
+#endif
 
         void        Initialize(void* hWnd);
 
@@ -94,10 +102,10 @@ namespace Synesthesia3D
         IDirect3DDevice9* const GetDevice() const { return m_pd3dDevice; };
         IDirect3D9* const       GetDriver() const { return m_pD3D; }
 
-        ProfilerDX9* const      GetProfiler() const { return (ProfilerDX9*)m_pProfiler; }
+        ProfilerD3D9* const      GetProfiler() const { return (ProfilerD3D9*)m_pProfiler; }
 
         friend class Renderer;
     };
 }
 
-#endif  //RENDERDX9_H
+#endif  //RENDERD3D9_H

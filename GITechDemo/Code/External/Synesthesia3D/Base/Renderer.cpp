@@ -30,7 +30,8 @@
 using namespace Synesthesia3D;
 
 #ifdef _WINDOWS
-#include "RendererDX9.h"
+#include "RendererD3D9.h"
+#include "RendererD3D9On12.h"
 #endif
 
 #include "RendererNULL.h"
@@ -74,10 +75,16 @@ void Renderer::CreateInstance(API api)
 
     switch (api)
     {
-        case API_DX9:
-            ms_pInstance = new RendererDX9;
-            ms_eAPI = API_DX9;
+        case API_D3D9:
+            ms_pInstance = new RendererD3D9;
+            ms_eAPI = API_D3D9;
             break;
+#if ENABLE_D3D9_ON_12
+        case API_D3D9On12:
+            ms_pInstance = new RendererD3D9On12;
+            ms_eAPI = API_D3D9On12;
+            break;
+#endif
         case API_NULL:
             ms_pInstance = new RendererNULL;
             ms_eAPI = API_NULL;
@@ -106,6 +113,24 @@ Renderer* const Renderer::GetInstance()
 const API Renderer::GetAPI()
 {
     return ms_eAPI;
+}
+
+const char* const Renderer::GetAPIName()
+{
+    switch (ms_eAPI)
+    {
+    case API_NULL:
+        return "Null";
+    case API_D3D9:
+        return "Direct3D 9";
+#if ENABLE_D3D9_ON_12
+    case API_D3D9On12:
+        return "Direct3D 9On12";
+#endif
+    default:
+        assert(false);
+        return "";
+    }
 }
 
 const Vec2i Renderer::GetDisplayOffset() const

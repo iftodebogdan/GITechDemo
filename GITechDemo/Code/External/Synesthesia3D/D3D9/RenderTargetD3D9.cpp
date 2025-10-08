@@ -1,5 +1,5 @@
 /**
- * @file        RenderTargetDX9.cpp
+ * @file        RenderTargetD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,17 +22,17 @@
 
 #include "stdafx.h"
 
-#include "RenderTargetDX9.h"
-#include "TextureDX9.h"
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
-#include "ProfilerDX9.h"
+#include "RenderTargetD3D9.h"
+#include "TextureD3D9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-IDirect3DSurface9* RenderTargetDX9::ms_pBBColorSurfBkp = nullptr;
-IDirect3DSurface9* RenderTargetDX9::ms_pBBDepthSurfBkp = nullptr;
+IDirect3DSurface9* RenderTargetD3D9::ms_pBBColorSurfBkp = nullptr;
+IDirect3DSurface9* RenderTargetD3D9::ms_pBBDepthSurfBkp = nullptr;
 
-RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
+RenderTargetD3D9::RenderTargetD3D9(const unsigned int targetCount, PixelFormat pixelFormat,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
     , m_pColorSurface(nullptr)
@@ -44,20 +44,20 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
 
     for (unsigned int i = 0; i < m_nTargetCount; i++)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pColorBuffer[i])->GetTextureD3D9();
         hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
         assert(SUCCEEDED(hr));
     }
 
     if (hasDepthStencil)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pDepthBuffer)->GetTextureD3D9();
         hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
         assert(SUCCEEDED(hr));
     }
 }
 
-RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
+RenderTargetD3D9::RenderTargetD3D9(const unsigned int targetCount, PixelFormat pixelFormat,
     const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat)
     , m_pColorSurface(nullptr)
@@ -66,7 +66,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount, PixelFormat pix
     RetrieveDirect3DSurfaces();
 }
 
-RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
+RenderTargetD3D9::RenderTargetD3D9(const unsigned int targetCount,
     PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
@@ -76,7 +76,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
     RetrieveDirect3DSurfaces();
 }
 
-RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
+RenderTargetD3D9::RenderTargetD3D9(const unsigned int targetCount,
     PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
     const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat)
@@ -86,7 +86,7 @@ RenderTargetDX9::RenderTargetDX9(const unsigned int targetCount,
     RetrieveDirect3DSurfaces();
 }
 
-void RenderTargetDX9::RetrieveDirect3DSurfaces()
+void RenderTargetD3D9::RetrieveDirect3DSurfaces()
 {
     HRESULT hr;
 
@@ -94,20 +94,20 @@ void RenderTargetDX9::RetrieveDirect3DSurfaces()
 
     for (unsigned int i = 0; i < m_nTargetCount; i++)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pColorBuffer[i])->GetTextureD3D9();
         hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
         assert(SUCCEEDED(hr));
     }
 
     if (m_bHasDepthStencil)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pDepthBuffer)->GetTextureD3D9();
         hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
         assert(SUCCEEDED(hr));
     }
 }
 
-RenderTargetDX9::~RenderTargetDX9()
+RenderTargetD3D9::~RenderTargetD3D9()
 {
     Unbind();
 
@@ -118,9 +118,9 @@ RenderTargetDX9::~RenderTargetDX9()
     }
 }
 
-void RenderTargetDX9::Enable()
+void RenderTargetD3D9::Enable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
     // Make a backup copy of the pointers to the
@@ -150,14 +150,14 @@ void RenderTargetDX9::Enable()
     RenderTarget::Enable();
 }
 
-void RenderTargetDX9::Disable()
+void RenderTargetD3D9::Disable()
 {
     RenderTarget::Disable();
 
     if (!GetActiveRenderTarget())
     {
         // No more render targets on the stack, set the back buffer
-        IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+        IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
         HRESULT hr;
 
         // This call restores the viewport automatically
@@ -186,14 +186,14 @@ void RenderTargetDX9::Disable()
     }
 }
 
-void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture)
+void RenderTargetD3D9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture* texture)
 {
     assert(ms_pBBColorSurfBkp == nullptr);
     assert(colorBufferIdx >= 0 && colorBufferIdx < m_nTargetCount);
     if (colorBufferIdx < 0 && colorBufferIdx >= m_nTargetCount)
         return;
 
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
     // Validate texture
@@ -220,7 +220,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
 
     // Create a temporary texture in system memory
     IDirect3DTexture9* tempTex = nullptr;
-    hr = device->CreateTexture(GetWidth(), GetHeight(), 0, 0, PixelFormatDX9[GetPixelFormat()], D3DPOOL_SYSTEMMEM, &tempTex, NULL);
+    hr = device->CreateTexture(GetWidth(), GetHeight(), 0, 0, PixelFormatD3D9[GetPixelFormat()], D3DPOOL_SYSTEMMEM, &tempTex, NULL);
     assert(SUCCEEDED(hr));
 
     // Get the surface
@@ -267,7 +267,7 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
     //for (unsigned int i = 0, n = texture->GetMipCount(); i < n; i++)
     //{
     //  IDirect3DSurface9* destSurface = 0;
-    //  hr = ((IDirect3DTexture9*)((TextureDX9*)texture)->GetTextureDX9())->GetSurfaceLevel(i, &destSurface);
+    //  hr = ((IDirect3DTexture9*)((TextureD3D9*)texture)->GetTextureD3D9())->GetSurfaceLevel(i, &destSurface);
     //  assert(SUCCEEDED(hr));
     //
     //  hr = device->StretchRect(m_pColorSurface[colorBufferIdx], NULL, destSurface, NULL, D3DTEXF_LINEAR);
@@ -281,13 +281,13 @@ void RenderTargetDX9::CopyColorBuffer(const unsigned int colorBufferIdx, Texture
     POP_PROFILE_MARKER();
 }
 
-void RenderTargetDX9::Bind()
+void RenderTargetD3D9::Bind()
 {
     HRESULT hr;
 
     for (unsigned int i = 0; i < m_nTargetCount; i++)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pColorBuffer[i])->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pColorBuffer[i])->GetTextureD3D9();
         if (dxTex)
         {
             hr = dxTex->GetSurfaceLevel(0, &m_pColorSurface[i]);
@@ -297,7 +297,7 @@ void RenderTargetDX9::Bind()
 
     if (m_bHasDepthStencil)
     {
-        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureDX9*)m_pDepthBuffer)->GetTextureDX9();
+        IDirect3DTexture9* dxTex = (IDirect3DTexture9*)((TextureD3D9*)m_pDepthBuffer)->GetTextureD3D9();
         if (dxTex)
         {
             hr = dxTex->GetSurfaceLevel(0, &m_pDepthSurface);
@@ -306,7 +306,7 @@ void RenderTargetDX9::Bind()
     }
 }
 
-void RenderTargetDX9::Unbind()
+void RenderTargetD3D9::Unbind()
 {
     unsigned int refCount = 0;
     for (unsigned int i = 0; i < m_nTargetCount; i++)
@@ -316,7 +316,7 @@ void RenderTargetDX9::Unbind()
             refCount = m_pColorSurface[i]->Release();
             m_pColorSurface[i] = nullptr;
         }
-        // Inconsistent between the retail and debug DX9 runtimes
+        // Inconsistent between the retail and debug D3D9 runtimes
         //assert(refCount == 1);
     }
     
@@ -325,6 +325,6 @@ void RenderTargetDX9::Unbind()
         refCount = m_pDepthSurface->Release();
         m_pDepthSurface = nullptr;
     }
-    // Inconsistent between the retail and debug DX9 runtimes
+    // Inconsistent between the retail and debug D3D9 runtimes
     //assert(refCount == 1);
 }

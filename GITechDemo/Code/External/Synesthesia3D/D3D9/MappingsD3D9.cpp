@@ -1,5 +1,5 @@
 /**
- * @file        MappingsDX9.cpp
+ * @file        MappingsD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,12 +22,12 @@
 
 #include "stdafx.h"
 
-#include "MappingsDX9.h"
+#include "MappingsD3D9.h"
 
 namespace Synesthesia3D
 {
     //Translates buffer usage flags from platform independent format to D3D9 format
-    const DWORD BufferUsageDX9[BU_MAX] =
+    const DWORD BufferUsageD3D9[BU_MAX] =
     {
         0,                          // BU_NONE
         D3DUSAGE_WRITEONLY,         // BU_STATIC
@@ -38,7 +38,7 @@ namespace Synesthesia3D
     };
 
     //Translates buffer locking flags from platform independent format to D3D9 format
-    const DWORD BufferLockingDX9[BL_MAX] =
+    const DWORD BufferLockingD3D9[BL_MAX] =
     {
         D3DLOCK_READONLY,       // BL_READ_ONLY
         0,                      // BL_WRITE_ONLY
@@ -46,7 +46,7 @@ namespace Synesthesia3D
     };
 
     //Translates vertex attribute type flags from platform independent format to D3D9 format
-    const BYTE VertexAttributeTypeDX9[VAT_MAX] =
+    const BYTE VertexAttributeTypeD3D9[VAT_MAX] =
     {
         255,                        // VAT_NONE
         D3DDECLTYPE_FLOAT1,         // VAT_FLOAT1
@@ -61,7 +61,7 @@ namespace Synesthesia3D
     };
 
     //Translates vertex attribute semantic flags from platform independent format to D3D9 format
-    const BYTE VertexAttributeSemanticDX9[VAS_MAX] =
+    const BYTE VertexAttributeSemanticD3D9[VAS_MAX] =
     {
         255,                        // VAS_NONE
         D3DDECLUSAGE_POSITION,      // VAS_POSITION
@@ -76,13 +76,13 @@ namespace Synesthesia3D
         D3DDECLUSAGE_PSIZE          // VAS_PSIZE
     };
 
-    const D3DFORMAT IndexBufferFormatDX9[IBF_MAX] =
+    const D3DFORMAT IndexBufferFormatD3D9[IBF_MAX] =
     {
         D3DFMT_INDEX16,             // IBF_INDEX16
         D3DFMT_INDEX32              // IBF_INDEX32
     };
 
-    const D3DFORMAT PixelFormatDX9[PF_MAX] =
+    const D3DFORMAT PixelFormatD3D9[PF_MAX] =
     {
         (D3DFORMAT)MAKEFOURCC('N','U','L','L'), // PF_NONE
         D3DFMT_R5G6B5,                          // PF_R5G6B5
@@ -111,7 +111,7 @@ namespace Synesthesia3D
         (D3DFORMAT)MAKEFOURCC('I','N','T','Z'), // PF_INTZ
     };
 
-    const DWORD RenderStateMappingDX9[RS_MAX] =
+    const DWORD RenderStateMappingD3D9[RS_MAX] =
     {
         0,                          // BLEND
         D3DBLEND_ZERO,              // BLEND_ZERO
@@ -172,7 +172,7 @@ namespace Synesthesia3D
         0                           // FILL_END
     };
 
-    const DWORD TextureAddressingModeDX9[SAM_MAX] =
+    const DWORD TextureAddressingModeD3D9[SAM_MAX] =
     {
         0,                          // SAM_NONE
         D3DTADDRESS_CLAMP,          // SAM_CLAMP
@@ -181,7 +181,7 @@ namespace Synesthesia3D
         D3DTADDRESS_BORDER,         // SAM_BORDER
     };
     
-    const DWORD MinMagFilterDX9[SF_MAX] =
+    const DWORD MinMagFilterD3D9[SF_MAX] =
     {
         D3DTEXF_NONE,               // SF_NONE
         D3DTEXF_POINT,              // SF_MIN_MAG_POINT_MIP_NONE
@@ -192,7 +192,7 @@ namespace Synesthesia3D
         D3DTEXF_LINEAR              // SF_MIN_MAG_LINEAR_MIP_LINEAR
     };
     
-    const DWORD MipFilterDX9[SF_MAX] =
+    const DWORD MipFilterD3D9[SF_MAX] =
     {
         D3DTEXF_NONE,               // SF_NONE
         D3DTEXF_NONE,               // SF_MIN_MAG_POINT_MIP_NONE
@@ -203,7 +203,7 @@ namespace Synesthesia3D
         D3DTEXF_LINEAR              // SF_MIN_MAG_LINEAR_MIP_LINEAR
     };
 
-    const D3DRESOURCETYPE TextureTypeDX9[TT_MAX] =
+    const D3DRESOURCETYPE TextureTypeD3D9[TT_MAX] =
     {
         D3DRTYPE_TEXTURE,           // TT_1D
         D3DRTYPE_TEXTURE,           // TT_2D
@@ -211,7 +211,7 @@ namespace Synesthesia3D
         D3DRTYPE_CUBETEXTURE        // TT_CUBE
     };
 
-    const unsigned int CubeFaceIndexDX9[FACE_MAX] =
+    const unsigned int CubeFaceIndexD3D9[FACE_MAX] =
     {
         0,  // FACE_XNEG
         1,  // FACE_YPOS
@@ -225,11 +225,11 @@ namespace Synesthesia3D
     {
         for (unsigned int i = 0; i < SF_MAX; i++)
         {
-            if (min == MinMagFilterDX9[i] && mag == MinMagFilterDX9[i])
+            if (min == MinMagFilterD3D9[i] && mag == MinMagFilterD3D9[i])
             {
                 for (unsigned int j = 0; j < SF_MAX; j++)
                 {
-                    if (mip == MipFilterDX9[i])
+                    if (mip == MipFilterD3D9[i])
                         return (SamplerFilter)i;
                 }
             }
@@ -242,7 +242,7 @@ namespace Synesthesia3D
     {
         for (unsigned int i = 0; i < SAM_MAX; i++)
         {
-            if (TextureAddressingModeDX9[i] == sam)
+            if (TextureAddressingModeD3D9[i] == sam)
                 return (SamplerAddressingMode)i;
         }
 
@@ -253,7 +253,7 @@ namespace Synesthesia3D
     {
         for (unsigned int i = 0; i < PF_MAX; i++)
         {
-            if (PixelFormatDX9[i] == fmt)
+            if (PixelFormatD3D9[i] == fmt)
                 return (PixelFormat)i;
         }
 

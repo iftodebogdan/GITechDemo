@@ -1,5 +1,5 @@
 /**
- * @file        VertexBufferDX9.cpp
+ * @file        VertexBufferD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,16 +22,16 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
 
-#include "VertexFormatDX9.h"
-#include "VertexBufferDX9.h"
-#include "IndexBufferDX9.h"
-#include "ProfilerDX9.h"
+#include "VertexFormatD3D9.h"
+#include "VertexBufferD3D9.h"
+#include "IndexBufferD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-VertexBufferDX9::VertexBufferDX9(VertexFormatDX9* const vertexFormat, const unsigned int vertexCount, IndexBufferDX9* const indexBuffer, const BufferUsage usage)
+VertexBufferD3D9::VertexBufferD3D9(VertexFormatD3D9* const vertexFormat, const unsigned int vertexCount, IndexBufferD3D9* const indexBuffer, const BufferUsage usage)
     : VertexBuffer(vertexFormat, vertexCount, indexBuffer, usage)
     , m_pVertexBuffer(nullptr)
     , m_pTempBuffer(nullptr)
@@ -40,12 +40,12 @@ VertexBufferDX9::VertexBufferDX9(VertexFormatDX9* const vertexFormat, const unsi
         Bind();
 }
 
-VertexBufferDX9::~VertexBufferDX9()
+VertexBufferD3D9::~VertexBufferD3D9()
 {
     Unbind();
 }
 
-void VertexBufferDX9::Enable(const unsigned int offset)
+void VertexBufferD3D9::Enable(const unsigned int offset)
 {
     assert(offset < GetElementCount());
 
@@ -56,14 +56,14 @@ void VertexBufferDX9::Enable(const unsigned int offset)
     if (m_pIndexBuffer)
         m_pIndexBuffer->Enable();
 
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = device->SetStreamSource(0, m_pVertexBuffer, offset * m_nElementSize, m_pVertexFormat->GetStride());
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void VertexBufferDX9::Disable()
+void VertexBufferD3D9::Disable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
 #ifdef _DEBUG
@@ -90,15 +90,15 @@ void VertexBufferDX9::Disable()
     m_pVertexFormat->Disable();
 }
 
-void VertexBufferDX9::Lock(const BufferLocking lockMode)
+void VertexBufferD3D9::Lock(const BufferLocking lockMode)
 {
     //The pointer to the locked data is saved for future use
     assert(m_pTempBuffer == nullptr);
-    HRESULT hr = m_pVertexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingDX9[lockMode]);
+    HRESULT hr = m_pVertexBuffer->Lock(0, 0, &m_pTempBuffer, BufferLockingD3D9[lockMode]);
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void VertexBufferDX9::Unlock()
+void VertexBufferD3D9::Unlock()
 {
     //Unlock the vertex data
     assert(m_pTempBuffer != nullptr);
@@ -107,17 +107,17 @@ void VertexBufferDX9::Unlock()
     m_pTempBuffer = nullptr;
 }
 
-void VertexBufferDX9::Update()
+void VertexBufferD3D9::Update()
 {
     //Copy the local changes to our vertex buffer to where the locked data is
     assert(m_pTempBuffer != nullptr);
     memcpy(m_pTempBuffer, GetData(), GetSize());
 }
 
-void VertexBufferDX9::Bind()
+void VertexBufferD3D9::Bind()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
-    HRESULT hr = device->CreateVertexBuffer((UINT)m_nSize, BufferUsageDX9[m_eBufferUsage], 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
+    HRESULT hr = device->CreateVertexBuffer((UINT)m_nSize, BufferUsageD3D9[m_eBufferUsage], 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
     S3D_VALIDATE_HRESULT(hr);
 
     Lock(BL_WRITE_ONLY);
@@ -125,7 +125,7 @@ void VertexBufferDX9::Bind()
     Unlock();
 }
 
-void VertexBufferDX9::Unbind()
+void VertexBufferD3D9::Unbind()
 {
     ULONG refCount = 0;
     if(m_pVertexBuffer)

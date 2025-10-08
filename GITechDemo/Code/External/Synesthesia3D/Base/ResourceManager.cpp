@@ -174,6 +174,10 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
                 texFile.read((char*)&compressedBufferSize, sizeof(unsigned int));
                 texFile.read((char*)&decompressedBufferSize, sizeof(unsigned int));
 
+                S3D_DBGPRINT("Info: Loading texture %s (compressed size: %.3f KB, decompressed size: %.3f KB, %.2f%% compression ratio)\n",
+                    pathToFile, (float)compressedBufferSize / 1024.f, (float)decompressedBufferSize / 1024.f,
+                    (float)compressedBufferSize / (float)decompressedBufferSize * 100.f);
+
                 if (compressedBufferSize > 0 && compressedBufferSize <= LZ4_COMPRESSBOUND(LZ4_MAX_INPUT_SIZE) &&
                     decompressedBufferSize > 0 && decompressedBufferSize <= LZ4_MAX_INPUT_SIZE)
                 {
@@ -185,10 +189,8 @@ const unsigned int ResourceManager::CreateTexture(const char* pathToFile)
                     if (readBytes == compressedBufferSize)
                     {
                         imemstream  texBuffer(decompressedBuffer, decompressedBufferSize);
-                        //MUTEX_LOCK(TexMutex);
                         texIdx = CreateTexture(PF_NONE, TT_1D, 0, 0, 0, 0, BU_NONE);
                         GetTexture(texIdx)->m_szSourceFile = pathToFile;
-                        //MUTEX_UNLOCK(TexMutex);
                         texBuffer >> *GetTexture(texIdx);
                     }
                     else
@@ -245,6 +247,10 @@ const unsigned int ResourceManager::CreateModel(const char* pathToFile)
                 unsigned int compressedBufferSize = 0, decompressedBufferSize = 0;
                 modelFile.read((char*)&compressedBufferSize, sizeof(unsigned int));
                 modelFile.read((char*)&decompressedBufferSize, sizeof(unsigned int));
+
+                S3D_DBGPRINT("Info: Loading model %s (compressed size: %.3f KB, decompressed size: %.3f KB, %.2f%% compression ratio)\n",
+                    pathToFile, (float)compressedBufferSize / 1024.f, (float)decompressedBufferSize / 1024.f,
+                    (float)compressedBufferSize / (float)decompressedBufferSize * 100.f);
 
                 if (compressedBufferSize > 0 && compressedBufferSize <= LZ4_COMPRESSBOUND(LZ4_MAX_INPUT_SIZE) &&
                     decompressedBufferSize > 0 && decompressedBufferSize <= LZ4_MAX_INPUT_SIZE)

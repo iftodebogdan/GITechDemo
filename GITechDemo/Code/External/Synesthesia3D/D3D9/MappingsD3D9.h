@@ -1,5 +1,5 @@
 /**
- * @file        MappingsDX9.h
+ * @file        MappingsD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,8 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAPPINGSDX9_H
-#define MAPPINGSDX9_H
+#ifndef MAPPINGSD3D9_H
+#define MAPPINGSD3D9_H
 
 #include <d3d9.h>
 
@@ -30,22 +30,22 @@
 namespace Synesthesia3D
 {
     //These are used to translate platform independent flags to D3D9 format
-    extern const DWORD BufferUsageDX9[BU_MAX];
-    extern const DWORD BufferLockingDX9[BL_MAX];
-    extern const BYTE VertexAttributeTypeDX9[VAT_MAX];
-    extern const BYTE VertexAttributeSemanticDX9[VAS_MAX];
-    extern const D3DFORMAT IndexBufferFormatDX9[IBF_MAX];
-    extern const D3DFORMAT PixelFormatDX9[PF_MAX];
-    extern const DWORD RenderStateMappingDX9[RS_MAX];
-    extern const DWORD TextureAddressingModeDX9[SAM_MAX];
-    extern const DWORD MinMagFilterDX9[SF_MAX];
-    extern const DWORD MipFilterDX9[SF_MAX];
-    extern const D3DRESOURCETYPE TextureTypeDX9[TT_MAX];
-    extern const unsigned int CubeFaceIndexDX9[FACE_MAX];
+    extern const DWORD BufferUsageD3D9[BU_MAX];
+    extern const DWORD BufferLockingD3D9[BL_MAX];
+    extern const BYTE VertexAttributeTypeD3D9[VAT_MAX];
+    extern const BYTE VertexAttributeSemanticD3D9[VAS_MAX];
+    extern const D3DFORMAT IndexBufferFormatD3D9[IBF_MAX];
+    extern const D3DFORMAT PixelFormatD3D9[PF_MAX];
+    extern const DWORD RenderStateMappingD3D9[RS_MAX];
+    extern const DWORD TextureAddressingModeD3D9[SAM_MAX];
+    extern const DWORD MinMagFilterD3D9[SF_MAX];
+    extern const DWORD MipFilterD3D9[SF_MAX];
+    extern const D3DRESOURCETYPE TextureTypeD3D9[TT_MAX];
+    extern const unsigned int CubeFaceIndexD3D9[FACE_MAX];
 
     const SamplerFilter         MatchFilterType(const DWORD min, const DWORD mag, const DWORD mip);
     const SamplerAddressingMode MatchAddressingMode(const DWORD sam);
     const PixelFormat           MatchPixelFormat(const D3DFORMAT fmt);
 }
 
-#endif //MAPPINGDX9_H
+#endif //MAPPINGD3D9_H

@@ -1,5 +1,5 @@
 /**
- * @file        ProfilerDX9.cpp
+ * @file        ProfilerD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,23 +22,23 @@
 
 #include "stdafx.h"
 
-#include "ProfilerDX9.h"
-#include "RendererDX9.h"
+#include "ProfilerD3D9.h"
+#include "RendererD3D9.h"
 using namespace Synesthesia3D;
 
-UINT64 ProfilerDX9::ms_nFirstQueryBeginTime = 0;
+UINT64 ProfilerD3D9::ms_nFirstQueryBeginTime = 0;
 
-ProfilerDX9::ProfilerDX9()
+ProfilerD3D9::ProfilerD3D9()
 {
 
 }
 
-ProfilerDX9::~ProfilerDX9()
+ProfilerD3D9::~ProfilerD3D9()
 {
 
 }
 
-void ProfilerDX9::PushProfileMarker(const char* const label, const bool issueGPUQuery)
+void ProfilerD3D9::PushProfileMarker(const char* const label, const bool issueGPUQuery)
 {
 #if ENABLE_PROFILE_MARKERS
     const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
@@ -53,27 +53,27 @@ void ProfilerDX9::PushProfileMarker(const char* const label, const bool issueGPU
     if (m_arrD3DDisjointQuery.size() > 0)
     {
         // Issue GPU begin query for current label
-        GPUProfileMarkerResultDX9* marker = nullptr;
-        if (issueGPUQuery && RendererDX9::GetInstance()->GetDeviceState() != DS_NOT_READY)
+        GPUProfileMarkerResultD3D9* marker = nullptr;
+        if (issueGPUQuery && RendererD3D9::GetInstance()->GetDeviceState() != DS_NOT_READY)
         {
-            marker = new GPUProfileMarkerResultDX9(label, m_arrD3DDisjointQuery.back());
+            marker = new GPUProfileMarkerResultD3D9(label, m_arrD3DDisjointQuery.back());
             m_arrGPUProfileMarkerResult.push_back(marker);
         }
-        m_arrGPUProfileMarkerDX9Stack.push(marker);
+        m_arrGPUProfileMarkerD3D9Stack.push(marker);
     }
 #endif
 }
 
-void ProfilerDX9::PopProfileMarker()
+void ProfilerD3D9::PopProfileMarker()
 {
 #if ENABLE_PROFILE_MARKERS
     const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
 
-    if (m_arrGPUProfileMarkerDX9Stack.size() > 0)
+    if (m_arrGPUProfileMarkerD3D9Stack.size() > 0)
     {
         // Issue GPU end query for current label
-        GPUProfileMarkerResultDX9* marker = m_arrGPUProfileMarkerDX9Stack.top();
-        m_arrGPUProfileMarkerDX9Stack.pop();
+        GPUProfileMarkerResultD3D9* marker = m_arrGPUProfileMarkerD3D9Stack.top();
+        m_arrGPUProfileMarkerD3D9Stack.pop();
         if (marker)
             marker->IssueEndQuery();
     }
@@ -83,15 +83,15 @@ void ProfilerDX9::PopProfileMarker()
 #endif
 }
 
-void ProfilerDX9::IssueDisjointQueryBegin()
+void ProfilerD3D9::IssueDisjointQueryBegin()
 {
 #if ENABLE_PROFILE_MARKERS
     m_arrD3DDisjointQuery.push_back(DisjointQuery());
 
-    HRESULT hr = RendererDX9::GetInstance()->GetDevice()->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &m_arrD3DDisjointQuery.back().disjointQuery);
+    HRESULT hr = RendererD3D9::GetInstance()->GetDevice()->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &m_arrD3DDisjointQuery.back().disjointQuery);
     S3D_VALIDATE_HRESULT(hr);
 
-    hr = RendererDX9::GetInstance()->GetDevice()->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &m_arrD3DDisjointQuery.back().freqQuery);
+    hr = RendererD3D9::GetInstance()->GetDevice()->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &m_arrD3DDisjointQuery.back().freqQuery);
     S3D_VALIDATE_HRESULT(hr);
 
     if (SUCCEEDED(hr))
@@ -100,7 +100,7 @@ void ProfilerDX9::IssueDisjointQueryBegin()
 #endif
 }
 
-void ProfilerDX9::IssueDisjointQueryEnd()
+void ProfilerD3D9::IssueDisjointQueryEnd()
 {
 #if ENABLE_PROFILE_MARKERS
     HRESULT hr = m_arrD3DDisjointQuery.back().disjointQuery->Issue(D3DISSUE_END);
@@ -113,7 +113,7 @@ void ProfilerDX9::IssueDisjointQueryEnd()
 #endif
 }
 
-void ProfilerDX9::ReleaseGPUProfileMarkerResults()
+void ProfilerD3D9::ReleaseGPUProfileMarkerResults()
 {
 #if ENABLE_PROFILE_MARKERS
     Profiler::ReleaseGPUProfileMarkerResults();
@@ -128,7 +128,7 @@ void ProfilerDX9::ReleaseGPUProfileMarkerResults()
 #endif
 }
 
-void ProfilerDX9::UpdateGPUProfileMarkerResults()
+void ProfilerD3D9::UpdateGPUProfileMarkerResults()
 {
 #if ENABLE_PROFILE_MARKERS
     // Update disjoint queries and their respective timestamp queries
@@ -146,7 +146,7 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
                 // Disjoint timestamps: remove them
                 for (unsigned int j = 0; j < m_arrGPUProfileMarkerResult.size(); j++)
                 {
-                    GPUProfileMarkerResultDX9* result = (GPUProfileMarkerResultDX9*)m_arrGPUProfileMarkerResult[j];
+                    GPUProfileMarkerResultD3D9* result = (GPUProfileMarkerResultD3D9*)m_arrGPUProfileMarkerResult[j];
                     if (result && result->m_tD3DDisjointQuery.disjointQuery == djQuery)
                     {
                         delete result;
@@ -172,7 +172,7 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
                 // Valid timestamps: update them
                 for (unsigned int j = 0; j < m_arrGPUProfileMarkerResult.size(); j++)
                 {
-                    GPUProfileMarkerResultDX9* result = (GPUProfileMarkerResultDX9*)m_arrGPUProfileMarkerResult[j];
+                    GPUProfileMarkerResultD3D9* result = (GPUProfileMarkerResultD3D9*)m_arrGPUProfileMarkerResult[j];
                     if (result && result->m_eStatus == GPUProfileMarkerResult::GPMRS_ISSUED && result->m_tD3DDisjointQuery.disjointQuery == djQuery)
                     {
                         isOldDisjointQuery = false;
@@ -221,7 +221,7 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
                         LPDIRECT3DQUERY9 oldFreqQuery = m_arrD3DDisjointQuery[j].freqQuery;
                         for (unsigned int k = 0; k < (unsigned int)m_arrGPUProfileMarkerResult.size(); k++)
                         {
-                            GPUProfileMarkerResultDX9* result = (GPUProfileMarkerResultDX9*)m_arrGPUProfileMarkerResult[k];
+                            GPUProfileMarkerResultD3D9* result = (GPUProfileMarkerResultD3D9*)m_arrGPUProfileMarkerResult[k];
                             if (result && result->m_tD3DDisjointQuery.disjointQuery == oldDjQuery)
                             {
                                 delete result;
@@ -245,7 +245,7 @@ void ProfilerDX9::UpdateGPUProfileMarkerResults()
 #endif
 }
 
-GPUProfileMarkerResultDX9::GPUProfileMarkerResultDX9(const char* const label, DisjointQuery disjointQuery)
+GPUProfileMarkerResultD3D9::GPUProfileMarkerResultD3D9(const char* const label, DisjointQuery disjointQuery)
     : GPUProfileMarkerResult(label)
     , m_pD3DBeginQuery(nullptr)
     , m_pD3DEndQuery(nullptr)
@@ -253,7 +253,7 @@ GPUProfileMarkerResultDX9::GPUProfileMarkerResultDX9(const char* const label, Di
 {
 #if ENABLE_PROFILE_MARKERS
     HRESULT hr = E_FAIL;
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     if (device)
     {
@@ -267,7 +267,7 @@ GPUProfileMarkerResultDX9::GPUProfileMarkerResultDX9(const char* const label, Di
 #endif
 }
 
-GPUProfileMarkerResultDX9::~GPUProfileMarkerResultDX9()
+GPUProfileMarkerResultD3D9::~GPUProfileMarkerResultD3D9()
 {
     if (m_pD3DBeginQuery)
         m_pD3DBeginQuery->Release();
@@ -275,11 +275,11 @@ GPUProfileMarkerResultDX9::~GPUProfileMarkerResultDX9()
         m_pD3DEndQuery->Release();
 }
 
-void GPUProfileMarkerResultDX9::IssueEndQuery()
+void GPUProfileMarkerResultD3D9::IssueEndQuery()
 {
 #if ENABLE_PROFILE_MARKERS
     HRESULT hr = E_FAIL;
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     if (device)
     {

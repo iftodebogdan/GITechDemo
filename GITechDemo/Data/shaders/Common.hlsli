@@ -30,7 +30,7 @@
 #endif // WIN32
 #define VERTEX  // defined for vertex shader HLSL code
 #define PIXEL   // defined for pixel shader HLSL code
-#define DX9     // defined for HLSL code when compiled for use with D3D9 API
+#define D3D9    // defined for HLSL code when compiled for use with D3D9 API
 #endif // __INTELLISENSE__
 
 #ifdef HLSL
@@ -80,7 +80,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // These typedefs help with achieving the same memory layout between HLSL and CPP structs.  //
 // They are not required if you don't use structs.                                          //
-// More details in ShaderProgramDX9::GetConstantType() in Synesthesia3D project.            //
+// More details in ShaderProgramD3D9::GetConstantType() in Synesthesia3D project.           //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef float  GPU_bool;

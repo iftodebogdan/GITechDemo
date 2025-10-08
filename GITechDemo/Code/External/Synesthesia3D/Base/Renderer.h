@@ -73,6 +73,7 @@ namespace Synesthesia3D
          * @brief   Retrieves the API/platform of the current render context.
          */
         static  SYNESTHESIA3D_DLL       const API       GetAPI();
+        static  SYNESTHESIA3D_DLL   const char* const   GetAPIName();
 
         /**
          * @brief   Initializes the device.

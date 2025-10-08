@@ -1,5 +1,5 @@
 /**
- * @file        SamplerStateDX9.h
+ * @file        SamplerStateD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,8 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAMPLERSTATEDX9_H
-#define SAMPLERSTATEDX9_H
+#ifndef SAMPLERSTATED3D9_H
+#define SAMPLERSTATED3D9_H
 
 #include "SamplerState.h"
 
@@ -29,26 +29,26 @@ enum _D3DTEXTUREFILTERTYPE;
 
 namespace Synesthesia3D
 {
-    class RendererDX9;
+    class RendererD3D9;
 
-    class SamplerStateDX9 : public SamplerState
+    class SamplerStateD3D9 : public SamplerState
     {
     public:
         void    Reset();
 
     protected:
-        SamplerStateDX9();
-        ~SamplerStateDX9();
+        SamplerStateD3D9();
+        ~SamplerStateD3D9();
 
         const bool  Flush();
 
         _D3DTEXTUREFILTERTYPE   m_eCurrentMinFilter[MAX_NUM_PSAMPLERS];
 
         // Local sampler states, sync'ed with underlying API
-        SamplerStateDesc m_tCurrentStateDX9[MAX_NUM_PSAMPLERS];
+        SamplerStateDesc m_tCurrentStateD3D9[MAX_NUM_PSAMPLERS];
 
-        friend class RendererDX9;
+        friend class RendererD3D9;
     };
 }
 
-#endif // SAMPLERSTATEDX9_H
+#endif // SAMPLERSTATED3D9_H

@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="DX9">
-      <UniqueIdentifier>{0df6a9e4-5be6-4ad9-ad5c-4b4f5da98b70}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{27b4e4cc-0c1e-4081-b37c-515005d8dcfd}</UniqueIdentifier>
     </Filter>
@@ -31,96 +28,108 @@
     <Filter Include="External\vld\bin\x64">
       <UniqueIdentifier>{ea17717f-5d5c-4452-8a8e-f17056951cac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DX9">
+    <Filter Include="D3D9">
+      <UniqueIdentifier>{0df6a9e4-5be6-4ad9-ad5c-4b4f5da98b70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\D3D9">
       <UniqueIdentifier>{e0e7a697-f3d9-4e2c-b4e1-a41776b7cf17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DX9\include">
+    <Filter Include="External\D3D9\include">
       <UniqueIdentifier>{a71fe817-cd4e-4c52-9848-537ca72ac32f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DX9\lib">
+    <Filter Include="External\D3D9\lib">
       <UniqueIdentifier>{a7221d65-bd30-4898-b441-20270d07308a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DX9\lib\x86">
+    <Filter Include="External\D3D9\lib\x86">
       <UniqueIdentifier>{763a1605-6feb-4069-a81b-cec0eaaa6c56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\DX9\lib\x64">
+    <Filter Include="External\D3D9\lib\x64">
       <UniqueIdentifier>{ee40dfac-f7b2-4600-b43f-2d2cecb555e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\D3D9On12">
+      <UniqueIdentifier>{8077a819-23e7-492b-baaf-14602d9d0b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\D3D9On12\include">
+      <UniqueIdentifier>{f43d7195-9449-4edb-b967-0870a8e24d97}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DX9\MappingsDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\MappingsD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\ProfilerDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\ProfilerD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\RenderStateDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\RenderStateD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\RenderTargetDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\RenderTargetD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\ResourceManagerDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\ResourceManagerD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\SamplerStateDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\SamplerStateD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\ShaderProgramDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\ShaderProgramD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\TextureDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\TextureD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\VertexFormatDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\VertexFormatD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\RendererDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\RendererD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\IndexBufferDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\IndexBufferD3D9.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
-    <ClCompile Include="DX9\VertexBufferDX9.cpp">
-      <Filter>DX9</Filter>
+    <ClCompile Include="D3D9\VertexBufferD3D9.cpp">
+      <Filter>D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D9\RendererD3D9On12.cpp">
+      <Filter>D3D9</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DX9\MappingsDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\MappingsD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\ProfilerDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\ProfilerD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\RenderStateDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\RenderStateD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\RenderTargetDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\RenderTargetD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\ResourceManagerDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\ResourceManagerD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\SamplerStateDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\SamplerStateD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\ShaderProgramDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\ShaderProgramD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\TextureDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\TextureD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\VertexFormatDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\VertexFormatD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\RendererDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\RendererD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\IndexBufferDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\IndexBufferD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="DX9\VertexBufferDX9.h">
-      <Filter>DX9</Filter>
+    <ClInclude Include="D3D9\VertexBufferD3D9.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
     <ClInclude Include="External\vld\include\vld.h">
       <Filter>External\vld\include</Filter>
@@ -128,47 +137,53 @@
     <ClInclude Include="External\vld\include\vld_def.h">
       <Filter>External\vld\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\DxErr.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\DxErr.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3d9.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3d9.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3d9caps.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3d9caps.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3d9types.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3d9types.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9anim.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9anim.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9core.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9core.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9effect.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9effect.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9math.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9math.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9mesh.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9mesh.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9shader.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9shader.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9shape.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9shape.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9tex.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9tex.h">
+      <Filter>External\D3D9\include</Filter>
     </ClInclude>
-    <ClInclude Include="External\DX9\include\d3dx9xof.h">
-      <Filter>External\DX9\include</Filter>
+    <ClInclude Include="External\D3D9\include\d3dx9xof.h">
+      <Filter>External\D3D9\include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\D3D9On12\include\d3d9on12.h">
+      <Filter>External\D3D9On12\include</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D9\RendererD3D9On12.h">
+      <Filter>D3D9</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -178,29 +193,29 @@
     <Library Include="External\vld\lib\x64\vld.lib">
       <Filter>External\vld\lib\x64</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x86\d3d9.lib">
-      <Filter>External\DX9\lib\x86</Filter>
+    <Library Include="External\D3D9\lib\x86\d3d9.lib">
+      <Filter>External\D3D9\lib\x86</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x86\d3dx9.lib">
-      <Filter>External\DX9\lib\x86</Filter>
+    <Library Include="External\D3D9\lib\x86\d3dx9.lib">
+      <Filter>External\D3D9\lib\x86</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x86\d3dx9d.lib">
-      <Filter>External\DX9\lib\x86</Filter>
+    <Library Include="External\D3D9\lib\x86\d3dx9d.lib">
+      <Filter>External\D3D9\lib\x86</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x86\DxErr.lib">
-      <Filter>External\DX9\lib\x86</Filter>
+    <Library Include="External\D3D9\lib\x86\DxErr.lib">
+      <Filter>External\D3D9\lib\x86</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x64\d3d9.lib">
-      <Filter>External\DX9\lib\x64</Filter>
+    <Library Include="External\D3D9\lib\x64\d3d9.lib">
+      <Filter>External\D3D9\lib\x64</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x64\d3dx9.lib">
-      <Filter>External\DX9\lib\x64</Filter>
+    <Library Include="External\D3D9\lib\x64\d3dx9.lib">
+      <Filter>External\D3D9\lib\x64</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x64\d3dx9d.lib">
-      <Filter>External\DX9\lib\x64</Filter>
+    <Library Include="External\D3D9\lib\x64\d3dx9d.lib">
+      <Filter>External\D3D9\lib\x64</Filter>
     </Library>
-    <Library Include="External\DX9\lib\x64\DxErr.lib">
-      <Filter>External\DX9\lib\x64</Filter>
+    <Library Include="External\D3D9\lib\x64\DxErr.lib">
+      <Filter>External\D3D9\lib\x64</Filter>
     </Library>
   </ItemGroup>
   <ItemGroup>
@@ -222,8 +237,8 @@
     <None Include="External\vld\bin\x64\Microsoft.DTfW.DHL.manifest">
       <Filter>External\vld\bin\x64</Filter>
     </None>
-    <None Include="External\DX9\include\d3dx9math.inl">
-      <Filter>External\DX9\include</Filter>
+    <None Include="External\D3D9\include\d3dx9math.inl">
+      <Filter>External\D3D9\include</Filter>
     </None>
   </ItemGroup>
 </Project>

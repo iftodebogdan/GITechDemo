@@ -418,7 +418,7 @@ namespace GITechDemoApp
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LinearFullDepthBuffer, PF_R32F, 1.f, 1.f, PF_NONE);
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(LinearQuarterDepthBuffer, PF_R32F, 0.5f, 0.5f, PF_NONE);
 
-    // Shadow map for the directional light (the dummy color buffer is required because of DX9 limitations
+    // Shadow map for the directional light (the dummy color buffer is required because of D3D9 limitations
     CREATE_STATIC_RENDER_TARGET_OBJECT(ShadowMapDir, PF_NONE, RenderConfig::CascadedShadowMaps::ShadowMapSize[0], RenderConfig::CascadedShadowMaps::ShadowMapSize[1], PF_INTZ);
 
     // Render target in which we accumulate the light contribution from all light sources (also known as the scene color buffer)

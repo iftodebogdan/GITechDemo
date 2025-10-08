@@ -27,63 +27,66 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DX9\IndexBufferDX9.cpp" />
-    <ClCompile Include="DX9\MappingsDX9.cpp" />
-    <ClCompile Include="DX9\ProfilerDX9.cpp" />
-    <ClCompile Include="DX9\RendererDX9.cpp" />
-    <ClCompile Include="DX9\RenderStateDX9.cpp" />
-    <ClCompile Include="DX9\RenderTargetDX9.cpp" />
-    <ClCompile Include="DX9\ResourceManagerDX9.cpp" />
-    <ClCompile Include="DX9\SamplerStateDX9.cpp" />
-    <ClCompile Include="DX9\ShaderProgramDX9.cpp" />
-    <ClCompile Include="DX9\TextureDX9.cpp" />
-    <ClCompile Include="DX9\VertexBufferDX9.cpp" />
-    <ClCompile Include="DX9\VertexFormatDX9.cpp" />
+    <ClCompile Include="D3D9\IndexBufferD3D9.cpp" />
+    <ClCompile Include="D3D9\MappingsD3D9.cpp" />
+    <ClCompile Include="D3D9\ProfilerD3D9.cpp" />
+    <ClCompile Include="D3D9\RendererD3D9.cpp" />
+    <ClCompile Include="D3D9\RendererD3D9On12.cpp" />
+    <ClCompile Include="D3D9\RenderStateD3D9.cpp" />
+    <ClCompile Include="D3D9\RenderTargetD3D9.cpp" />
+    <ClCompile Include="D3D9\ResourceManagerD3D9.cpp" />
+    <ClCompile Include="D3D9\SamplerStateD3D9.cpp" />
+    <ClCompile Include="D3D9\ShaderProgramD3D9.cpp" />
+    <ClCompile Include="D3D9\TextureD3D9.cpp" />
+    <ClCompile Include="D3D9\VertexBufferD3D9.cpp" />
+    <ClCompile Include="D3D9\VertexFormatD3D9.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DX9\IndexBufferDX9.h" />
-    <ClInclude Include="DX9\MappingsDX9.h" />
-    <ClInclude Include="DX9\ProfilerDX9.h" />
-    <ClInclude Include="DX9\RendererDX9.h" />
-    <ClInclude Include="DX9\RenderStateDX9.h" />
-    <ClInclude Include="DX9\RenderTargetDX9.h" />
-    <ClInclude Include="DX9\ResourceManagerDX9.h" />
-    <ClInclude Include="DX9\SamplerStateDX9.h" />
-    <ClInclude Include="DX9\ShaderProgramDX9.h" />
-    <ClInclude Include="DX9\TextureDX9.h" />
-    <ClInclude Include="DX9\VertexBufferDX9.h" />
-    <ClInclude Include="DX9\VertexFormatDX9.h" />
-    <ClInclude Include="External\DX9\include\d3d9.h" />
-    <ClInclude Include="External\DX9\include\d3d9caps.h" />
-    <ClInclude Include="External\DX9\include\d3d9types.h" />
-    <ClInclude Include="External\DX9\include\d3dx9.h" />
-    <ClInclude Include="External\DX9\include\d3dx9anim.h" />
-    <ClInclude Include="External\DX9\include\d3dx9core.h" />
-    <ClInclude Include="External\DX9\include\d3dx9effect.h" />
-    <ClInclude Include="External\DX9\include\d3dx9math.h" />
-    <ClInclude Include="External\DX9\include\d3dx9mesh.h" />
-    <ClInclude Include="External\DX9\include\d3dx9shader.h" />
-    <ClInclude Include="External\DX9\include\d3dx9shape.h" />
-    <ClInclude Include="External\DX9\include\d3dx9tex.h" />
-    <ClInclude Include="External\DX9\include\d3dx9xof.h" />
-    <ClInclude Include="External\DX9\include\DxErr.h" />
+    <ClInclude Include="D3D9\IndexBufferD3D9.h" />
+    <ClInclude Include="D3D9\MappingsD3D9.h" />
+    <ClInclude Include="D3D9\ProfilerD3D9.h" />
+    <ClInclude Include="D3D9\RendererD3D9.h" />
+    <ClInclude Include="D3D9\RendererD3D9On12.h" />
+    <ClInclude Include="D3D9\RenderStateD3D9.h" />
+    <ClInclude Include="D3D9\RenderTargetD3D9.h" />
+    <ClInclude Include="D3D9\ResourceManagerD3D9.h" />
+    <ClInclude Include="D3D9\SamplerStateD3D9.h" />
+    <ClInclude Include="D3D9\ShaderProgramD3D9.h" />
+    <ClInclude Include="D3D9\TextureD3D9.h" />
+    <ClInclude Include="D3D9\VertexBufferD3D9.h" />
+    <ClInclude Include="D3D9\VertexFormatD3D9.h" />
+    <ClInclude Include="External\D3D9On12\include\d3d9on12.h" />
+    <ClInclude Include="External\D3D9\include\d3d9.h" />
+    <ClInclude Include="External\D3D9\include\d3d9caps.h" />
+    <ClInclude Include="External\D3D9\include\d3d9types.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9anim.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9core.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9effect.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9math.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9mesh.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9shader.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9shape.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9tex.h" />
+    <ClInclude Include="External\D3D9\include\d3dx9xof.h" />
+    <ClInclude Include="External\D3D9\include\DxErr.h" />
     <ClInclude Include="External\vld\include\vld.h" />
     <ClInclude Include="External\vld\include\vld_def.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="External\DX9\lib\x64\d3d9.lib" />
-    <Library Include="External\DX9\lib\x64\d3dx9.lib" />
-    <Library Include="External\DX9\lib\x64\d3dx9d.lib" />
-    <Library Include="External\DX9\lib\x64\DxErr.lib" />
-    <Library Include="External\DX9\lib\x86\d3d9.lib" />
-    <Library Include="External\DX9\lib\x86\d3dx9.lib" />
-    <Library Include="External\DX9\lib\x86\d3dx9d.lib" />
-    <Library Include="External\DX9\lib\x86\DxErr.lib" />
+    <Library Include="External\D3D9\lib\x64\d3d9.lib" />
+    <Library Include="External\D3D9\lib\x64\d3dx9.lib" />
+    <Library Include="External\D3D9\lib\x64\d3dx9d.lib" />
+    <Library Include="External\D3D9\lib\x64\DxErr.lib" />
+    <Library Include="External\D3D9\lib\x86\d3d9.lib" />
+    <Library Include="External\D3D9\lib\x86\d3dx9.lib" />
+    <Library Include="External\D3D9\lib\x86\d3dx9d.lib" />
+    <Library Include="External\D3D9\lib\x86\DxErr.lib" />
     <Library Include="External\vld\lib\x64\vld.lib" />
     <Library Include="External\vld\lib\x86\vld.lib" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="External\DX9\include\d3dx9math.inl" />
+    <None Include="External\D3D9\include\d3dx9math.inl" />
     <None Include="External\vld\bin\x64\dbghelp.dll" />
     <None Include="External\vld\bin\x64\vld_x64.dll" />
     <None Include="External\vld\bin\x86\dbghelp.dll" />
@@ -231,13 +234,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -264,13 +267,13 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -300,7 +303,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -308,7 +311,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -326,7 +329,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -335,7 +338,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -353,7 +356,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -361,7 +364,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
@@ -379,7 +382,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)DX9;$(ProjectDir)NULL;$(ProjectDir)External\DX9\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -388,7 +391,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\DX9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent />

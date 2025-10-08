@@ -1,5 +1,5 @@
 /**
- * @file        ResourceManagerDX9.cpp
+ * @file        ResourceManagerD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,28 +22,28 @@
 
 #include "stdafx.h"
 
-#include "VertexFormatDX9.h"
-#include "IndexBufferDX9.h"
-#include "VertexBufferDX9.h"
-#include "ShaderProgramDX9.h"
-#include "TextureDX9.h"
-#include "RenderTargetDX9.h"
+#include "VertexFormatD3D9.h"
+#include "IndexBufferD3D9.h"
+#include "VertexBufferD3D9.h"
+#include "ShaderProgramD3D9.h"
+#include "TextureD3D9.h"
+#include "RenderTargetD3D9.h"
 #include "Renderer.h"
-#include "ResourceManagerDX9.h"
-#include "ProfilerDX9.h"
+#include "ResourceManagerD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-const unsigned int ResourceManagerDX9::CreateVertexFormat(const unsigned int attributeCount)
+const unsigned int ResourceManagerD3D9::CreateVertexFormat(const unsigned int attributeCount)
 {
-    VertexFormat* const vf = new VertexFormatDX9(attributeCount);
+    VertexFormat* const vf = new VertexFormatD3D9(attributeCount);
     return AddVertexFormat(vf);
 }
 
-const unsigned int ResourceManagerDX9::CreateVertexFormat(
+const unsigned int ResourceManagerD3D9::CreateVertexFormat(
     const unsigned int attributeCount, const VertexAttributeSemantic semantic,
     const VertexAttributeType type, const unsigned int semanticIdx, ...)
 {
-    VertexFormat* vf = new VertexFormatDX9(attributeCount);
+    VertexFormat* vf = new VertexFormatD3D9(attributeCount);
     unsigned int offset = 0;
 
     vf->SetAttribute(0, offset, semantic, type, semanticIdx);
@@ -67,85 +67,85 @@ const unsigned int ResourceManagerDX9::CreateVertexFormat(
     return AddVertexFormat(vf);
 }
 
-const unsigned int ResourceManagerDX9::CreateIndexBuffer(
+const unsigned int ResourceManagerD3D9::CreateIndexBuffer(
     const unsigned int indexCount, const IndexBufferFormat indexFormat,
     const BufferUsage usage)
 {
-    IndexBuffer* ib = new IndexBufferDX9(indexCount, indexFormat, usage);
+    IndexBuffer* ib = new IndexBufferD3D9(indexCount, indexFormat, usage);
     return AddIndexBuffer(ib);
 }
 
-const unsigned int ResourceManagerDX9::CreateVertexBuffer(
+const unsigned int ResourceManagerD3D9::CreateVertexBuffer(
     VertexFormat* const vertexFormat, const unsigned int vertexCount,
     IndexBuffer* const indexBuffer, const BufferUsage usage)
 {
-    VertexBuffer* vb = new VertexBufferDX9((VertexFormatDX9*)vertexFormat, vertexCount, (IndexBufferDX9*)indexBuffer, usage);
+    VertexBuffer* vb = new VertexBufferD3D9((VertexFormatD3D9*)vertexFormat, vertexCount, (IndexBufferD3D9*)indexBuffer, usage);
     return AddVertexBuffer(vb);
 }
 
-const unsigned int ResourceManagerDX9::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
+const unsigned int ResourceManagerD3D9::CreateShaderProgram(const char* filePath, const ShaderProgramType programType, const char* entryPoint)
 {
-    ShaderProgramDX9* sp = new ShaderProgramDX9(programType);
+    ShaderProgramD3D9* sp = new ShaderProgramD3D9(programType);
     sp->Compile(filePath, entryPoint);
     return AddShaderProgram(sp);
 }
 
-const unsigned int ResourceManagerDX9::CreateTexture(
+const unsigned int ResourceManagerD3D9::CreateTexture(
     const PixelFormat pixelFormat, const TextureType texType,
     const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
     const unsigned int mipCount, const BufferUsage usage)
 {
-    Texture* tex = new TextureDX9(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
+    Texture* tex = new TextureD3D9(pixelFormat, texType, sizeX, sizeY, sizeZ, mipCount, usage);
     return AddTexture(tex);
 }
 
-const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+const unsigned int ResourceManagerD3D9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-    RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
+    RenderTarget* rt = new RenderTargetD3D9(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
     return AddRenderTarget(rt);
 }
 
-const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
+const unsigned int ResourceManagerD3D9::CreateRenderTarget(const unsigned int targetCount, PixelFormat pixelFormat,
     const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-    RenderTarget* rt = new RenderTargetDX9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
+    RenderTarget* rt = new RenderTargetD3D9(targetCount, pixelFormat, widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
     return AddRenderTarget(rt);
 }
 
-const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount,
+const unsigned int ResourceManagerD3D9::CreateRenderTarget(const unsigned int targetCount,
     PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-    RenderTarget* rt = new RenderTargetDX9(targetCount,
+    RenderTarget* rt = new RenderTargetD3D9(targetCount,
         pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
         width, height, hasMipmaps, hasDepthStencil, depthStencilFormat);
     return AddRenderTarget(rt);
 }
 
-const unsigned int ResourceManagerDX9::CreateRenderTarget(const unsigned int targetCount,
+const unsigned int ResourceManagerD3D9::CreateRenderTarget(const unsigned int targetCount,
     PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
     const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
 {
-    RenderTarget* rt = new RenderTargetDX9(targetCount,
+    RenderTarget* rt = new RenderTargetD3D9(targetCount,
         pixelFormatRT0, pixelFormatRT1, pixelFormatRT2, pixelFormatRT3,
         widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
     return AddRenderTarget(rt);
 }
 
-void ResourceManagerDX9::UnbindAll()
+void ResourceManagerD3D9::UnbindAll()
 {
     ResourceManager::UnbindAll();
 
-    if (RenderTargetDX9::ms_pBBColorSurfBkp)
+    if (RenderTargetD3D9::ms_pBBColorSurfBkp)
     {
-        RenderTargetDX9::ms_pBBColorSurfBkp->Release();
-        RenderTargetDX9::ms_pBBColorSurfBkp = nullptr;
+        RenderTargetD3D9::ms_pBBColorSurfBkp->Release();
+        RenderTargetD3D9::ms_pBBColorSurfBkp = nullptr;
     }
 
-    if (RenderTargetDX9::ms_pBBDepthSurfBkp)
+    if (RenderTargetD3D9::ms_pBBDepthSurfBkp)
     {
-        RenderTargetDX9::ms_pBBDepthSurfBkp->Release();
-        RenderTargetDX9::ms_pBBDepthSurfBkp = nullptr;
+        RenderTargetD3D9::ms_pBBDepthSurfBkp->Release();
+        RenderTargetD3D9::ms_pBBDepthSurfBkp = nullptr;
     }
 }

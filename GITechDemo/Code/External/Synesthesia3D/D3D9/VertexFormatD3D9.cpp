@@ -1,5 +1,5 @@
 /**
- * @file        VertexFormatDX9.cpp
+ * @file        VertexFormatD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,25 +22,25 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
-#include "VertexFormatDX9.h"
-#include "ProfilerDX9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
+#include "VertexFormatD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-VertexFormatDX9::VertexFormatDX9(const unsigned int attributeCount)
+VertexFormatD3D9::VertexFormatD3D9(const unsigned int attributeCount)
     : VertexFormat(attributeCount)
     , m_pVertexDeclaration(nullptr)
 {}
 
-VertexFormatDX9::~VertexFormatDX9()
+VertexFormatD3D9::~VertexFormatD3D9()
 {
     Unbind();
 }
 
-void VertexFormatDX9::Enable()
+void VertexFormatD3D9::Enable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     
     //Sync our vertex declaration before enabling it
     if (!m_pVertexDeclaration)
@@ -50,12 +50,12 @@ void VertexFormatDX9::Enable()
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void VertexFormatDX9::Disable()
+void VertexFormatD3D9::Disable()
 {
-    //Apparently this is not needed, resulting in a warning when using the debug DX9 libraries
+    //Apparently this is not needed, resulting in a warning when using the debug D3D9 libraries
     /*
 
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
 #ifdef _DEBUG
@@ -74,22 +74,22 @@ void VertexFormatDX9::Disable()
     */
 }
 
-void VertexFormatDX9::Update()
+void VertexFormatD3D9::Update()
 {
     ULONG refCount = 0;
     if (m_pVertexDeclaration)
         refCount = m_pVertexDeclaration->Release();
     assert(refCount == 0);
 
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     for (unsigned int i = 0; i < m_nAttributeCount; i++)
     {
         m_pVertexElements[i].Method = D3DDECLMETHOD_DEFAULT;
         m_pVertexElements[i].Offset = (WORD)GetOffset(i);
         m_pVertexElements[i].Stream = (WORD)0;
-        m_pVertexElements[i].Type = VertexAttributeTypeDX9[GetAttributeType(i)];
-        m_pVertexElements[i].Usage = VertexAttributeSemanticDX9[GetAttributeSemantic(i)];
+        m_pVertexElements[i].Type = VertexAttributeTypeD3D9[GetAttributeType(i)];
+        m_pVertexElements[i].Usage = VertexAttributeSemanticD3D9[GetAttributeSemantic(i)];
         m_pVertexElements[i].UsageIndex = (BYTE)GetSemanticIndex(i);
     }
 
@@ -104,12 +104,12 @@ void VertexFormatDX9::Update()
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void VertexFormatDX9::Bind()
+void VertexFormatD3D9::Bind()
 {
     Update();
 }
 
-void VertexFormatDX9::Unbind()
+void VertexFormatD3D9::Unbind()
 {
     ULONG refCount = 0;
     if(m_pVertexDeclaration)

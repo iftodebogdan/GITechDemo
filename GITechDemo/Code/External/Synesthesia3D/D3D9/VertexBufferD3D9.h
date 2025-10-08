@@ -1,5 +1,5 @@
 /**
- * @file        IndexBufferDX9.h
+ * @file        VertexBufferD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,18 +20,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INDEXBUFFERDX9_H
-#define INDEXBUFFERDX9_H
+#ifndef VERTEXBUFFERD3D9_H
+#define VERTEXBUFFERD3D9_H
 
 #include <d3d9.h>
-#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 
 namespace Synesthesia3D
 {
-    class IndexBufferDX9 : public IndexBuffer
+    class VertexFormatD3D9;
+    class IndexBufferD3D9;
+
+    //This is the D3D9 implementation of the VertexBuffer class
+    class VertexBufferD3D9 : public VertexBuffer
     {
     public:
-        void    Enable();
+        void    Enable(const unsigned int offset = 0);
         void    Disable();
         void    Lock(const BufferLocking lockMode);
         void    Unlock();
@@ -41,18 +45,18 @@ namespace Synesthesia3D
         void    Unbind();
 
     private:
-        IndexBufferDX9(
-            const unsigned int indexCount, const IndexBufferFormat indexFormat,
-            const BufferUsage usage = BU_STATIC);
-        ~IndexBufferDX9();
+        VertexBufferD3D9(
+            VertexFormatD3D9* const vertexFormat, const unsigned int vertexCount,
+            IndexBufferD3D9* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC);
+        ~VertexBufferD3D9();
 
-        IDirect3DIndexBuffer9* m_pIndexBuffer;
+        IDirect3DVertexBuffer9*     m_pVertexBuffer;
 
         // A temporary pointer used in the Lock->Update->Unlock flow
-        void*   m_pTempBuffer;
+        void*                       m_pTempBuffer;
 
-        friend class ResourceManagerDX9;
+        friend class ResourceManagerD3D9;
     };
 }
 
-#endif //INDEXBUFFERDX9_H
+#endif //VERTEXBUFFERD3D9_H

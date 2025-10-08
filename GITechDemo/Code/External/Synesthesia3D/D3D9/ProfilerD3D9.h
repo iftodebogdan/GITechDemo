@@ -1,5 +1,5 @@
 /**
- * @file        ProfilerDX9.h
+ * @file        ProfilerD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,8 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PROFILINGDX9_H
-#define PROFILINGDX9_H
+#ifndef PROFILINGD3D9_H
+#define PROFILINGD3D9_H
 
 #include <vector>
 #include <stack>
@@ -38,11 +38,11 @@ namespace Synesthesia3D
         LPDIRECT3DQUERY9 freqQuery;
     };
 
-    class GPUProfileMarkerResultDX9 : public GPUProfileMarkerResult
+    class GPUProfileMarkerResultD3D9 : public GPUProfileMarkerResult
     {
     private:
-        GPUProfileMarkerResultDX9(const char* const label, DisjointQuery disjointQuery);
-        ~GPUProfileMarkerResultDX9();
+        GPUProfileMarkerResultD3D9(const char* const label, DisjointQuery disjointQuery);
+        ~GPUProfileMarkerResultD3D9();
 
         void IssueEndQuery();
 
@@ -50,18 +50,18 @@ namespace Synesthesia3D
         LPDIRECT3DQUERY9    m_pD3DEndQuery;
         DisjointQuery       m_tD3DDisjointQuery;
 
-        friend class ProfilerDX9;
+        friend class ProfilerD3D9;
     };
 
-    class ProfilerDX9 : public Profiler
+    class ProfilerD3D9 : public Profiler
     {
     public:
         void PushProfileMarker(const char* const label, const bool issueGPUQuery = false);
         void PopProfileMarker();
 
     private:
-        ProfilerDX9();
-        ~ProfilerDX9();
+        ProfilerD3D9();
+        ~ProfilerD3D9();
 
         void IssueDisjointQueryBegin();
         void IssueDisjointQueryEnd();
@@ -70,12 +70,12 @@ namespace Synesthesia3D
         void UpdateGPUProfileMarkerResults();
 
         std::vector<DisjointQuery>              m_arrD3DDisjointQuery;
-        std::stack<GPUProfileMarkerResultDX9*>  m_arrGPUProfileMarkerDX9Stack;
+        std::stack<GPUProfileMarkerResultD3D9*>  m_arrGPUProfileMarkerD3D9Stack;
 
         static UINT64   ms_nFirstQueryBeginTime;
 
-        friend class RendererDX9;
+        friend class RendererD3D9;
     };
 }
 
-#endif // PROFILINGDX9_H
+#endif // PROFILINGD3D9_H

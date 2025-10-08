@@ -39,6 +39,10 @@ using namespace gmtl;
 // This header holds all defines, enums and
 // structures used by the rendering library
 
+#ifndef ENABLE_D3D9_ON_12
+    #define ENABLE_D3D9_ON_12 (1)   /**< @brief Enable Direct3D 9On12 support. */
+#endif
+
 #ifndef PURE_VIRTUAL
     #define PURE_VIRTUAL = 0    /**< @brief Used to mark pure virtual functions. */
 #endif
@@ -77,9 +81,12 @@ namespace Synesthesia3D
      */
     enum API
     {
-        API_NONE,   /**< @brief No renderer instantiated. */
-        API_NULL,   /**< @brief Null render. */
-        API_DX9     /**< @brief Direct3D 9. */
+        API_NONE,       /**< @brief No renderer instantiated. */
+        API_NULL,       /**< @brief Null render. */
+        API_D3D9,       /**< @brief Direct3D 9. */
+#if ENABLE_D3D9_ON_12
+        API_D3D9On12,   /**< @brief Direct3D 9On12. */
+#endif
     };
 
     /////////////////////////////////////////////////////////////////////

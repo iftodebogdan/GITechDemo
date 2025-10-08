@@ -1,5 +1,5 @@
 /**
- * @file        ResourceManagerDX9.h
+ * @file        ResourceManagerD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,14 +20,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RESOURCEMANAGERDX9_H
-#define RESOURCEMANAGERDX9_H
+#ifndef RESOURCEMANAGERD3D9_H
+#define RESOURCEMANAGERD3D9_H
 
 #include "ResourceManager.h"
 
 namespace Synesthesia3D
 {
-    class ResourceManagerDX9 : public ResourceManager
+    class ResourceManagerD3D9 : public ResourceManager
     {
     public:
         const unsigned int CreateVertexFormat(const unsigned int attributeCount);
@@ -64,11 +64,11 @@ namespace Synesthesia3D
         void    UnbindAll();
 
     private:
-        ResourceManagerDX9() {}
-        ~ResourceManagerDX9() {}
+        ResourceManagerD3D9() {}
+        ~ResourceManagerD3D9() {}
 
-        friend class RendererDX9;
+        friend class RendererD3D9;
     };
 }
 
-#endif // RESOURCEMANAGERDX9_H
+#endif // RESOURCEMANAGERD3D9_H

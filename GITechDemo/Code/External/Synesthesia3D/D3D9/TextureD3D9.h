@@ -1,5 +1,5 @@
 /**
- * @file        TextureDX9.h
+ * @file        TextureD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,16 +20,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTUREDX9_H
-#define TEXTUREDX9_H
+#ifndef TEXTURED3D9_H
+#define TEXTURED3D9_H
 
 #include <d3d9.h>
 #include "Texture.h"
-#include "MappingsDX9.h"
+#include "MappingsD3D9.h"
 
 namespace Synesthesia3D
 {
-    class TextureDX9 : public Texture
+    class TextureD3D9 : public Texture
     {
     public:
         void        Enable(const unsigned int texUnit) const;
@@ -42,16 +42,16 @@ namespace Synesthesia3D
         void        Bind();
         void        Unbind();
 
-        const unsigned int  GetCubeFaceIndex(const CubeFace cubeFace) const { return CubeFaceIndexDX9[cubeFace]; }
+        const unsigned int  GetCubeFaceIndex(const CubeFace cubeFace) const { return CubeFaceIndexD3D9[cubeFace]; }
 
-        IDirect3DBaseTexture9* const    GetTextureDX9() const { return m_pTexture; }
+        IDirect3DBaseTexture9* const    GetTextureD3D9() const { return m_pTexture; }
 
     private:
-        TextureDX9(
+        TextureD3D9(
             const PixelFormat pixelFormat, const TextureType texType,
             const unsigned int sizeX, const unsigned int sizeY = 1, const unsigned int sizeZ = 1,
             const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
-        ~TextureDX9();
+        ~TextureD3D9();
 
         IDirect3DBaseTexture9* m_pTexture;
 
@@ -60,8 +60,8 @@ namespace Synesthesia3D
         unsigned int    m_nRowPitch;
         unsigned int    m_nDepthPitch;
 
-        friend class ResourceManagerDX9;
+        friend class ResourceManagerD3D9;
     };
 }
 
-#endif //TEXTUREDX9_H
+#endif //TEXTURED3D9_H

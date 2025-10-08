@@ -569,8 +569,9 @@ void UIPass::SetupUI()
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.f);
-        ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize(pFW->GetWindowTitle().c_str()).x - style.WindowPadding.x);
-        ImGui::TextDisabled(pFW->GetWindowTitle().c_str());
+        string title = string(Renderer::GetInstance()->GetAPIName()) + " | " + pFW->GetWindowTitle();
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() - ImGui::CalcTextSize(title.c_str()).x - style.WindowPadding.x);
+        ImGui::TextDisabled(title.c_str());
         ImGui::PopStyleVar();
 
         // Quit confirmation dialog

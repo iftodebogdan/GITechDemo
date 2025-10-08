@@ -438,13 +438,13 @@ float PCF8x8(sampler2D shadowMap, float2 oneOverShadowMapSize, float2 texCoord, 
 
 ////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////
-// Fix for DX9 half-pixel offset. Easier to manage and matches other APIs. //
-// https://aras-p.info/blog/2016/04/08/solving-dx9-half-pixel-offset/      //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// Fix for D3D9 half-pixel offset. Easier to manage and matches other APIs. //
+// https://aras-p.info/blog/2016/04/08/solving-dx9-half-pixel-offset/       //
+//////////////////////////////////////////////////////////////////////////////
 void PatchVSOutputPositionForHalfPixelOffset(inout float4 vsOutPos)
 {
-#if defined(DX9) && defined(VERTEX)
+#if defined(D3D9) && defined(VERTEX)
     vsOutPos.xy += float2(-1.f, 1.f) * UtilsParams.RenderTargetInvSize * vsOutPos.w;
 #endif
 }

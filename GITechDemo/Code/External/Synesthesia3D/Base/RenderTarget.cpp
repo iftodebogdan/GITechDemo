@@ -50,7 +50,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
         || Renderer::GetAPI() == API_NULL);
     //assert(pixelFormat != PF_NONE);
 
-    // DX9 restrictions prevent us from binding only a depth buffer
+    // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.
     if (m_nTargetCount <= 0)
     {
@@ -95,7 +95,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
         || Renderer::GetAPI() == API_NULL);
     //assert(pixelFormat != PF_NONE);
 
-    // DX9 restrictions prevent us from binding only a depth buffer
+    // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.
     if (m_nTargetCount <= 0)
     {
@@ -143,7 +143,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
     assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
         || Renderer::GetAPI() == API_NULL);
 
-    // DX9 restrictions prevent us from binding only a depth buffer
+    // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.
     if (m_nTargetCount <= 0)
     {
@@ -208,7 +208,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
     assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
         || Renderer::GetAPI() == API_NULL);
 
-    // DX9 restrictions prevent us from binding only a depth buffer
+    // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.
     if (m_nTargetCount <= 0)
     {

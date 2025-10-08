@@ -1,5 +1,5 @@
 /**
- * @file        RenderTargetDX9.h
+ * @file        RenderTargetD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,8 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RENDERTARGETDX9_H
-#define RENDERTARGETDX9_H
+#ifndef RENDERTARGETD3D9_H
+#define RENDERTARGETD3D9_H
 
 #include <d3d9.h>
 
@@ -29,7 +29,7 @@
 
 namespace Synesthesia3D
 {
-    class RenderTargetDX9 : public RenderTarget
+    class RenderTargetD3D9 : public RenderTarget
     {
     public:
         void    Enable();
@@ -40,17 +40,17 @@ namespace Synesthesia3D
         void    Unbind();
 
     protected:
-        RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
+        RenderTargetD3D9(const unsigned int targetCount, PixelFormat pixelFormat,
             const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
-        RenderTargetDX9(const unsigned int targetCount, PixelFormat pixelFormat,
+        RenderTargetD3D9(const unsigned int targetCount, PixelFormat pixelFormat,
             const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
-        RenderTargetDX9(const unsigned int targetCount,
+        RenderTargetD3D9(const unsigned int targetCount,
             PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
             const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
-        RenderTargetDX9(const unsigned int targetCount,
+        RenderTargetD3D9(const unsigned int targetCount,
             PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
             const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
-        ~RenderTargetDX9();
+        ~RenderTargetD3D9();
 
         void RetrieveDirect3DSurfaces();
 
@@ -62,8 +62,8 @@ namespace Synesthesia3D
         static IDirect3DSurface9*   ms_pBBColorSurfBkp;
         static IDirect3DSurface9*   ms_pBBDepthSurfBkp;
 
-        friend class ResourceManagerDX9;
+        friend class ResourceManagerD3D9;
     };
 }
 
-#endif // RENDERTARGETDX9_H
+#endif // RENDERTARGETD3D9_H

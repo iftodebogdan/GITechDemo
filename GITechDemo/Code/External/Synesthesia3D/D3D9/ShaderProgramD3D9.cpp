@@ -1,5 +1,5 @@
 /**
- * @file        ShaderProgramDX9.cpp
+ * @file        ShaderProgramD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,15 +22,15 @@
 
 #include "stdafx.h"
 
-#include "ShaderProgramDX9.h"
-#include "RendererDX9.h"
-#include "TextureDX9.h"
-#include "ProfilerDX9.h"
+#include "ShaderProgramD3D9.h"
+#include "RendererD3D9.h"
+#include "TextureD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
 #define CONST_MAX_ARRAY_SIZE 16;
 
-ShaderProgramDX9::ShaderProgramDX9(const ShaderProgramType programType,
+ShaderProgramD3D9::ShaderProgramD3D9(const ShaderProgramType programType,
     const char* srcData, const char* entryPoint, const char* profile)
     : ShaderProgram(programType)
     , m_pVertexShader(nullptr)
@@ -41,18 +41,18 @@ ShaderProgramDX9::ShaderProgramDX9(const ShaderProgramType programType,
         Compile(srcData, entryPoint);
 }
 
-ShaderProgramDX9::~ShaderProgramDX9()
+ShaderProgramD3D9::~ShaderProgramD3D9()
 {
     Unbind();
 }
 
-void ShaderProgramDX9::Enable(ShaderInput* const shaderInput)
+void ShaderProgramD3D9::Enable(ShaderInput* const shaderInput)
 {
     ShaderProgram::Enable(shaderInput);
 
     assert(m_pVertexShader || m_pPixelShader);
     
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
     switch (m_eProgramType)
     {
@@ -65,9 +65,9 @@ void ShaderProgramDX9::Enable(ShaderInput* const shaderInput)
     assert(SUCCEEDED(hr));
 }
 
-void ShaderProgramDX9::Disable()
+void ShaderProgramD3D9::Disable()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
 
 #ifdef _DEBUG
@@ -105,9 +105,9 @@ void ShaderProgramDX9::Disable()
     ShaderProgram::Disable();
 }
 
-const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoint)
+const bool ShaderProgramD3D9::Compile(const char* filePath, const char* entryPoint)
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     // We need a null terminated array of D3DXMACROs, so adapt std:basic_string to our needs (because strings are null terminated)
     std::basic_string<D3DXMACRO, std::char_traits<D3DXMACRO>, std::allocator<D3DXMACRO>> macroList;
@@ -144,7 +144,7 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
 
     macroList.push_back({ "HLSL", "" });
 
-    macroList.push_back({ "DX9", "" });
+    macroList.push_back({ "D3D9", "" });
 
     HRESULT hr = D3DXCompileShaderFromFile(filePath, macroList.c_str(), NULL, entryPoint, profile,
         flags, &compiledData, &errorMsg, &m_pConstantTable);
@@ -196,7 +196,7 @@ const bool ShaderProgramDX9::Compile(const char* filePath, const char* entryPoin
     return ShaderProgram::Compile(filePath, entryPoint);
 }
 
-const unsigned int ShaderProgramDX9::GetConstantCount() const
+const unsigned int ShaderProgramD3D9::GetConstantCount() const
 {
     D3DXCONSTANTTABLE_DESC constDesc;
     memset(&constDesc, 0, sizeof(constDesc));
@@ -206,7 +206,7 @@ const unsigned int ShaderProgramDX9::GetConstantCount() const
     return constDesc.Constants;
 }
 
-const char* ShaderProgramDX9::GetConstantName(const unsigned int handle) const
+const char* ShaderProgramD3D9::GetConstantName(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -216,7 +216,7 @@ const char* ShaderProgramDX9::GetConstantName(const unsigned int handle) const
     return constDesc.Name;
 }
 
-const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) const
+const InputType ShaderProgramD3D9::GetConstantType(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -327,7 +327,7 @@ const InputType ShaderProgramDX9::GetConstantType(const unsigned int handle) con
     return IT_NONE;
 }
 
-const RegisterType ShaderProgramDX9::GetConstantRegisterType(const unsigned int handle) const
+const RegisterType ShaderProgramD3D9::GetConstantRegisterType(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -350,7 +350,7 @@ const RegisterType ShaderProgramDX9::GetConstantRegisterType(const unsigned int 
     }
 }
 
-const unsigned int ShaderProgramDX9::GetConstantRegisterIndex(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantRegisterIndex(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -360,7 +360,7 @@ const unsigned int ShaderProgramDX9::GetConstantRegisterIndex(const unsigned int
     return constDesc.RegisterIndex;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantRegisterCount(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantRegisterCount(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -370,7 +370,7 @@ const unsigned int ShaderProgramDX9::GetConstantRegisterCount(const unsigned int
     return constDesc.RegisterCount;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantRowCount(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantRowCount(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -379,7 +379,7 @@ const unsigned int ShaderProgramDX9::GetConstantRowCount(const unsigned int hand
 
     return constDesc.Rows;
 }
-const unsigned int ShaderProgramDX9::GetConstantColumnCount(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantColumnCount(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -389,7 +389,7 @@ const unsigned int ShaderProgramDX9::GetConstantColumnCount(const unsigned int h
     return constDesc.Columns;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantArrayElementCount(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantArrayElementCount(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -399,7 +399,7 @@ const unsigned int ShaderProgramDX9::GetConstantArrayElementCount(const unsigned
     return constDesc.Elements;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantStructMemberCount(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantStructMemberCount(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -409,7 +409,7 @@ const unsigned int ShaderProgramDX9::GetConstantStructMemberCount(const unsigned
     return constDesc.StructMembers;
 }
 
-const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int handle) const
+const unsigned int ShaderProgramD3D9::GetConstantSizeBytes(const unsigned int handle) const
 {
     unsigned int count = 1u;
     D3DXCONSTANT_DESC constDesc;
@@ -436,9 +436,9 @@ const unsigned int ShaderProgramDX9::GetConstantSizeBytes(const unsigned int han
     return constantSize;
 }
 
-void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount)
+void ShaderProgramD3D9::SetFloat(const unsigned int registerIndex, const float* const data, const unsigned int registerCount)
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
     switch (m_eProgramType)
     {
@@ -452,9 +452,9 @@ void ShaderProgramDX9::SetFloat(const unsigned int registerIndex, const float* c
 }
 
 
-void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount)
+void ShaderProgramD3D9::SetInt(const unsigned int registerIndex, const int* const data, const unsigned int registerCount)
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
     switch (m_eProgramType)
     {
@@ -467,9 +467,9 @@ void ShaderProgramDX9::SetInt(const unsigned int registerIndex, const int* const
     assert(SUCCEEDED(hr));
 }
 
-void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount)
+void ShaderProgramD3D9::SetBool(const unsigned int registerIndex, const bool* const data, const unsigned int registerCount)
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
     
     // Convert the bool (2 bytes) array to a Microsoft BOOL (4 bytes) array
@@ -489,19 +489,19 @@ void ShaderProgramDX9::SetBool(const unsigned int registerIndex, const bool* con
     assert(SUCCEEDED(hr));
 }
 
-void ShaderProgramDX9::SetTexture(const unsigned int registerIndex, const Texture* const tex)
+void ShaderProgramD3D9::SetTexture(const unsigned int registerIndex, const Texture* const tex)
 {
     assert(tex);
     tex->Enable(registerIndex);
 }
 
-void ShaderProgramDX9::Bind()
+void ShaderProgramD3D9::Bind()
 {
     if (m_szSrcFile.length())
         Compile(m_szSrcFile.c_str(), m_szEntryPoint.c_str());
 }
 
-void ShaderProgramDX9::Unbind()
+void ShaderProgramD3D9::Unbind()
 {
     unsigned int refCount = 0;
 

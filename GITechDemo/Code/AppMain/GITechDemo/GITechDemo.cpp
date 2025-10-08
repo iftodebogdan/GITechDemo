@@ -85,7 +85,8 @@ bool GITechDemo::Init(void* hWnd)
     Framework* const pFW = Framework::GetInstance();
 
     // Renderer MUST be initialized on the SAME thread as the target window
-    Renderer::CreateInstance(API_DX9);
+    Renderer::CreateInstance(API_D3D9);
+    //Renderer::CreateInstance(API_D3D9On12);
     //Renderer::CreateInstance(API_NULL);
 
     Renderer* RenderContext = Renderer::GetInstance();

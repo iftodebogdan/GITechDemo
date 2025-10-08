@@ -1,5 +1,5 @@
 /**
- * @file        RendererDX9.cpp
+ * @file        RendererD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,16 +22,16 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
+#include "RendererD3D9.h"
 
-#include "VertexFormatDX9.h"
-#include "VertexBufferDX9.h"
-#include "IndexBufferDX9.h"
-#include "TextureDX9.h"
-#include "ResourceManagerDX9.h"
-#include "RenderStateDX9.h"
-#include "SamplerStateDX9.h"
-#include "ProfilerDX9.h"
+#include "VertexFormatD3D9.h"
+#include "VertexBufferD3D9.h"
+#include "IndexBufferD3D9.h"
+#include "TextureD3D9.h"
+#include "ResourceManagerD3D9.h"
+#include "RenderStateD3D9.h"
+#include "SamplerStateD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
 #include <d3dx9.h>
@@ -39,12 +39,12 @@ using namespace Synesthesia3D;
 D3DFORMAT BBFormats[] = { D3DFMT_A2R10G10B10, D3DFMT_A8R8G8B8, D3DFMT_X8R8G8B8, D3DFMT_A1R5G5B5, D3DFMT_X1R5G5B5, D3DFMT_R5G6B5 };
 D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32, D3DFMT_D24X8, D3DFMT_D16 }; // Prefer with stencil
 
-RendererDX9::RendererDX9()
+RendererD3D9::RendererD3D9()
     : m_pD3D(nullptr)
     , m_pd3dDevice(nullptr)
 {}
 
-RendererDX9::~RendererDX9()
+RendererD3D9::~RendererD3D9()
 {
     ULONG refCount = 0;
 
@@ -57,7 +57,7 @@ RendererDX9::~RendererDX9()
     assert(refCount == 0);
 }
 
-void RendererDX9::CheckDeviceCaps()
+void RendererD3D9::CheckDeviceCaps()
 {
     std::vector<D3DFORMAT> arrValidBBFormats;
 
@@ -120,9 +120,9 @@ void RendererDX9::CheckDeviceCaps()
                         D3DADAPTER_DEFAULT,
                         D3DDEVTYPE_HAL,
                         arrValidBBFormats[vbbf],
-                        BufferUsageDX9[bu],
-                        TextureTypeDX9[tt],
-                        PixelFormatDX9[pf])))
+                        BufferUsageD3D9[bu],
+                        TextureTypeD3D9[tt],
+                        PixelFormatD3D9[pf])))
                     {
                         bValidPixelFormat = false;
                         break;
@@ -179,7 +179,7 @@ void RendererDX9::CheckDeviceCaps()
     m_tDeviceCaps.nNumSimultaneousRTs = deviceCaps.NumSimultaneousRTs;
 }
 
-void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
+void RendererD3D9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 {
     // Validate backbuffer format
     D3DFORMAT validBBFmt = pp.BackBufferFormat;
@@ -316,10 +316,20 @@ void RendererDX9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
         pp.BackBufferCount = 1;
 }
 
-void RendererDX9::Initialize(void* hWnd)
+IDirect3D9* RendererD3D9::CreateDriver()
+{
+    return Direct3DCreate9(D3D_SDK_VERSION);
+}
+
+void RendererD3D9::ValidateDevice()
+{
+    assert(m_pd3dDevice);
+}
+
+void RendererD3D9::Initialize(void* hWnd)
 {
     // Create the D3D object, which is needed to create the D3DDevice.
-    m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+    m_pD3D = CreateDriver();
     assert(m_pD3D);
 
     // Set up the structure used to create the D3DDevice. Most parameters are
@@ -400,18 +410,18 @@ void RendererDX9::Initialize(void* hWnd)
             &m_ePresentParameters, &m_pd3dDevice);
     }
 
-    assert(m_pd3dDevice);
+    ValidateDevice();
 
-    m_pResourceManager = new ResourceManagerDX9();
-    m_pRenderStateManager = new RenderStateDX9();
-    m_pSamplerStateManager = new SamplerStateDX9();
+    m_pResourceManager = new ResourceManagerD3D9();
+    m_pRenderStateManager = new RenderStateD3D9();
+    m_pSamplerStateManager = new SamplerStateD3D9();
 
-    m_pProfiler = new ProfilerDX9();
+    m_pProfiler = new ProfilerD3D9();
 
     SetDeviceState(DS_READY);
 }
 
-const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
+const bool RendererD3D9::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
 {
     Vec2i validOffset(offset);
     if (fullscreen)
@@ -488,7 +498,7 @@ const bool RendererDX9::SetDisplayResolution(const Vec2i size, const Vec2i offse
     return SUCCEEDED(hr);
 }
 
-void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
+void RendererD3D9::SetViewport(const Vec2i size, const Vec2i offset)
 {
     D3DVIEWPORT9 vp;
     vp.X = offset[0];
@@ -502,7 +512,7 @@ void RendererDX9::SetViewport(const Vec2i size, const Vec2i offset)
     assert(SUCCEEDED(hr));
 }
 
-const bool RendererDX9::BeginFrame()
+const bool RendererD3D9::BeginFrame()
 {
     HRESULT hr = m_pd3dDevice->TestCooperativeLevel();
     if (hr == D3DERR_DEVICELOST)
@@ -554,7 +564,7 @@ const bool RendererDX9::BeginFrame()
     return Renderer::BeginFrame();
 }
 
-void RendererDX9::EndFrame()
+void RendererD3D9::EndFrame()
 {
     assert(GetDeviceState() == DS_RENDERING);
     if (GetDeviceState() != DS_RENDERING)
@@ -568,7 +578,7 @@ void RendererDX9::EndFrame()
     Renderer::EndFrame();
 }
 
-void RendererDX9::SwapBuffers()
+void RendererD3D9::SwapBuffers()
 {
     assert(GetDeviceState() == DS_PRESENTING);
     if (GetDeviceState() != DS_PRESENTING)
@@ -591,7 +601,7 @@ void RendererDX9::SwapBuffers()
     POP_PROFILE_MARKER();
 }
 
-void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset, const unsigned int primCount, const unsigned int vtxCount, const unsigned int idxOffset)
+void RendererD3D9::DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vtxOffset, const unsigned int primCount, const unsigned int vtxCount, const unsigned int idxOffset)
 {
     PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -614,7 +624,7 @@ void RendererDX9::DrawVertexBuffer(VertexBuffer* const vb, const unsigned int vt
     POP_PROFILE_MARKER();
 }
 
-void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
+void RendererD3D9::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
 {
     PUSH_PROFILE_MARKER(__FUNCSIG__);
 
@@ -640,7 +650,7 @@ void RendererDX9::Clear(const Vec4f rgba, const float z, const unsigned int sten
     POP_PROFILE_MARKER();
 }
 
-void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
+void RendererD3D9::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
 {
     const float yScale = 1.f / tanf(fovYRad * 0.5f);
     const float xScale = yScale / aspectRatio;
@@ -653,7 +663,7 @@ void RendererDX9::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRa
     );
 }
 
-void RendererDX9::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
+void RendererD3D9::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
 {
     const float yScale = 1.f / tanf(fovYRad * 0.5f);
     const float xScale = yScale / aspectRatio;
@@ -667,7 +677,7 @@ void RendererDX9::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const floa
     );
 }
 
-void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
+void RendererD3D9::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
 {
     D3DXMATRIXA16 mat;
     D3DXMatrixOrthoOffCenterLH(&mat, left, right, bottom, top, zNear, zFar);
@@ -675,7 +685,7 @@ void RendererDX9::CreateOrthographicMatrix(Matrix44f& matProj, const float left,
     matProj.set(mat);
 }
 
-const bool RendererDX9::ResetDevice(D3DPRESENT_PARAMETERS& pp)
+const bool RendererD3D9::ResetDevice(D3DPRESENT_PARAMETERS& pp)
 {
     HRESULT hr = E_FAIL;
     int attempts = 0;

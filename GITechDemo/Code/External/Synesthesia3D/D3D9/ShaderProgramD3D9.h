@@ -1,5 +1,5 @@
 /**
- * @file        ShaderProgramDX9.h
+ * @file        ShaderProgramD3D9.h
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -20,21 +20,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SHADERPROGRAMDX9_H
-#define SHADERPROGRAMDX9_H
+#ifndef SHADERPROGRAMD3D9_H
+#define SHADERPROGRAMD3D9_H
 
-#include "d3dx9.h"
+#include <d3dx9.h>
+
 #include "ShaderProgram.h"
 
 namespace Synesthesia3D
 {
     class Texture;
 
-    class ShaderProgramDX9 : public ShaderProgram
+    class ShaderProgramD3D9 : public ShaderProgram
     {
     private:
-        ShaderProgramDX9(const ShaderProgramType programType, const char* srcData = "", const char* entryPoint = "", const char* profile = "");
-        ~ShaderProgramDX9();
+        ShaderProgramD3D9(const ShaderProgramType programType, const char* srcData = "", const char* entryPoint = "", const char* profile = "");
+        ~ShaderProgramD3D9();
 
         void Enable(ShaderInput* const shaderInput);
         void Disable();
@@ -64,8 +65,8 @@ namespace Synesthesia3D
         IDirect3DPixelShader9* m_pPixelShader;
         LPD3DXCONSTANTTABLE m_pConstantTable;
 
-        friend class ResourceManagerDX9;
+        friend class ResourceManagerD3D9;
     };
 }
 
-#endif // SHADERPROGRAMDX9_H
+#endif // SHADERPROGRAMD3D9_H

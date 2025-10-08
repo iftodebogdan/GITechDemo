@@ -1,5 +1,5 @@
 /**
- * @file        TextureDX9.cpp
+ * @file        TextureD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,13 +22,13 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
-#include "TextureDX9.h"
-#include "ProfilerDX9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
+#include "TextureD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-TextureDX9::TextureDX9(
+TextureD3D9::TextureD3D9(
     const PixelFormat pixelFormat, const TextureType texType,
     const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
     const unsigned int mipCount, const BufferUsage usage)
@@ -43,22 +43,22 @@ TextureDX9::TextureDX9(
         Bind();
 }
 
-TextureDX9::~TextureDX9()
+TextureD3D9::~TextureD3D9()
 {
     Unbind();
 }
 
-void TextureDX9::Enable(const unsigned int texUnit) const
+void TextureD3D9::Enable(const unsigned int texUnit) const
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     HRESULT hr = device->SetTexture(texUnit, m_pTexture);
     S3D_VALIDATE_HRESULT(hr);
 }
 
-void TextureDX9::Disable(const unsigned int texUnit) const
+void TextureD3D9::Disable(const unsigned int texUnit) const
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
 
 #ifdef _DEBUG
@@ -68,7 +68,7 @@ void TextureDX9::Disable(const unsigned int texUnit) const
     assert(activeTex == m_pTexture);
     unsigned int refCount = 1;
     refCount = activeTex->Release();
-    // Inconsistent between the retail and debug DX9 runtimes
+    // Inconsistent between the retail and debug D3D9 runtimes
     //assert(refCount == 1/* + IsRenderTarget() ? 1 : 0*/);
 #endif
 
@@ -76,7 +76,7 @@ void TextureDX9::Disable(const unsigned int texUnit) const
     S3D_VALIDATE_HRESULT(hr);
 }
 
-const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
+const bool TextureD3D9::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
 {
     if (m_eTexType == TT_CUBE)
     {
@@ -95,7 +95,7 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
     {
     case TT_1D:
     case TT_2D:
-        hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(mipmapLevel, &rect, 0, BufferLockingDX9[lockMode]);
+        hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(mipmapLevel, &rect, 0, BufferLockingD3D9[lockMode]);
         if (!SUCCEEDED(hr))
         {
             assert(false);
@@ -107,7 +107,7 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
         break;
 
     case TT_3D:
-        hr = ((IDirect3DVolumeTexture9*)m_pTexture)->LockBox(mipmapLevel, &box, 0, BufferLockingDX9[lockMode]);
+        hr = ((IDirect3DVolumeTexture9*)m_pTexture)->LockBox(mipmapLevel, &box, 0, BufferLockingD3D9[lockMode]);
         if (!SUCCEEDED(hr))
         {
             assert(false);
@@ -121,7 +121,7 @@ const bool TextureDX9::Lock(const unsigned int mipmapLevel, const BufferLocking 
     return Texture::Lock(mipmapLevel, lockMode);
 }
 
-const bool TextureDX9::Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode)
+const bool TextureD3D9::Lock(const CubeFace cubeFace, const unsigned int mipmapLevel, const BufferLocking lockMode)
 {
     if (m_eTexType != TT_CUBE)
     {
@@ -134,7 +134,7 @@ const bool TextureDX9::Lock(const CubeFace cubeFace, const unsigned int mipmapLe
 
     assert(m_pTempBuffer == nullptr);
     D3DLOCKED_RECT rect;
-    HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)GetCubeFaceIndex(cubeFace), mipmapLevel, &rect, 0, BufferLockingDX9[lockMode]);
+    HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)GetCubeFaceIndex(cubeFace), mipmapLevel, &rect, 0, BufferLockingD3D9[lockMode]);
     if (!SUCCEEDED(hr))
     {
         assert(false);
@@ -147,7 +147,7 @@ const bool TextureDX9::Lock(const CubeFace cubeFace, const unsigned int mipmapLe
     return Texture::Lock(cubeFace, mipmapLevel, lockMode);
 }
 
-void TextureDX9::Unlock()
+void TextureD3D9::Unlock()
 {
     assert(m_pTempBuffer != nullptr);
     HRESULT hr;
@@ -161,7 +161,7 @@ void TextureDX9::Unlock()
     Texture::Unlock();
 }
 
-void TextureDX9::Update()
+void TextureD3D9::Update()
 {
     assert(m_pTempBuffer != nullptr);
 
@@ -194,11 +194,11 @@ void TextureDX9::Update()
     }
 }
 
-void TextureDX9::Bind()
+void TextureD3D9::Bind()
 {
     Texture::Bind();
 
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
 
     D3DPOOL pool;
     if (GetUsage() == BU_TEXTURE)
@@ -214,12 +214,12 @@ void TextureDX9::Bind()
     case TT_1D:
         hr = device->CreateTexture(
             GetWidth(), 1u, GetMipCount(),
-            BufferUsageDX9[m_eBufferUsage], PixelFormatDX9[m_ePixelFormat],
+            BufferUsageD3D9[m_eBufferUsage], PixelFormatD3D9[m_ePixelFormat],
             pool, (IDirect3DTexture9**)&m_pTexture, 0);
         break;
 
     case TT_2D:
-        usageFlags = BufferUsageDX9[m_eBufferUsage];
+        usageFlags = BufferUsageD3D9[m_eBufferUsage];
         mipCount = GetMipCount();
         if (IsRenderTarget() && mipCount != 1)
         {
@@ -227,30 +227,30 @@ void TextureDX9::Bind()
             usageFlags |= D3DUSAGE_AUTOGENMIPMAP;
             mipCount = 0;
         #ifdef _DEBUG
-            hr = RendererDX9::GetInstance()->GetDriver()->CheckDeviceFormat(
-                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, PixelFormatDX9[RendererDX9::GetInstance()->GetBackBufferFormat()],
-                usageFlags, D3DRTYPE_TEXTURE, PixelFormatDX9[m_ePixelFormat]);
+            hr = RendererD3D9::GetInstance()->GetDriver()->CheckDeviceFormat(
+                D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, PixelFormatD3D9[RendererD3D9::GetInstance()->GetBackBufferFormat()],
+                usageFlags, D3DRTYPE_TEXTURE, PixelFormatD3D9[m_ePixelFormat]);
             S3D_VALIDATE_HRESULT(hr);
             assert(Renderer::GetInstance()->GetDeviceCaps().bCanAutoGenMipmaps);
         #endif
         }
         hr = device->CreateTexture(
             GetWidth(), GetHeight(), mipCount,
-            usageFlags, PixelFormatDX9[m_ePixelFormat],
+            usageFlags, PixelFormatD3D9[m_ePixelFormat],
             pool, (IDirect3DTexture9**)&m_pTexture, 0);
         break;
 
     case TT_3D:
         hr = device->CreateVolumeTexture(
             GetWidth(), GetHeight(), GetDepth(), GetMipCount(),
-            BufferUsageDX9[m_eBufferUsage], PixelFormatDX9[m_ePixelFormat],
+            BufferUsageD3D9[m_eBufferUsage], PixelFormatD3D9[m_ePixelFormat],
             pool, (IDirect3DVolumeTexture9**)&m_pTexture, 0);
         break;
 
     case TT_CUBE:
         hr = device->CreateCubeTexture(
             GetWidth(), GetMipCount(),
-            BufferUsageDX9[m_eBufferUsage], PixelFormatDX9[m_ePixelFormat],
+            BufferUsageD3D9[m_eBufferUsage], PixelFormatD3D9[m_ePixelFormat],
             pool, (IDirect3DCubeTexture9**)&m_pTexture, 0);
     }
     S3D_VALIDATE_HRESULT(hr);
@@ -289,7 +289,7 @@ void TextureDX9::Bind()
     }
 }
 
-void TextureDX9::Unbind()
+void TextureD3D9::Unbind()
 {
     unsigned int refCount = 0;
     if (m_pTexture)

@@ -1,5 +1,5 @@
 /**
- * @file        RenderStateDX9.cpp
+ * @file        RenderStateD3D9.cpp
  *
  * @note        This file is part of the "Synesthesia3D" graphics engine
  *
@@ -22,21 +22,21 @@
 
 #include "stdafx.h"
 
-#include "RendererDX9.h"
-#include "MappingsDX9.h"
-#include "RenderStateDX9.h"
-#include "ProfilerDX9.h"
+#include "RendererD3D9.h"
+#include "MappingsD3D9.h"
+#include "RenderStateD3D9.h"
+#include "ProfilerD3D9.h"
 using namespace Synesthesia3D;
 
-RenderStateDX9::RenderStateDX9()
+RenderStateD3D9::RenderStateD3D9()
 {
     Reset();
 }
 
-RenderStateDX9::~RenderStateDX9()
+RenderStateD3D9::~RenderStateD3D9()
 {}
 
-const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const
+const unsigned int RenderStateD3D9::MatchRenderState(const DWORD rs, const unsigned int rsEnumClass) const
 {
     unsigned int begin, end;
     switch (rsEnumClass)
@@ -72,7 +72,7 @@ const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsign
 
     for (unsigned int i = begin + 1; i < end; i++)
     {
-        if (RenderStateMappingDX9[i] == rs)
+        if (RenderStateMappingD3D9[i] == rs)
             return i;
     }
 
@@ -80,18 +80,18 @@ const unsigned int RenderStateDX9::MatchRenderState(const DWORD rs, const unsign
     return 0;
 }
 
-const bool RenderStateDX9::SetScissor(const Vec2i size, const Vec2i offset)
+const bool RenderStateD3D9::SetScissor(const Vec2i size, const Vec2i offset)
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     const RECT scissorRect = { offset[0], offset[1], offset[0] + size[0], offset[1] + size[1] };
     HRESULT hr = device->SetScissorRect(&scissorRect);
     assert(SUCCEEDED(hr));
     return SUCCEEDED(hr);
 }
 
-void RenderStateDX9::Reset()
+void RenderStateD3D9::Reset()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr;
     DWORD value;
 
@@ -99,19 +99,19 @@ void RenderStateDX9::Reset()
 
     hr = device->GetRenderState(D3DRS_ALPHABLENDENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bColorBlendEnabledDX9 = (value != 0);
+    m_bColorBlendEnabledD3D9 = (value != 0);
 
     hr = device->GetRenderState(D3DRS_SRCBLEND, &value);
     assert(SUCCEEDED(hr));
-    m_eColorSrcBlendDX9 = (Blend)MatchRenderState(value, BLEND);
+    m_eColorSrcBlendD3D9 = (Blend)MatchRenderState(value, BLEND);
 
     hr = device->GetRenderState(D3DRS_DESTBLEND, &value);
     assert(SUCCEEDED(hr));
-    m_eColorDstBlendDX9 = (Blend)MatchRenderState(value, BLEND);
+    m_eColorDstBlendD3D9 = (Blend)MatchRenderState(value, BLEND);
 
     hr = device->GetRenderState(D3DRS_BLENDFACTOR, &value);
     assert(SUCCEEDED(hr));
-    m_vColorBlendFactorDX9 = Vec4f(
+    m_vColorBlendFactorD3D9 = Vec4f(
         (float)((value & (0xff << 16)) >> 16) / 255.f,  // red
         (float)((value & (0xff << 8)) >> 8) / 255.f,    // green
         (float)(value & 0xff) / 255.f,                  // blue
@@ -121,240 +121,240 @@ void RenderStateDX9::Reset()
 
     hr = device->GetRenderState(D3DRS_ALPHATESTENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bAlphaTestEnabledDX9 = (value != 0);
+    m_bAlphaTestEnabledD3D9 = (value != 0);
 
     hr = device->GetRenderState(D3DRS_ALPHAFUNC, &value);
     assert(SUCCEEDED(hr));
-    m_eAlphaFuncDX9 = (Cmp)MatchRenderState(value, CMP);
+    m_eAlphaFuncD3D9 = (Cmp)MatchRenderState(value, CMP);
 
     hr = device->GetRenderState(D3DRS_ALPHAREF, &value);
     assert(SUCCEEDED(hr));
-    m_fAlphaRefDX9 = (float)value / 255.f;
+    m_fAlphaRefD3D9 = (float)value / 255.f;
 
 
 
     hr = device->GetRenderState(D3DRS_CULLMODE, &value);
     assert(SUCCEEDED(hr));
-    m_eCullModeDX9 = (Cull)MatchRenderState(value, CULL);
+    m_eCullModeD3D9 = (Cull)MatchRenderState(value, CULL);
 
 
 
     hr = device->GetRenderState(D3DRS_ZENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_eZEnabledDX9 = (ZBuffer)MatchRenderState(value, ZB);
+    m_eZEnabledD3D9 = (ZBuffer)MatchRenderState(value, ZB);
 
     hr = device->GetRenderState(D3DRS_ZFUNC, &value);
     assert(SUCCEEDED(hr));
-    m_eZFuncDX9 = (Cmp)MatchRenderState(value, CMP);
+    m_eZFuncD3D9 = (Cmp)MatchRenderState(value, CMP);
 
     hr = device->GetRenderState(D3DRS_ZWRITEENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bZWriteEnabledDX9 = (value != 0);
+    m_bZWriteEnabledD3D9 = (value != 0);
 
 
     hr = device->GetRenderState(D3DRS_COLORWRITEENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bColorWriteRedDX9     = (value & D3DCOLORWRITEENABLE_RED) != 0;
-    m_bColorWriteGreenDX9   = (value & D3DCOLORWRITEENABLE_GREEN) != 0;
-    m_bColorWriteBlueDX9    = (value & D3DCOLORWRITEENABLE_BLUE) != 0;
-    m_bColorWriteAlphaDX9   = (value & D3DCOLORWRITEENABLE_ALPHA) != 0;
+    m_bColorWriteRedD3D9     = (value & D3DCOLORWRITEENABLE_RED) != 0;
+    m_bColorWriteGreenD3D9   = (value & D3DCOLORWRITEENABLE_GREEN) != 0;
+    m_bColorWriteBlueD3D9    = (value & D3DCOLORWRITEENABLE_BLUE) != 0;
+    m_bColorWriteAlphaD3D9   = (value & D3DCOLORWRITEENABLE_ALPHA) != 0;
 
 
     hr = device->GetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, &value);
     assert(SUCCEEDED(hr));
-    m_fSlopeScaledDepthBiasDX9 = *(float*)&value;
+    m_fSlopeScaledDepthBiasD3D9 = *(float*)&value;
 
     hr = device->GetRenderState(D3DRS_DEPTHBIAS, &value);
     assert(SUCCEEDED(hr));
-    m_fDepthBiasDX9 = *(float*)&value;// *16777216.0f;
+    m_fDepthBiasD3D9 = *(float*)&value;// *16777216.0f;
 
 
 
     hr = device->GetRenderState(D3DRS_STENCILENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bStencilEnabledDX9 = (value != 0);
+    m_bStencilEnabledD3D9 = (value != 0);
 
     hr = device->GetRenderState(D3DRS_STENCILFUNC, &value);
     assert(SUCCEEDED(hr));
-    m_eStencilFuncDX9 = (Cmp)MatchRenderState(value, CMP);
+    m_eStencilFuncD3D9 = (Cmp)MatchRenderState(value, CMP);
 
     hr = device->GetRenderState(D3DRS_STENCILREF, &value);
     assert(SUCCEEDED(hr));
-    m_lStencilRefDX9 = value;
+    m_lStencilRefD3D9 = value;
 
     hr = device->GetRenderState(D3DRS_STENCILMASK, &value);
     assert(SUCCEEDED(hr));
-    m_lStencilMaskDX9 = value;
+    m_lStencilMaskD3D9 = value;
 
     hr = device->GetRenderState(D3DRS_STENCILWRITEMASK, &value);
     assert(SUCCEEDED(hr));
-    m_lStencilWriteMaskDX9 = value;
+    m_lStencilWriteMaskD3D9 = value;
 
     hr = device->GetRenderState(D3DRS_STENCILFAIL, &value);
     assert(SUCCEEDED(hr));
-    m_eStencilFailDX9 = (StencilOp)MatchRenderState(value, STENCILOP);
+    m_eStencilFailD3D9 = (StencilOp)MatchRenderState(value, STENCILOP);
 
     hr = device->GetRenderState(D3DRS_STENCILZFAIL, &value);
     assert(SUCCEEDED(hr));
-    m_eStencilZFailDX9 = (StencilOp)MatchRenderState(value, STENCILOP);
+    m_eStencilZFailD3D9 = (StencilOp)MatchRenderState(value, STENCILOP);
 
     hr = device->GetRenderState(D3DRS_STENCILPASS, &value);
     assert(SUCCEEDED(hr));
-    m_eStencilPassDX9 = (StencilOp)MatchRenderState(value, STENCILOP);
+    m_eStencilPassD3D9 = (StencilOp)MatchRenderState(value, STENCILOP);
 
 
 
     hr = device->GetRenderState(D3DRS_FILLMODE, &value);
     assert(SUCCEEDED(hr));
-    m_eFillModeDX9 = (Fill)MatchRenderState(value, FILL);
+    m_eFillModeD3D9 = (Fill)MatchRenderState(value, FILL);
 
 
 
     hr = device->GetRenderState(D3DRS_SCISSORTESTENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bScissorEnabledDX9 = (value != 0);
+    m_bScissorEnabledD3D9 = (value != 0);
 
 
 
     hr = device->GetRenderState(D3DRS_SRGBWRITEENABLE, &value);
     assert(SUCCEEDED(hr));
-    m_bSRGBEnabledDX9 = (value != 0);
+    m_bSRGBEnabledD3D9 = (value != 0);
 
 
 
     RenderState::Reset();
 }
 
-const bool RenderStateDX9::Flush()
+const bool RenderStateD3D9::Flush()
 {
-    IDirect3DDevice9* device = RendererDX9::GetInstance()->GetDevice();
+    IDirect3DDevice9* device = RendererD3D9::GetInstance()->GetDevice();
     HRESULT hr = E_FAIL;
 
-    if (m_bColorBlendEnabledDX9 != GetColorBlendEnabled())
+    if (m_bColorBlendEnabledD3D9 != GetColorBlendEnabled())
     {
         hr = device->SetRenderState(D3DRS_ALPHABLENDENABLE, (DWORD)GetColorBlendEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bColorBlendEnabledDX9 = GetColorBlendEnabled();
+            m_bColorBlendEnabledD3D9 = GetColorBlendEnabled();
         else
             return false;
     }
 
-    if (m_eColorSrcBlendDX9 != GetColorSrcBlend())
+    if (m_eColorSrcBlendD3D9 != GetColorSrcBlend())
     {
-        hr = device->SetRenderState(D3DRS_SRCBLEND/*ALPHA*/, RenderStateMappingDX9[GetColorSrcBlend()]);
+        hr = device->SetRenderState(D3DRS_SRCBLEND/*ALPHA*/, RenderStateMappingD3D9[GetColorSrcBlend()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eColorSrcBlendDX9 = GetColorSrcBlend();
+            m_eColorSrcBlendD3D9 = GetColorSrcBlend();
         else
             return false;
     }
 
-    if (m_eColorDstBlendDX9 != GetColorDstBlend())
+    if (m_eColorDstBlendD3D9 != GetColorDstBlend())
     {
-        hr = device->SetRenderState(D3DRS_DESTBLEND/*ALPHA*/, RenderStateMappingDX9[GetColorDstBlend()]);
+        hr = device->SetRenderState(D3DRS_DESTBLEND/*ALPHA*/, RenderStateMappingD3D9[GetColorDstBlend()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eColorDstBlendDX9 = GetColorDstBlend();
+            m_eColorDstBlendD3D9 = GetColorDstBlend();
         else
             return false;
     }
 
-    if (m_bAlphaTestEnabledDX9 != GetAlphaTestEnabled())
+    if (m_bAlphaTestEnabledD3D9 != GetAlphaTestEnabled())
     {
         hr = device->SetRenderState(D3DRS_ALPHATESTENABLE, (DWORD)GetAlphaTestEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bAlphaTestEnabledDX9 = GetAlphaTestEnabled();
+            m_bAlphaTestEnabledD3D9 = GetAlphaTestEnabled();
         else
             return false;
     }
 
-    if (m_eAlphaFuncDX9 != GetAlphaTestFunc())
+    if (m_eAlphaFuncD3D9 != GetAlphaTestFunc())
     {
-        hr = device->SetRenderState(D3DRS_ALPHAFUNC, RenderStateMappingDX9[GetAlphaTestFunc()]);
+        hr = device->SetRenderState(D3DRS_ALPHAFUNC, RenderStateMappingD3D9[GetAlphaTestFunc()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eAlphaFuncDX9 = GetAlphaTestFunc();
+            m_eAlphaFuncD3D9 = GetAlphaTestFunc();
         else
             return false;
     }
 
-    if (m_fAlphaRefDX9 != GetAlphaTestRef())
+    if (m_fAlphaRefD3D9 != GetAlphaTestRef())
     {
         hr = device->SetRenderState(D3DRS_ALPHAREF, (DWORD)(255.f * GetAlphaTestRef()));
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_fAlphaRefDX9 = GetAlphaTestRef();
+            m_fAlphaRefD3D9 = GetAlphaTestRef();
         else
             return false;
     }
 
-    if (m_vColorBlendFactorDX9 != GetColorBlendFactor())
+    if (m_vColorBlendFactorD3D9 != GetColorBlendFactor())
     {
         hr = device->SetRenderState(D3DRS_BLENDFACTOR, D3DCOLOR_COLORVALUE(GetColorBlendFactor()[0], GetColorBlendFactor()[1], GetColorBlendFactor()[2], GetColorBlendFactor()[3]));
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_vColorBlendFactorDX9 = GetColorBlendFactor();
+            m_vColorBlendFactorD3D9 = GetColorBlendFactor();
         else
             return false;
     }
 
-    if (m_eCullModeDX9 != GetCullMode())
+    if (m_eCullModeD3D9 != GetCullMode())
     {
-        hr = device->SetRenderState(D3DRS_CULLMODE, RenderStateMappingDX9[GetCullMode()]);
+        hr = device->SetRenderState(D3DRS_CULLMODE, RenderStateMappingD3D9[GetCullMode()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eCullModeDX9 = GetCullMode();
+            m_eCullModeD3D9 = GetCullMode();
         else
             return false;
     }
 
-    if (m_eZEnabledDX9 != GetZEnabled())
+    if (m_eZEnabledD3D9 != GetZEnabled())
     {
-        hr = device->SetRenderState(D3DRS_ZENABLE, RenderStateMappingDX9[GetZEnabled()]);
+        hr = device->SetRenderState(D3DRS_ZENABLE, RenderStateMappingD3D9[GetZEnabled()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eZEnabledDX9 = GetZEnabled();
+            m_eZEnabledD3D9 = GetZEnabled();
         else
             return false;
     }
 
-    if (m_eZFuncDX9 != GetZFunc())
+    if (m_eZFuncD3D9 != GetZFunc())
     {
-        hr = device->SetRenderState(D3DRS_ZFUNC, RenderStateMappingDX9[GetZFunc()]);
+        hr = device->SetRenderState(D3DRS_ZFUNC, RenderStateMappingD3D9[GetZFunc()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eZFuncDX9 = GetZFunc();
+            m_eZFuncD3D9 = GetZFunc();
         else
             return false;
     }
 
-    if (m_bZWriteEnabledDX9 != GetZWriteEnabled())
+    if (m_bZWriteEnabledD3D9 != GetZWriteEnabled())
     {
         hr = device->SetRenderState(D3DRS_ZWRITEENABLE, (DWORD)GetZWriteEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bZWriteEnabledDX9 = GetZWriteEnabled();
+            m_bZWriteEnabledD3D9 = GetZWriteEnabled();
         else
             return false;
     }
 
-    if (m_bColorWriteRedDX9 != GetColorWriteRedEnabled() ||
-        m_bColorWriteGreenDX9 != GetColorWriteGreenEnabled() ||
-        m_bColorWriteBlueDX9 != GetColorWriteBlueEnabled() ||
-        m_bColorWriteAlphaDX9 != GetColorWriteAlphaEnabled())
+    if (m_bColorWriteRedD3D9 != GetColorWriteRedEnabled() ||
+        m_bColorWriteGreenD3D9 != GetColorWriteGreenEnabled() ||
+        m_bColorWriteBlueD3D9 != GetColorWriteBlueEnabled() ||
+        m_bColorWriteAlphaD3D9 != GetColorWriteAlphaEnabled())
     {
         DWORD colorWriteEnable = 
             ((GetColorWriteRedEnabled() * 0xf) & D3DCOLORWRITEENABLE_RED) |
@@ -366,28 +366,28 @@ const bool RenderStateDX9::Flush()
 
         if (SUCCEEDED(hr))
         {
-            m_bColorWriteRedDX9 = GetColorWriteRedEnabled();
-            m_bColorWriteGreenDX9 = GetColorWriteGreenEnabled();
-            m_bColorWriteBlueDX9 = GetColorWriteBlueEnabled();
-            m_bColorWriteAlphaDX9 = GetColorWriteAlphaEnabled();
+            m_bColorWriteRedD3D9 = GetColorWriteRedEnabled();
+            m_bColorWriteGreenD3D9 = GetColorWriteGreenEnabled();
+            m_bColorWriteBlueD3D9 = GetColorWriteBlueEnabled();
+            m_bColorWriteAlphaD3D9 = GetColorWriteAlphaEnabled();
         }
         else
             return false;
     }
 
-    if (m_fSlopeScaledDepthBiasDX9 != GetSlopeScaledDepthBias())
+    if (m_fSlopeScaledDepthBiasD3D9 != GetSlopeScaledDepthBias())
     {
         const float scale = GetSlopeScaledDepthBias();
         hr = device->SetRenderState(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&scale);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_fSlopeScaledDepthBiasDX9 = GetSlopeScaledDepthBias();
+            m_fSlopeScaledDepthBiasD3D9 = GetSlopeScaledDepthBias();
         else
             return false;
     }
 
-    if (m_fDepthBiasDX9 != GetDepthBias())
+    if (m_fDepthBiasD3D9 != GetDepthBias())
     {
         //float dwBias = bias / 16777216.0f;
         const float bias = GetDepthBias();
@@ -395,128 +395,128 @@ const bool RenderStateDX9::Flush()
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_fDepthBiasDX9 = GetDepthBias();
+            m_fDepthBiasD3D9 = GetDepthBias();
         else
             return false;
     }
 
-    if (m_bStencilEnabledDX9 != GetStencilEnabled())
+    if (m_bStencilEnabledD3D9 != GetStencilEnabled())
     {
         hr = device->SetRenderState(D3DRS_STENCILENABLE, (DWORD)GetStencilEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bStencilEnabledDX9 = GetStencilEnabled();
+            m_bStencilEnabledD3D9 = GetStencilEnabled();
         else
             return false;
     }
 
-    if (m_eStencilFuncDX9 != GetStencilFunc())
+    if (m_eStencilFuncD3D9 != GetStencilFunc())
     {
-        hr = device->SetRenderState(D3DRS_STENCILFUNC, RenderStateMappingDX9[GetStencilFunc()]);
+        hr = device->SetRenderState(D3DRS_STENCILFUNC, RenderStateMappingD3D9[GetStencilFunc()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eStencilFuncDX9 = GetStencilFunc();
+            m_eStencilFuncD3D9 = GetStencilFunc();
         else
             return false;
     }
 
-    if (m_lStencilRefDX9 != GetStencilRef())
+    if (m_lStencilRefD3D9 != GetStencilRef())
     {
         hr = device->SetRenderState(D3DRS_STENCILREF, (DWORD)GetStencilRef());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_lStencilRefDX9 = GetStencilRef();
+            m_lStencilRefD3D9 = GetStencilRef();
         else
             return false;
     }
 
-    if (m_lStencilMaskDX9 != GetStencilMask())
+    if (m_lStencilMaskD3D9 != GetStencilMask())
     {
         hr = device->SetRenderState(D3DRS_STENCILMASK, (DWORD)GetStencilMask());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_lStencilMaskDX9 = GetStencilMask();
+            m_lStencilMaskD3D9 = GetStencilMask();
         else
             return false;
     }
 
-    if (m_lStencilWriteMaskDX9 != GetStencilWriteMask())
+    if (m_lStencilWriteMaskD3D9 != GetStencilWriteMask())
     {
         hr = device->SetRenderState(D3DRS_STENCILWRITEMASK, (DWORD)GetStencilWriteMask());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_lStencilWriteMaskDX9 = GetStencilWriteMask();
+            m_lStencilWriteMaskD3D9 = GetStencilWriteMask();
         else
             return false;
     }
 
-    if (m_eStencilFailDX9 != GetStencilFail())
+    if (m_eStencilFailD3D9 != GetStencilFail())
     {
-        hr = device->SetRenderState(D3DRS_STENCILFAIL, RenderStateMappingDX9[GetStencilFail()]);
+        hr = device->SetRenderState(D3DRS_STENCILFAIL, RenderStateMappingD3D9[GetStencilFail()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eStencilFailDX9 = GetStencilFail();
+            m_eStencilFailD3D9 = GetStencilFail();
         else
             return false;
     }
 
-    if (m_eStencilZFailDX9 != GetStencilZFail())
+    if (m_eStencilZFailD3D9 != GetStencilZFail())
     {
-        hr = device->SetRenderState(D3DRS_STENCILZFAIL, RenderStateMappingDX9[GetStencilZFail()]);
+        hr = device->SetRenderState(D3DRS_STENCILZFAIL, RenderStateMappingD3D9[GetStencilZFail()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eStencilZFailDX9 = GetStencilZFail();
+            m_eStencilZFailD3D9 = GetStencilZFail();
         else
             return false;
     }
 
-    if (m_eStencilPassDX9 != GetStencilPass())
+    if (m_eStencilPassD3D9 != GetStencilPass())
     {
-        hr = device->SetRenderState(D3DRS_STENCILPASS, RenderStateMappingDX9[GetStencilPass()]);
+        hr = device->SetRenderState(D3DRS_STENCILPASS, RenderStateMappingD3D9[GetStencilPass()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eStencilPassDX9 = GetStencilPass();
+            m_eStencilPassD3D9 = GetStencilPass();
         else
             return false;
     }
 
-    if (m_eFillModeDX9 != GetFillMode())
+    if (m_eFillModeD3D9 != GetFillMode())
     {
-        hr = device->SetRenderState(D3DRS_FILLMODE, RenderStateMappingDX9[GetFillMode()]);
+        hr = device->SetRenderState(D3DRS_FILLMODE, RenderStateMappingD3D9[GetFillMode()]);
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_eFillModeDX9 = GetFillMode();
+            m_eFillModeD3D9 = GetFillMode();
         else
             return false;
     }
 
-    if (m_bScissorEnabledDX9 != GetScissorEnabled())
+    if (m_bScissorEnabledD3D9 != GetScissorEnabled())
     {
         hr = device->SetRenderState(D3DRS_SCISSORTESTENABLE, (DWORD)GetScissorEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bScissorEnabledDX9 = GetScissorEnabled();
+            m_bScissorEnabledD3D9 = GetScissorEnabled();
         else
             return false;
     }
 
-    if (m_bSRGBEnabledDX9 != GetSRGBWriteEnabled())
+    if (m_bSRGBEnabledD3D9 != GetSRGBWriteEnabled())
     {
         hr = device->SetRenderState(D3DRS_SRGBWRITEENABLE, (DWORD)GetSRGBWriteEnabled());
         assert(SUCCEEDED(hr));
 
         if (SUCCEEDED(hr))
-            m_bSRGBEnabledDX9 = GetSRGBWriteEnabled();
+            m_bSRGBEnabledD3D9 = GetSRGBWriteEnabled();
         else
             return false;
     }
