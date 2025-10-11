@@ -147,7 +147,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -184,7 +184,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -224,7 +224,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -265,7 +265,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -305,7 +305,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -347,7 +347,7 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CONFIGURATION="$(Configuration)";_PLATFORM="$(PlatformTarget)";_PROFILE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\External\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\External\Synesthesia3D\Base;$(SolutionDir)..\External\Synesthesia3D;$(SolutionDir)..\External\freetype\include;$(SolutionDir)..\External\gainput\include;$(SolutionDir)..\External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Framework;$(ProjectDir)Framework\Windows;$(ProjectDir)GITechDemo;$(ProjectDir)GITechDemo\RenderScheme;$(ProjectDir)GITechDemo\Resources;$(ProjectDir)GITechDemo\Utilities;$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\gainput\include;$(ProjectDir)External\ImGui\include;$(SolutionDir)..\..\Data\shaders\</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -408,13 +408,13 @@ call "$(SolutionDir)..\..\Tools\Python27\python.exe" "$(SolutionDir)..\..\Build\
     <None Include="GITechDemo\UtahTeapot.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\External\gainput\gainput_win.vcxproj">
+    <ProjectReference Include="External\gainput\gainput_win.vcxproj">
       <Project>{84a40273-6042-41ce-8da8-cd1d538e1fc1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\External\imgui\ImGui_win.vcxproj">
+    <ProjectReference Include="External\imgui\ImGui_win.vcxproj">
       <Project>{1f3a97ea-bad7-498e-bcb1-5cc3a2c316ad}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\External\Synesthesia3D\Synesthesia3D_win.vcxproj">
+    <ProjectReference Include="..\Synesthesia3D\Synesthesia3D_win.vcxproj">
       <Project>{42b90f7f-e5d8-4b7f-be74-cac4da86c76f}</Project>
     </ProjectReference>
   </ItemGroup>
