@@ -50,7 +50,7 @@ void vsmain(float2 position : POSITION, float4 color : COLOR, float2 texCoord : 
     output.TexCoord = texCoord;
     output.Color = color;
 
-    PatchVSOutputPositionForHalfPixelOffset(output.Position);
+    //PatchVSOutputPositionForHalfPixelOffset(output.Position);
 }
 #endif // VERTEX
 ////////////////////////////////////////////////////////////////////

@@ -136,9 +136,9 @@ CREATE_ROOT_PASS()
         #include "ASCIIPass.h"
         ADD_RENDER_PASS(ASCII_PASS, ASCIIPass, "ASCII Effect", POST_PROCESSING_PASS)
 
-    #include "CopyToBackBufferPass.h"
-    ADD_RENDER_PASS(COPY_TO_BACK_BUFFER_PASS, CopyToBackBufferPass, "Copy to back buffer", ROOT_PASS)
-
     // User interface
     #include "UIPass.h"
     ADD_RENDER_PASS(UI_PASS, UIPass, "UI", ROOT_PASS)
+
+    #include "CopyToBackBufferPass.h"
+    ADD_RENDER_PASS(COPY_TO_BACK_BUFFER_PASS, CopyToBackBufferPass, "Copy to back buffer", ROOT_PASS)

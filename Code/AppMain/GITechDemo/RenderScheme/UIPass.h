@@ -26,14 +26,13 @@
 #include <string>
 #include <unordered_map>
 
+#include <ResourceData.h>
+#include <Utility/Hash.h>
+
 #include <gmtl\gmtl.h>
 using namespace gmtl;
 
 #include "RenderPass.h"
-
-#include "ResourceData.h"
-
-#include "Utility/Hash.h"
 
 namespace gainput
 {
@@ -105,10 +104,10 @@ namespace GITechDemoApp
         bool windowOpen;
     };
 
-    class GPUProfileMarkerResultHistory
+    class ProfileMarkerResultHistory
     {
     public:
-        GPUProfileMarkerResultHistory()
+        ProfileMarkerResultHistory()
             : m_nCurrBufferIdx(0u)
             , m_fTimeAccum(0.f)
         {}
@@ -148,7 +147,8 @@ namespace GITechDemoApp
         void AddParameterInWindow(ArtistParameter* const param) const;
         void DrawGPUFrametimeGraph();
         void DrawGPUProfileBars(const RenderPass* pass = nullptr, const unsigned int level = 0);
-        void DrawGPUProfileDetails(const RenderPass* pass = nullptr, const unsigned int level = 0) const;
+        void DrawCPUProfileDetails(const RenderPass* pass = nullptr, const unsigned int level = 0);
+        void DrawGPUProfileDetails(const RenderPass* pass = nullptr, const unsigned int level = 0);
         void CleanGPUProfileMarkerResultCache(const unsigned int passNameHash);
 
         // UI states/parameters
@@ -197,7 +197,8 @@ namespace GITechDemoApp
         gainput::InputDeviceKeyboard* m_pKeyboardDevice;
         gainput::InputDeviceMouse* m_pMouseDevice;
 
-        GPUProfileMarkerResultHistory m_tGPUProfileMarkerResultHistory;
+        ProfileMarkerResultHistory m_tCPUProfileMarkerResultHistory;
+        ProfileMarkerResultHistory m_tGPUProfileMarkerResultHistory;
     };
 }
 

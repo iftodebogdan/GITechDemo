@@ -133,6 +133,7 @@ void UIPass::Update(const float fDeltaTime)
     Framework* const pFW = Framework::GetInstance();
     ImGuiIO& io = ImGui::GetIO();
 
+    m_tCPUProfileMarkerResultHistory.Update(pFW->GetDeltaTime());
     m_tGPUProfileMarkerResultHistory.Update(pFW->GetDeltaTime());
 
     io.IniFilename = nullptr;
@@ -239,11 +240,20 @@ void UIPass::Update(const float fDeltaTime)
     HLSL::UIParams->MipLevel = m_nSelectedMip;
     HLSL::UIParams->FaceIdx = m_nSelectedFace;
     HLSL::UIParams->DepthSlice = m_fSelectedSlice;
+
+    ResMgr->GetTexture(UIBuffer.GetRenderTarget()->GetColorBuffer())->SetSRGBEnabled(true);
 }
 
 void UIPass::Draw()
 {
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    UIBuffer.Enable();
+    RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0u);
     RenderUI();
+    UIBuffer.Disable();
 }
 
 void UIPass::AddParameterInWindow(ArtistParameter* const param) const
@@ -476,8 +486,6 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             ImGui::PopStyleColor();
         }
 
-        m_tGPUProfileMarkerResultHistory.AddMarkerResult(pass->GetPassNameHash(), timing);
-
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
             DrawGPUProfileBars(pass->GetChildren()[i], level + 1);
@@ -485,7 +493,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
     }
 }
 
-void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int level) const
+void GITechDemoApp::UIPass::DrawCPUProfileDetails(const RenderPass* pass, const unsigned int level)
 {
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
@@ -493,18 +501,59 @@ void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int le
 
     const ImGuiStyle& style = ImGui::GetStyle();
 
+    const char* cpuSuffix = "";
     if (pass == nullptr)
+    {
         pass = &RenderScheme::GetRootPass();
+        cpuSuffix = " (CPU)";
+    }
+
+    if (pass)
+    {
+        const float timing = pass->GetLastCPUTimeMs();
+
+        m_tCPUProfileMarkerResultHistory.AddMarkerResult(pass->GetPassNameHash(), timing);
+
+        float average, min, max;
+        m_tCPUProfileMarkerResultHistory.AggregateResults(pass->GetPassNameHash(), average, min, max);
+
+        ImGui::Text("%s%s: %5.3f ms (min/avg/max %5.3f/%5.3f/%5.3f ms)", pass->GetPassName(), cpuSuffix, timing, min, average, max);
+
+        for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
+        {
+            ImGui::Indent();
+            DrawCPUProfileDetails(pass->GetChildren()[i], level + 1);
+            ImGui::Unindent();
+        }
+    }
+}
+
+void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int level)
+{
+    Renderer* RenderContext = Renderer::GetInstance();
+    if (!RenderContext)
+        return;
+
+    const ImGuiStyle& style = ImGui::GetStyle();
+
+    const char* gpuSuffix = "";
+    if (pass == nullptr)
+    {
+        pass = &RenderScheme::GetRootPass();
+        gpuSuffix = " (GPU)";
+    }
 
     if (pass)
     {
         const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
         const float timing = marker ? marker->GetTiming() : 0.f;
 
+        m_tGPUProfileMarkerResultHistory.AddMarkerResult(pass->GetPassNameHash(), timing);
+
         float average, min, max;
         m_tGPUProfileMarkerResultHistory.AggregateResults(pass->GetPassNameHash(), average, min, max);
 
-        ImGui::Text("%s: %5.3f ms (min/avg/max %5.3f/%5.3f/%5.3f ms)", pass->GetPassName(), timing, min, average, max);
+        ImGui::Text("%s%s: %5.3f ms (min/avg/max %5.3f/%5.3f/%5.3f ms)", pass->GetPassName(), gpuSuffix, timing, min, average, max);
 
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
@@ -677,6 +726,12 @@ void UIPass::SetupUI()
         ImGui::PopStyleColor();
 
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
+        if (ImGui::Begin("CPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
+        {
+            ImGui::SetWindowPos(ImVec2(style.WindowPadding.x, io.DisplaySize.y - style.WindowPadding.y - ImGui::GetWindowHeight()));
+            DrawCPUProfileDetails();
+            ImGui::End();
+        }
         if (ImGui::Begin("GPU Profiler Details", &m_bShowProfiler, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs))
         {
             ImGui::SetWindowPos(ImVec2(io.DisplaySize.x - style.WindowPadding.x - ImGui::GetWindowWidth(), io.DisplaySize.y - style.WindowPadding.y - ImGui::GetWindowHeight()));
@@ -934,7 +989,6 @@ void UIPass::GenerateDrawData()
         m_nImGuiIbIdx[m_nCurrBufferIdx] = ResMgr->CreateIndexBuffer(drawData->TotalIdxCount * 2u, sizeof(ImDrawIdx) == 2 ? IBF_INDEX16 : IBF_INDEX32, BU_DYNAMIC);
         m_pImGuiIb[m_nCurrBufferIdx] = ResMgr->GetIndexBuffer(m_nImGuiIbIdx[m_nCurrBufferIdx]);
         assert(sizeof(ImDrawIdx) == m_pImGuiIb[m_nCurrBufferIdx]->GetElementSize());
-        assert(m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() <= Math::pow(2.f, sizeof(ImDrawIdx) * 8.f));
 
         //cout << "UI index buffer reallocation: " << drawData->TotalIdxCount << "/" << m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() << " indices req/alloc" << endl;
     }
@@ -1033,7 +1087,7 @@ void UIPass::RenderUI()
     const bool scissorEnabled = RSMgr->GetScissorEnabled();
     const Cull cullMode = RSMgr->GetCullMode();
 
-    RSMgr->SetSRGBWriteEnabled(false);
+    RSMgr->SetSRGBWriteEnabled(true);
     RSMgr->SetZWriteEnabled(false);
     RSMgr->SetZFunc(CMP_ALWAYS);
     RSMgr->SetZEnabled(ZB_DISABLED);
@@ -1312,7 +1366,7 @@ void UIPass::ReleaseResources()
     }
 }
 
-void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)
+void ProfileMarkerResultHistory::Update(const float fDeltaTime)
 {
     m_fTimeAccum += fDeltaTime;
 
@@ -1324,7 +1378,7 @@ void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)
     }
 }
 
-void GITechDemoApp::GPUProfileMarkerResultHistory::AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const
+void GITechDemoApp::ProfileMarkerResultHistory::AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const
 {
     const int historyBufferIdx = (m_nCurrBufferIdx + 1) % 2;
     const auto& accumulator = m_arrGPUProfileMarkerResultAccumulator[historyBufferIdx].find(passNameHash);
@@ -1343,7 +1397,7 @@ void GITechDemoApp::GPUProfileMarkerResultHistory::AggregateResults(const unsign
     }
 }
 
-void GPUProfileMarkerResultHistory::AddMarkerResult(const unsigned int passNameHash, const float timing)
+void ProfileMarkerResultHistory::AddMarkerResult(const unsigned int passNameHash, const float timing)
 {
     GPUProfileMarkerResultAccumulator& accumulator = m_arrGPUProfileMarkerResultAccumulator[m_nCurrBufferIdx][passNameHash];
     accumulator.totalTime += timing;

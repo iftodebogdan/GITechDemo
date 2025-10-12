@@ -48,6 +48,8 @@ namespace GITechDemoApp
 
         const std::vector<RenderPass*>&     GetChildren() const { return m_arrChildList; }
 
+        const float GetLastCPUTimeMs() const { return (float)m_nCPUTicks / 1000.f; }
+
     protected:
         virtual void Update(const float fDeltaTime) {}
         virtual void Draw();
@@ -69,6 +71,17 @@ namespace GITechDemoApp
         std::string                 m_szPassName;
         unsigned int                m_nPassNameHash;
         std::vector<RenderPass*>    m_arrChildList;
+
+        struct ScopedCPUTimer
+        {
+            ScopedCPUTimer(unsigned int& ticks);
+            ~ScopedCPUTimer();
+
+            unsigned int m_nStartTicks;
+            unsigned int& m_nTicks;
+        };
+
+        unsigned int    m_nCPUTicks;
 
         friend class RenderScheme;
     };

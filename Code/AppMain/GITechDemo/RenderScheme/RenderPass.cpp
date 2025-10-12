@@ -23,17 +23,27 @@
 
 #include <Renderer.h>
 #include <Profiler.h>
+#include <Utility/Hash.h>
 using namespace Synesthesia3D;
 
+#include "Framework.h"
+using namespace AppFramework;
+
 #include "GITechDemo.h"
-#include "Utility/Hash.h"
 
 #include "RenderPass.h"
 using namespace GITechDemoApp;
 
+#if ENABLE_PROFILE_MARKERS
+#define SCOPED_CPU_TIMER(ticks) RenderPass::ScopedCPUTimer scopedCPUTimer(ticks)
+#else
+#define SCOPED_CPU_TIMER(ticks)
+#endif
+
 RenderPass::RenderPass(const char* const passName, RenderPass* const parentPass)
     : m_szPassName(passName)
     , m_nPassNameHash(S3DHASH(passName))
+    , m_nCPUTicks(0u)
 {
     if (parentPass)
     {
@@ -54,6 +64,8 @@ void RenderPass::AddChildPass(RenderPass* const childPass)
 
 void RenderPass::Draw()
 {
+    SCOPED_CPU_TIMER(m_nCPUTicks);
+
     PUSH_PROFILE_MARKER_WITH_GPU_QUERY(GetPassName());
     DrawChildren();
     POP_PROFILE_MARKER();
@@ -65,6 +77,8 @@ void RenderPass::DrawChildren()
     {
         if (m_arrChildList[child] != nullptr)
         {
+            SCOPED_CPU_TIMER(m_arrChildList[child]->m_nCPUTicks);
+
             PUSH_PROFILE_MARKER_WITH_GPU_QUERY(m_arrChildList[child]->GetPassName());
             m_arrChildList[child]->Update(((GITechDemo*)AppMain)->GetDeltaTime());
             m_arrChildList[child]->Draw();
@@ -105,4 +119,16 @@ void RenderPass::ReleaseChildrenResources()
             m_arrChildList[child]->ReleaseChildrenResources();
         }
     }
+}
+
+RenderPass::ScopedCPUTimer::ScopedCPUTimer(unsigned int& ticks)
+    : m_nStartTicks(Framework::GetInstance()->GetTicks())
+    , m_nTicks(ticks)
+{
+
+}
+
+GITechDemoApp::RenderPass::ScopedCPUTimer::~ScopedCPUTimer()
+{
+    m_nTicks = Framework::GetInstance()->GetTicks() - m_nStartTicks;
 }
