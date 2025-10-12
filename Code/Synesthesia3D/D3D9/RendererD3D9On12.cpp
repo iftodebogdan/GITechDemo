@@ -93,6 +93,15 @@ IDirect3D9* RendererD3D9On12::CreateDriver()
         IDirect3D9* d3d = nullptr;
         ID3D12Device* d3d12Device = nullptr;
 
+#ifdef _DEBUG
+        ID3D12Debug* debugController;
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+        {
+            debugController->EnableDebugLayer();
+            debugController->Release();
+        }
+#endif
+
         D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12Device));
 
         LUID adapter_LUID = d3d12Device->GetAdapterLuid();

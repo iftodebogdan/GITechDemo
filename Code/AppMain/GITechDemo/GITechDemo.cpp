@@ -23,6 +23,7 @@
 
 #include <time.h>
 #include <sstream>
+#include <unordered_set>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -174,6 +175,16 @@ bool GITechDemo::Init(void* hWnd)
     m_bLastFrameVSync = RenderContext->GetVSyncStatus();
 
     HLSL::FrameParams->ViewProjMat = MAT_IDENTITY44F;
+
+    // Double check that we don't have any hash collisions in the render pass names
+    std::unordered_set<unsigned int> passNameHashSet;
+    auto traversePasses = [&passNameHashSet](auto&& traversePasses, RenderPass* renderPass) -> void {
+        auto& result = passNameHashSet.insert(renderPass->GetPassNameHash());
+        assert(result.second == true); // hash collision!
+        for (RenderPass* subRenderPass : renderPass->GetChildren())
+            traversePasses(traversePasses, subRenderPass);
+    };
+    traversePasses(traversePasses, &RenderScheme::GetRootPass());
 
     return true;
 }

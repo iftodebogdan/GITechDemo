@@ -26,15 +26,22 @@
 using namespace Synesthesia3D;
 
 #include "GITechDemo.h"
+#include "Utility/Hash.h"
 
 #include "RenderPass.h"
 using namespace GITechDemoApp;
 
 RenderPass::RenderPass(const char* const passName, RenderPass* const parentPass)
     : m_szPassName(passName)
+    , m_nPassNameHash(S3DHASH(passName))
 {
-    if(parentPass)
+    if (parentPass)
+    {
         parentPass->AddChildPass(this);
+
+        assert(m_nPassNameHash != parentPass->GetPassNameHash());
+        m_nPassNameHash ^= parentPass->GetPassNameHash();
+    }
 }
 
 RenderPass::~RenderPass()

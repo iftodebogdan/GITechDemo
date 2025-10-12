@@ -1094,7 +1094,7 @@ namespace GITechDemoApp
         "Sky",
         RenderConfig::SkyBox::SunRadius,
         10.f,
-        1000.f);
+        15000.f);
 
     CREATE_ARTIST_PARAMETER_OBJECT(
         "Sun brightness",

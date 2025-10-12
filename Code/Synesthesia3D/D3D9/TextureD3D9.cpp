@@ -87,6 +87,9 @@ const bool TextureD3D9::Lock(const unsigned int mipmapLevel, const BufferLocking
     if (m_bIsLocked || m_eBufferUsage == BU_RENDERTAGET || m_eBufferUsage == BU_DEPTHSTENCIL)
         return false;
 
+    // D3DLOCK_DISCARD is only valid when the resource is created with D3DUSAGE_DYNAMIC
+    const DWORD lockFlags = BufferLockingD3D9[lockMode] & (m_eBufferUsage != BU_DYNAMIC ? ~D3DLOCK_DISCARD : ~0u);
+
     assert(m_pTempBuffer == nullptr);
     D3DLOCKED_RECT rect;
     D3DLOCKED_BOX box;
@@ -95,7 +98,7 @@ const bool TextureD3D9::Lock(const unsigned int mipmapLevel, const BufferLocking
     {
     case TT_1D:
     case TT_2D:
-        hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(mipmapLevel, &rect, 0, BufferLockingD3D9[lockMode]);
+        hr = ((IDirect3DTexture9*)m_pTexture)->LockRect(mipmapLevel, &rect, 0, lockFlags);
         if (!SUCCEEDED(hr))
         {
             assert(false);
@@ -107,7 +110,7 @@ const bool TextureD3D9::Lock(const unsigned int mipmapLevel, const BufferLocking
         break;
 
     case TT_3D:
-        hr = ((IDirect3DVolumeTexture9*)m_pTexture)->LockBox(mipmapLevel, &box, 0, BufferLockingD3D9[lockMode]);
+        hr = ((IDirect3DVolumeTexture9*)m_pTexture)->LockBox(mipmapLevel, &box, 0, lockFlags);
         if (!SUCCEEDED(hr))
         {
             assert(false);
@@ -132,9 +135,12 @@ const bool TextureD3D9::Lock(const CubeFace cubeFace, const unsigned int mipmapL
     if (m_bIsLocked)
         return false;
 
+    // D3DLOCK_DISCARD is only valid when the resource is created with D3DUSAGE_DYNAMIC
+    const DWORD lockFlags = BufferLockingD3D9[lockMode] | (m_eBufferUsage != BU_DYNAMIC ? ~D3DLOCK_DISCARD : 0);
+
     assert(m_pTempBuffer == nullptr);
     D3DLOCKED_RECT rect;
-    HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)GetCubeFaceIndex(cubeFace), mipmapLevel, &rect, 0, BufferLockingD3D9[lockMode]);
+    HRESULT hr = ((IDirect3DCubeTexture9*)m_pTexture)->LockRect((D3DCUBEMAP_FACES)GetCubeFaceIndex(cubeFace), mipmapLevel, &rect, 0, lockFlags);
     if (!SUCCEEDED(hr))
     {
         assert(false);

@@ -44,11 +44,12 @@ void ProfilerD3D9::PushProfileMarker(const char* const label, const bool issueGP
     const std::lock_guard<std::recursive_mutex> lock(m_tProfileMarkerMutex);
 
     Profiler::PushProfileMarker(label);
-    unsigned int len = (unsigned int)strlen(label) + 1;
-    wchar_t* labelWide = new wchar_t[len];
-    MultiByteToWideChar(CP_ACP, 0, label, -1, labelWide, len);
+
+    const int labelWideMaxSize = 128;
+    wchar_t labelWide[labelWideMaxSize];
+    MultiByteToWideChar(CP_UTF8, 0, label, -1, labelWide, labelWideMaxSize);
+
     D3DPERF_BeginEvent((D3DCOLOR)0xffffffff, labelWide);
-    delete[] labelWide;
 
     if (m_arrD3DDisjointQuery.size() > 0)
     {

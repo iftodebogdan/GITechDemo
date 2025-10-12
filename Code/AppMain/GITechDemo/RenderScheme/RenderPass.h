@@ -44,6 +44,7 @@ namespace GITechDemoApp
 
         void AddChildPass(RenderPass* const childPass);
         const char* const GetPassName() const { return m_szPassName.c_str(); }
+        const unsigned int GetPassNameHash() const { return m_nPassNameHash; }
 
         const std::vector<RenderPass*>&     GetChildren() const { return m_arrChildList; }
 
@@ -66,6 +67,7 @@ namespace GITechDemoApp
         void ReleaseChildrenResources();
 
         std::string                 m_szPassName;
+        unsigned int                m_nPassNameHash;
         std::vector<RenderPass*>    m_arrChildList;
 
         friend class RenderScheme;

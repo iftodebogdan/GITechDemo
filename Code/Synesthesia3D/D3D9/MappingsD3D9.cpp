@@ -41,7 +41,7 @@ namespace Synesthesia3D
     const DWORD BufferLockingD3D9[BL_MAX] =
     {
         D3DLOCK_READONLY,       // BL_READ_ONLY
-        0,                      // BL_WRITE_ONLY
+        D3DLOCK_DISCARD,        // BL_WRITE_ONLY
         0                       // BL_READ_WRITE
     };
 

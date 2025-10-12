@@ -290,12 +290,12 @@ void UIPass::AddParameterInWindow(ArtistParameter* const param) const
     }
 }
 
-void UIPass::CleanGPUProfileMarkerResultCache(const char* const passName)
+void UIPass::CleanGPUProfileMarkerResultCache(const unsigned int passNameHash)
 {
     // Clean up old cached profile marker results
     for (int i = (int)m_arrGPUProfileMarkerResultCache.size() - 1; i >= 0; i--)
     {
-        if (passName == m_arrGPUProfileMarkerResultCache[i].name)
+        if (passNameHash == m_arrGPUProfileMarkerResultCache[i].nameHash)
         {
             m_arrGPUProfileMarkerResultCache.erase(m_arrGPUProfileMarkerResultCache.begin() + i);
         }
@@ -395,15 +395,15 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             // Add this profile marker result to the cache
             if (start >= rootStart && end <= rootEnd)
             {
-                CleanGPUProfileMarkerResultCache(pass->GetPassName());
+                CleanGPUProfileMarkerResultCache(pass->GetPassNameHash());
 
                 // Profile marker result is from current frame
-                m_arrGPUProfileMarkerResultCache.push_back(GPUProfileMarkerResultCacheEntry(pass->GetPassName(), timing, start, end, rootTiming, rootStart, rootEnd));
+                m_arrGPUProfileMarkerResultCache.push_back(GPUProfileMarkerResultCacheEntry(pass->GetPassNameHash(), timing, start, end, rootTiming, rootStart, rootEnd));
             }
             else
             {
                 // Profile marker result is from a future frame
-                m_arrGPUProfileMarkerResultCache.push_back(GPUProfileMarkerResultCacheEntry(pass->GetPassName(), timing, start, end, 0.f, 0.f, 0.f));
+                m_arrGPUProfileMarkerResultCache.push_back(GPUProfileMarkerResultCacheEntry(pass->GetPassNameHash(), timing, start, end, 0.f, 0.f, 0.f));
             }
 
             // Add root timings to incomplete cached profile marker results (if applicable)
@@ -418,7 +418,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
                         entry.rootStart = rootStart;
                         entry.rootEnd = rootEnd;
 
-                        CleanGPUProfileMarkerResultCache(entry.name.c_str());
+                        CleanGPUProfileMarkerResultCache(entry.nameHash);
 
                         m_arrGPUProfileMarkerResultCache.push_back(entry);
                     }
@@ -430,7 +430,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             {
                 for (int i = (int)m_arrGPUProfileMarkerResultCache.size() - 1; i >= 0; i--)
                 {
-                    if (pass->GetPassName() == m_arrGPUProfileMarkerResultCache[i].name && m_arrGPUProfileMarkerResultCache[i].rootTiming != 0.f)
+                    if (pass->GetPassNameHash() == m_arrGPUProfileMarkerResultCache[i].nameHash && m_arrGPUProfileMarkerResultCache[i].rootTiming != 0.f)
                     {
                         timing = m_arrGPUProfileMarkerResultCache[i].timing;
                         start = m_arrGPUProfileMarkerResultCache[i].start;
@@ -463,8 +463,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             ImGui::SetCursorPosX(barLeft);
             ImGui::SetCursorPosY((level - 1) * (barHeight + style.FramePadding.y) + style.WindowPadding.y);
 
-            const char* const passName = pass->GetPassName();
-            const unsigned int passNameHash = S3DHASH(passName);
+            const unsigned int passNameHash = pass->GetPassNameHash();
             const float R = ((passNameHash & 0x000000FF) >> 0) / 255.f;
             const float G = ((passNameHash & 0x0000FF00) >> 8) / 255.f;
             const float B = ((passNameHash & 0x00FF0000) >> 16) / 255.f;
@@ -477,7 +476,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
             ImGui::PopStyleColor();
         }
 
-        m_tGPUProfileMarkerResultHistory.PushMarker(GPUProfileMarkerResultCacheEntry(pass->GetPassName(), timing, start, end, rootTiming, rootStart, rootEnd));
+        m_tGPUProfileMarkerResultHistory.AddMarkerResult(pass->GetPassNameHash(), timing);
 
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
@@ -502,7 +501,10 @@ void UIPass::DrawGPUProfileDetails(const RenderPass* pass, const unsigned int le
         const GPUProfileMarkerResult* const marker = RenderContext->GetProfiler()->RetrieveGPUProfileMarker(pass->GetPassName());
         const float timing = marker ? marker->GetTiming() : 0.f;
 
-        ImGui::Text("%s: %6.3f ms (avg %6.3f ms)", pass->GetPassName(), timing, m_tGPUProfileMarkerResultHistory.GetAverage(pass->GetPassName()));
+        float average, min, max;
+        m_tGPUProfileMarkerResultHistory.AggregateResults(pass->GetPassNameHash(), average, min, max);
+
+        ImGui::Text("%s: %5.3f ms (min/avg/max %5.3f/%5.3f/%5.3f ms)", pass->GetPassName(), timing, min, average, max);
 
         for (unsigned int i = 0; i < (unsigned int)pass->GetChildren().size(); i++)
         {
@@ -929,27 +931,31 @@ void UIPass::GenerateDrawData()
             ResMgr->ReleaseIndexBuffer(m_nImGuiIbIdx[m_nCurrBufferIdx]);
         }
 
-        m_nImGuiIbIdx[m_nCurrBufferIdx] = ResMgr->CreateIndexBuffer(Math::Max(drawData->TotalIdxCount, 1), sizeof(ImDrawIdx) == 2 ? IBF_INDEX16 : IBF_INDEX32);
+        m_nImGuiIbIdx[m_nCurrBufferIdx] = ResMgr->CreateIndexBuffer(drawData->TotalIdxCount * 2u, sizeof(ImDrawIdx) == 2 ? IBF_INDEX16 : IBF_INDEX32, BU_DYNAMIC);
         m_pImGuiIb[m_nCurrBufferIdx] = ResMgr->GetIndexBuffer(m_nImGuiIbIdx[m_nCurrBufferIdx]);
         assert(sizeof(ImDrawIdx) == m_pImGuiIb[m_nCurrBufferIdx]->GetElementSize());
         assert(m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() <= Math::pow(2.f, sizeof(ImDrawIdx) * 8.f));
 
-        //cout << "UI index buffer reallocation: " << m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() << " indices." << endl;
+        //cout << "UI index buffer reallocation: " << drawData->TotalIdxCount << "/" << m_pImGuiIb[m_nCurrBufferIdx]->GetElementCount() << " indices req/alloc" << endl;
     }
 
     const bool needsVbReallocation = !m_pImGuiVb[m_nCurrBufferIdx] || m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() < (unsigned int)drawData->TotalVtxCount;
-    if (needsIbReallocation || needsVbReallocation)
+    if (needsVbReallocation)
     {
-        const unsigned int prevMaxVtxCount = m_pImGuiVb[m_nCurrBufferIdx] ? m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() : 1;
         if (m_nImGuiVbIdx[m_nCurrBufferIdx] != ~0u)
         {
             ResMgr->ReleaseVertexBuffer(m_nImGuiVbIdx[m_nCurrBufferIdx]);
         }
 
-        m_nImGuiVbIdx[m_nCurrBufferIdx] = ResMgr->CreateVertexBuffer(m_pImGuiVf[m_nCurrBufferIdx], Math::Max(prevMaxVtxCount, (unsigned int)drawData->TotalVtxCount), m_pImGuiIb[m_nCurrBufferIdx]);
+        m_nImGuiVbIdx[m_nCurrBufferIdx] = ResMgr->CreateVertexBuffer(m_pImGuiVf[m_nCurrBufferIdx], drawData->TotalVtxCount * 2u, m_pImGuiIb[m_nCurrBufferIdx], BU_DYNAMIC);
         m_pImGuiVb[m_nCurrBufferIdx] = ResMgr->GetVertexBuffer(m_nImGuiVbIdx[m_nCurrBufferIdx]);
 
-        //cout << "UI vertex buffer reallocation: " << m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() << " vertices." << endl;
+        //cout << "UI vertex buffer reallocation: " << drawData->TotalVtxCount << "/" << m_pImGuiVb[m_nCurrBufferIdx]->GetElementCount() << " vertices req/alloc" << endl;
+    }
+    else if(needsIbReallocation)
+    {
+        // If only the index buffer was reallocated, we need to rebind the index buffer to the vertex buffer
+        m_pImGuiVb[m_nCurrBufferIdx]->SetIndexBuffer(m_pImGuiIb[m_nCurrBufferIdx]);
     }
 
     m_pImGuiIb[m_nCurrBufferIdx]->Lock(BL_WRITE_ONLY);
@@ -1314,38 +1320,34 @@ void GPUProfileMarkerResultHistory::Update(const float fDeltaTime)
     {
         m_fTimeAccum = 0.f;
         m_nCurrBufferIdx = (m_nCurrBufferIdx + 1) % 2;
-        m_arrGPUProfileMarkerResultHistory[m_nCurrBufferIdx].clear();
+        m_arrGPUProfileMarkerResultAccumulator[m_nCurrBufferIdx].clear();
     }
 }
 
-const float GPUProfileMarkerResultHistory::GetAverage(const char* const name) const
+void GITechDemoApp::GPUProfileMarkerResultHistory::AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const
 {
     const int historyBufferIdx = (m_nCurrBufferIdx + 1) % 2;
-    float totalTime = 0.f;
-    int markerCount = 0;
+    const auto& accumulator = m_arrGPUProfileMarkerResultAccumulator[historyBufferIdx].find(passNameHash);
 
-    const unsigned int nameHash = S3DHASH(name);
-
-    for (unsigned int i = 0; i < m_arrGPUProfileMarkerResultHistory[historyBufferIdx].size(); i++)
+    if (accumulator != m_arrGPUProfileMarkerResultAccumulator[historyBufferIdx].end())
     {
-        if (m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].nameHash == nameHash)
-        {
-            totalTime += m_arrGPUProfileMarkerResultHistory[historyBufferIdx][i].timing;
-            markerCount++;
-        }
-    }
-
-    if (markerCount)
-    {
-        return totalTime / (float)markerCount;
+        average = accumulator->second.totalTime / accumulator->second.count;
+        min = accumulator->second.minTime;
+        max = accumulator->second.maxTime;
     }
     else
     {
-        return 0.f;
+        average = 0.f;
+        min = 0.f;
+        max = 0.f;
     }
 }
 
-void GPUProfileMarkerResultHistory::PushMarker(const GPUProfileMarkerResultCacheEntry& marker)
+void GPUProfileMarkerResultHistory::AddMarkerResult(const unsigned int passNameHash, const float timing)
 {
-    m_arrGPUProfileMarkerResultHistory[m_nCurrBufferIdx].push_back(marker);
+    GPUProfileMarkerResultAccumulator& accumulator = m_arrGPUProfileMarkerResultAccumulator[m_nCurrBufferIdx][passNameHash];
+    accumulator.totalTime += timing;
+    accumulator.count++;
+    accumulator.minTime = Math::Min(accumulator.minTime, timing);
+    accumulator.maxTime = Math::Max(accumulator.maxTime, timing);
 }

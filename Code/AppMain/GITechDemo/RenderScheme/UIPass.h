@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include <gmtl\gmtl.h>
 using namespace gmtl;
@@ -51,7 +52,8 @@ namespace Synesthesia3D
 
 namespace GITechDemoApp
 {
-    #define UI_BUFFER_COUNT (3)
+    // Buffering should be handled internally via BU_DYNAMIC vertex and index buffers and BL_WRITE_ONLY locking
+    #define UI_BUFFER_COUNT (1)
 
     class ArtistParameter;
 
@@ -76,13 +78,13 @@ namespace GITechDemoApp
     struct GPUProfileMarkerResultCacheEntry
     {
         GPUProfileMarkerResultCacheEntry(
-            std::string _name, float _timing, float _start, float _end,
+            const unsigned int _nameHash, float _timing, float _start, float _end,
             float _rootTiming, float _rootStart, float _rootEnd)
-            : name(_name), nameHash(S3DHASH(_name.c_str())), timing(_timing), start(_start), end(_end)
+            : nameHash(_nameHash), timing(_timing), start(_start), end(_end)
             , rootTiming(_rootTiming), rootStart(_rootStart), rootEnd(_rootEnd)
-        {}
+        {
+        }
 
-        std::string name;
         unsigned int nameHash;
         float timing, start, end;
         float rootTiming, rootStart, rootEnd;
@@ -112,11 +114,20 @@ namespace GITechDemoApp
         {}
 
         void Update(const float fDeltaTime);
-        const float GetAverage(const char* const name) const;
-        void PushMarker(const GPUProfileMarkerResultCacheEntry& marker);
+        void AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const;
+        void AddMarkerResult(const unsigned int passNameHash, const float timing);
 
     private:
-        std::vector<GPUProfileMarkerResultCacheEntry> m_arrGPUProfileMarkerResultHistory[2];
+        struct GPUProfileMarkerResultAccumulator
+        {
+            float totalTime = 0.f;
+            unsigned int count = 0u;
+
+            float minTime = FLT_MAX;
+            float maxTime = 0.f;
+        };
+
+        std::unordered_map<unsigned int, GPUProfileMarkerResultAccumulator> m_arrGPUProfileMarkerResultAccumulator[2];
         unsigned int m_nCurrBufferIdx;
         float m_fTimeAccum;
     };
@@ -138,7 +149,7 @@ namespace GITechDemoApp
         void DrawGPUFrametimeGraph();
         void DrawGPUProfileBars(const RenderPass* pass = nullptr, const unsigned int level = 0);
         void DrawGPUProfileDetails(const RenderPass* pass = nullptr, const unsigned int level = 0) const;
-        void CleanGPUProfileMarkerResultCache(const char* const passName);
+        void CleanGPUProfileMarkerResultCache(const unsigned int passNameHash);
 
         // UI states/parameters
         bool m_bShowAllParameters;
