@@ -27,6 +27,7 @@
 
 namespace Synesthesia3D
 {
+    class ResourceManager;
     class RenderState;
     class SamplerState;
     class Profiler;
@@ -72,8 +73,8 @@ namespace Synesthesia3D
         /**
          * @brief   Retrieves the API/platform of the current render context.
          */
-        static  SYNESTHESIA3D_DLL       const API       GetAPI();
-        static  SYNESTHESIA3D_DLL   const char* const   GetAPIName();
+                SYNESTHESIA3D_DLL       const API       GetAPI() const;
+                SYNESTHESIA3D_DLL   const char* const   GetAPIName() const;
 
         /**
          * @brief   Initializes the device.
@@ -324,7 +325,7 @@ namespace Synesthesia3D
             DeviceState         m_eDeviceState;             /**< @brief Current device state. @see DeviceState */
 
         static  Renderer*       ms_pInstance;               /**< @brief Holds the current instance of the rendering class. */
-        static  API             ms_eAPI;                    /**< @brief Holds the currently instanced rendering API. */
+                API             m_eAPI;                     /**< @brief Holds the currently instanced rendering API. */
     };
 }
 

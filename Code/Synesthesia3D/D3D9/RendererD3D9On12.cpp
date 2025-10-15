@@ -40,6 +40,8 @@ RendererD3D9On12::RendererD3D9On12()
         S3D_DBGPRINT("Failed to load d3d9.dll and/or its functions for D3D9On12.\n");
         assert(false);
     }
+
+    m_eAPI = API_D3D9On12;
 }
 
 RendererD3D9On12::~RendererD3D9On12()

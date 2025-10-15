@@ -37,7 +37,7 @@ namespace Synesthesia3D
         Vec2i   m_vScreenSize;
 
     public:
-        static  RendererNULL* const GetInstance() { assert(ms_eAPI == API_NULL); return (RendererNULL*)ms_pInstance; };
+        static  RendererNULL* const GetInstance() { assert(ms_pInstance && ms_pInstance->GetAPI() == API_NULL); return (RendererNULL*)ms_pInstance; };
 
         void    Initialize(void* hWnd);
         void    SetViewport(const Vec2i /*size*/, const Vec2i /*offset = Vec2i(0, 0)*/) {}

@@ -39,8 +39,19 @@ using namespace gmtl;
 // This header holds all defines, enums and
 // structures used by the rendering library
 
-#ifndef ENABLE_D3D9_ON_12
-    #define ENABLE_D3D9_ON_12 (1)   /**< @brief Enable Direct3D 9On12 support. */
+#define ENABLE_D3D9_ON_12 (1)       /**< @brief Enable Direct3D 9On12 support. */
+
+#if (defined(__x86_64__) || defined(_M_X64))
+    #define ENABLE_NVRHI (0)            /**< @brief Enable NVidia's rendering hardware interface support. */
+
+    #if ENABLE_NVRHI && _WINDOWS
+        #define ENABLE_NVRHI_D3D11 (0)  /**< @brief Enable NVRHI Direct3D 11 support. */
+        #define ENABLE_NVRHI_D3D12 (0)  /**< @brief Enable NVRHI Direct3D 12 support. */
+    #endif
+
+    #if ENABLE_NVRHI
+        #define ENABLE_NVRHI_VULKAN (0) /**< @brief Enable NVRHI Vulkan support. */
+    #endif
 #endif
 
 #ifndef PURE_VIRTUAL
@@ -81,12 +92,13 @@ namespace Synesthesia3D
      */
     enum API
     {
-        API_NONE,       /**< @brief No renderer instantiated. */
-        API_NULL,       /**< @brief Null render. */
-        API_D3D9,       /**< @brief Direct3D 9. */
-#if ENABLE_D3D9_ON_12
-        API_D3D9On12,   /**< @brief Direct3D 9On12. */
-#endif
+        API_NONE,           /**< @brief No renderer instantiated. */
+        API_NULL,           /**< @brief Null render. */
+        API_D3D9,           /**< @brief Direct3D 9. */
+        API_D3D9On12,       /**< @brief Direct3D 9On12. */
+        API_NVRHI_D3D11,    /**< @brief NVRHI Direct3D 11. */
+        API_NVRHI_D3D12,    /**< @brief NVRHI Direct3D 12. */
+        API_NVRHI_VULKAN,   /**< @brief NVRHI Vulkan. */
     };
 
     /////////////////////////////////////////////////////////////////////

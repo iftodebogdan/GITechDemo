@@ -72,6 +72,8 @@
     <ClInclude Include="External\D3D9\include\DxErr.h" />
     <ClInclude Include="External\vld\include\vld.h" />
     <ClInclude Include="External\vld\include\vld_def.h" />
+    <ClInclude Include="NVRHI\RendererNVRHID3D11.h" />
+    <ClInclude Include="NVRHI\RendererNVRHID3D12.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="External\D3D9\lib\x64\d3d9.lib" />
@@ -234,7 +236,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -267,7 +269,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -303,7 +305,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -329,7 +331,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -356,7 +358,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -382,7 +384,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>

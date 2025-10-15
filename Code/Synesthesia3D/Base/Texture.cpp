@@ -877,7 +877,7 @@ const unsigned int Texture::GetBytesPerPixel(const PixelFormat pixelFormat)
 
 void Texture::ValidatePixelFormat(PixelFormat& pixelFormat, const TextureType texType, const BufferUsage usage)
 {
-    if (Renderer::GetAPI() == API_NULL)
+    if (Renderer::GetInstance()->GetAPI() == API_NULL)
         return;
 
     const std::vector<DeviceCaps::SupportedPixelFormat>& arrValidPF = Renderer::GetInstance()->GetDeviceCaps().arrSupportedPixelFormats;

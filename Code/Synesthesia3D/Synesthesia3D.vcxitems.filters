@@ -37,6 +37,9 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{ffaad265-9a83-40dc-b6bf-716670a46dc2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NVRHI">
+      <UniqueIdentifier>{d49eda97-b2d0-4c8d-b0b0-912026ef5903}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Base\Profiler.cpp">
@@ -392,6 +395,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ThreadSafeList.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHIVulkan.h">
+      <Filter>NVRHI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

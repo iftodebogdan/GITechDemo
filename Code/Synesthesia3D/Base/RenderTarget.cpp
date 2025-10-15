@@ -46,8 +46,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
     , m_pDepthBuffer(nullptr)
 {
     //assert(targetCount > 0);
-    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
-        || Renderer::GetAPI() == API_NULL);
+    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs || Renderer::GetInstance()->GetAPI() == API_NULL);
     //assert(pixelFormat != PF_NONE);
 
     // D3D9 restrictions prevent us from binding only a depth buffer
@@ -91,8 +90,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount, PixelFormat pixelForm
     , m_pDepthBuffer(nullptr)
 {
     //assert(targetCount > 0);
-    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
-        || Renderer::GetAPI() == API_NULL);
+    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs || Renderer::GetInstance()->GetAPI() == API_NULL);
     //assert(pixelFormat != PF_NONE);
 
     // D3D9 restrictions prevent us from binding only a depth buffer
@@ -140,8 +138,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 {
     //assert(targetCount > 0);
     assert(targetCount <= 4);
-    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
-        || Renderer::GetAPI() == API_NULL);
+    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs || Renderer::GetInstance()->GetAPI() == API_NULL);
 
     // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.
@@ -205,8 +202,7 @@ RenderTarget::RenderTarget(const unsigned int targetCount,
 {
     //assert(targetCount > 0);
     assert(targetCount <= 4);
-    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs
-        || Renderer::GetAPI() == API_NULL);
+    assert(targetCount <= Renderer::GetInstance()->GetDeviceCaps().nNumSimultaneousRTs || Renderer::GetInstance()->GetAPI() == API_NULL);
 
     // D3D9 restrictions prevent us from binding only a depth buffer
     // so create a single color target with the FourCC NULL format.

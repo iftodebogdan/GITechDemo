@@ -139,6 +139,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHIVulkan.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)stdafx.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ThreadSafeList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Utility\ColorUtility.h" />

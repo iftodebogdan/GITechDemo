@@ -23,6 +23,8 @@
 #ifndef RENDERERD3D9_H
 #define RENDERERD3D9_H
 
+#ifdef _WINDOWS
+
 #ifdef _DEBUG
     #ifndef D3D_DEBUG_INFO
         #define D3D_DEBUG_INFO
@@ -73,9 +75,9 @@ namespace Synesthesia3D
 
     public:
 #if ENABLE_D3D9_ON_12
-        static  RendererD3D9* const  GetInstance() { assert(ms_eAPI == API_D3D9 || ms_eAPI == API_D3D9On12); return (RendererD3D9*)ms_pInstance; };
+        static  RendererD3D9* const  GetInstance() { assert(!ms_pInstance || ms_pInstance->GetAPI() == API_D3D9 || ms_pInstance->GetAPI() == API_D3D9On12); return (RendererD3D9*)ms_pInstance; };
 #else
-        static  RendererD3D9* const  GetInstance() { assert(ms_eAPI == API_D3D9); return (RendererD3D9*)ms_pInstance; };
+        static  RendererD3D9* const  GetInstance() { assert(!ms_pInstance || ms_pInstance->GetAPI() == API_D3D9); return (RendererD3D9*)ms_pInstance; };
 #endif
 
         void        Initialize(void* hWnd);
@@ -107,5 +109,16 @@ namespace Synesthesia3D
         friend class Renderer;
     };
 }
+
+#else // _WINDOWS
+
+#include "RendererNULL.h"
+
+namespace Synesthesia3D
+{
+    typedef RendererNULL RendererD3D9;
+}
+
+#endif // _WINDOWS
 
 #endif  //RENDERD3D9_H

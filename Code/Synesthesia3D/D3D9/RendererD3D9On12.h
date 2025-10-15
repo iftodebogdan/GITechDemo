@@ -23,10 +23,11 @@
 #ifndef RENDERERD3D9ON12_H
 #define RENDERERD3D9ON12_H
 
-
-#include "RendererD3D9.h"
+#include "ResourceData.h"
 
 #if ENABLE_D3D9_ON_12
+
+#include "RendererD3D9.h"
 
 #include <dxgi.h>
 #include <d3d9on12.h>
@@ -52,6 +53,15 @@ namespace Synesthesia3D
 
         friend class Renderer;
     };
+}
+
+#else //ENABLE_D3D9_ON_12
+
+#include "RendererNULL.h"
+
+namespace Synesthesia3D
+{
+    typedef RendererNULL RendererD3D9On12;
 }
 
 #endif //ENABLE_D3D9_ON_12

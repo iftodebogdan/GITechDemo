@@ -29,17 +29,16 @@
 #include "Profiler.h"
 using namespace Synesthesia3D;
 
-#ifdef _WINDOWS
 #include "RendererD3D9.h"
 #include "RendererD3D9On12.h"
-#endif
-
+#include "RendererNVRHID3D11.h"
+#include "RendererNVRHID3D12.h"
+#include "RendererNVRHIVulkan.h"
 #include "RendererNULL.h"
 
 using namespace Synesthesia3D;
 
 Renderer* Renderer::ms_pInstance = nullptr;
-API Renderer::ms_eAPI = API_NONE;
 
 Renderer::Renderer()
     : m_vBackBufferOffset(0, 0)
@@ -48,6 +47,7 @@ Renderer::Renderer()
     , m_pSamplerStateManager(nullptr)
     , m_pProfiler(nullptr)
     , m_eDeviceState(DS_NOT_READY)
+    , m_eAPI(API_NULL)
 {
 
 }
@@ -75,22 +75,33 @@ void Renderer::CreateInstance(API api)
 
     switch (api)
     {
-        case API_D3D9:
-            ms_pInstance = new RendererD3D9;
-            ms_eAPI = API_D3D9;
-            break;
-#if ENABLE_D3D9_ON_12
-        case API_D3D9On12:
-            ms_pInstance = new RendererD3D9On12;
-            ms_eAPI = API_D3D9On12;
-            break;
-#endif
-        case API_NULL:
-            ms_pInstance = new RendererNULL;
-            ms_eAPI = API_NULL;
-            break;
-        default:
-            assert(false);
+    case API_D3D9:
+        ms_pInstance = new RendererD3D9;
+        break;
+
+    case API_D3D9On12:
+        ms_pInstance = new RendererD3D9On12;
+        break;
+
+    case API_NVRHI_D3D11:
+        ms_pInstance = new RendererNVRHID3D11;
+        break;
+
+    case API_NVRHI_D3D12:
+        ms_pInstance = new RendererNVRHID3D12;
+        break;
+
+    case API_NVRHI_VULKAN:
+        ms_pInstance = new RendererNVRHIVulkan;
+        break;
+
+    case API_NULL:
+        ms_pInstance = new RendererNULL;
+        break;
+
+    default:
+        assert(false);
+        ms_pInstance = new RendererNULL;
     }
 }
 
@@ -110,23 +121,27 @@ Renderer* const Renderer::GetInstance()
     return ms_pInstance;
 }
 
-const API Renderer::GetAPI()
+const API Renderer::GetAPI() const
 {
-    return ms_eAPI;
+    return m_eAPI;
 }
 
-const char* const Renderer::GetAPIName()
+const char* const Renderer::GetAPIName() const
 {
-    switch (ms_eAPI)
+    switch (m_eAPI)
     {
     case API_NULL:
         return "Null";
     case API_D3D9:
         return "Direct3D 9";
-#if ENABLE_D3D9_ON_12
     case API_D3D9On12:
         return "Direct3D 9On12";
-#endif
+    case API_NVRHI_D3D11:
+        return "NVRHI Direct3D 11";
+    case API_NVRHI_D3D12:
+        return "NVRHI Direct3D 12";
+    case API_NVRHI_VULKAN:
+        return "NVRHI Vulkan";
     default:
         assert(false);
         return "";
@@ -160,13 +175,13 @@ void Renderer::ValidateDisplayResolution(Vec2i& size, unsigned int& refreshRate)
             }
             else if (((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth >= bestMatch[0] &&
                 (int)m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth <= size[0]) ||
-                
+
                 ((int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight >= bestMatch[1] &&
-                (int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight <= size[1]))
+                    (int)m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight <= size[1]))
             {
                 bestMatch[0] = m_tDeviceCaps.arrSupportedScreenFormats[i].nWidth;
                 bestMatch[1] = m_tDeviceCaps.arrSupportedScreenFormats[i].nHeight;
-                
+
                 if ((m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate > bestRRMatch &&
                     m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate <= refreshRate) ||
                     (bestRRMatch > refreshRate && m_tDeviceCaps.arrSupportedScreenFormats[i].nRefreshRate < bestRRMatch) ||

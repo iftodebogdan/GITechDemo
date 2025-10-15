@@ -52,6 +52,9 @@
     <Filter Include="External\D3D9On12\include">
       <UniqueIdentifier>{f43d7195-9449-4edb-b967-0870a8e24d97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NVRHI">
+      <UniqueIdentifier>{bb234385-b343-4a4b-931e-0735d93f8054}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D9\MappingsD3D9.cpp">
@@ -184,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="D3D9\RendererD3D9On12.h">
       <Filter>D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="NVRHI\RendererNVRHID3D11.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="NVRHI\RendererNVRHID3D12.h">
+      <Filter>NVRHI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

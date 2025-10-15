@@ -42,7 +42,9 @@ D3DFORMAT DSFormats[] = { D3DFMT_D24S8, D3DFMT_D24X4S4, D3DFMT_D15S1, D3DFMT_D32
 RendererD3D9::RendererD3D9()
     : m_pD3D(nullptr)
     , m_pd3dDevice(nullptr)
-{}
+{
+    m_eAPI = API_D3D9;
+}
 
 RendererD3D9::~RendererD3D9()
 {

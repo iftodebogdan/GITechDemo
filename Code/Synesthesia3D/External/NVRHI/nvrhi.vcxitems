@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{0cb5db0f-0f34-4876-a55f-6412ae0dd3d7}</ItemsProjectGuid>
+    <ItemsProjectName>NVRHI_Shared</ItemsProjectName>
+    <ItemsRootNamespace>NVRHI</ItemsRootNamespace>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\common\aftermath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\common\containers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\common\misc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\common\resource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\nvrhi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\nvrhiHLSL.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\utils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\validation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\nvrhi\vulkan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\common\state-tracking.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\common\versioning.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\validation\validation-backend.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-backend.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\common\aftermath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\common\format-info.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\common\misc.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\common\state-tracking.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\common\utils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\validation\validation-commandlist.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\validation\validation-device.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-allocator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-buffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-commandlist.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-compute.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-constants.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-device.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-graphics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-meshlets.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-queries.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-queue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-raytracing.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-resource-bindings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-shader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-staging-texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-state-tracking.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\vulkan\vulkan-upload.cpp" />
+  </ItemGroup>
+</Project>
