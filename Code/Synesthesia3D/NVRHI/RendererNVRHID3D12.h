@@ -27,13 +27,34 @@
 
 #if ENABLE_NVRHI_D3D12
 
+#include <dxgi1_5.h>
+
+#include <nvrhi/d3d12.h>
+
 #include "RendererNVRHI.h"
 
 namespace Synesthesia3D
 {
     class RendererNVRHID3D12 : public RendererNVRHI
     {
+    protected:
+        RendererNVRHID3D12();
+        virtual ~RendererNVRHID3D12();
 
+    public:
+        void Initialize(void* hWnd) override;
+
+    private:
+        void DestroyDevice();
+
+        nvrhi::RefCountPtr<IDXGIFactory2> m_DxgiFactory2;
+        nvrhi::RefCountPtr<IDXGIAdapter> m_DxgiAdapter;
+        nvrhi::RefCountPtr<ID3D12Device> m_Device12;
+        nvrhi::RefCountPtr<ID3D12CommandQueue> m_GraphicsQueue;
+        nvrhi::RefCountPtr<ID3D12CommandQueue> m_ComputeQueue;
+        nvrhi::RefCountPtr<ID3D12CommandQueue> m_CopyQueue;
+
+        friend class Renderer;
     };
 }
 

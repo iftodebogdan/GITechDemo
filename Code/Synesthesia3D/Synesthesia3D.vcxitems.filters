@@ -136,6 +136,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\ProfilerNULL.cpp">
       <Filter>NULL</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h">

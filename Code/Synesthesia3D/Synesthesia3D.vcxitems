@@ -52,6 +52,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\TextureNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexBufferNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

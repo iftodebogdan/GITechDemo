@@ -173,7 +173,7 @@ namespace Synesthesia3D
          * @param[in]   zNear       The distance to the near clipping plane.
          * @param[in]   zFar        The distance to the far clipping plane.
          */
-        virtual SYNESTHESIA3D_DLL           void        CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL           void        CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const;
         
         /**
          * @brief   Creates a perspective projection matrix with an infinite far plane.
@@ -183,7 +183,7 @@ namespace Synesthesia3D
          * @param[in]   aspectRatio The display's aspect ratio (width/height).
          * @param[in]   zNear       The distance to the near clipping plane.
          */
-        virtual SYNESTHESIA3D_DLL           void        CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL           void        CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const;
 
         /**
          * @brief   Creates an orthographic projection matrix fit for the current platform standards.
@@ -196,7 +196,7 @@ namespace Synesthesia3D
          * @param[in]   zNear   The distance to the near clipping plane.
          * @param[in]   zFar    The distance to the far clipping plane.
          */
-        virtual SYNESTHESIA3D_DLL           void        CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const PURE_VIRTUAL;
+        virtual SYNESTHESIA3D_DLL           void        CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const;
 
         /**
          * @brief   Converts a GMTL / OpenGL projection matrix to a DirectX compliant projection matrix.

@@ -42,11 +42,11 @@ using namespace gmtl;
 #define ENABLE_D3D9_ON_12 (1)       /**< @brief Enable Direct3D 9On12 support. */
 
 #if (defined(__x86_64__) || defined(_M_X64))
-    #define ENABLE_NVRHI (0)            /**< @brief Enable NVidia's rendering hardware interface support. */
+    #define ENABLE_NVRHI (1)            /**< @brief Enable NVidia's rendering hardware interface support. */
 
     #if ENABLE_NVRHI && _WINDOWS
         #define ENABLE_NVRHI_D3D11 (0)  /**< @brief Enable NVRHI Direct3D 11 support. */
-        #define ENABLE_NVRHI_D3D12 (0)  /**< @brief Enable NVRHI Direct3D 12 support. */
+        #define ENABLE_NVRHI_D3D12 (1)  /**< @brief Enable NVRHI Direct3D 12 support. */
     #endif
 
     #if ENABLE_NVRHI

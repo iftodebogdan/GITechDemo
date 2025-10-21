@@ -96,6 +96,9 @@
     <ClCompile Include="D3D9\RendererD3D9On12.cpp">
       <Filter>D3D9</Filter>
     </ClCompile>
+    <ClCompile Include="NVRHI\RendererNVRHID3D12.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D9\MappingsD3D9.h">

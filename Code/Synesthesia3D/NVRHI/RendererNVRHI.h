@@ -27,13 +27,39 @@
 
 #if ENABLE_NVRHI
 
+#include <nvrhi/nvrhi.h>
+
 #include "Renderer.h"
 
 namespace Synesthesia3D
 {
     class RendererNVRHI : public Renderer
     {
+    protected:
+        RendererNVRHI();
+        virtual ~RendererNVRHI();
 
+    public:
+        virtual void Initialize(void* hWnd) override;
+        const bool SetDisplayResolution(
+            const Vec2i size,
+            const Vec2i offset = Vec2i(0, 0),
+            const bool fullscreen = false,
+            const unsigned int refreshRate = 0,
+            const bool vsync = true) override;
+        const Vec2i GetDisplayResolution() const override;
+        const bool GetVSyncStatus() const override;
+        const unsigned int GetDisplayRefreshRate() const override;
+        const PixelFormat GetBackBufferFormat() const override;
+        const bool IsFullscreen() const override;
+        void SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) override;
+        void CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const override;
+        void CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const override;
+        void CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const override;
+        void Clear(const Vec4f rgba, const float z, const unsigned int stencil) override;
+
+    protected:
+        nvrhi::DeviceHandle m_NvrhiDevice;
     };
 }
 

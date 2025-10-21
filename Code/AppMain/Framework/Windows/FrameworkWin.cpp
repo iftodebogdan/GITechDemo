@@ -169,6 +169,8 @@ int FrameworkWin::Run()
     }
     else
     {
+        AppMain->Release();
+        SetLastError(E_FAIL);
         ErrorExit(TEXT("AppMain->Init()"));
         m_bQuit = true;
     }

@@ -89,6 +89,7 @@ bool GITechDemo::Init(void* hWnd)
     Renderer::CreateInstance(API_D3D9);
     //Renderer::CreateInstance(API_D3D9On12);
     //Renderer::CreateInstance(API_NULL);
+    //Renderer::CreateInstance(API_NVRHI_D3D12);
 
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)

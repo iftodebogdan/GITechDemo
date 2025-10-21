@@ -40,6 +40,7 @@
     <ClCompile Include="D3D9\TextureD3D9.cpp" />
     <ClCompile Include="D3D9\VertexBufferD3D9.cpp" />
     <ClCompile Include="D3D9\VertexFormatD3D9.cpp" />
+    <ClCompile Include="NVRHI\RendererNVRHID3D12.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D9\IndexBufferD3D9.h" />
@@ -236,13 +237,15 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -269,13 +272,15 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;vld.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);$(ProjectDir)External\vld\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -305,15 +310,17 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -331,8 +338,10 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -340,7 +349,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
@@ -358,15 +367,17 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent />
@@ -384,8 +395,10 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -393,7 +406,7 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\D3D9\lib\$(PlatformTarget);$(ProjectDir)External\NVRHI\lib\$(PlatformTarget);</AdditionalLibraryDirectories>
       <Profile>true</Profile>
     </Link>
     <PostBuildEvent />

@@ -109,7 +109,9 @@ void Renderer::DestroyInstance()
 {
     if (ms_pInstance)
     {
-        ms_pInstance->GetResourceManager()->ReleaseAll();
+        if(ms_pInstance->GetResourceManager())
+            ms_pInstance->GetResourceManager()->ReleaseAll();
+
         Renderer* tmp = ms_pInstance;
         ms_pInstance = nullptr;
         delete tmp;
@@ -195,6 +197,47 @@ void Renderer::ValidateDisplayResolution(Vec2i& size, unsigned int& refreshRate)
 
     size = bestMatch;
     refreshRate = bestRRMatch;
+}
+
+void Renderer::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
+{
+    const float yScale = 1.f / tanf(fovYRad * 0.5f);
+    const float xScale = yScale / aspectRatio;
+    
+    matProj.set(
+        xScale, 0.f, 0.f, 0.f,
+        0.f, yScale, 0.f, 0.f,
+        0.f, 0.f, zFar / (zFar - zNear), -zNear * zFar / (zFar - zNear),
+        0.f, 0.f, 1.f, 0.f
+    );
+
+    //gmtl::setPerspective(matProj, gmtl::Math::rad2Deg(fovYRad), aspectRatio, zNear, zFar);
+}
+
+void Renderer::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
+{
+    const float yScale = 1.f / tanf(fovYRad * 0.5f);
+    const float xScale = yScale / aspectRatio;
+    const float epsilon = 2.4e-7f;
+    
+    matProj.set(
+        xScale, 0.f, 0.f, 0.f,
+        0.f, yScale, 0.f, 0.f,
+        0.f, 0.f, epsilon + 1.f, (epsilon - 1) * zNear,
+        0.f, 0.f, 1.f, 0.f
+    );
+}
+
+void Renderer::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
+{
+    matProj.set(
+        2.f / (right - left), 0.f, 0.f, (left + right) / (left - right),
+        0.f, 2.f / (top - bottom), 0.f, (top + bottom) / (bottom - top),
+        0.f, 0.f, 1.f / (zFar - zNear), zNear / (zNear - zFar),
+        0.f, 0.f, 0.f, 1.f
+    );
+
+    //gmtl::setOrtho(matProj, left, top, right, bottom, zNear, zFar);
 }
 
 void Renderer::ConvertOGLProjMatToD3D(Matrix44f& matProj)

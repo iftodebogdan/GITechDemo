@@ -652,41 +652,6 @@ void RendererD3D9::Clear(const Vec4f rgba, const float z, const unsigned int ste
     POP_PROFILE_MARKER();
 }
 
-void RendererD3D9::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
-{
-    const float yScale = 1.f / tanf(fovYRad * 0.5f);
-    const float xScale = yScale / aspectRatio;
-
-    matProj.set(
-        xScale, 0.f, 0.f, 0.f,
-        0.f, yScale, 0.f, 0.f,
-        0.f, 0.f, zFar / (zFar - zNear), -zNear * zFar / (zFar - zNear),
-        0.f, 0.f, 1.f, 0.f
-    );
-}
-
-void RendererD3D9::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
-{
-    const float yScale = 1.f / tanf(fovYRad * 0.5f);
-    const float xScale = yScale / aspectRatio;
-    const float epsilon = 2.4e-7f;
-
-    matProj.set(
-        xScale, 0.f, 0.f, 0.f,
-        0.f, yScale, 0.f, 0.f,
-        0.f, 0.f, epsilon + 1.f, (epsilon - 1) * zNear,
-        0.f, 0.f, 1.f, 0.f
-    );
-}
-
-void RendererD3D9::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
-{
-    D3DXMATRIXA16 mat;
-    D3DXMatrixOrthoOffCenterLH(&mat, left, right, bottom, top, zNear, zFar);
-    assert(sizeof(mat.m) == sizeof(matProj.mData));
-    matProj.set(mat);
-}
-
 const bool RendererD3D9::ResetDevice(D3DPRESENT_PARAMETERS& pp)
 {
     HRESULT hr = E_FAIL;

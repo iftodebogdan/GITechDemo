@@ -289,7 +289,11 @@ static const int LZ4_minLength = (MFLIMIT+1);
 /*-************************************
 *  Common functions
 **************************************/
+#if __cplusplus < 201703L
 static unsigned LZ4_NbCommonBytes (register reg_t val)
+#else
+static unsigned LZ4_NbCommonBytes(reg_t val)
+#endif
 {
     if (LZ4_isLittleEndian()) {
         if (sizeof(val)==8) {

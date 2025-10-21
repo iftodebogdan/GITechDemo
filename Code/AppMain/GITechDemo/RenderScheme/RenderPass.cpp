@@ -115,7 +115,7 @@ void RenderPass::ReleaseChildrenResources()
     {
         if (m_arrChildList[child] != nullptr)
         {
-            m_arrChildList[child]->AllocateResources();
+            m_arrChildList[child]->ReleaseResources();
             m_arrChildList[child]->ReleaseChildrenResources();
         }
     }
