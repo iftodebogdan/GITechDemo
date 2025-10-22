@@ -240,20 +240,11 @@ void UIPass::Update(const float fDeltaTime)
     HLSL::UIParams->MipLevel = m_nSelectedMip;
     HLSL::UIParams->FaceIdx = m_nSelectedFace;
     HLSL::UIParams->DepthSlice = m_fSelectedSlice;
-
-    ResMgr->GetTexture(UIBuffer.GetRenderTarget()->GetColorBuffer())->SetSRGBEnabled(true);
 }
 
 void UIPass::Draw()
 {
-    Renderer* RenderContext = Renderer::GetInstance();
-    if (!RenderContext)
-        return;
-
-    UIBuffer.Enable();
-    RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0u);
     RenderUI();
-    UIBuffer.Disable();
 }
 
 void UIPass::AddParameterInWindow(ArtistParameter* const param) const
@@ -493,7 +484,7 @@ void UIPass::DrawGPUProfileBars(const RenderPass* pass, const unsigned int level
     }
 }
 
-void GITechDemoApp::UIPass::DrawCPUProfileDetails(const RenderPass* pass, const unsigned int level)
+void UIPass::DrawCPUProfileDetails(const RenderPass* pass, const unsigned int level)
 {
     Renderer* RenderContext = Renderer::GetInstance();
     if (!RenderContext)
@@ -1087,7 +1078,7 @@ void UIPass::RenderUI()
     const bool scissorEnabled = RSMgr->GetScissorEnabled();
     const Cull cullMode = RSMgr->GetCullMode();
 
-    RSMgr->SetSRGBWriteEnabled(true);
+    RSMgr->SetSRGBWriteEnabled(false);
     RSMgr->SetZWriteEnabled(false);
     RSMgr->SetZFunc(CMP_ALWAYS);
     RSMgr->SetZEnabled(ZB_DISABLED);
@@ -1378,7 +1369,7 @@ void ProfileMarkerResultHistory::Update(const float fDeltaTime)
     }
 }
 
-void GITechDemoApp::ProfileMarkerResultHistory::AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const
+void ProfileMarkerResultHistory::AggregateResults(const unsigned int passNameHash, float& average, float& min, float& max) const
 {
     const int historyBufferIdx = (m_nCurrBufferIdx + 1) % 2;
     const auto& accumulator = m_arrGPUProfileMarkerResultAccumulator[historyBufferIdx].find(passNameHash);

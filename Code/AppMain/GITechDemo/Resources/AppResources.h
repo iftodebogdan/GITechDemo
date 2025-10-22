@@ -151,7 +151,6 @@ namespace GITechDemoApp
     CREATE_RENDER_TARGET_HANDLE(AnamorphicLensFlareBuffer1);
     CREATE_RENDER_TARGET_HANDLE(AnamorphicLensFlareBuffer2);
     CREATE_RENDER_TARGET_HANDLE(ASCIIEffectBuffer);
-    CREATE_RENDER_TARGET_HANDLE(UIBuffer);
 
     enum HDRDownsampleBufferIndex {
         QUARTER = 0,
