@@ -491,9 +491,6 @@ namespace GITechDemoApp
     // ASCII render effect render target
     CREATE_DYNAMIC_RENDER_TARGET_OBJECT(ASCIIEffectBuffer, PF_A8R8G8B8, 1.f, 1.f, PF_NONE);
 
-    // UI
-    CREATE_DYNAMIC_RENDER_TARGET_OBJECT(UIBuffer, PF_A8R8G8B8, 1.f, 1.f, PF_NONE);
-
     // Arrays of render targets for easier handling
     RenderTarget* VolumetricLightFullBuffer[2] = {
         &VolumetricLightFullBuffer0,

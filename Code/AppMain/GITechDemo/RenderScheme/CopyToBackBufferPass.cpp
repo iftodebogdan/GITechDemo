@@ -104,57 +104,29 @@ void CopyToBackBufferPass::Update(const float fDeltaTime)
 void CopyToBackBufferPass::Draw()
 {
     Renderer* RenderContext = Renderer::GetInstance();
-    RenderState* RenderStateMgr = RenderContext->GetRenderStateManager();;
     if (!RenderContext || !m_pFinalImageBuffer)
         return;
 
     PUSH_PROFILE_MARKER("Copy to back buffer");
 
-    const bool sRGBEnabled = RenderStateMgr->GetSRGBWriteEnabled();
-    const bool zWrite = RenderStateMgr->GetZWriteEnabled();
-    const Cmp zFunc = RenderStateMgr->GetZFunc();
+    const bool sRGBEnabled = RenderContext->GetRenderStateManager()->GetSRGBWriteEnabled();
+    const bool zWrite = RenderContext->GetRenderStateManager()->GetZWriteEnabled();
+    const Cmp zFunc = RenderContext->GetRenderStateManager()->GetZFunc();
 
-    const bool blendEnabled = RenderStateMgr->GetColorBlendEnabled();
-    const Blend dstBlend = RenderStateMgr->GetColorDstBlend();
-    const Blend srcBlend = RenderStateMgr->GetColorSrcBlend();
-    bool redEnabled, greenEnabled, blueEnabled, alphaEnabled;
-    RenderStateMgr->GetColorWriteEnabled(redEnabled, greenEnabled, blueEnabled, alphaEnabled);
-
-    RenderStateMgr->SetSRGBWriteEnabled(true);
-    RenderStateMgr->SetZWriteEnabled(false);
-    RenderStateMgr->SetZFunc(CMP_ALWAYS);
-    RenderStateMgr->SetColorWriteEnabled(true, true, true, false);
+    RenderContext->GetRenderStateManager()->SetSRGBWriteEnabled(true);
+    RenderContext->GetRenderStateManager()->SetZWriteEnabled(false);
+    RenderContext->GetRenderStateManager()->SetZFunc(CMP_ALWAYS);
 
     // Not necesarry
     //RenderContext->Clear(Vec4f(0.f, 0.f, 0.f, 0.f), 1.f, 0);
 
-    // Composite final scene buffer
     ColorCopyShader.Enable();
     RenderContext->DrawVertexBuffer(FullScreenTri);
     ColorCopyShader.Disable();
 
-    // Composite UI buffer
-    RenderStateMgr->SetColorBlendEnabled(true);
-    RenderStateMgr->SetColorDstBlend(BLEND_INVSRCALPHA);
-    RenderStateMgr->SetColorSrcBlend(BLEND_ONE);
-
-    HLSL::ColorCopy_SourceTexture = UIBuffer.GetRenderTarget()->GetColorBuffer();
-    HLSL::ColorCopyParams->SingleChannelCopy = false;
-    HLSL::ColorCopyParams->CustomColorModulator = Vec4f(1.f, 1.f, 1.f, 1.f);
-    HLSL::ColorCopyParams->ApplyTonemap = false;
-
-    ColorCopyShader.Enable();
-    RenderContext->DrawVertexBuffer(FullScreenTri);
-    ColorCopyShader.Disable();
-
-    RenderStateMgr->SetSRGBWriteEnabled(sRGBEnabled);
-    RenderStateMgr->SetZWriteEnabled(zWrite);
-    RenderStateMgr->SetZFunc(zFunc);
-    RenderStateMgr->SetColorWriteEnabled(redEnabled, greenEnabled, blueEnabled, alphaEnabled);
-
-    RenderStateMgr->SetColorBlendEnabled(blendEnabled);
-    RenderStateMgr->SetColorDstBlend(dstBlend);
-    RenderStateMgr->SetColorSrcBlend(srcBlend);
+    RenderContext->GetRenderStateManager()->SetSRGBWriteEnabled(sRGBEnabled);
+    RenderContext->GetRenderStateManager()->SetZWriteEnabled(zWrite);
+    RenderContext->GetRenderStateManager()->SetZFunc(zFunc);
 
     POP_PROFILE_MARKER();
 }
