@@ -25,18 +25,30 @@
 #include "RendererNVRHI.h"
 using namespace Synesthesia3D;
 
+#include "ResourceManagerNVRHI.h"
+#include "MappingsNVRHI.h"
+
 #pragma comment(lib, "NVRHI.lib")
 
 RendererNVRHI::RendererNVRHI()
 {
+
 }
 
 RendererNVRHI::~RendererNVRHI()
 {
+
 }
 
 void RendererNVRHI::Initialize(void* hWnd)
 {
+    CheckDeviceCaps();
+
+    m_pResourceManager = new ResourceManagerNVRHI();
+    //m_pRenderStateManager = new RenderStateNVRHI();
+    //m_pSamplerStateManager = new SamplerStateNVRHI();
+    //
+    //m_pProfiler = new ProfilerNVRHI();
 }
 
 const bool RendererNVRHI::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
@@ -87,4 +99,9 @@ void RendererNVRHI::CreateOrthographicMatrix(Matrix44f& matProj, const float lef
 
 void RendererNVRHI::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
 {
+}
+
+void RendererNVRHI::CheckDeviceCaps()
+{
+
 }

@@ -22,6 +22,8 @@
 
 #include "stdafx.h"
 
+#include <unordered_set>
+
 #include <nvrhi/validation.h>
 
 #if _DEBUG
@@ -31,6 +33,8 @@
 
 #include "RendererNVRHID3D12.h"
 using namespace Synesthesia3D;
+
+#include "MappingsNVRHI.h"
 
 #ifdef _DEBUG
     #include <DxErr.h>
@@ -81,8 +85,19 @@ void DefaultMessageCallback::message(nvrhi::MessageSeverity severity, const char
     S3D_DBGPRINT("%s: %s", severityString.c_str(), messageText);
 }
 
+const nvrhi::Format SwapChainFormats[] = {
+    nvrhi::Format::SRGBA8_UNORM,
+    nvrhi::Format::SBGRA8_UNORM,
+    nvrhi::Format::RGBA8_UNORM,
+    nvrhi::Format::BGRA8_UNORM,
+    nvrhi::Format::R10G10B10A2_UNORM,
+    nvrhi::Format::RGBA16_FLOAT
+};
+
 RendererNVRHID3D12::RendererNVRHID3D12()
 {
+    m_eAPI = API_NVRHI_D3D12;
+
     if (!m_DxgiFactory2)
     {
         HRESULT hres = CreateDXGIFactory2(
@@ -106,7 +121,7 @@ RendererNVRHID3D12::RendererNVRHID3D12()
 
 RendererNVRHID3D12::~RendererNVRHID3D12()
 {
-    DestroyDevice();
+    DestroyDeviceAndSwapchain();
 
     m_DxgiAdapter = nullptr;
     m_DxgiFactory2 = nullptr;
@@ -129,6 +144,14 @@ RendererNVRHID3D12::~RendererNVRHID3D12()
 }
 
 void RendererNVRHID3D12::Initialize(void* hWnd)
+{
+    CreateDevice();
+    CreateSwapChain(hWnd);
+
+    RendererNVRHI::Initialize(hWnd);
+}
+
+void RendererNVRHID3D12::CreateDevice()
 {
 #if _DEBUG
     {
@@ -257,12 +280,243 @@ void RendererNVRHID3D12::Initialize(void* hWnd)
 #endif
 }
 
-void Synesthesia3D::RendererNVRHID3D12::DestroyDevice()
+const bool RendererNVRHID3D12::CreateSwapChain(void* hWnd)
 {
+    ZeroMemory(&m_SwapChainDesc, sizeof(m_SwapChainDesc));
+    m_SwapChainDesc.Width = 1920;
+    m_SwapChainDesc.Height = 1080;
+    m_SwapChainDesc.SampleDesc.Count = 1;
+    m_SwapChainDesc.SampleDesc.Quality = 0;
+    m_SwapChainDesc.BufferUsage = DXGI_USAGE_SHADER_INPUT | DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    m_SwapChainDesc.BufferCount = 3;
+    m_SwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    m_SwapChainDesc.Flags = 0; // TODO: consider using DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH?
+
+    // Special processing for sRGB swap chain formats.
+    // DXGI will not create a swap chain with an sRGB format, but its contents will be interpreted as sRGB.
+    // So we need to use a non-sRGB format here, but store the true sRGB format for later framebuffer creation.
+    switch (SwapChainFormats[0])
+    {
+    case nvrhi::Format::SRGBA8_UNORM:
+        m_SwapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        break;
+    case nvrhi::Format::SBGRA8_UNORM:
+        m_SwapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        break;
+    default:
+        m_SwapChainDesc.Format = nvrhi::d3d12::convertFormat(SwapChainFormats[0]);
+        break;
+    }
+
+    nvrhi::RefCountPtr<IDXGIFactory5> pDxgiFactory5;
+    if (SUCCEEDED(m_DxgiFactory2->QueryInterface(IID_PPV_ARGS(&pDxgiFactory5))))
+    {
+        BOOL supported = 0;
+        if (SUCCEEDED(pDxgiFactory5->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &supported, sizeof(supported))))
+            m_TearingSupported = (supported != 0);
+    }
+
+    if (m_TearingSupported)
+    {
+        m_SwapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    }
+
+    m_FullScreenDesc = {};
+    m_FullScreenDesc.RefreshRate.Numerator = 60;
+    m_FullScreenDesc.RefreshRate.Denominator = 1;
+    m_FullScreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
+    m_FullScreenDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    m_FullScreenDesc.Windowed = true;
+
+    nvrhi::RefCountPtr<IDXGISwapChain1> pSwapChain1;
+    HRESULT hr = m_DxgiFactory2->CreateSwapChainForHwnd(m_GraphicsQueue, (HWND)hWnd, &m_SwapChainDesc, &m_FullScreenDesc, nullptr, &pSwapChain1);
+    S3D_VALIDATE_HRESULT(hr);
+
+    hr = pSwapChain1->QueryInterface(IID_PPV_ARGS(&m_SwapChain));
+    S3D_VALIDATE_HRESULT(hr);
+
+    if (!CreateRenderTargets())
+        return false;
+
+    hr = m_Device12->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_FrameFence));
+    S3D_VALIDATE_HRESULT(hr);
+
+    for (UINT bufferIndex = 0; bufferIndex < m_SwapChainDesc.BufferCount; bufferIndex++)
+    {
+        m_FrameFenceEvents.push_back(CreateEvent(nullptr, false, true, nullptr));
+    }
+
+    return true;
+}
+
+const bool Synesthesia3D::RendererNVRHID3D12::CreateRenderTargets()
+{
+    m_SwapChainBuffers.resize(m_SwapChainDesc.BufferCount);
+    m_RhiSwapChainBuffers.resize(m_SwapChainDesc.BufferCount);
+
+    for (UINT n = 0; n < m_SwapChainDesc.BufferCount; n++)
+    {
+        const HRESULT hr = m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_SwapChainBuffers[n]));
+        S3D_VALIDATE_HRESULT(hr);
+
+        const nvrhi::Format swapChainFormat = nvrhi::Format::SRGBA8_UNORM;
+
+        nvrhi::TextureDesc textureDesc;
+        textureDesc.width = m_SwapChainDesc.Width;
+        textureDesc.height = m_SwapChainDesc.Height;
+        textureDesc.sampleCount = m_SwapChainDesc.SampleDesc.Count;
+        textureDesc.sampleQuality = m_SwapChainDesc.SampleDesc.Quality;
+        textureDesc.format = swapChainFormat;
+        textureDesc.debugName = "SwapChainBuffer";
+        textureDesc.isRenderTarget = true;
+        textureDesc.isUAV = false;
+        textureDesc.initialState = nvrhi::ResourceStates::Present;
+        textureDesc.keepInitialState = true;
+
+        m_RhiSwapChainBuffers[n] = m_NvrhiDevice->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D12_Resource, nvrhi::Object(m_SwapChainBuffers[n]), textureDesc);
+    }
+
+    return true;
+}
+
+void RendererNVRHID3D12::DestroyDeviceAndSwapchain()
+{
+    m_RhiSwapChainBuffers.clear();
+
+    ReleaseRenderTargets();
+
     m_NvrhiDevice = nullptr;
+
+    for (auto fenceEvent : m_FrameFenceEvents)
+    {
+        WaitForSingleObject(fenceEvent, INFINITE);
+        CloseHandle(fenceEvent);
+    }
+
+    m_FrameFenceEvents.clear();
+
+    if (m_SwapChain)
+    {
+        m_SwapChain->SetFullscreenState(false, nullptr);
+    }
+
+    m_SwapChainBuffers.clear();
 
     m_GraphicsQueue = nullptr;
     m_ComputeQueue = nullptr;
     m_CopyQueue = nullptr;
     m_Device12 = nullptr;
+}
+
+void RendererNVRHID3D12::ReleaseRenderTargets()
+{
+    if (m_NvrhiDevice)
+    {
+        // Make sure that all frames have finished rendering
+        m_NvrhiDevice->waitForIdle();
+
+        // Release all in-flight references to the render targets
+        m_NvrhiDevice->runGarbageCollection();
+    }
+
+    // Set the events so that WaitForSingleObject in OneFrame will not hang later
+    for (auto e : m_FrameFenceEvents)
+        SetEvent(e);
+
+    // Release the old buffers because ResizeBuffers requires that
+    m_RhiSwapChainBuffers.clear();
+    m_SwapChainBuffers.clear();
+}
+
+namespace std {
+    template<>
+    struct hash<DeviceCaps::SupportedScreenFormat> {
+        const size_t operator()(const DeviceCaps::SupportedScreenFormat& c) const
+        {
+            return std::hash<unsigned int>()(c.nWidth)
+                ^ std::hash<unsigned int>()(c.nHeight)
+                ^ std::hash<unsigned int>()(c.nRefreshRate)
+                ^ std::hash<PixelFormat>()(c.ePixelFormat);
+        }
+    };
+
+    template<>
+    struct equal_to<DeviceCaps::SupportedScreenFormat> {
+        const bool operator()(const DeviceCaps::SupportedScreenFormat& a, const DeviceCaps::SupportedScreenFormat& b) const
+        {
+            return a.nWidth == b.nWidth
+                && a.nHeight == b.nHeight
+                && a.nRefreshRate == b.nRefreshRate
+                && a.ePixelFormat == b.ePixelFormat;
+        }
+    };
+}
+
+void RendererNVRHID3D12::CheckDeviceCaps()
+{
+    RendererNVRHI::CheckDeviceCaps();
+
+    std::unordered_set<DeviceCaps::SupportedScreenFormat> uniqueScreenFormats;
+
+    unsigned int adapterCount = 0;
+    while (true)
+    {
+        nvrhi::RefCountPtr<IDXGIAdapter> adapter;
+        HRESULT hr = m_DxgiFactory2->EnumAdapters(adapterCount, &adapter);
+        if (FAILED(hr))
+            break;
+
+        DXGI_ADAPTER_DESC desc;
+        hr = adapter->GetDesc(&desc);
+        if (FAILED(hr))
+            break;
+
+        unsigned int outputCount = 0;
+        while (true)
+        {
+            nvrhi::RefCountPtr<IDXGIOutput> output;
+            hr = adapter->EnumOutputs(outputCount, &output);
+            if (FAILED(hr))
+                break;
+
+            for (nvrhi::Format scf : SwapChainFormats)
+            {
+                DXGI_FORMAT fmt = nvrhi::d3d12::convertFormat(scf);
+                UINT numModes = 0;
+                hr = output->GetDisplayModeList(fmt, 0, &numModes, nullptr);
+
+                if (FAILED(hr))
+                    break;
+
+                std::vector<DXGI_MODE_DESC> modeDescs;
+                modeDescs.resize(numModes);
+                hr = output->GetDisplayModeList(fmt, 0, &numModes, modeDescs.data());
+
+                if (FAILED(hr))
+                    break;
+
+                for (const DXGI_MODE_DESC& modeDesc : modeDescs)
+                {
+                    DeviceCaps::SupportedScreenFormat sf;
+                    sf.nWidth = modeDesc.Width;
+                    sf.nHeight = modeDesc.Height;
+                    sf.nRefreshRate = modeDesc.RefreshRate.Numerator / modeDesc.RefreshRate.Denominator;
+                    sf.ePixelFormat = MatchPixelFormat(scf);
+                    uniqueScreenFormats.insert(sf);
+                }
+            }
+
+            outputCount++;
+        }
+
+        adapterCount++;
+    }
+
+    m_tDeviceCaps.arrSupportedScreenFormats.insert(
+        m_tDeviceCaps.arrSupportedScreenFormats.end(),
+        uniqueScreenFormats.begin(),
+        uniqueScreenFormats.end()
+    );
+
+    m_tDeviceCaps.nNumSimultaneousRTs = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;
 }

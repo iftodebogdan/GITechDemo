@@ -39,6 +39,8 @@ namespace Synesthesia3D
         RendererNVRHI();
         virtual ~RendererNVRHI();
 
+        virtual void CheckDeviceCaps();
+
     public:
         virtual void Initialize(void* hWnd) override;
         const bool SetDisplayResolution(

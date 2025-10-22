@@ -139,6 +139,30 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.cpp">
       <Filter>NVRHI</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ResourceManagerNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\VertexFormatNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\IndexBufferNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\VertexBufferNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ShaderProgramNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\TextureNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RenderTargetNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h">
@@ -403,6 +427,30 @@
       <Filter>NVRHI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHIVulkan.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ResourceManagerNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\VertexFormatNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\IndexBufferNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\VertexBufferNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ShaderProgramNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\TextureNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RenderTargetNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.h">
       <Filter>NVRHI</Filter>
     </ClInclude>
   </ItemGroup>

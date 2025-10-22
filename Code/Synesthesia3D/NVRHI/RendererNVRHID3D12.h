@@ -41,18 +41,35 @@ namespace Synesthesia3D
         RendererNVRHID3D12();
         virtual ~RendererNVRHID3D12();
 
+        void CreateDevice();
+        const bool CreateSwapChain(void* hWnd);
+        const bool CreateRenderTargets();
+        void DestroyDeviceAndSwapchain();
+        void ReleaseRenderTargets();
+
+        void CheckDeviceCaps() override;
+
     public:
         void Initialize(void* hWnd) override;
 
     private:
-        void DestroyDevice();
-
         nvrhi::RefCountPtr<IDXGIFactory2> m_DxgiFactory2;
         nvrhi::RefCountPtr<IDXGIAdapter> m_DxgiAdapter;
         nvrhi::RefCountPtr<ID3D12Device> m_Device12;
         nvrhi::RefCountPtr<ID3D12CommandQueue> m_GraphicsQueue;
         nvrhi::RefCountPtr<ID3D12CommandQueue> m_ComputeQueue;
         nvrhi::RefCountPtr<ID3D12CommandQueue> m_CopyQueue;
+
+        DXGI_SWAP_CHAIN_DESC1 m_SwapChainDesc{};
+        DXGI_SWAP_CHAIN_FULLSCREEN_DESC m_FullScreenDesc{};
+        nvrhi::RefCountPtr<IDXGISwapChain3> m_SwapChain;
+
+        std::vector<nvrhi::RefCountPtr<ID3D12Resource>> m_SwapChainBuffers;
+        std::vector<nvrhi::TextureHandle> m_RhiSwapChainBuffers;
+        nvrhi::RefCountPtr<ID3D12Fence> m_FrameFence;
+        std::vector<HANDLE> m_FrameFenceEvents;
+
+        bool m_TearingSupported = false;
 
         friend class Renderer;
     };

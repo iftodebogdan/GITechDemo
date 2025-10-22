@@ -1,0 +1,52 @@
+/**
+ * @file        IndexBufferNVRHI.h
+ *
+ * @note        This file is part of the "Synesthesia3D" graphics engine
+ *
+ * @copyright   Copyright (C) Iftode Bogdan-Marius <iftode.bogdan@gmail.com>
+ *
+ * @copyright
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * @copyright
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * @copyright
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef INDEXBUFFERNVRHI_H
+#define INDEXBUFFERNVRHI_H
+
+#include "IndexBuffer.h"
+
+namespace Synesthesia3D
+{
+    class IndexBufferNVRHI : public IndexBuffer
+    {
+    public:
+        void Enable() override;
+        void Disable() override;
+        void Lock(const BufferLocking lockMode) override;
+        void Unlock() override;
+        void Update() override;
+
+        void Bind() override;
+        void Unbind() override;
+
+    private:
+        IndexBufferNVRHI(
+            const unsigned int indexCount, const IndexBufferFormat indexFormat,
+            const BufferUsage usage = BU_STATIC);
+        ~IndexBufferNVRHI();
+
+        friend class ResourceManagerNVRHI;
+    };
+}
+
+#endif // INDEXBUFFERNVRHI_H
