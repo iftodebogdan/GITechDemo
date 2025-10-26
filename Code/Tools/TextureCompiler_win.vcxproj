@@ -100,6 +100,7 @@
       <PreprocessorDefinitions>WIN32;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\DevIL\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +131,7 @@ DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <PreprocessorDefinitions>WIN32;_CONSOLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\DevIL\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,6 +164,7 @@ DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <PreprocessorDefinitions>WIN32;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\DevIL\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,6 +199,7 @@ DEL /F /Q "$(OutDir)\ILU.dll"</Command>
       <PreprocessorDefinitions>WIN32;_CONSOLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\Synesthesia3D\External\gmtl\include;$(SolutionDir)..\Synesthesia3D\Base;$(SolutionDir)..\Synesthesia3D;$(ProjectDir)External\DevIL\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

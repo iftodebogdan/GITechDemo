@@ -22,23 +22,35 @@
 
 #include "stdafx.h"
 
+#include "RendererNVRHID3D12.h"
+using namespace Synesthesia3D;
+
+#if ENABLE_NVRHI_D3D12
+
+//#define LOAD_WINPIX_GPU_CAPTURER_DLL (_PROFILE || _DEBUG)
+
+#if LOAD_WINPIX_GPU_CAPTURER_DLL
+#include <filesystem>
+#include <shlobj.h>
+#endif
+
 #include <unordered_set>
 
 #include <nvrhi/validation.h>
+
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d12.lib")
 
 #if _DEBUG
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif
 
-#include "RendererNVRHID3D12.h"
-using namespace Synesthesia3D;
-
 #include "MappingsNVRHI.h"
 
 #ifdef _DEBUG
-    #include <DxErr.h>
-    #define S3D_VALIDATE_HRESULT(hr) \
+#include <DxErr.h>
+#define S3D_VALIDATE_HRESULT(hr) \
         { \
             if (FAILED(hr)) { \
                 S3D_DBGPRINT("Error %s %s\n", DXGetErrorString(hr), DXGetErrorDescription(hr)); \
@@ -46,7 +58,39 @@ using namespace Synesthesia3D;
             assert(SUCCEEDED(hr)); \
         }
 #else
-    #define S3D_VALIDATE_HRESULT(hr) ((void)0)  
+#define S3D_VALIDATE_HRESULT(hr) ((void)0)  
+#endif
+
+#if LOAD_WINPIX_GPU_CAPTURER_DLL
+static std::wstring GetLatestWinPixGpuCapturerPath_Cpp17()
+{
+    LPWSTR programFilesPath = nullptr;
+    SHGetKnownFolderPath(FOLDERID_ProgramFiles, KF_FLAG_DEFAULT, NULL, &programFilesPath);
+
+    std::filesystem::path pixInstallationPath = programFilesPath;
+    pixInstallationPath /= "Microsoft PIX";
+
+    std::wstring newestVersionFound;
+
+    for (auto const& directory_entry : std::filesystem::directory_iterator(pixInstallationPath))
+    {
+        if (directory_entry.is_directory())
+        {
+            if (newestVersionFound.empty() || newestVersionFound < directory_entry.path().filename().c_str())
+            {
+                newestVersionFound = directory_entry.path().filename().c_str();
+            }
+        }
+    }
+
+    if (newestVersionFound.empty())
+    {
+        S3D_DBGPRINT("Warning: Could not find WinPixGpuCapturer.dll for GPU capture.");
+        return L"";
+    }
+
+    return pixInstallationPath / newestVersionFound / L"WinPixGpuCapturer.dll";
+}
 #endif
 
 struct DefaultMessageCallback : public nvrhi::IMessageCallback
@@ -82,7 +126,9 @@ void DefaultMessageCallback::message(nvrhi::MessageSeverity severity, const char
         break;
     }
 
-    S3D_DBGPRINT("%s: %s", severityString.c_str(), messageText);
+    S3D_DBGPRINT("%s: %s\n", severityString.c_str(), messageText);
+
+    assert(severity == nvrhi::MessageSeverity::Info);
 }
 
 const nvrhi::Format SwapChainFormats[] = {
@@ -121,6 +167,8 @@ RendererNVRHID3D12::RendererNVRHID3D12()
 
 RendererNVRHID3D12::~RendererNVRHID3D12()
 {
+    m_pImmediateGraphicsCommandList = nullptr;
+
     DestroyDeviceAndSwapchain();
 
     m_DxgiAdapter = nullptr;
@@ -145,10 +193,43 @@ RendererNVRHID3D12::~RendererNVRHID3D12()
 
 void RendererNVRHID3D12::Initialize(void* hWnd)
 {
+#if LOAD_WINPIX_GPU_CAPTURER_DLL
+    // Check to see if a copy of WinPixGpuCapturer.dll has already been injected into the application.
+    // This may happen if the application is launched through the PIX UI.
+    if (GetModuleHandleW(L"WinPixGpuCapturer.dll") == 0)
+    {
+        const std::wstring dllPath = GetLatestWinPixGpuCapturerPath_Cpp17();
+        if (!dllPath.empty())
+            LoadLibraryW(dllPath.c_str());
+    }
+#endif
+
     CreateDevice();
     CreateSwapChain(hWnd);
 
     RendererNVRHI::Initialize(hWnd);
+}
+
+void RendererNVRHID3D12::SwapBuffers()
+{
+    assert(GetDeviceState() == DS_PRESENTING);
+    if (GetDeviceState() != DS_PRESENTING)
+        return;
+
+    auto bufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
+
+    UINT presentFlags = 0;
+    if(!GetVSyncStatus() && !IsFullscreen() && m_TearingSupported)
+        presentFlags |= DXGI_PRESENT_ALLOW_TEARING;
+
+    HRESULT hr = m_SwapChain->Present(GetVSyncStatus() ? 1 : 0, presentFlags);
+    S3D_VALIDATE_HRESULT(hr);
+
+    m_FrameFence->SetEventOnCompletion(m_FrameCount, m_FrameFenceEvents[bufferIndex]);
+    m_GraphicsQueue->Signal(m_FrameFence, m_FrameCount);
+    m_FrameCount++;
+
+    Renderer::SwapBuffers();
 }
 
 void RendererNVRHID3D12::CreateDevice()
@@ -203,10 +284,18 @@ void RendererNVRHID3D12::CreateDevice()
     }
     */
 
+#if _DEBUG
+    VLDDisable();
+#endif
+
     HRESULT hr = D3D12CreateDevice(
         m_DxgiAdapter,
         D3D_FEATURE_LEVEL_12_2,
         IID_PPV_ARGS(&m_Device12));
+
+#if _DEBUG
+    VLDEnable();
+#endif
 
     if (FAILED(hr))
     {
@@ -239,6 +328,10 @@ void RendererNVRHID3D12::CreateDevice()
     }
 #endif
 
+#if _DEBUG
+    VLDDisable();
+#endif
+
     D3D12_COMMAND_QUEUE_DESC queueDesc;
     ZeroMemory(&queueDesc, sizeof(queueDesc));
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -248,7 +341,6 @@ void RendererNVRHID3D12::CreateDevice()
     S3D_VALIDATE_HRESULT(hr);
     m_GraphicsQueue->SetName(L"Graphics Queue");
 
-    /*
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
     hr = m_Device12->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_ComputeQueue));
     S3D_VALIDATE_HRESULT(hr);
@@ -258,7 +350,10 @@ void RendererNVRHID3D12::CreateDevice()
     hr = m_Device12->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_CopyQueue));
     S3D_VALIDATE_HRESULT(hr);
     m_CopyQueue->SetName(L"Copy Queue");
-    */
+
+#if _DEBUG
+    VLDEnable();
+#endif
 
     nvrhi::d3d12::DeviceDesc deviceDesc;
     deviceDesc.errorCB = &DefaultMessageCallback::GetInstance();
@@ -273,10 +368,10 @@ void RendererNVRHID3D12::CreateDevice()
 #endif
     deviceDesc.enableHeapDirectlyIndexed = false; // TODO: allows ResourceDescriptorHeap on DX12 - is this required?
 
-    m_NvrhiDevice = nvrhi::d3d12::createDevice(deviceDesc);
+    m_pDevice = nvrhi::d3d12::createDevice(deviceDesc);
 
 #if _DEBUG
-    m_NvrhiDevice = nvrhi::validation::createValidationLayer(m_NvrhiDevice);
+    m_pDevice = nvrhi::validation::createValidationLayer(m_pDevice);
 #endif
 }
 
@@ -373,7 +468,7 @@ const bool Synesthesia3D::RendererNVRHID3D12::CreateRenderTargets()
         textureDesc.initialState = nvrhi::ResourceStates::Present;
         textureDesc.keepInitialState = true;
 
-        m_RhiSwapChainBuffers[n] = m_NvrhiDevice->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D12_Resource, nvrhi::Object(m_SwapChainBuffers[n]), textureDesc);
+        m_RhiSwapChainBuffers[n] = m_pDevice->createHandleForNativeTexture(nvrhi::ObjectTypes::D3D12_Resource, nvrhi::Object(m_SwapChainBuffers[n]), textureDesc);
     }
 
     return true;
@@ -385,7 +480,7 @@ void RendererNVRHID3D12::DestroyDeviceAndSwapchain()
 
     ReleaseRenderTargets();
 
-    m_NvrhiDevice = nullptr;
+    m_pDevice = nullptr;
 
     for (auto fenceEvent : m_FrameFenceEvents)
     {
@@ -402,6 +497,8 @@ void RendererNVRHID3D12::DestroyDeviceAndSwapchain()
 
     m_SwapChainBuffers.clear();
 
+    m_FrameFence = nullptr;
+    m_SwapChain = nullptr;
     m_GraphicsQueue = nullptr;
     m_ComputeQueue = nullptr;
     m_CopyQueue = nullptr;
@@ -410,13 +507,13 @@ void RendererNVRHID3D12::DestroyDeviceAndSwapchain()
 
 void RendererNVRHID3D12::ReleaseRenderTargets()
 {
-    if (m_NvrhiDevice)
+    if (m_pDevice)
     {
         // Make sure that all frames have finished rendering
-        m_NvrhiDevice->waitForIdle();
+        m_pDevice->waitForIdle();
 
         // Release all in-flight references to the render targets
-        m_NvrhiDevice->runGarbageCollection();
+        m_pDevice->runGarbageCollection();
     }
 
     // Set the events so that WaitForSingleObject in OneFrame will not hang later
@@ -456,6 +553,7 @@ void RendererNVRHID3D12::CheckDeviceCaps()
 {
     RendererNVRHI::CheckDeviceCaps();
 
+    // Verify supported backbuffer formats
     std::unordered_set<DeviceCaps::SupportedScreenFormat> uniqueScreenFormats;
 
     unsigned int adapterCount = 0;
@@ -519,4 +617,48 @@ void RendererNVRHID3D12::CheckDeviceCaps()
     );
 
     m_tDeviceCaps.nNumSimultaneousRTs = D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;
+
+    // Verify supported texture formats
+    const D3D12_FORMAT_SUPPORT1 arrTextureTypeMap[] = {
+        D3D12_FORMAT_SUPPORT1_TEXTURE1D,    // TT_1D,
+        D3D12_FORMAT_SUPPORT1_TEXTURE2D,    // TT_2D,
+        D3D12_FORMAT_SUPPORT1_TEXTURE3D,    // TT_3D,
+        D3D12_FORMAT_SUPPORT1_TEXTURECUBE,  // TT_CUBE
+    };
+
+    const D3D12_FORMAT_SUPPORT1 arrBufferUsageMap[] = {
+        D3D12_FORMAT_SUPPORT1_NONE,             // BU_STATIC
+        D3D12_FORMAT_SUPPORT1_NONE,             // BU_DYNAMIC
+        D3D12_FORMAT_SUPPORT1_RENDER_TARGET,    // BU_RENDERTAGET
+        D3D12_FORMAT_SUPPORT1_DEPTH_STENCIL,    // BU_DEPTHSTENCIL
+        D3D12_FORMAT_SUPPORT1_SHADER_SAMPLE     // BU_TEXTURE
+    };
+
+    for (unsigned int pf = PF_NONE; pf < PF_MAX; pf++)
+    {
+        D3D12_FEATURE_DATA_FORMAT_SUPPORT formatSupport = { nvrhi::d3d12::convertFormat(PixelFormatNVRHI[pf]) };
+        HRESULT hr = m_Device12->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &formatSupport, sizeof(formatSupport));
+        S3D_VALIDATE_HRESULT(hr);
+
+        if (SUCCEEDED(hr))
+        {
+            for (unsigned int tt = TT_1D; tt < TT_MAX; tt++)
+            {
+                for (unsigned int bu = BU_STATIC; bu < BU_MAX; bu++)
+                {
+                    if (formatSupport.Support1 & (arrTextureTypeMap[tt] | arrBufferUsageMap[bu]))
+                    {
+                        DeviceCaps::SupportedPixelFormat tf;
+                        tf.ePixelFormat = (PixelFormat)pf;
+                        tf.eResourceUsage = (BufferUsage)bu;
+                        tf.eTextureType = (TextureType)tt;
+
+                        m_tDeviceCaps.arrSupportedPixelFormats.push_back(tf);
+                    }
+                }
+            }
+        }
+    }
 }
+
+#endif // ENABLE_NVRHI_D3D12

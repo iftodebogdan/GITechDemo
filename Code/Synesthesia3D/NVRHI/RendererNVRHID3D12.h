@@ -52,6 +52,8 @@ namespace Synesthesia3D
     public:
         void Initialize(void* hWnd) override;
 
+        void SwapBuffers() override;
+
     private:
         nvrhi::RefCountPtr<IDXGIFactory2> m_DxgiFactory2;
         nvrhi::RefCountPtr<IDXGIAdapter> m_DxgiAdapter;
@@ -65,11 +67,11 @@ namespace Synesthesia3D
         nvrhi::RefCountPtr<IDXGISwapChain3> m_SwapChain;
 
         std::vector<nvrhi::RefCountPtr<ID3D12Resource>> m_SwapChainBuffers;
-        std::vector<nvrhi::TextureHandle> m_RhiSwapChainBuffers;
         nvrhi::RefCountPtr<ID3D12Fence> m_FrameFence;
         std::vector<HANDLE> m_FrameFenceEvents;
 
         bool m_TearingSupported = false;
+        UINT64 m_FrameCount = 1;
 
         friend class Renderer;
     };

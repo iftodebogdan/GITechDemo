@@ -211,6 +211,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
+    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -229,6 +230,7 @@
     <IntDir>$(SolutionDir)..\..\BinTemp\$(SolutionName)\$(ProjectName)\$(PlatformTarget)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(RootNamespace)_$(PlatformTarget)_$(Configuration)</TargetName>
+    <CustomBuildAfterTargets>Clean</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -237,10 +239,11 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -250,7 +253,8 @@
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\RenderDoc\bin\$(PlatformTarget)\*.*" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
       <Message>Copy DLL dependencies</Message>
     </PostBuildEvent>
     <CustomBuildStep />
@@ -258,11 +262,12 @@
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
+      <Command>DEL /F /Q "$(OutDir)\renderdoc.dll"
+DEL /F /Q "$(OutDir)\dbghelp.dll"
 DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
 DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Outputs>$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
+      <Outputs>$(OutDir)\renderdoc.dll;$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -272,10 +277,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;$(ProjectDir)External\vld\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -284,7 +290,8 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)External\RenderDoc\bin\$(PlatformTarget)\*.*" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)External\vld\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy DLL dependencies</Message>
@@ -294,11 +301,12 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
     <CustomBuildStep />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>DEL /F /Q "$(OutDir)\dbghelp.dll"
+      <Command>DEL /F /Q "$(OutDir)\renderdoc.dll"
+DEL /F /Q "$(OutDir)\dbghelp.dll"
 DEL /F /Q "$(OutDir)\Microsoft.DTfW.DHL.manifest"
 DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <Message>Deleting DLL dependencies</Message>
-      <Outputs>$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
+      <Outputs>$(OutDir)\renderdoc.dll;$(OutDir)\dbghelp.dll;$(OutDir)\Microsoft.DTfW.DHL.manifest;$(OutDir)\vld_$(PlatformTarget).dll;%(Outputs)</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -310,10 +318,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -338,10 +347,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -357,6 +367,15 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
     <CustomBuildStep />
     <PostBuildEvent />
     <CustomBuildStep />
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)External\RenderDoc\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Message>Copy DLL dependencies</Message>
+    </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\renderdoc.dll"</Command>
+      <Message>Deleting DLL dependencies</Message>
+      <Outputs>$(OutDir)\renderdoc.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -367,10 +386,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -395,10 +415,11 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_PROFILE;NDEBUG;_WINDOWS;_USRDLL;SYNESTHESIA3D_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Base;$(ProjectDir)D3D9;$(ProjectDir)NVRHI;$(ProjectDir)NULL;$(ProjectDir)External\D3D9\include;$(ProjectDir)External\D3D9On12\include;$(ProjectDir)External\NVRHI\include;$(ProjectDir)External\NVRHI\thirdparty\DirectX-Headers\include;$(ProjectDir)External\RenderDoc\include;$(ProjectDir)External\gmtl\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -414,6 +435,15 @@ DEL /F /Q "$(OutDir)\vld_$(PlatformTarget).dll"</Command>
     <CustomBuildStep />
     <PostBuildEvent />
     <CustomBuildStep />
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)External\RenderDoc\bin\$(PlatformTarget)\*.*" "$(OutDir)"</Command>
+      <Message>Copy DLL dependencies</Message>
+    </PostBuildEvent>
+    <CustomBuildStep>
+      <Command>DEL /F /Q "$(OutDir)\renderdoc.dll"</Command>
+      <Message>Deleting DLL dependencies</Message>
+      <Outputs>$(OutDir)\renderdoc.dll</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

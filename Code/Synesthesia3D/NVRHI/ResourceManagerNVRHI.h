@@ -23,6 +23,10 @@
 #ifndef RESOURCEMANAGERNVRHI_H
 #define RESOURCEMANAGERNVRHI_H
 
+#include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
 #include "ResourceManager.h"
 
 namespace Synesthesia3D
@@ -48,5 +52,7 @@ namespace Synesthesia3D
         friend class RendererNVRHI;
     };
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // RESOURCEMANAGERNVRHI_H

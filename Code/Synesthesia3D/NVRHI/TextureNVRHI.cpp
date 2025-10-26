@@ -25,6 +25,11 @@
 #include "TextureNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
+#include "RendererNVRHI.h"
+#include "MappingsNVRHI.h"
+
 TextureNVRHI::TextureNVRHI(
     const PixelFormat pixelFormat, const TextureType texType,
     const unsigned int sizeX, const unsigned int sizeY, const unsigned int sizeZ,
@@ -39,16 +44,17 @@ TextureNVRHI::TextureNVRHI(
 TextureNVRHI::~TextureNVRHI()
 {
     Unbind();
+    m_pTexture = nullptr;
 }
 
 void TextureNVRHI::Enable(const unsigned int texUnit) const
 {
-
+    m_tBoundTextures[texUnit] = nvrhi::BindingSetItem::Texture_SRV(texUnit, m_pTexture);
 }
 
 void TextureNVRHI::Disable(const unsigned int texUnit) const
 {
-
+    m_tBoundTextures[texUnit] = nvrhi::BindingSetItem::Texture_SRV(texUnit, nullptr);
 }
 
 const bool TextureNVRHI::Lock(const unsigned int mipmapLevel, const BufferLocking lockMode)
@@ -86,43 +92,87 @@ void TextureNVRHI::Unlock()
 
 void TextureNVRHI::Update()
 {
+    RendererNVRHI* const RenderContext = RendererNVRHI::GetInstance();
 
+    RenderContext->GetCommandList()->writeTexture(
+        m_pTexture,
+        GetTextureType() == TT_CUBE ? GetCubeFaceIndex(m_eLockedCubeFace) : 0u,
+        m_nLockedMip,
+        GetTextureType() == TT_CUBE ? GetMipData(m_eLockedCubeFace, m_nLockedMip) : GetMipData(m_nLockedMip),
+        GetWidth(m_nLockedMip) * GetBytesPerPixel(GetPixelFormat()),
+        GetHeight(m_nLockedMip) * GetWidth(m_nLockedMip) * GetBytesPerPixel(GetPixelFormat()));
 }
 
 void TextureNVRHI::Bind()
 {
+    RendererNVRHI* const RenderContext = RendererNVRHI::GetInstance();
+
     Texture::Bind();
 
-    switch (GetTextureType())
+    if (!m_pTexture)
     {
-    case TT_1D:
-    case TT_2D:
-    case TT_3D:
-        for (unsigned int mip = 0; mip < GetMipCount(); mip++)
+        nvrhi::TextureDesc textureDesc;
+        textureDesc.setWidth(GetWidth())
+            .setHeight(GetHeight())
+            .setDepth(GetDepth())
+            .setArraySize(GetTextureType() == TT_CUBE ? 6 : 1)
+            .setMipLevels(GetMipCount())
+            .setSampleCount(1)
+            .setSampleQuality(0)
+            .setFormat(PixelFormatNVRHI[GetPixelFormat()])
+            .setDimension(TextureTypeNVRHI[GetTextureType()])
+            .setDebugName(GetSourceFile())
+            .setIsRenderTarget(IsRenderTarget() || IsDepthStencil())
+            .setIsUAV(false)
+            .setIsTypeless(false)
+            .setIsVirtual(false)
+            .setClearValue(nvrhi::Color())
+            .setUseClearValue(false)
+            .setInitialState(nvrhi::ResourceStates::Unknown)
+            .setKeepInitialState(false)
+            .setSharedResourceFlags(nvrhi::SharedResourceFlags::None);
+
+        m_pTexture = RenderContext->GetDevice()->createTexture(textureDesc);
+
+        if (GetUsage() == BU_TEXTURE)
         {
-            if (Lock(mip, BL_WRITE_ONLY))
+            RenderContext->GetCommandList()->beginTrackingTextureState(m_pTexture, nvrhi::AllSubresources, nvrhi::ResourceStates::Common);
+
+            switch (GetTextureType())
             {
-                Update();
-                Unlock();
-            }
-            else
-                if (m_eBufferUsage != BU_RENDERTAGET && m_eBufferUsage != BU_DEPTHSTENCIL)
-                    assert(false);
-        }
-        break;
-    case TT_CUBE:
-        for (CubeFace face = FACE_XNEG; face < FACE_MAX; face = (CubeFace)(face + 1))
-        {
-            for (unsigned int mip = 0; mip < GetMipCount(); mip++)
-            {
-                if (Lock(face, mip, BL_WRITE_ONLY))
+            case TT_1D:
+            case TT_2D:
+            case TT_3D:
+                for (unsigned int mip = 0; mip < GetMipCount(); mip++)
                 {
-                    Update();
-                    Unlock();
+                    if (Lock(mip, BL_WRITE_ONLY))
+                    {
+                        Update();
+                        Unlock();
+                    }
+                    else
+                        if (m_eBufferUsage != BU_RENDERTAGET && m_eBufferUsage != BU_DEPTHSTENCIL)
+                            assert(false);
                 }
-                else
-                    assert(false);
+                break;
+            case TT_CUBE:
+                for (CubeFace face = FACE_XNEG; face < FACE_MAX; face = (CubeFace)(face + 1))
+                {
+                    for (unsigned int mip = 0; mip < GetMipCount(); mip++)
+                    {
+                        if (Lock(face, mip, BL_WRITE_ONLY))
+                        {
+                            Update();
+                            Unlock();
+                        }
+                        else
+                            assert(false);
+                    }
+                }
             }
+
+            RenderContext->GetCommandList()->setPermanentTextureState(m_pTexture, nvrhi::ResourceStates::ShaderResource);
+            RenderContext->GetCommandList()->commitBarriers();
         }
     }
 }
@@ -132,7 +182,4 @@ void TextureNVRHI::Unbind()
 
 }
 
-const unsigned int TextureNVRHI::GetCubeFaceIndex(const CubeFace cubeFace) const
-{
-    return 0;
-}
+#endif // ENABLE_NVRHI

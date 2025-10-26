@@ -23,6 +23,10 @@
 #ifndef VERTEXBUFFERNVRHI_H
 #define VERTEXBUFFERNVRHI_H
 
+#include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
 #include "VertexBuffer.h"
 
 namespace Synesthesia3D
@@ -51,5 +55,7 @@ namespace Synesthesia3D
         friend class ResourceManagerNVRHI;
     };
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // VERTEXBUFFERNVRHI_H

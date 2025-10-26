@@ -163,6 +163,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.cpp">
       <Filter>NVRHI</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RenderStateNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\SamplerStateNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ProfilerNVRHI.cpp">
+      <Filter>NVRHI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Base\Profiler.h">
@@ -451,6 +460,15 @@
       <Filter>NVRHI</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RenderStateNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\SamplerStateNVRHI.h">
+      <Filter>NVRHI</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ProfilerNVRHI.h">
       <Filter>NVRHI</Filter>
     </ClInclude>
   </ItemGroup>

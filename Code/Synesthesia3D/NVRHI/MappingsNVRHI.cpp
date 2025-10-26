@@ -24,6 +24,8 @@
 
 #include "MappingsNVRHI.h"
 
+#if ENABLE_NVRHI
+
 namespace Synesthesia3D
 {
     const nvrhi::Format PixelFormatNVRHI[PF_MAX] =
@@ -65,4 +67,35 @@ namespace Synesthesia3D
 
         return PF_NONE;
     }
+
+    const nvrhi::TextureDimension TextureTypeNVRHI[TT_MAX] =
+    {
+        nvrhi::TextureDimension::Texture1D,     // TT_1D
+        nvrhi::TextureDimension::Texture2D,     // TT_2D
+        nvrhi::TextureDimension::Texture3D,     // TT_3D
+        nvrhi::TextureDimension::TextureCube,   // TT_CUBE
+    };
+
+    const TextureType MatchTextureType(const nvrhi::TextureDimension dim)
+    {
+        for (unsigned int i = 0; i < TT_MAX; i++)
+        {
+            if (TextureTypeNVRHI[i] == dim)
+                return (TextureType)i;
+        }
+        return TT_MAX;
+    }
+
+    // TODO: Verify this mapping
+    const unsigned int CubeFaceIndexNVRHI[FACE_MAX] =
+    {
+        1,  // FACE_XNEG
+        2,  // FACE_YPOS
+        3,  // FACE_YNEG
+        4,  // FACE_ZPOS
+        0,  // FACE_XPOS
+        5   // FACE_ZNEG
+    };
 }
+
+#endif // ENABLE_NVRHI

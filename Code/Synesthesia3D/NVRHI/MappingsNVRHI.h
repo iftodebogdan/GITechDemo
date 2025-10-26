@@ -23,13 +23,22 @@
 #ifndef MAPPINGSNVRHI_H
 #define MAPPINGSNVRHI_H
 
-#include <nvrhi/nvrhi.h>
-
 #include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
+#include <nvrhi/nvrhi.h>
 
 namespace Synesthesia3D
 {
+    extern const nvrhi::Format PixelFormatNVRHI[PF_MAX];
+    extern const nvrhi::TextureDimension TextureTypeNVRHI[TT_MAX];
+    extern const unsigned int CubeFaceIndexNVRHI[FACE_MAX];
+
     const PixelFormat MatchPixelFormat(const nvrhi::Format fmt);
+    const TextureType MatchTextureType(const nvrhi::TextureDimension dim);
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // MAPPINGSNVRHI_H

@@ -25,6 +25,8 @@
 #include "ShaderProgramNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 ShaderProgramNVRHI::ShaderProgramNVRHI(const ShaderProgramType programType,
     const char* srcData, const char* entryPoint, const char* profile)
     : ShaderProgram(programType)
@@ -138,3 +140,5 @@ void ShaderProgramNVRHI::Unbind()
 {
 
 }
+
+#endif // ENABLE_NVRHI

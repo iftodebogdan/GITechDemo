@@ -23,6 +23,10 @@
 #ifndef VERTEXFORMATNVRHI_H
 #define VERTEXFORMATNVRHI_H
 
+#include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
 #include "VertexFormat.h"
 
 namespace Synesthesia3D
@@ -44,5 +48,7 @@ namespace Synesthesia3D
         friend class ResourceManagerNVRHI;
     };
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // VERTEXFORMATNVRHI_H

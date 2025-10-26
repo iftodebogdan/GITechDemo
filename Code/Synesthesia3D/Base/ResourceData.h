@@ -39,7 +39,7 @@ using namespace gmtl;
 // This header holds all defines, enums and
 // structures used by the rendering library
 
-#define ENABLE_D3D9_ON_12 (1)       /**< @brief Enable Direct3D 9On12 support. */
+#define ENABLE_D3D9_ON_12 (0)       /**< @brief Enable Direct3D 9On12 support. */
 
 #if (defined(__x86_64__) || defined(_M_X64))
     #define ENABLE_NVRHI (1)            /**< @brief Enable NVidia's rendering hardware interface support. */

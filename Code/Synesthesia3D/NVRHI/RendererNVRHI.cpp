@@ -25,14 +25,26 @@
 #include "RendererNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
+//#define LOAD_RENDERDOC_DLL (_PROFILE || _DEBUG)
+
+#if LOAD_RENDERDOC_DLL
+#include "renderdoc_app.h"
+#endif
+
 #include "ResourceManagerNVRHI.h"
+#include "RenderStateNVRHI.h"
+#include "SamplerStateNVRHI.h"
+#include "ProfilerNVRHI.h"
+
 #include "MappingsNVRHI.h"
 
 #pragma comment(lib, "NVRHI.lib")
 
 RendererNVRHI::RendererNVRHI()
 {
-
+    InitializeRenderDoc();
 }
 
 RendererNVRHI::~RendererNVRHI()
@@ -40,15 +52,29 @@ RendererNVRHI::~RendererNVRHI()
 
 }
 
+RendererNVRHI* const RendererNVRHI::GetInstance()
+{
+    assert(!ms_pInstance || ms_pInstance->GetAPI() == API_NVRHI_D3D11 || ms_pInstance->GetAPI() == API_NVRHI_D3D12 || ms_pInstance->GetAPI() == API_NVRHI_VULKAN);
+    return static_cast<RendererNVRHI*>(Renderer::GetInstance());
+}
+
 void RendererNVRHI::Initialize(void* hWnd)
 {
     CheckDeviceCaps();
 
     m_pResourceManager = new ResourceManagerNVRHI();
-    //m_pRenderStateManager = new RenderStateNVRHI();
-    //m_pSamplerStateManager = new SamplerStateNVRHI();
-    //
-    //m_pProfiler = new ProfilerNVRHI();
+    m_pRenderStateManager = new RenderStateNVRHI();
+    m_pSamplerStateManager = new SamplerStateNVRHI();
+
+    m_pProfiler = new ProfilerNVRHI();
+
+    m_pImmediateGraphicsCommandList = m_pDevice->createCommandList();
+
+    SetDeviceState(DS_READY);
+
+    // TODO: find alternative to this
+    if (!BeginFrame())
+        assert(false);
 }
 
 const bool RendererNVRHI::SetDisplayResolution(const Vec2i size, const Vec2i offset, const bool fullscreen, const unsigned int refreshRate, const bool vsync)
@@ -58,7 +84,15 @@ const bool RendererNVRHI::SetDisplayResolution(const Vec2i size, const Vec2i off
 
 const Vec2i RendererNVRHI::GetDisplayResolution() const
 {
-    return Vec2i();
+    Vec2i swapchainSize;
+
+    if (m_RhiSwapChainBuffers.size() > 0 && m_RhiSwapChainBuffers[0].Get())
+    {
+        swapchainSize[0] = m_RhiSwapChainBuffers[0]->getDesc().width;
+        swapchainSize[1] = m_RhiSwapChainBuffers[0]->getDesc().height;
+    }
+
+    return swapchainSize;
 }
 
 const bool RendererNVRHI::GetVSyncStatus() const
@@ -85,23 +119,62 @@ void RendererNVRHI::SetViewport(const Vec2i size, const Vec2i offset)
 {
 }
 
-void RendererNVRHI::CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const
+const bool RendererNVRHI::BeginFrame()
 {
+    if (GetDeviceState() == DS_RENDERING)
+        return true;
+
+    assert(GetDeviceState() == DS_READY);
+    m_pImmediateGraphicsCommandList->open();
+
+    return Renderer::BeginFrame();
 }
 
-void RendererNVRHI::CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const
+void RendererNVRHI::EndFrame()
 {
-}
+    assert(GetDeviceState() == DS_RENDERING);
+    if (GetDeviceState() != DS_RENDERING)
+        return;
 
-void RendererNVRHI::CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const
-{
+    m_pImmediateGraphicsCommandList->close();
+    m_pDevice->executeCommandList(m_pImmediateGraphicsCommandList);
+
+    Renderer::EndFrame();
 }
 
 void RendererNVRHI::Clear(const Vec4f rgba, const float z, const unsigned int stencil)
 {
+
 }
 
 void RendererNVRHI::CheckDeviceCaps()
 {
 
 }
+
+void Synesthesia3D::RendererNVRHI::InitializeRenderDoc()
+{
+#ifdef LOAD_RENDERDOC_DLL
+    RENDERDOC_API_1_1_2* rdoc_api = NULL;
+
+#if _DEBUG
+    VLDDisable();
+#endif
+
+    HINSTANCE hLib = LoadLibraryA("renderdoc.dll");
+
+#if _DEBUG
+    VLDEnable();
+#endif
+
+    if (HMODULE mod = GetModuleHandleA("renderdoc.dll"))
+    {
+        pRENDERDOC_GetAPI RENDERDOC_GetAPI =
+            (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+        int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_1_2, (void**)&rdoc_api);
+        assert(ret == 1);
+    }
+#endif
+}
+
+#endif // ENABLE_NVRHI

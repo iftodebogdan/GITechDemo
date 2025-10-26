@@ -23,7 +23,16 @@
 #ifndef TEXTURENVRHI_H
 #define TEXTURENVRHI_H
 
+#include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
+#include <unordered_map>
+
+#include <nvrhi/nvrhi.h>
+
 #include "Texture.h"
+#include "MappingsNVRHI.h"
 
 namespace Synesthesia3D
 {
@@ -40,7 +49,7 @@ namespace Synesthesia3D
         void Bind() override;
         void Unbind() override;
 
-        const unsigned int GetCubeFaceIndex(const CubeFace cubeFace) const override;
+        const unsigned int GetCubeFaceIndex(const CubeFace cubeFace) const override { return CubeFaceIndexNVRHI[cubeFace]; }
 
     private:
         TextureNVRHI(
@@ -49,8 +58,14 @@ namespace Synesthesia3D
             const unsigned int mipCount = 0, const BufferUsage usage = BU_TEXTURE);
         ~TextureNVRHI();
 
+        nvrhi::TextureHandle m_pTexture;
+
+        mutable std::unordered_map<unsigned int, nvrhi::BindingSetItem> m_tBoundTextures;
+
         friend class ResourceManagerNVRHI;
     };
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // TEXTURENVRHI_H

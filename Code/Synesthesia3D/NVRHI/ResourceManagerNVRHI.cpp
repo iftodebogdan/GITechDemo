@@ -25,6 +25,8 @@
 #include "ResourceManagerNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 #include "VertexFormatNVRHI.h"
 #include "IndexBufferNVRHI.h"
 #include "VertexBufferNVRHI.h"
@@ -131,3 +133,5 @@ const unsigned int ResourceManagerNVRHI::CreateRenderTarget(const unsigned int t
         widthRatio, heightRatio, hasMipmaps, hasDepthStencil, depthStencilFormat);
     return AddRenderTarget(rt);
 }
+
+#endif // ENABLE_NVRHI

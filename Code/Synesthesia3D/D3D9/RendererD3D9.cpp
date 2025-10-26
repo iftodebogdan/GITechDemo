@@ -320,7 +320,17 @@ void RendererD3D9::ValidatePresentParameters(D3DPRESENT_PARAMETERS& pp)
 
 IDirect3D9* RendererD3D9::CreateDriver()
 {
-    return Direct3DCreate9(D3D_SDK_VERSION);
+#if _DEBUG
+    VLDDisable();
+#endif
+
+    IDirect3D9* pDriver = Direct3DCreate9(D3D_SDK_VERSION);
+
+#if _DEBUG
+    VLDEnable();
+#endif
+
+    return pDriver;
 }
 
 void RendererD3D9::ValidateDevice()

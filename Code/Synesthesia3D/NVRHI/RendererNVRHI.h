@@ -41,8 +41,13 @@ namespace Synesthesia3D
 
         virtual void CheckDeviceCaps();
 
+        void InitializeRenderDoc();
+
     public:
+        static RendererNVRHI* const GetInstance();
+
         virtual void Initialize(void* hWnd) override;
+
         const bool SetDisplayResolution(
             const Vec2i size,
             const Vec2i offset = Vec2i(0, 0),
@@ -53,15 +58,23 @@ namespace Synesthesia3D
         const bool GetVSyncStatus() const override;
         const unsigned int GetDisplayRefreshRate() const override;
         const PixelFormat GetBackBufferFormat() const override;
+
         const bool IsFullscreen() const override;
         void SetViewport(const Vec2i size, const Vec2i offset = Vec2i(0, 0)) override;
-        void CreatePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear, const float zFar) const override;
-        void CreateInfinitePerspectiveMatrix(Matrix44f& matProj, const float fovYRad, const float aspectRatio, const float zNear) const override;
-        void CreateOrthographicMatrix(Matrix44f& matProj, const float left, const float top, const float right, const float bottom, const float zNear, const float zFar) const override;
+
+        const bool BeginFrame() override;
+        void EndFrame() override;
+
         void Clear(const Vec4f rgba, const float z, const unsigned int stencil) override;
 
+        nvrhi::DeviceHandle GetDevice() const { return m_pDevice; }
+        nvrhi::CommandListHandle GetCommandList() const { return m_pImmediateGraphicsCommandList; }
+
     protected:
-        nvrhi::DeviceHandle m_NvrhiDevice;
+        nvrhi::DeviceHandle m_pDevice;
+        nvrhi::CommandListHandle m_pImmediateGraphicsCommandList;
+
+        std::vector<nvrhi::TextureHandle> m_RhiSwapChainBuffers;
     };
 }
 

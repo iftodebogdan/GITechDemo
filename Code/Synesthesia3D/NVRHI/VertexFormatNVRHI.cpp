@@ -25,6 +25,8 @@
 #include "VertexFormatNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 VertexFormatNVRHI::VertexFormatNVRHI(const unsigned int attributeCount)
     : VertexFormat(attributeCount)
 {
@@ -60,3 +62,5 @@ void VertexFormatNVRHI::Unbind()
 {
 
 }
+
+#endif // ENABLE_NVRHI

@@ -25,6 +25,8 @@
 #include "IndexBufferNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 IndexBufferNVRHI::IndexBufferNVRHI(const unsigned int indexCount, const IndexBufferFormat indexFormat, const BufferUsage usage)
     : IndexBuffer(indexCount, indexFormat, usage)
 {
@@ -71,3 +73,5 @@ void IndexBufferNVRHI::Unbind()
 {
 
 }
+
+#endif // ENABLE_NVRHI

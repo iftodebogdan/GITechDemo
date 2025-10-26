@@ -213,6 +213,10 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
     if (!pFW)
         return;
 
+    // TODO: fix multi-threaded resource loading
+    if (Renderer::GetInstance()->GetAPI() == API_NVRHI_D3D12 && thId != 0)
+        return;
+
     bool bAllInitialized = false;
     do
     {

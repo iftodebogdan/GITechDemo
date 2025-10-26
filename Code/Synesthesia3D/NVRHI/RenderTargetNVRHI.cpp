@@ -25,6 +25,8 @@
 #include "RenderTargetNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 RenderTargetNVRHI::RenderTargetNVRHI(const unsigned int targetCount, PixelFormat pixelFormat,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
@@ -84,3 +86,5 @@ void RenderTargetNVRHI::Unbind()
 {
 
 }
+
+#endif // ENABLE_NVRHI

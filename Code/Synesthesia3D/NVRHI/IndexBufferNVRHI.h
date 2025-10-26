@@ -23,6 +23,10 @@
 #ifndef INDEXBUFFERNVRHI_H
 #define INDEXBUFFERNVRHI_H
 
+#include "ResourceData.h"
+
+#if ENABLE_NVRHI
+
 #include "IndexBuffer.h"
 
 namespace Synesthesia3D
@@ -48,5 +52,7 @@ namespace Synesthesia3D
         friend class ResourceManagerNVRHI;
     };
 }
+
+#endif // ENABLE_NVRHI
 
 #endif // INDEXBUFFERNVRHI_H

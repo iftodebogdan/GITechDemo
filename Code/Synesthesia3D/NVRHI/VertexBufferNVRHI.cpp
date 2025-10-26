@@ -25,6 +25,8 @@
 #include "VertexBufferNVRHI.h"
 using namespace Synesthesia3D;
 
+#if ENABLE_NVRHI
+
 #include "VertexFormatNVRHI.h"
 #include "IndexBufferNVRHI.h"
 
@@ -74,3 +76,5 @@ void VertexBufferNVRHI::Unbind()
 {
 
 }
+
+#endif // ENABLE_NVRHI

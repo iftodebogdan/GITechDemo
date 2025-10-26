@@ -54,9 +54,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\IndexBufferNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ProfilerNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RenderStateNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\RenderTargetNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ResourceManagerNVRHI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\SamplerStateNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\ShaderProgramNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\TextureNVRHI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)NVRHI\VertexBufferNVRHI.cpp" />
@@ -150,10 +153,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)NULL\VertexFormatNULL.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\IndexBufferNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\MappingsNVRHI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ProfilerNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RendererNVRHIVulkan.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RenderStateNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\RenderTargetNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ResourceManagerNVRHI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\SamplerStateNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\ShaderProgramNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\TextureNVRHI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)NVRHI\VertexBufferNVRHI.h" />
