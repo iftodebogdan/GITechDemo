@@ -290,7 +290,7 @@ void RendererNVRHID3D12::CreateDevice()
 
     HRESULT hr = D3D12CreateDevice(
         m_DxgiAdapter,
-        D3D_FEATURE_LEVEL_12_2,
+        D3D_FEATURE_LEVEL_12_1, // TODO: check feature level support
         IID_PPV_ARGS(&m_Device12));
 
 #if _DEBUG

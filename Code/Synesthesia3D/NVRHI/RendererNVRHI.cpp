@@ -40,7 +40,13 @@ using namespace Synesthesia3D;
 
 #include "MappingsNVRHI.h"
 
-#pragma comment(lib, "NVRHI.lib")
+#if _DEBUG
+#pragma comment(lib, "NVRHI_x64_Debug.lib")
+#elif _PROFILE
+#pragma comment(lib, "NVRHI_x64_Profile.lib")
+#elif NDEBUG
+#pragma comment(lib, "NVRHI_x64_Release.lib")
+#endif
 
 RendererNVRHI::RendererNVRHI()
 {
