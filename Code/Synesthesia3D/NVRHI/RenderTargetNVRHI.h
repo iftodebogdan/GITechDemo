@@ -27,6 +27,8 @@
 
 #if ENABLE_NVRHI
 
+#include <nvrhi/nvrhi.h>
+
 #include "RenderTarget.h"
 
 namespace Synesthesia3D
@@ -53,6 +55,8 @@ namespace Synesthesia3D
             PixelFormat pixelFormatRT0, PixelFormat pixelFormatRT1, PixelFormat pixelFormatRT2, PixelFormat pixelFormatRT3,
             const float widthRatio, const float heightRatio, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat);
         ~RenderTargetNVRHI();
+
+        nvrhi::FramebufferHandle m_pFramebuffer;
 
         friend class ResourceManagerNVRHI;
     };

@@ -27,6 +27,11 @@ using namespace Synesthesia3D;
 
 #if ENABLE_NVRHI
 
+#include "RendererNVRHI.h"
+#include "ResourceManagerNVRHI.h"
+#include "TextureNVRHI.h"
+#include "MappingsNVRHI.h"
+
 RenderTargetNVRHI::RenderTargetNVRHI(const unsigned int targetCount, PixelFormat pixelFormat,
     const unsigned int width, const unsigned int height, bool hasMipmaps, bool hasDepthStencil, PixelFormat depthStencilFormat)
     : RenderTarget(targetCount, pixelFormat, width, height, hasMipmaps, hasDepthStencil, depthStencilFormat)
@@ -79,7 +84,29 @@ void RenderTargetNVRHI::CopyColorBuffer(const unsigned int colorBufferIdx, Textu
 
 void RenderTargetNVRHI::Bind()
 {
+    nvrhi::FramebufferDesc desc;
 
+    for (unsigned int i = 0; i < GetTargetCount(); i++)
+    {
+        const unsigned int colorBufferIdx = GetColorBuffer(i);
+        assert(colorBufferIdx != ~0u);
+
+        const TextureNVRHI* colorBufferTex = static_cast<TextureNVRHI*>(Renderer::GetInstance()->GetResourceManager()->GetTexture(colorBufferIdx));
+        assert(colorBufferTex != nullptr);
+
+        desc.addColorAttachment(colorBufferTex->GetTextureNVRHI());
+    }
+
+    const unsigned int depthBufferIdx = GetDepthBuffer();
+    if (depthBufferIdx != ~0u)
+    {
+        const TextureNVRHI* depthBufferTex = static_cast<TextureNVRHI*>(Renderer::GetInstance()->GetResourceManager()->GetTexture(depthBufferIdx));
+        assert(depthBufferTex != nullptr);
+
+        desc.setDepthAttachment(depthBufferTex->GetTextureNVRHI());
+    }
+
+    m_pFramebuffer = RendererNVRHI::GetInstance()->GetDevice()->createFramebuffer(desc);
 }
 
 void RenderTargetNVRHI::Unbind()

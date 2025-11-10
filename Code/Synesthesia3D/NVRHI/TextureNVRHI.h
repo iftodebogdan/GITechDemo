@@ -51,6 +51,8 @@ namespace Synesthesia3D
 
         const unsigned int GetCubeFaceIndex(const CubeFace cubeFace) const override { return CubeFaceIndexNVRHI[cubeFace]; }
 
+        nvrhi::TextureHandle GetTextureNVRHI() const { return m_pTexture; }
+
     private:
         TextureNVRHI(
             const PixelFormat pixelFormat, const TextureType texType,

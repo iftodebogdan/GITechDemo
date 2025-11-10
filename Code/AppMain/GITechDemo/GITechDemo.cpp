@@ -269,6 +269,11 @@ void GITechDemo::LoadResources(unsigned int thId, unsigned int thCount)
             // Misc. resources
             RenderScheme::AllocateResources();
 
+            // TODO: this looks silly, but some resources aren't bound on creation (i.e. the GPU resource isn't created)
+            // this is currently useful for debugging, but should be moved to a better spot
+            Renderer::GetInstance()->GetResourceManager()->UnbindAll();
+            Renderer::GetInstance()->GetResourceManager()->BindAll();
+
             bExtraResInit = true;
 
             cout << msg.str() + " finished in " + tostr((float)(pFW->GetTicks() - startTicks) / 1000.f) + "ms\n";
