@@ -34,6 +34,8 @@ namespace Synesthesia3D
     extern const nvrhi::Format PixelFormatNVRHI[PF_MAX];
     extern const nvrhi::TextureDimension TextureTypeNVRHI[TT_MAX];
     extern const unsigned int CubeFaceIndexNVRHI[FACE_MAX];
+    extern const std::string VertexAttributeSemanticNVRHI[VAS_MAX];
+    extern const nvrhi::Format VertexAttributeTypeNVRHI[VAT_MAX];
 
     const PixelFormat MatchPixelFormat(const nvrhi::Format fmt);
     const TextureType MatchTextureType(const nvrhi::TextureDimension dim);

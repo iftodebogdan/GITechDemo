@@ -27,6 +27,8 @@
 
 #if ENABLE_NVRHI
 
+#include <nvrhi/nvrhi.h>
+
 #include "VertexFormat.h"
 
 namespace Synesthesia3D
@@ -44,6 +46,8 @@ namespace Synesthesia3D
     private:
         VertexFormatNVRHI(const unsigned int attributeCount);
         ~VertexFormatNVRHI();
+
+        nvrhi::InputLayoutHandle m_pInputLayout;
 
         friend class ResourceManagerNVRHI;
     };

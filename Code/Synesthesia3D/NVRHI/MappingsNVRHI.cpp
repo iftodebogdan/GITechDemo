@@ -96,6 +96,36 @@ namespace Synesthesia3D
         0,  // FACE_XPOS
         5   // FACE_ZNEG
     };
+
+    const std::string VertexAttributeSemanticNVRHI[VAS_MAX] =
+    {
+        "UNKNOWN",      // VAS_NONE
+        "POSITION",     // VAS_POSITION
+        "NORMAL",       // VAS_NORMAL
+        "TANGENT",      // VAS_TANGENT
+        "BINORMAL",     // VAS_BINORMAL
+        "TEXCOORD",     // VAS_TEXCOORD
+        "COLOR",        // VAS_COLOR
+        "BLENDINDICES", // VAS_BLENDINDICES
+        "BLENDWEIGHT",  // VAS_BLENDWEIGHT
+        "FOGCOORD",     // VAS_FOGCOORD
+        "PSIZE",        // VAS_PSIZE
+    };
+
+    const nvrhi::Format VertexAttributeTypeNVRHI[VAT_MAX] =
+    {
+        nvrhi::Format::UNKNOWN,         // VAT_NONE
+        nvrhi::Format::R32_FLOAT,       // VAT_FLOAT1
+        nvrhi::Format::RG32_FLOAT,      // VAT_FLOAT2
+        nvrhi::Format::RGB32_FLOAT,     // VAT_FLOAT3
+        nvrhi::Format::RGBA32_FLOAT,    // VAT_FLOAT4
+        nvrhi::Format::RG16_FLOAT,      // VAT_HALF2
+        nvrhi::Format::RGBA16_FLOAT,    // VAT_HALF4
+        nvrhi::Format::RGBA8_UINT,      // VAT_UBYTE4
+        nvrhi::Format::RG16_SINT,       // VAT_SHORT2
+        nvrhi::Format::RGBA16_SINT      // VAT_SHORT4
+    };
+
 }
 
 #endif // ENABLE_NVRHI

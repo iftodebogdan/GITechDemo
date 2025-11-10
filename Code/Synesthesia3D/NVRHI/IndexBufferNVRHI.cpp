@@ -27,6 +27,8 @@ using namespace Synesthesia3D;
 
 #if ENABLE_NVRHI
 
+#include "RendererNVRHI.h"
+
 IndexBufferNVRHI::IndexBufferNVRHI(const unsigned int indexCount, const IndexBufferFormat indexFormat, const BufferUsage usage)
     : IndexBuffer(indexCount, indexFormat, usage)
 {
@@ -61,12 +63,19 @@ void IndexBufferNVRHI::Unlock()
 
 void IndexBufferNVRHI::Update()
 {
-
+    RendererNVRHI::GetInstance()->GetCommandList()->writeBuffer(m_pIndexBuffer, GetData(), GetSize());
 }
 
 void IndexBufferNVRHI::Bind()
 {
-
+    nvrhi::BufferDesc indexBufferDesc;
+    indexBufferDesc
+        .setByteSize(GetSize())
+        .setIsIndexBuffer(true)
+        .setInitialState(nvrhi::ResourceStates::IndexBuffer)
+        .setKeepInitialState(true)
+        .setDebugName("IndexBufferNVRHI");
+    m_pIndexBuffer = RendererNVRHI::GetInstance()->GetDevice()->createBuffer(indexBufferDesc);
 }
 
 void IndexBufferNVRHI::Unbind()

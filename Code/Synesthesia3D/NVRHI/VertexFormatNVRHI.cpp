@@ -27,6 +27,9 @@ using namespace Synesthesia3D;
 
 #if ENABLE_NVRHI
 
+#include "RendererNVRHI.h"
+#include "MappingsNVRHI.h"
+
 VertexFormatNVRHI::VertexFormatNVRHI(const unsigned int attributeCount)
     : VertexFormat(attributeCount)
 {
@@ -50,7 +53,21 @@ void VertexFormatNVRHI::Disable()
 
 void VertexFormatNVRHI::Update()
 {
+    std::vector<nvrhi::VertexAttributeDesc> attributes;
+    attributes.resize(m_nAttributeCount);
 
+    for (unsigned int i = 0; i < m_nAttributeCount; i++)
+    {
+        attributes[i]
+            .setName(VertexAttributeSemanticNVRHI[GetAttributeSemantic(i)] + std::to_string(GetSemanticIndex(i)))
+            .setFormat(VertexAttributeTypeNVRHI[GetAttributeType(i)])
+            .setOffset(GetOffset(i))
+            .setBufferIndex(0)
+            .setElementStride(GetStride());
+    }
+
+    // TODO: D3D11 requires vertex shader ptr
+    m_pInputLayout = RendererNVRHI::GetInstance()->GetDevice()->createInputLayout(attributes.data(), GetAttributeCount(), nullptr);
 }
 
 void VertexFormatNVRHI::Bind()

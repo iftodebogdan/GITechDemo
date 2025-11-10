@@ -27,6 +27,8 @@
 
 #if ENABLE_NVRHI
 
+#include <nvrhi/nvrhi.h>
+
 #include "IndexBuffer.h"
 
 namespace Synesthesia3D
@@ -48,6 +50,8 @@ namespace Synesthesia3D
             const unsigned int indexCount, const IndexBufferFormat indexFormat,
             const BufferUsage usage = BU_STATIC);
         ~IndexBufferNVRHI();
+
+        nvrhi::BufferHandle m_pIndexBuffer;
 
         friend class ResourceManagerNVRHI;
     };

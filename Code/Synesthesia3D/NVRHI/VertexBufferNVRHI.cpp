@@ -27,6 +27,8 @@ using namespace Synesthesia3D;
 
 #if ENABLE_NVRHI
 
+#include "RendererNVRHI.h"
+
 #include "VertexFormatNVRHI.h"
 #include "IndexBufferNVRHI.h"
 
@@ -64,12 +66,19 @@ void VertexBufferNVRHI::Unlock()
 
 void VertexBufferNVRHI::Update()
 {
-
+    RendererNVRHI::GetInstance()->GetCommandList()->writeBuffer(m_pVertexBuffer, GetData(), GetSize());
 }
 
 void VertexBufferNVRHI::Bind()
 {
-
+    nvrhi::BufferDesc vertexBufferDesc;
+    vertexBufferDesc
+        .setByteSize(GetSize())
+        .setIsVertexBuffer(true)
+        .setDebugName("VertexBufferNVRHI") // TODO: file name?
+        .setInitialState(nvrhi::ResourceStates::VertexBuffer)
+        .setKeepInitialState(true);
+    m_pVertexBuffer = RendererNVRHI::GetInstance()->GetDevice()->createBuffer(vertexBufferDesc);
 }
 
 void VertexBufferNVRHI::Unbind()

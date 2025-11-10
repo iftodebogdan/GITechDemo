@@ -27,6 +27,8 @@
 
 #if ENABLE_NVRHI
 
+#include <nvrhi/nvrhi.h>
+
 #include "VertexBuffer.h"
 
 namespace Synesthesia3D
@@ -51,6 +53,8 @@ namespace Synesthesia3D
             VertexFormatNVRHI* const vertexFormat, const unsigned int vertexCount,
             IndexBufferNVRHI* const indexBuffer = nullptr, const BufferUsage usage = BU_STATIC);
         ~VertexBufferNVRHI();
+
+        nvrhi::BufferHandle m_pVertexBuffer;
 
         friend class ResourceManagerNVRHI;
     };
